@@ -37,8 +37,14 @@ public class Maestro {
         maestroClient.disconnect();
     }
 
-    public void flush() throws MqttException, IOException {
+    public void flushRequest() throws MqttException, IOException {
         FlushRequest maestroNote = new FlushRequest();
+
+        maestroClient.publish("/mpt/daemon", maestroNote);
+    }
+
+    public void pingRequest() throws MqttException, IOException {
+        PingRequest maestroNote = new PingRequest();
 
         maestroClient.publish("/mpt/daemon", maestroNote);
     }

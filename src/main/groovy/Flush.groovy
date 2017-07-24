@@ -31,7 +31,7 @@ brokerURL = System.getenv("MAESTRO_BROKER")
 println "Connecting to " + brokerURL
 maestro = new Maestro(brokerURL)
 
-maestro.flush()
+maestro.flushRequest()
 maestro.stop()
 
 

@@ -18,8 +18,6 @@ package net.orpiske.mpt.maestro;
 
 public class FlushRequest extends MaestroRequest {
     public FlushRequest() {
-        super();
-
-        super.setMaestroCommand(MaestroCommand.MAESTRO_NOTE_FLUSH);
+        super(MaestroCommand.MAESTRO_NOTE_FLUSH);
     }
 }
