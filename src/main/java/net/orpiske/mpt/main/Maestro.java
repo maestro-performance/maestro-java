@@ -20,35 +20,32 @@ import net.orpiske.mpt.maestro.MaestroClient;
 import net.orpiske.mpt.maestro.MaestroCommand;
 import net.orpiske.mpt.maestro.MaestroNote;
 import net.orpiske.mpt.maestro.MaestroNoteType;
+import org.eclipse.paho.client.mqttv3.MqttException;
+
+import java.io.IOException;
 
 public class Maestro {
     private String url;
+    private MaestroClient maestroClient = null;
 
-    public Maestro(final String url) {
+    public Maestro(final String url) throws MqttException {
         this.url = url;
+
+        maestroClient = new MaestroClient(url);
+
+        maestroClient.connect();
     }
 
-    public int run() {
-        MaestroClient maestroClient = null;
+    public void stop() throws MqttException {
+        maestroClient.disconnect();
+    }
 
-        try {
-            maestroClient = new MaestroClient(url);
+    public void flush() throws MqttException, IOException {
+        MaestroNote maestroNote = new MaestroNote();
 
-            maestroClient.connect();
+        maestroNote.setNoteType(MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        maestroNote.setMaestroCommand(MaestroCommand.MAESTRO_NOTE_FLUSH);
 
-            MaestroNote maestroNote = new MaestroNote();
-
-            maestroNote.setNoteType(MaestroNoteType.MAESTRO_TYPE_REQUEST);
-            maestroNote.setMaestroCommand(MaestroCommand.MAESTRO_NOTE_FLUSH);
-
-            maestroClient.publish("/mpt/daemon", maestroNote);
-        }
-        catch (Exception e) {
-            System.err.println("Unable to execute maestro: " + e.getMessage());
-
-            return 1;
-        }
-
-        return 0;
+        maestroClient.publish("/mpt/daemon", maestroNote);
     }
 }

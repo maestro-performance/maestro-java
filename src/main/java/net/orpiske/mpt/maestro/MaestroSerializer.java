@@ -20,7 +20,6 @@ package net.orpiske.mpt.maestro;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
 
-
 import java.io.IOException;
 
 public class MaestroSerializer {

@@ -15,8 +15,6 @@
  */
 package net.orpiske.mpt.utils;
 
-import java.io.File;
-
 /**
  * Application constants
  * @author Otavio R. Piske <angusyoung@gmail.com>

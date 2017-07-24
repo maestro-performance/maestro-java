@@ -47,6 +47,10 @@ public class MaestroClient {
         mqttClient.connect();
     }
 
+    public void disconnect() throws MqttException {
+        mqttClient.disconnect();
+    }
+
     public void publish(final String topic, final MaestroNote note) throws MqttException, IOException {
         byte[] bytes = MaestroSerializer.serialize(note);
 

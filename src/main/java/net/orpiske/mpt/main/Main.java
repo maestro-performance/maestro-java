@@ -64,9 +64,7 @@ public class Main {
     public static void main(String[] args) {
         processCommand(args);
 
-        Maestro maestro = new Maestro(url);
 
-        maestro.run();
     }
 
 
