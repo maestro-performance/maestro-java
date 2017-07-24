@@ -16,10 +16,7 @@
 
 package net.orpiske.mpt.main;
 
-import net.orpiske.mpt.maestro.MaestroClient;
-import net.orpiske.mpt.maestro.MaestroCommand;
-import net.orpiske.mpt.maestro.MaestroNote;
-import net.orpiske.mpt.maestro.MaestroNoteType;
+import net.orpiske.mpt.maestro.*;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
@@ -41,10 +38,7 @@ public class Maestro {
     }
 
     public void flush() throws MqttException, IOException {
-        MaestroNote maestroNote = new MaestroNote();
-
-        maestroNote.setNoteType(MaestroNoteType.MAESTRO_TYPE_REQUEST);
-        maestroNote.setMaestroCommand(MaestroCommand.MAESTRO_NOTE_FLUSH);
+        FlushRequest maestroNote = new FlushRequest();
 
         maestroClient.publish("/mpt/daemon", maestroNote);
     }

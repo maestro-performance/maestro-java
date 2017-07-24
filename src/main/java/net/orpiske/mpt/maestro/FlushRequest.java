@@ -16,22 +16,10 @@
 
 package net.orpiske.mpt.maestro;
 
+public class FlushRequest extends MaestroRequest {
+    public FlushRequest() {
+        super();
 
-import org.msgpack.core.MessageBufferPacker;
-import org.msgpack.core.MessagePack;
-
-import java.io.IOException;
-
-public class MaestroSerializer {
-
-    public static byte[] serialize(MaestroNote note) throws IOException {
-        MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
-
-        packer.packShort(note.getNoteType().getValue());
-        packer.packLong(note.getMaestroCommand().getValue());
-
-        packer.close();
-
-        return packer.toByteArray();
+        super.setMaestroCommand(MaestroCommand.MAESTRO_NOTE_FLUSH);
     }
 }

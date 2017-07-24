@@ -52,7 +52,7 @@ public class MaestroClient {
     }
 
     public void publish(final String topic, final MaestroNote note) throws MqttException, IOException {
-        byte[] bytes = MaestroSerializer.serialize(note);
+        byte[] bytes = note.serialize();
 
         mqttClient.publish(topic, bytes, 0, false);
     }

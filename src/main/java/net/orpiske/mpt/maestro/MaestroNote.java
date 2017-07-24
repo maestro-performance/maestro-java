@@ -16,11 +16,16 @@
 
 package net.orpiske.mpt.maestro;
 
+import org.msgpack.core.MessageBufferPacker;
+import org.msgpack.core.MessagePack;
+
+import java.io.IOException;
+
 public class MaestroNote {
     private MaestroNoteType noteType;
     private MaestroCommand maestroCommand;
 
-    public MaestroNote() {
+    protected MaestroNote() {
 
     }
 
@@ -28,7 +33,7 @@ public class MaestroNote {
         return noteType;
     }
 
-    public void setNoteType(MaestroNoteType noteType) {
+    protected void setNoteType(MaestroNoteType noteType) {
         this.noteType = noteType;
     }
 
@@ -36,11 +41,25 @@ public class MaestroNote {
         return maestroCommand;
     }
 
-    public void setMaestroCommand(MaestroCommand maestroCommand) {
+    protected void setMaestroCommand(MaestroCommand maestroCommand) {
         this.maestroCommand = maestroCommand;
     }
 
+    protected MessageBufferPacker pack() throws IOException {
+        MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
 
+        packer.packShort(noteType.getValue());
+        packer.packLong(maestroCommand.getValue());
 
+        return packer;
+    }
+
+    final public byte[] serialize() throws IOException {
+        MessageBufferPacker packer = pack();
+
+        packer.close();
+
+        return packer.toByteArray();
+    }
 
 }

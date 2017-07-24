@@ -18,6 +18,9 @@ package net.orpiske.mpt.main;
 
 import net.orpiske.mpt.utils.Constants;
 import org.apache.commons.cli.*;
+import org.eclipse.paho.client.mqttv3.MqttException;
+
+import java.io.IOException;
 
 public class Main {
     private static CommandLine cmdLine;
@@ -64,7 +67,22 @@ public class Main {
     public static void main(String[] args) {
         processCommand(args);
 
+        Maestro maestro = null;
+        try {
+            maestro = new Maestro(url);
 
+            maestro.flush();
+
+            System.exit(0);
+        } catch (MqttException e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+            System.err.println(e.getMessage());
+        }
+
+        System.exit(1);
     }
 
 
