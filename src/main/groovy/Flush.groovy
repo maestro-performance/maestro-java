@@ -14,7 +14,9 @@
  *  limitations under the License.
  */
 
-import net.orpiske.mpt.main.Maestro
+import net.orpiske.mpt.maestro.Maestro
+import net.orpiske.mpt.maestro.notes.MaestroNote
+import net.orpiske.mpt.maestro.notes.MaestroNoteType
 
 @GrabConfig(systemClassLoader=true)
 
@@ -32,6 +34,38 @@ println "Connecting to " + brokerURL
 maestro = new Maestro(brokerURL)
 
 maestro.flushRequest()
+
+println "Collecting replies"
+List<MaestroNote> replies = maestro.collect()
+
+for (int i = 0; i < 10; i++) {
+    if (replies != null && replies.size() > 0) {
+        break
+    }
+
+    println "Waiting for replies ..."
+    Thread.sleep(1)
+    replies = maestro.collect()
+}
+
+println "Processing " + replies.size() + " replies"
+replies.each { MaestroNote note ->
+    switch (note.getNoteType()) {
+        case MaestroNoteType.MAESTRO_TYPE_RESPONSE:
+            print "Received response for "
+            break
+
+        case MaestroNoteType.MAESTRO_TYPE_REQUEST:
+            print "Received request for "
+            break
+        case MaestroNoteType.MAESTRO_TYPE_NOTIFICATION:
+            print "Received notification for "
+            break;
+    }
+
+    println note.getMaestroCommand()
+}
+
 maestro.stop()
 
 

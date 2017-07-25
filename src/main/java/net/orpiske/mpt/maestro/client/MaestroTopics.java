@@ -17,8 +17,13 @@
 package net.orpiske.mpt.maestro.client;
 
 public class MaestroTopics {
-    public final static String MAESTRO_TOPIC = "/mpt/daemon";
+    public final static String MAESTRO_TOPIC = "/mpt/maestro";
     public final static String NOTIFICATION_TOPIC = "/mpt/notifications";
+
+    public final static String ALL_DAEMONS = "/mpt/daemon";
+    public final static String SENDER_DAEMONS = "/mpt/daemon/sender";
+    public final static String RECEIVER_DAEMONS ="/mpt/daemon/receiver";
+    public final static String BROKER_INSPECTOR_DAEMONS = "/mpt/daemon/brokerd";
 
     public final static String[] MAESTRO_TOPICS = {MAESTRO_TOPIC, NOTIFICATION_TOPIC};
 

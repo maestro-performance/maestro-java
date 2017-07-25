@@ -17,43 +17,54 @@
 package net.orpiske.mpt.maestro;
 
 import net.orpiske.mpt.maestro.client.MaestroClient;
-import net.orpiske.mpt.maestro.client.MaestroCollector;
+import net.orpiske.mpt.maestro.client.MaestroCollectorExecutor;
 import net.orpiske.mpt.maestro.client.MaestroTopics;
 import net.orpiske.mpt.maestro.notes.FlushRequest;
+import net.orpiske.mpt.maestro.notes.MaestroNote;
 import net.orpiske.mpt.maestro.notes.PingRequest;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
+import java.util.List;
 
 public class Maestro {
-    private String url;
     private MaestroClient maestroClient = null;
-    private MaestroCollector maestroCollector = null;
+    private MaestroCollectorExecutor collectorExecutor;
+    private Thread collectorThread;
 
     public Maestro(final String url) throws MqttException {
-        this.url = url;
-
-        maestroCollector = new MaestroCollector(url);
-        maestroCollector.connect();
-        maestroCollector.subscribe();
+        collectorExecutor = new MaestroCollectorExecutor(url);
 
         maestroClient = new MaestroClient(url);
         maestroClient.connect();
+
+        collectorThread = new Thread(collectorExecutor);
+        collectorThread.start();
     }
 
     public void stop() throws MqttException {
         maestroClient.disconnect();
+        collectorExecutor.stop();
+        try {
+            collectorThread.join();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
     }
 
     public void flushRequest() throws MqttException, IOException {
         FlushRequest maestroNote = new FlushRequest();
 
-        maestroClient.publish(MaestroTopics.MAESTRO_TOPIC, maestroNote);
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
     }
 
     public void pingRequest() throws MqttException, IOException {
         PingRequest maestroNote = new PingRequest();
 
-        maestroClient.publish(MaestroTopics.MAESTRO_TOPIC, maestroNote);
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+    public List<MaestroNote> collect() {
+        return collectorExecutor.collect();
     }
 }

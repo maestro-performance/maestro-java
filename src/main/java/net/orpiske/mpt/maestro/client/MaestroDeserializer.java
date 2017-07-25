@@ -25,29 +25,35 @@ import java.io.IOException;
 
 public class MaestroDeserializer {
 
-    private static MaestroNotification deserializeNotification(MessageUnpacker unpacker, byte[] bytes) throws IOException {
-        return null;
+    private static MaestroNotification deserializeNotification(MessageUnpacker unpacker, byte[] bytes) throws IOException, MalformedNoteException {
+        long tmpCommand = unpacker.unpackLong();
+        MaestroCommand command = MaestroCommand.from(tmpCommand);
+
+        switch (command) {
+            default: {
+                throw new MalformedNoteException("Invalid notification command: " + tmpCommand);
+            }
+        }
     }
 
-    private static MaestroResponse deserializeResponse(MessageUnpacker unpacker, byte[] bytes) throws IOException {
-        MaestroCommand command = MaestroCommand.from(unpacker.unpackLong());
+    private static MaestroResponse deserializeResponse(MessageUnpacker unpacker, byte[] bytes) throws IOException, MalformedNoteException {
+        long tmpCommand = unpacker.unpackLong();
+        MaestroCommand command = MaestroCommand.from(tmpCommand);
 
         switch (command) {
             case MAESTRO_NOTE_OK: {
                 return new OkResponse();
             }
-
             default: {
-                break;
+                throw new MalformedNoteException("Invalid response command: " + tmpCommand);
             }
         }
 
-
-        return null;
     }
 
-    private static MaestroRequest deserializeRequest(MessageUnpacker unpacker, byte[] bytes) throws IOException {
-        MaestroCommand command = MaestroCommand.from(unpacker.unpackLong());
+    private static MaestroRequest deserializeRequest(MessageUnpacker unpacker, byte[] bytes) throws IOException, MalformedNoteException {
+        long tmpCommand = unpacker.unpackLong();
+        MaestroCommand command = MaestroCommand.from(tmpCommand);
 
         switch (command) {
             case MAESTRO_NOTE_PING: {
@@ -57,26 +63,23 @@ public class MaestroDeserializer {
                 return new FlushRequest();
             }
             default: {
-                break;
+                throw new MalformedNoteException("Invalid request command: " + tmpCommand);
             }
         }
-
-
-        return null;
-
     }
 
     public static MaestroNote deserialize(byte[] bytes) throws IOException, MalformedNoteException {
         MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(bytes);
 
         try {
-            MaestroNoteType type = MaestroNoteType.from(unpacker.unpackShort());
+            short tmpType = unpacker.unpackShort();
+            MaestroNoteType type = MaestroNoteType.from(tmpType);
 
             switch (type) {
                 case MAESTRO_TYPE_REQUEST: return deserializeRequest(unpacker, bytes);
                 case MAESTRO_TYPE_RESPONSE: return deserializeResponse(unpacker, bytes);
                 case MAESTRO_TYPE_NOTIFICATION: return deserializeNotification(unpacker, bytes);
-                default: throw new MalformedNoteException("Invalid note type");
+                default: throw new MalformedNoteException("Invalid note type: " + tmpType);
             }
         } finally {
             unpacker.close();
