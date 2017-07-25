@@ -16,8 +16,38 @@
 
 package net.orpiske.mpt.maestro.notes;
 
+import org.msgpack.core.MessageUnpacker;
+
+import java.io.IOException;
+
 public class MaestroResponse extends MaestroNote {
+    private String id;
+    private String name;
+
     public MaestroResponse(MaestroCommand maestroCommand) {
         super(MaestroNoteType.MAESTRO_TYPE_RESPONSE, maestroCommand);
+    }
+
+    public MaestroResponse(MaestroCommand maestroCommand, MessageUnpacker unpacker, byte[] bytes) throws IOException {
+        super(MaestroNoteType.MAESTRO_TYPE_RESPONSE, maestroCommand);
+
+        id = unpacker.unpackString();
+        name = unpacker.unpackString();
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 }
