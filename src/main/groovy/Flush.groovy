@@ -36,17 +36,7 @@ maestro = new Maestro(brokerURL)
 maestro.flushRequest()
 
 println "Collecting replies"
-List<MaestroNote> replies = maestro.collect()
-
-for (int i = 0; i < 10; i++) {
-    if (replies != null && replies.size() > 0) {
-        break
-    }
-
-    println "Waiting for replies ..."
-    Thread.sleep(1)
-    replies = maestro.collect()
-}
+List<MaestroNote> replies = maestro.collect(1000, 10)
 
 println "Processing " + replies.size() + " replies"
 replies.each { MaestroNote note ->

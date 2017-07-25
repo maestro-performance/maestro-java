@@ -67,4 +67,29 @@ public class Maestro {
     public List<MaestroNote> collect() {
         return collectorExecutor.collect();
     }
+
+    private boolean hasReplies(List<?> replies) {
+        return (replies != null && replies.size() > 0);
+    }
+
+    public List<MaestroNote> collect(long wait, int retries) {
+        List<MaestroNote> replies = null;
+
+        do {
+            replies = collectorExecutor.collect();
+
+            if (hasReplies(replies)) {
+                break;
+            }
+
+            try {
+                Thread.sleep(wait);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            retries--;
+        } while (retries > 0);
+
+        return replies;
+    }
 }

@@ -15,8 +15,11 @@
  */
 
 import net.orpiske.mpt.maestro.Maestro
+import net.orpiske.mpt.maestro.notes.MaestroCommand
 import net.orpiske.mpt.maestro.notes.MaestroNote
 import net.orpiske.mpt.maestro.notes.MaestroNoteType
+import net.orpiske.mpt.maestro.notes.MaestroResponse
+import net.orpiske.mpt.maestro.notes.PingResponse
 
 @GrabConfig(systemClassLoader=true)
 
@@ -35,21 +38,12 @@ maestro = new Maestro(brokerURL)
 
 maestro.pingRequest()
 
-println "Collecting replies"
-List<MaestroNote> replies = maestro.collect()
-
-for (int i = 0; i < 10; i++) {
-    if (replies != null && replies.size() > 0) {
-        break
-    }
-
-    println "Waiting for responses ..."
-    Thread.sleep(1)
-}
+println "Collecting replies "
+List<MaestroNote> replies = maestro.collect(1000, 10)
 
 
-println "Processing replies"
-for (MaestroNote note : replies) {
+println "Processing " + replies.size() + " replies"
+replies.each { MaestroNote note ->
     switch (note.getNoteType()) {
         case MaestroNoteType.MAESTRO_TYPE_RESPONSE:
             print "Received response for "
@@ -63,8 +57,16 @@ for (MaestroNote note : replies) {
             break;
     }
 
-    println "Response received for: " + note.getMaestroCommand()
+    println note.getMaestroCommand()
 
+    if (note.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE) {
+        println "ID: " + ((MaestroResponse) note).getId();
+        println "Name: " + ((MaestroResponse) note).getName();
+    }
+
+    if (note.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_PING) {
+        println "Elapsed time: " + ((PingResponse) note).getElapsed()
+    }
 }
 
 maestro.stop()
