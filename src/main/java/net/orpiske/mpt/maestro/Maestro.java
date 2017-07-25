@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.main;
+package net.orpiske.mpt.maestro;
 
 import net.orpiske.mpt.maestro.client.MaestroClient;
 import net.orpiske.mpt.maestro.client.MaestroCollector;
