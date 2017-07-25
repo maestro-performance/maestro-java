@@ -65,6 +65,7 @@ public class MaestroCollector implements MqttCallback {
     public void messageArrived(String s, MqttMessage mqttMessage) {
         System.out.println("Message arrived");
         byte[] payload = mqttMessage.getPayload();
+
         try {
             MaestroNote note = MaestroDeserializer.deserialize(payload);
             System.out.println("Message type: " + note.getClass());
@@ -73,7 +74,11 @@ public class MaestroCollector implements MqttCallback {
             System.out.println("Invalid message type: " + e.getMessage());
         } catch (IOException e) {
             System.out.println("I/O error: " + e.getMessage());
+        } catch (Exception e) {
+            System.out.println("Unhandled exception: " + e.getMessage());
+            e.printStackTrace();
         }
+
     }
 
     public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
