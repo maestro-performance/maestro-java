@@ -20,6 +20,7 @@ import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
+import java.time.Instant;
 
 public class PingRequest extends MaestroRequest {
     private long sec;
@@ -28,8 +29,9 @@ public class PingRequest extends MaestroRequest {
     public PingRequest() {
         super(MaestroCommand.MAESTRO_NOTE_PING);
 
-        sec = System.currentTimeMillis() / 1000;
-        usec = System.nanoTime();
+        Instant instant = Instant.now();
+        sec = instant.getEpochSecond();
+        usec = instant.getNano() / 1000;
     }
 
     public PingRequest(MessageUnpacker unpacker, byte[] bytes) throws IOException {
