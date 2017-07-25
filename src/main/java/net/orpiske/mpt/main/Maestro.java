@@ -16,7 +16,11 @@
 
 package net.orpiske.mpt.main;
 
-import net.orpiske.mpt.maestro.*;
+import net.orpiske.mpt.maestro.client.MaestroClient;
+import net.orpiske.mpt.maestro.client.MaestroCollector;
+import net.orpiske.mpt.maestro.client.MaestroTopics;
+import net.orpiske.mpt.maestro.notes.FlushRequest;
+import net.orpiske.mpt.maestro.notes.PingRequest;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;

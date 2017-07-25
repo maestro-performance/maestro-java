@@ -14,13 +14,10 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.maestro;
+package net.orpiske.mpt.maestro.notes;
 
-public class MaestroTopics {
-    public final static String MAESTRO_TOPIC = "/mpt/maestro";
-    public final static String NOTIFICATION_TOPIC = "/mpt/notifications";
-
-    public final static String[] MAESTRO_TOPICS = {MAESTRO_TOPIC, NOTIFICATION_TOPIC};
-
-    private MaestroTopics() {}
+public class FlushRequest extends MaestroRequest {
+    public FlushRequest() {
+        super(MaestroCommand.MAESTRO_NOTE_FLUSH);
+    }
 }

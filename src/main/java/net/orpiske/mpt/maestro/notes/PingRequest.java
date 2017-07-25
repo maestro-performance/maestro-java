@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.maestro;
+package net.orpiske.mpt.maestro.notes;
 
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;

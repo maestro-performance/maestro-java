@@ -71,7 +71,7 @@ public class Main {
         try {
             maestro = new Maestro(url);
 
-            maestro.flushRequest();
+            maestro.pingRequest();
 
             System.exit(0);
         } catch (MqttException e) {

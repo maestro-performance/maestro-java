@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.maestro;
+package net.orpiske.mpt.maestro.notes;
 
 public enum MaestroNoteType {
     MAESTRO_TYPE_REQUEST((short) 0),

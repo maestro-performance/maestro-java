@@ -14,10 +14,10 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.maestro;
+package net.orpiske.mpt.maestro.notes;
 
-public class MaestroResponse extends MaestroNote {
-    public MaestroResponse(MaestroCommand maestroCommand) {
-        super(MaestroNoteType.MAESTRO_TYPE_RESPONSE, maestroCommand);
+public abstract class MaestroRequest extends MaestroNote {
+    public MaestroRequest(MaestroCommand maestroCommand) {
+        super(MaestroNoteType.MAESTRO_TYPE_REQUEST, maestroCommand);
     }
 }

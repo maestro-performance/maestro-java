@@ -14,14 +14,13 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.maestro;
+package net.orpiske.mpt.maestro.client;
 
-import org.msgpack.core.MessageUnpacker;
+public class MaestroTopics {
+    public final static String MAESTRO_TOPIC = "/mpt/maestro";
+    public final static String NOTIFICATION_TOPIC = "/mpt/notifications";
 
-import java.io.IOException;
+    public final static String[] MAESTRO_TOPICS = {MAESTRO_TOPIC, NOTIFICATION_TOPIC};
 
-public abstract class MaestroRequest extends MaestroNote {
-    public MaestroRequest(MaestroCommand maestroCommand) {
-        super(MaestroNoteType.MAESTRO_TYPE_REQUEST, maestroCommand);
-    }
+    private MaestroTopics() {}
 }

@@ -16,7 +16,8 @@
 
 package net.orpiske.mpt.maestro;
 
-import net.orpiske.mpt.main.Maestro;
+import net.orpiske.mpt.maestro.client.MaestroDeserializer;
+import net.orpiske.mpt.maestro.notes.*;
 import org.junit.Test;
 import static org.junit.Assert.*;
 
