@@ -14,14 +14,26 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.maestro;
+package net.orpiske.mpt.maestro.exceptions;
 
-import org.msgpack.core.MessageUnpacker;
+public class MaestroException extends Exception {
+    public MaestroException() {
+        super();
+    }
 
-import java.io.IOException;
+    public MaestroException(String message) {
+        super(message);
+    }
 
-public abstract class MaestroRequest extends MaestroNote {
-    public MaestroRequest(MaestroCommand maestroCommand) {
-        super(MaestroNoteType.MAESTRO_TYPE_REQUEST, maestroCommand);
+    public MaestroException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public MaestroException(Throwable cause) {
+        super(cause);
+    }
+
+    protected MaestroException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

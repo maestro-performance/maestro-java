@@ -16,12 +16,8 @@
 
 package net.orpiske.mpt.maestro;
 
-import org.msgpack.core.MessageUnpacker;
-
-import java.io.IOException;
-
-public abstract class MaestroRequest extends MaestroNote {
-    public MaestroRequest(MaestroCommand maestroCommand) {
-        super(MaestroNoteType.MAESTRO_TYPE_REQUEST, maestroCommand);
+public class MaestroNotification extends MaestroNote {
+    public MaestroNotification(MaestroCommand maestroCommand) {
+        super(MaestroNoteType.MAESTRO_TYPE_NOTIFICATION, maestroCommand);
     }
 }

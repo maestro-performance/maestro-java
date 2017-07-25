@@ -24,12 +24,16 @@ import java.io.IOException;
 public class Maestro {
     private String url;
     private MaestroClient maestroClient = null;
+    private MaestroCollector maestroCollector = null;
 
     public Maestro(final String url) throws MqttException {
         this.url = url;
 
-        maestroClient = new MaestroClient(url);
+        maestroCollector = new MaestroCollector(url);
+        maestroCollector.connect();
+        maestroCollector.subscribe();
 
+        maestroClient = new MaestroClient(url);
         maestroClient.connect();
     }
 

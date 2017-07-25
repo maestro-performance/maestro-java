@@ -18,6 +18,7 @@ package net.orpiske.mpt.maestro;
 
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
+import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
@@ -25,8 +26,9 @@ public class MaestroNote {
     private MaestroNoteType noteType;
     private MaestroCommand maestroCommand;
 
-    protected MaestroNote() {
-
+    public MaestroNote(MaestroNoteType type, MaestroCommand command) {
+        setNoteType(type);
+        setMaestroCommand(command);
     }
 
     public MaestroNoteType getNoteType() {
@@ -61,5 +63,4 @@ public class MaestroNote {
 
         return packer.toByteArray();
     }
-
 }

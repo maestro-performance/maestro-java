@@ -17,6 +17,7 @@
 package net.orpiske.mpt.maestro;
 
 import org.msgpack.core.MessageBufferPacker;
+import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
@@ -29,6 +30,13 @@ public class PingRequest extends MaestroRequest {
 
         sec = System.currentTimeMillis() / 1000;
         usec = System.nanoTime();
+    }
+
+    public PingRequest(MessageUnpacker unpacker, byte[] bytes) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_PING);
+
+        sec = unpacker.unpackLong();
+        usec = unpacker.unpackLong();
     }
 
     public long getSec() {

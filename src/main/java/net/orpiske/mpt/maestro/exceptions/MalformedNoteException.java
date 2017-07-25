@@ -14,14 +14,10 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.maestro;
+package net.orpiske.mpt.maestro.exceptions;
 
-import org.msgpack.core.MessageUnpacker;
-
-import java.io.IOException;
-
-public abstract class MaestroRequest extends MaestroNote {
-    public MaestroRequest(MaestroCommand maestroCommand) {
-        super(MaestroNoteType.MAESTRO_TYPE_REQUEST, maestroCommand);
+public class MalformedNoteException extends MaestroException {
+    public MalformedNoteException(String message) {
+        super(message);
     }
 }

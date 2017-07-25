@@ -49,4 +49,28 @@ public enum MaestroCommand {
     public long getValue() {
         return value;
     }
+
+    public static MaestroCommand from(long value) {
+        switch ((int) value) {
+            case 0: return MAESTRO_NOTE_START_RECEIVER;
+            case 1: return MAESTRO_NOTE_STOP_RECEIVER;
+            case 2: return MAESTRO_NOTE_START_SENDER;
+            case 3: return MAESTRO_NOTE_STOP_SENDER;
+            case 4: return MAESTRO_NOTE_START_INSPECTOR;
+            case 5: return MAESTRO_NOTE_STOP_INSPECTOR;
+            case 6: return MAESTRO_NOTE_FLUSH;
+            case 7: return MAESTRO_NOTE_SET;
+            case 8: return MAESTRO_NOTE_STATS;
+            case 9: return MAESTRO_NOTE_HALT;
+            case 10: return MAESTRO_NOTE_PING;
+            case 11: return MAESTRO_NOTE_OK;
+            case 12: return MAESTRO_NOTE_PROTOCOL_ERROR;
+            case 13: return MAESTRO_NOTE_INTERNAL_ERROR;
+            case 14: return MAESTRO_NOTE_ABNORMAL_DISCONNECT;
+            case 15: return MAESTRO_NOTE_NOTIFY_FAIL;
+            case 16: return MAESTRO_NOTE_NOTIFY_SUCCESS;
+        }
+
+        return null;
+    }
 }

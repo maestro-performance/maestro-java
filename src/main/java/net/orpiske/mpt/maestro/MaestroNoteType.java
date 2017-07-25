@@ -30,4 +30,15 @@ public enum MaestroNoteType {
     public short getValue() {
         return value;
     }
+
+    public static MaestroNoteType from(short type) {
+        switch (type) {
+            case 0: return MAESTRO_TYPE_REQUEST;
+            case 1: return MAESTRO_TYPE_RESPONSE;
+            case 2: return MAESTRO_TYPE_NOTIFICATION;
+        }
+
+        return null;
+    }
+
 }
