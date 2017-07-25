@@ -40,12 +40,12 @@ public class Maestro {
     public void flushRequest() throws MqttException, IOException {
         FlushRequest maestroNote = new FlushRequest();
 
-        maestroClient.publish("/mpt/daemon", maestroNote);
+        maestroClient.publish(MaestroTopics.MAESTRO_TOPIC, maestroNote);
     }
 
     public void pingRequest() throws MqttException, IOException {
         PingRequest maestroNote = new PingRequest();
 
-        maestroClient.publish("/mpt/daemon", maestroNote);
+        maestroClient.publish(MaestroTopics.MAESTRO_TOPIC, maestroNote);
     }
 }
