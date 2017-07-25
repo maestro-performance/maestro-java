@@ -30,6 +30,19 @@ public class MaestroDeserializer {
     }
 
     private static MaestroResponse deserializeResponse(MessageUnpacker unpacker, byte[] bytes) throws IOException {
+        MaestroCommand command = MaestroCommand.from(unpacker.unpackLong());
+
+        switch (command) {
+            case MAESTRO_NOTE_OK: {
+                return new OkResponse();
+            }
+
+            default: {
+                break;
+            }
+        }
+
+
         return null;
     }
 

@@ -51,4 +51,15 @@ public class MaestroProtocolTest {
         assertTrue(parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
         assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_FLUSH);
     }
+
+
+    @Test
+    public void serializeOkResponse() throws Exception {
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(new OkResponse()));
+
+        assertTrue(parsed instanceof OkResponse);
+        assertTrue("Parsed object is not a OK response",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_OK);
+    }
 }
