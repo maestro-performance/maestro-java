@@ -46,13 +46,13 @@ public class MaestroCollectorExecutor implements Runnable {
     }
 
     public void stop() {
-        exit = true;
-
         try {
             maestroCollector.disconnect();
         } catch (MqttException e) {
-            e.printStackTrace();
+            // e.printStackTrace();
         }
+
+        exit = true;
     }
 
     public List<MaestroNote> collect() {

@@ -34,7 +34,7 @@ public class PingRequest extends MaestroRequest {
         usec = instant.getNano() / 1000;
     }
 
-    public PingRequest(MessageUnpacker unpacker, byte[] bytes) throws IOException {
+    public PingRequest(MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_PING);
 
         sec = unpacker.unpackLong();

@@ -27,8 +27,8 @@ public class PingResponse extends MaestroResponse {
         super(maestroCommand);
     }
 
-    public PingResponse(MessageUnpacker unpacker, byte[] bytes) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_PING, unpacker, bytes);
+    public PingResponse(MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_PING, unpacker);
 
         elapsed = unpacker.unpackLong();
     }

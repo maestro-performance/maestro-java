@@ -28,7 +28,7 @@ public class MaestroResponse extends MaestroNote {
         super(MaestroNoteType.MAESTRO_TYPE_RESPONSE, maestroCommand);
     }
 
-    public MaestroResponse(MaestroCommand maestroCommand, MessageUnpacker unpacker, byte[] bytes) throws IOException {
+    public MaestroResponse(MaestroCommand maestroCommand, MessageUnpacker unpacker) throws IOException {
         super(MaestroNoteType.MAESTRO_TYPE_RESPONSE, maestroCommand);
 
         id = unpacker.unpackString();
