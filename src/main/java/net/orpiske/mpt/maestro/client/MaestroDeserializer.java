@@ -44,6 +44,9 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_OK: {
                 return new OkResponse();
             }
+            case MAESTRO_NOTE_PING: {
+                return new PingResponse(unpacker, bytes);
+            }
             default: {
                 throw new MalformedNoteException("Invalid response command: " + tmpCommand);
             }
