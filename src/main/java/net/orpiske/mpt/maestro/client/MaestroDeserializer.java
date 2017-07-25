@@ -30,6 +30,12 @@ public class MaestroDeserializer {
         MaestroCommand command = MaestroCommand.from(tmpCommand);
 
         switch (command) {
+            case MAESTRO_NOTE_NOTIFY_FAIL: {
+                return new TestFailedNotification(unpacker);
+            }
+            case MAESTRO_NOTE_NOTIFY_SUCCESS: {
+                return new TestSuccessfulNotification(unpacker);
+            }
             default: {
                 throw new MalformedNoteException("Invalid notification command: " + tmpCommand);
             }
