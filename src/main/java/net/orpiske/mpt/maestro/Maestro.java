@@ -19,9 +19,7 @@ package net.orpiske.mpt.maestro;
 import net.orpiske.mpt.maestro.client.MaestroClient;
 import net.orpiske.mpt.maestro.client.MaestroCollectorExecutor;
 import net.orpiske.mpt.maestro.client.MaestroTopics;
-import net.orpiske.mpt.maestro.notes.FlushRequest;
-import net.orpiske.mpt.maestro.notes.MaestroNote;
-import net.orpiske.mpt.maestro.notes.PingRequest;
+import net.orpiske.mpt.maestro.notes.*;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
@@ -60,6 +58,137 @@ public class Maestro {
 
     public void pingRequest() throws MqttException, IOException {
         PingRequest maestroNote = new PingRequest();
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+    public void setBroker(final String value) throws MqttException, IOException {
+        SetRequest maestroNote = new SetRequest();
+
+        maestroNote.setBroker(value);
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+    public void setDuration(final String value) throws MqttException, IOException {
+        SetRequest maestroNote = new SetRequest();
+
+        maestroNote.setDurationType(value);
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+    public void setDuration(final long value) throws MqttException, IOException {
+        SetRequest maestroNote = new SetRequest();
+
+        maestroNote.setDurationType(Long.toString(value));
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+    public void setLogLevel(final String value) throws MqttException, IOException {
+        SetRequest maestroNote = new SetRequest();
+
+        maestroNote.setLogLevel(value);
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+    public void setParallelCount(int value) throws MqttException, IOException {
+        SetRequest maestroNote = new SetRequest();
+
+
+        maestroNote.setParallelCount(Integer.toString(value));
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+    /**
+     * This one can be used for variable message sizes
+     * @param value
+     * @throws MqttException
+     * @throws IOException
+     */
+    public void setMessageSize(final String value) throws MqttException, IOException {
+        SetRequest maestroNote = new SetRequest();
+
+        maestroNote.setMessageSize(value);
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+    public void setMessageSize(final long value) throws MqttException, IOException {
+        SetRequest maestroNote = new SetRequest();
+
+        maestroNote.setMessageSize(Long.toString(value));
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+
+    public void setThrottle(final int value) throws MqttException, IOException {
+        SetRequest maestroNote = new SetRequest();
+
+        maestroNote.setThrottle(Integer.toString(value));
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+    public void setRate(final int value) throws MqttException, IOException {
+        SetRequest maestroNote = new SetRequest();
+
+        maestroNote.setRate(Integer.toString(value));
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+    public void setFCL(final int value) throws MqttException, IOException {
+        SetRequest maestroNote = new SetRequest();
+
+        maestroNote.setFCL(Integer.toString(value));
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+
+    public void startInspector() throws MqttException, IOException {
+        StartInspector maestroNote = new StartInspector();
+
+        maestroClient.publish(MaestroTopics.BROKER_INSPECTOR_DAEMONS, maestroNote);
+    }
+
+    public void stopInspector() throws MqttException, IOException {
+        StopInspector maestroNote = new StopInspector();
+
+        maestroClient.publish(MaestroTopics.BROKER_INSPECTOR_DAEMONS, maestroNote);
+    }
+
+    public void startSender() throws MqttException, IOException {
+        StartSender maestroNote = new StartSender();
+
+        maestroClient.publish(MaestroTopics.SENDER_DAEMONS, maestroNote);
+    }
+
+    public void stopSender() throws MqttException, IOException {
+        StopSender maestroNote = new StopSender();
+
+        maestroClient.publish(MaestroTopics.SENDER_DAEMONS, maestroNote);
+    }
+
+    public void startReceiver() throws MqttException, IOException {
+        StartReceiver maestroNote = new StartReceiver();
+
+        maestroClient.publish(MaestroTopics.RECEIVER_DAEMONS, maestroNote);
+    }
+
+    public void stopReceiver() throws MqttException, IOException {
+        StopReceiver maestroNote = new StopReceiver();
+
+        maestroClient.publish(MaestroTopics.RECEIVER_DAEMONS, maestroNote);
+    }
+
+    public void statsRequest() throws MqttException, IOException {
+        StatsRequest maestroNote = new StatsRequest();
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
     }
