@@ -1,5 +1,5 @@
 /*
- *  Copyright ${YEAR} ${USER}
+ *  Copyright 2017 Otavio R. Piske <angusyoung@gmail.com>
  *
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.main;
 
+import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.utils.Constants;
 import org.apache.commons.cli.*;
 import org.eclipse.paho.client.mqttv3.MqttException;
