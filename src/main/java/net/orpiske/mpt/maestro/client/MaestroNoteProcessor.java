@@ -25,11 +25,11 @@ public class MaestroNoteProcessor {
 
     }
 
-    protected void processNotifySuccess(MaestroNote note) {
+    protected void processNotifySuccess(TestSuccessfulNotification note) {
 
     }
 
-    protected void processNotifyFail(MaestroNote note) {
+    protected void processNotifyFail(TestFailedNotification note) {
 
     }
 
@@ -49,11 +49,11 @@ public class MaestroNoteProcessor {
     protected void processNotification(MaestroNote note) {
         switch (note.getMaestroCommand()) {
             case MAESTRO_NOTE_NOTIFY_FAIL: {
-                processNotifySuccess(note);
+                processNotifyFail((TestFailedNotification) note);
                 break;
             }
             case MAESTRO_NOTE_NOTIFY_SUCCESS: {
-                processNotifyFail(note);
+                processNotifySuccess((TestSuccessfulNotification) note);
                 break;
             }
         }
