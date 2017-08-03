@@ -28,7 +28,7 @@ public class TestSuccessfulNotification extends MaestroNotification {
     }
 
     public TestSuccessfulNotification(MessageUnpacker unpacker) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_NOTIFY_SUCCESS);
+        super(MaestroCommand.MAESTRO_NOTE_NOTIFY_SUCCESS, unpacker);
 
         message = unpacker.unpackString();
     }

@@ -28,7 +28,7 @@ public class TestFailedNotification extends MaestroNotification {
     }
 
     public TestFailedNotification(MessageUnpacker unpacker) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_NOTIFY_FAIL);
+        super(MaestroCommand.MAESTRO_NOTE_NOTIFY_FAIL, unpacker);
 
         message = unpacker.unpackString();
     }
