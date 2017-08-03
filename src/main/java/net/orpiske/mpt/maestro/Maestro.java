@@ -95,7 +95,7 @@ public class Maestro {
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
     }
 
-    public void setParallelCount(int value) throws MqttException, IOException {
+    public void setParallelCount(final int value) throws MqttException, IOException {
         SetRequest maestroNote = new SetRequest();
 
 
