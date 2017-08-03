@@ -16,11 +16,11 @@
 
 
 import net.orpiske.mpt.maestro.Maestro
-import net.orpiske.mpt.maestro.notes.MaestroCommand
+import net.orpiske.mpt.maestro.client.MaestroNoteProcessor
 import net.orpiske.mpt.maestro.notes.MaestroNote
-import net.orpiske.mpt.maestro.notes.MaestroNoteType
-import net.orpiske.mpt.maestro.notes.MaestroResponse
 import net.orpiske.mpt.maestro.notes.PingResponse
+import net.orpiske.mpt.maestro.notes.TestFailedNotification
+import net.orpiske.mpt.maestro.notes.TestSuccessfulNotification
 
 @GrabConfig(systemClassLoader=true)
 
@@ -32,92 +32,91 @@ import net.orpiske.mpt.maestro.notes.PingResponse
 @GrabResolver(name='Eclipse', root='https://repo.eclipse.org/content/repositories/paho-releases/')
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
+class ShortTestExecutor {
+    private Maestro maestro;
+    private int rate = 300;
+    private int parallelCount = 1;
+    private final maximumLatency = 500;
 
-boolean process_replies(Maestro maestro) {
-    println "Collecting replies "
-    List<MaestroNote> replies = maestro.collect(1000, 10)
 
-    println "Processing " + replies.size() + " replies"
-    replies.each { MaestroNote note ->
-        switch (note.getNoteType()) {
-            case MaestroNoteType.MAESTRO_TYPE_RESPONSE:
-                print "Received response for "
-                break
+    ShortTestExecutor(Maestro maestro) {
+        this.maestro = maestro;
+    }
 
-            case MaestroNoteType.MAESTRO_TYPE_REQUEST:
-                print "Received request for "
-                break
-            case MaestroNoteType.MAESTRO_TYPE_NOTIFICATION:
-                print "Received notification for "
-                break;
+    class ShortTestProcessor extends MaestroNoteProcessor {
+        @Override
+        protected void processPingResponse(PingResponse note) {
+            println  "Elapsed time from " + note.getName() + ": " + note.getElapsed() + " ms"
         }
 
-        println note.getMaestroCommand()
-
-        if (note.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE) {
-            println "ID: " + ((MaestroResponse) note).getId();
-            println "Name: " + ((MaestroResponse) note).getName();
+        @Override
+        protected void processNotifySuccess(TestSuccessfulNotification note) {
+            println "Test successful on " + note.getName()
         }
 
-        if (note.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_PING) {
-            println "Elapsed time: " + ((PingResponse) note).getElapsed()
+        @Override
+        protected void processNotifyFail(TestFailedNotification note) {
+            println "Test failed on " + note.getName()
         }
+    }
+
+
+    private boolean processReplies() {
+        println "Collecting replies "
+        List<MaestroNote> replies = maestro.collect(1000, 10)
+
+        (new ShortTestProcessor()).process(replies)
+    }
+
+    private void setTestParameters(String brokerURL) {
+        println "Sending ping request"
+        maestro.pingRequest()
+
+        println "Setting broker"
+        maestro.setBroker(brokerURL)
+
+        println "Setting rate"
+        maestro.setRate(rate);
+
+        println "Setting parallel count"
+        maestro.setParallelCount(parallelCount)
+
+        println "Setting duration"
+        maestro.setDuration("30s")
+
+        println "Setting fail-condition-latency"
+        maestro.setFCL(maximumLatency)
+
+        // Variable message size
+        maestro.setMessageSize("~256")
+    }
+
+    private void startServices() {
+        maestro.startReceiver()
+        maestro.startInspector()
+        maestro.startSender()
+    }
+
+    void run(String brokerURL) {
+        setTestParameters(brokerURL)
+        startServices()
+        processReplies()
+
+        println "Waiting a while for the tests to kick off"
+        Thread.sleep(21000)
+
+        processReplies()
     }
 }
 
-def run_test(Maestro maestro) {
-    brokerURL = System.getenv("BROKER_URL")
+maestroURL = System.getenv("MAESTRO_BROKER")
+brokerURL = System.getenv("BROKER_URL")
 
-    println "Sending ping request"
-    maestro.pingRequest()
+println "Connecting to " + maestroURL
+maestro = new Maestro(maestroURL)
 
-    println "Setting broker"
-    maestro.setBroker(brokerURL)
-
-    println "Setting rate"
-    maestro.setRate(10);
-
-    println "Setting parallel count"
-    maestro.setParallelCount(1)
-
-    println "Setting duration"
-    maestro.setDuration("20s")
-
-    println "Setting fail-condition-latency"
-    maestro.setFCL(500)
-
-    // Variable message size
-    maestro.setMessageSize("~256")
-}
-
-def start_services(Maestro maestro) {
-    maestro.startReceiver()
-    maestro.startInspector()
-    maestro.startSender()
-}
-
-
-def main() {
-    maestroURL = System.getenv("MAESTRO_BROKER")
-
-    println "Connecting to " + maestroURL
-    maestro = new Maestro(maestroURL)
-
-    run_test(maestro)
-
-    process_replies(maestro)
-
-    start_services(maestro)
-
-    println "Waiting a while for the tests to kick off"
-    Thread.sleep(21000)
-
-    process_replies(maestro)
-
-    maestro.stop()
-}
-
-main()
-
+ShortTestExecutor executor = new ShortTestExecutor(maestro)
+executor.run(brokerURL);
+maestro.stop()
 
 
