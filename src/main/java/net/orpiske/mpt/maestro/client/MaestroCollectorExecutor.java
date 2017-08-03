@@ -18,20 +18,24 @@ package net.orpiske.mpt.maestro.client;
 
 import net.orpiske.mpt.maestro.notes.MaestroNote;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
 public class MaestroCollectorExecutor implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(MaestroCollectorExecutor.class);
+
     private MaestroCollector maestroCollector = null;
     private volatile boolean exit = false;
 
     public MaestroCollectorExecutor(final String url) throws MqttException {
         maestroCollector = new MaestroCollector(url);
 
-        System.out.println("Connecting the collector");
+        logger.debug("Connecting the collector");
         maestroCollector.connect();
 
-        System.out.println("Subscribing the collector");
+        logger.debug("Subscribing the collector");
         maestroCollector.subscribe();
     }
 
@@ -40,7 +44,7 @@ public class MaestroCollectorExecutor implements Runnable {
             try {
                 Thread.sleep(1000);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error(e.getMessage(), e);
             }
         }
     }
@@ -49,7 +53,7 @@ public class MaestroCollectorExecutor implements Runnable {
         try {
             maestroCollector.disconnect();
         } catch (MqttException e) {
-            // e.printStackTrace();
+            logger.debug(e.getMessage(), e);
         }
 
         exit = true;

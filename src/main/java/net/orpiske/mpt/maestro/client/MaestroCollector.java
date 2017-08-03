@@ -21,11 +21,15 @@ import net.orpiske.mpt.maestro.notes.MaestroNote;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.*;
 
 public class MaestroCollector implements MqttCallback {
+    private static final Logger logger = LoggerFactory.getLogger(MaestroCollector.class);
+
     private MqttClient mqttClient;
     private List<MaestroNote> collected = Collections.synchronizedList(new LinkedList<MaestroNote>());
 
@@ -54,7 +58,8 @@ public class MaestroCollector implements MqttCallback {
     }
 
     public void subscribe() throws MqttException {
-        System.out.println("Subscribing to the maestro topics");
+        logger.debug("Subscribing to the maestro topics");
+
         mqttClient.subscribe(MaestroTopics.MAESTRO_TOPICS);
     }
 
@@ -63,20 +68,21 @@ public class MaestroCollector implements MqttCallback {
     }
 
     public void messageArrived(String s, MqttMessage mqttMessage) {
-        System.out.println("Message arrived");
+        logger.trace("Message arrived");
+
         byte[] payload = mqttMessage.getPayload();
 
         try {
             MaestroNote note = MaestroDeserializer.deserialize(payload);
-            System.out.println("Message type: " + note.getClass());
+            logger.trace("Message type: " + note.getClass());
+
             collected.add(note);
         } catch (MalformedNoteException e) {
-            System.out.println("Invalid message type: " + e.getMessage());
+            logger.error("Invalid message type: " + e.getMessage(), e);
         } catch (IOException e) {
-            System.out.println("I/O error: " + e.getMessage());
+            logger.error("I/O error: " + e.getMessage(), e);
         } catch (Exception e) {
-            System.out.println("Unhandled exception: " + e.getMessage());
-            e.printStackTrace();
+            logger.error("Unhandled exception: " + e.getMessage(), e);
         }
 
     }

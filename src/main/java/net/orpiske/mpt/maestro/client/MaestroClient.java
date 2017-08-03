@@ -22,11 +22,15 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.UUID;
 
 public class MaestroClient {
+    private static final Logger logger = LoggerFactory.getLogger(MaestroClient.class);
+
     private MqttClient mqttClient;
 
     public MaestroClient(final String url) throws MqttException {
