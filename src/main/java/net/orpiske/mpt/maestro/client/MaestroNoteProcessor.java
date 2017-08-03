@@ -20,7 +20,7 @@ import net.orpiske.mpt.maestro.notes.*;
 
 import java.util.List;
 
-public class NoteProcessor {
+public class MaestroNoteProcessor {
     protected void processPingResponse(PingResponse note) {
 
     }
