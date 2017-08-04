@@ -21,6 +21,8 @@ import net.orpiske.mpt.maestro.notes.MaestroNote
 import net.orpiske.mpt.maestro.notes.PingResponse
 import net.orpiske.mpt.maestro.notes.TestFailedNotification
 import net.orpiske.mpt.maestro.notes.TestSuccessfulNotification
+import net.orpiske.mpt.reports.ReportsDownloader
+import net.orpiske.mpt.utils.LogConfigurator
 
 @GrabConfig(systemClassLoader=true)
 
@@ -34,17 +36,22 @@ import net.orpiske.mpt.maestro.notes.TestSuccessfulNotification
 
 class IterativeTestExecutor {
     private Maestro maestro;
-    private int rate = 300;
+    private int rate = 200;
     private int parallelCount = 1;
     private final maximumLatency = 300;
     private boolean failed = false;
-    private boolean notified = false;
-    private long duration = 30*1000;
+    private int notifications = 0
     private int execNum = 0;
+
+    private final String DURATION_STR = "30s"
+
+    private ReportsDownloader reportsDownloader = new ReportsDownloader("/tmp/mpt/groovy/");
 
 
     IterativeTestExecutor(Maestro maestro) {
         this.maestro = maestro
+
+        LogConfigurator.verbose()
     }
 
     class IterativeTestProcessor extends MaestroNoteProcessor {
@@ -53,17 +60,23 @@ class IterativeTestExecutor {
             println  "Elapsed time from " + note.getName() + ": " + note.getElapsed() + " ms"
         }
 
+
         @Override
         protected void processNotifySuccess(TestSuccessfulNotification note) {
-
             println "Test successful on " + note.getName() + " after " + execNum + " executions"
             println "Test parameters used"
             println "Rate: " + rate
             println "Parallel count: " + parallelCount
             println "Maximum latency: " + maximumLatency
 
-            notified = true;
 
+            String type = note.getName().split("@")[0]
+            String host = note.getName().split("@")[1]
+
+            reportsDownloader.setReportTypeDir("success")
+            reportsDownloader.downloadLastSuccessful(type, host, note.getName());
+
+            notifications++
         }
 
         @Override
@@ -74,29 +87,55 @@ class IterativeTestExecutor {
             println "Parallel count: " + parallelCount
             println "Maximum latency: " + maximumLatency
 
+            String type = note.getName().split("@")[0]
+            String host = note.getName().split("@")[1]
+
+            reportsDownloader.setReportTypeDir("failed")
+            reportsDownloader.downloadLastFailed(type, host, note.getName());
+
             failed = true;
-            notified = true;
+            notifications++
         }
     }
 
-    private boolean processReplies() {
-        int waitSecs = (duration + 2000) / 1000
-        int repeat = waitSecs
+    private boolean processReplies(int numPeers) {
+        int repeat = 60
 
-        println "Collecting replies (and waiting for " + waitSecs + " secs)"
+        println "Collecting replies and waiting for " + DURATION_STR
 
-        while (!notified || repeat > 0) {
-            List<MaestroNote> replies = maestro.collect(1000, waitSecs)
+        while (notifications != numPeers) {
+            List<MaestroNote> replies = maestro.collect(1000, 1)
 
             (new IterativeTestProcessor()).process(replies)
             repeat--
+            print "\rEstimated time for test completion " + repeat + " secs"
+
+            if (repeat == 0) {
+                break
+            }
         }
+        println ""
     }
 
-    private void setTestParameters(String brokerURL) {
+    private int getNumPeers() {
+        int numPeers = 0;
+
         println "Sending ping request"
         maestro.pingRequest()
 
+        Thread.sleep(5000)
+
+        List<MaestroNote> replies = maestro.collect()
+        for (MaestroNote note : replies) {
+            if (note instanceof PingResponse) {
+                numPeers++;
+            }
+        }
+
+        return numPeers;
+    }
+
+    private void setTestParameters(String brokerURL) {
         println "Setting broker"
         maestro.setBroker(brokerURL)
 
@@ -107,7 +146,7 @@ class IterativeTestExecutor {
         maestro.setParallelCount(parallelCount)
 
         println "Setting duration"
-        maestro.setDuration(duration)
+        maestro.setDuration(DURATION_STR)
 
         println "Setting fail-condition-latency"
         maestro.setFCL(maximumLatency)
@@ -117,27 +156,35 @@ class IterativeTestExecutor {
     }
 
     private void startServices() {
+        notifications = 0
+
         maestro.startReceiver()
         maestro.startInspector()
         maestro.startSender()
     }
 
     void run(String brokerURL) {
-        // Clean up the topic
-        maestro.collect()
+        try {
+            // Clean up the topic
+            maestro.collect()
 
-        while (!failed) {
-            setTestParameters(brokerURL)
-            startServices()
-            processReplies()
+            while (!failed) {
+                int numPeers = getNumPeers();
 
-            execNum++;
-            rate += 10
-            notified = false;
+                reportsDownloader.setTestNum(execNum);
+                reportsDownloader.setParallelCount(parallelCount);
 
-            println "Sleeping for 10 seconds to allow the broker to catch up"
-            Thread.sleep(10000)
+                setTestParameters(brokerURL)
+                startServices()
+                processReplies(numPeers)
 
+                execNum++;
+                rate += 10
+
+            }
+        }
+        catch (Exception e) {
+            println "Error: " + e.getMessage();
         }
     }
 }
