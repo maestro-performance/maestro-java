@@ -18,6 +18,7 @@ package net.orpiske.mpt.maestro.client;
 
 import net.orpiske.mpt.maestro.exceptions.MalformedNoteException;
 import net.orpiske.mpt.maestro.notes.*;
+import net.orpiske.mpt.maestro.notes.InternalError;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessageUnpacker;
 import org.slf4j.Logger;
@@ -26,6 +27,8 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 
 public class MaestroDeserializer {
+    private static final Logger logger = LoggerFactory.getLogger(MaestroDeserializer.class);
+
     private static MaestroNotification deserializeNotification(MessageUnpacker unpacker, byte[] bytes) throws IOException, MalformedNoteException {
         long tmpCommand = unpacker.unpackLong();
         MaestroCommand command = MaestroCommand.from(tmpCommand);
@@ -54,7 +57,33 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_PING: {
                 return new PingResponse(unpacker);
             }
+            case MAESTRO_NOTE_INTERNAL_ERROR: {
+                return new InternalError();
+            }
+            case MAESTRO_NOTE_ABNORMAL_DISCONNECT: {
+                return new AbnormalDisconnect();
+            }
+            case MAESTRO_NOTE_PROTOCOL_ERROR: {
+                return new ProtocolError();
+            }
+            case MAESTRO_NOTE_STATS: {
+                return new StatsResponse(unpacker);
+            }
+            case MAESTRO_NOTE_START_RECEIVER:
+            case MAESTRO_NOTE_STOP_RECEIVER:
+            case MAESTRO_NOTE_START_SENDER:
+            case MAESTRO_NOTE_STOP_SENDER:
+            case MAESTRO_NOTE_START_INSPECTOR:
+            case MAESTRO_NOTE_STOP_INSPECTOR:
+            case MAESTRO_NOTE_FLUSH:
+            case MAESTRO_NOTE_SET:
+            case MAESTRO_NOTE_HALT: {
+                logger.warn("Unexpected maestro command for a response: {}", tmpCommand);
+            }
             default: {
+                if (command != null) {
+                    logger.error("Type unknown: " + command.getClass());
+                }
                 throw new MalformedNoteException("Invalid response command: " + tmpCommand);
             }
         }
