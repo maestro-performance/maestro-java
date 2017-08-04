@@ -24,7 +24,8 @@ import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +42,7 @@ import java.util.HashMap;
  *
  */
 public class HttpResourceExchange implements ResourceExchange {
-	private static final Logger logger = Logger.getLogger(HttpResourceExchange.class);
+	private static final Logger logger = LoggerFactory.getLogger(HttpResourceExchange.class);
 	
 	/**
 	 * Exchange properties
