@@ -21,6 +21,7 @@ import net.orpiske.mpt.maestro.notes.MaestroNote
 import net.orpiske.mpt.maestro.notes.PingResponse
 import net.orpiske.mpt.maestro.notes.TestFailedNotification
 import net.orpiske.mpt.maestro.notes.TestSuccessfulNotification
+import net.orpiske.mpt.reports.ReportGenerator
 import net.orpiske.mpt.reports.ReportsDownloader
 import net.orpiske.mpt.utils.LogConfigurator
 
@@ -36,7 +37,7 @@ import net.orpiske.mpt.utils.LogConfigurator
 
 class IterativeTestExecutor {
     private Maestro maestro;
-    private int rate = 200;
+    private int rate = 350;
     private int parallelCount = 1;
     private final maximumLatency = 300;
     private boolean failed = false;
@@ -189,14 +190,16 @@ class IterativeTestExecutor {
     }
 }
 
-maestroURL = System.getenv("MAESTRO_BROKER")
-brokerURL = System.getenv("BROKER_URL")
+//maestroURL = System.getenv("MAESTRO_BROKER")
+//brokerURL = System.getenv("BROKER_URL")
+//
+//println "Connecting to " + maestroURL
+//maestro = new Maestro(maestroURL)
+//
+//IterativeTestExecutor executor = new IterativeTestExecutor(maestro)
+//executor.run(brokerURL);
+//maestro.stop()
 
-println "Connecting to " + maestroURL
-maestro = new Maestro(maestroURL)
 
-IterativeTestExecutor executor = new IterativeTestExecutor(maestro)
-executor.run(brokerURL);
-maestro.stop()
-
-
+LogConfigurator.debug()
+ReportGenerator.generate("/tmp/mpt/groovy")
