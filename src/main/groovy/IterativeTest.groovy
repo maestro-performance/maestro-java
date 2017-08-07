@@ -190,15 +190,15 @@ class IterativeTestExecutor {
     }
 }
 
-//maestroURL = System.getenv("MAESTRO_BROKER")
-//brokerURL = System.getenv("BROKER_URL")
-//
-//println "Connecting to " + maestroURL
-//maestro = new Maestro(maestroURL)
-//
-//IterativeTestExecutor executor = new IterativeTestExecutor(maestro)
-//executor.run(brokerURL);
-//maestro.stop()
+maestroURL = System.getenv("MAESTRO_BROKER")
+brokerURL = System.getenv("BROKER_URL")
+
+println "Connecting to " + maestroURL
+maestro = new Maestro(maestroURL)
+
+IterativeTestExecutor executor = new IterativeTestExecutor(maestro)
+executor.run(brokerURL);
+maestro.stop()
 
 
 LogConfigurator.debug()
