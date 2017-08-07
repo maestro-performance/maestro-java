@@ -38,46 +38,66 @@ public class ReportGenerator extends DirectoryWalker {
 
     private List<ReportFile> files = new LinkedList<>();
 
-    private void plotHdr(File file) throws IOException {
-        // HDR Converter
-        HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper();
+    private void plotHdr(File file)  {
+        try {
+            // HDR Converter
+            HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper();
 
-        String csvFile = processorWrapper.convertLog(file.getPath());
+            String csvFile = processorWrapper.convertLog(file.getPath());
 
-        // CSV Reader
-        HdrReader reader = new HdrReader();
+            // CSV Reader
+            HdrReader reader = new HdrReader();
 
-        HdrData hdrData = reader.read(csvFile);
+            HdrData hdrData = reader.read(csvFile);
 
-        // HdrPlotter
-        HdrPlotter plotter = new HdrPlotter(FilenameUtils.removeExtension(file.getPath()));
-        plotter.plot(hdrData.getPercentile(), hdrData.getValue());
+            // HdrPlotter
+            HdrPlotter plotter = new HdrPlotter(FilenameUtils.removeExtension(file.getPath()));
+            plotter.plot(hdrData.getPercentile(), hdrData.getValue());
 
-        files.add(new HdrHistogramReportFile(file));
+            files.add(new HdrHistogramReportFile(file));
+        }
+        catch (Throwable t) {
+            logger.error("Unable to generate report for {}", file.getPath());
+            logger.error("Exception: ", t);
+
+            ReportFile reportFile = new HdrHistogramReportFile(file);
+            reportFile.setReportSuccessful(false);
+            reportFile.setReportFailure(t);
+        }
     }
 
-    private void plotRate(File file) throws IOException {
-        RateDataProcessor rateDataProcessor = new RateDataProcessor();
-        RateReader rateReader = new RateReader(rateDataProcessor);
+    private void plotRate(File file) {
+        try {
+            RateDataProcessor rateDataProcessor = new RateDataProcessor();
+            RateReader rateReader = new RateReader(rateDataProcessor);
 
-        rateReader.read(file.getPath());
+            rateReader.read(file.getPath());
 
-        RateData rateData = rateDataProcessor.getRateData();
+            RateData rateData = rateDataProcessor.getRateData();
 
-        // Removes the gz
-        String baseName = FilenameUtils.removeExtension(file.getPath());
-        // Removes the csv
-        baseName = FilenameUtils.removeExtension(baseName);
+            // Removes the gz
+            String baseName = FilenameUtils.removeExtension(file.getPath());
+            // Removes the csv
+            baseName = FilenameUtils.removeExtension(baseName);
 
-        // Plotter
-        RatePlotter plotter = new RatePlotter(FilenameUtils.removeExtension(baseName));
-        logger.debug("Number of records to plot: {} ", rateData.getRatePeriods().size());
-        for (Date d : rateData.getRatePeriods()) {
-            logger.debug("Adding date record for plotting: {}", d);
+            // Plotter
+            RatePlotter plotter = new RatePlotter(FilenameUtils.removeExtension(baseName));
+            logger.debug("Number of records to plot: {} ", rateData.getRatePeriods().size());
+            for (Date d : rateData.getRatePeriods()) {
+                logger.debug("Adding date record for plotting: {}", d);
+            }
+
+            plotter.plot(rateData.getRatePeriods(), rateData.getRateValues());
+            files.add(new MptReportFile(file));
         }
+        catch (Throwable t) {
+            logger.error("Unable to generate report for {}", file.getPath());
+            logger.error("Exception: ", t);
 
-        plotter.plot(rateData.getRatePeriods(), rateData.getRateValues());
-        files.add(new MptReportFile(file));
+            ReportFile reportFile = new MptReportFile(file);
+            reportFile.setReportSuccessful(false);
+            reportFile.setReportFailure(t);
+        }
     }
 
     @Override
@@ -124,6 +144,17 @@ public class ReportGenerator extends DirectoryWalker {
         ReportGenerator walker = new ReportGenerator();
 
         List<ReportFile> tmpList = walker.generate(new File(path));
+
+        Map<String, Object> context = ReportContextBuilder.toContext(tmpList);
+
+
+        ReportRenderer reportRenderer = new ReportRenderer(context);
+
+        try {
+            System.out.println(reportRenderer.renderNodeInfo());
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
