@@ -24,7 +24,9 @@ import net.orpiske.mdp.plot.RateData;
 import net.orpiske.mdp.plot.RateDataProcessor;
 import net.orpiske.mdp.plot.RatePlotter;
 import net.orpiske.mdp.plot.RateReader;
+import org.apache.commons.io.Charsets;
 import org.apache.commons.io.DirectoryWalker;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -52,6 +54,9 @@ public class ReportGenerator extends DirectoryWalker {
 
             // HdrPlotter
             HdrPlotter plotter = new HdrPlotter(FilenameUtils.removeExtension(file.getPath()));
+
+            plotter.setOutputWidth(1024);
+            plotter.setOutputHeight(600);
             plotter.plot(hdrData.getPercentile(), hdrData.getValue());
 
             files.add(new HdrHistogramReportFile(file));
@@ -87,6 +92,8 @@ public class ReportGenerator extends DirectoryWalker {
                 logger.debug("Adding date record for plotting: {}", d);
             }
 
+            plotter.setOutputWidth(1024);
+            plotter.setOutputHeight(600);
             plotter.plot(rateData.getRatePeriods(), rateData.getRateValues());
             files.add(new MptReportFile(file));
         }
@@ -147,14 +154,21 @@ public class ReportGenerator extends DirectoryWalker {
 
         Map<String, Object> context = ReportContextBuilder.toContext(tmpList);
 
+        Set<String> reports = (Set<String>) context.get("reportDirs");
+        for (String report : reports) {
+            ReportRenderer reportRenderer = new ReportRenderer(context);
 
-        ReportRenderer reportRenderer = new ReportRenderer(context);
-
-        try {
-            System.out.println(reportRenderer.renderNodeInfo());
-        } catch (Exception e) {
-            e.printStackTrace();
+            try {
+                File outFile = new File(report, "index.html");
+                FileUtils.writeStringToFile(outFile, reportRenderer.renderNodeInfo(), Charsets.UTF_8);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+
+
+
+
     }
 
 }

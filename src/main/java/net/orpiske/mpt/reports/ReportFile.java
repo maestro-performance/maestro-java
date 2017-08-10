@@ -81,4 +81,8 @@ public class ReportFile {
     public boolean isTestSuccessful() {
         return testSuccessful;
     }
+
+    public String getReportDir() {
+        return file.getParent();
+    }
 }
