@@ -25,17 +25,17 @@ public class ReportContextBuilder {
         Map<String, Object> context = new HashMap<>();
 
         Set<String> nodes = new HashSet<>();
-        Set<String> noteTypes = new HashSet<>();
+        Set<String> nodeTypes = new HashSet<>();
         Set<Integer> tests = new HashSet<>();
 
         for (ReportFile reportFile : reportFiles) {
             nodes.add(reportFile.getNodeHost());
-            noteTypes.add(reportFile.getNodeType().getValue());
+            nodeTypes.add(reportFile.getNodeType().getValue());
             tests.add(reportFile.getTestNum());
         }
 
         context.put("nodes", nodes);
-        context.put("nodeTypes", noteTypes);
+        context.put("nodeTypes", nodeTypes);
         context.put("tests", tests);
         context.put("reports", reportFiles);
 
