@@ -16,6 +16,9 @@
 
 package net.orpiske.mpt.reports;
 
+import net.orpiske.bmic.plot.BmicData;
+import net.orpiske.bmic.plot.BmicPlotter;
+import net.orpiske.bmic.plot.BmicReader;
 import net.orpiske.hhp.plot.HdrData;
 import net.orpiske.hhp.plot.HdrLogProcessorWrapper;
 import net.orpiske.hhp.plot.HdrPlotter;
@@ -40,7 +43,7 @@ public class ReportGenerator extends DirectoryWalker {
 
     private List<ReportFile> files = new LinkedList<>();
 
-    private void plotHdr(File file)  {
+    private void plotHdr(File file) {
         try {
             // HDR Converter
             HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper();
@@ -107,6 +110,38 @@ public class ReportGenerator extends DirectoryWalker {
         }
     }
 
+    private void plotInspector(File file) {
+        try {
+            BmicReader bmicReader = new BmicReader();
+
+            BmicData bmicData = bmicReader.read(file.getPath());
+
+            // Removes the gz
+            String baseName = FilenameUtils.removeExtension(file.getPath());
+            // Removes the csv
+            baseName = FilenameUtils.removeExtension(baseName);
+
+            // Plotter
+            BmicPlotter plotter = new BmicPlotter(baseName);
+            logger.debug("Number of records to plot: {} ", bmicData.getTimestamps().size());
+            for (Date d : bmicData.getTimestamps()) {
+                logger.debug("Adding date record for plotting: {}", d);
+            }
+
+            plotter.setOutputWidth(1024);
+            plotter.setOutputHeight(600);
+            plotter.plot(bmicData);
+        }
+        catch (Throwable t) {
+            logger.error("Unable to generate report for {}", file.getPath());
+            logger.error("Exception: ", t);
+
+            ReportFile reportFile = new MptReportFile(file);
+            reportFile.setReportSuccessful(false);
+            reportFile.setReportFailure(t);
+        }
+    }
+
     @Override
     protected void handleFile(File file, int depth, Collection results)
             throws IOException
@@ -122,6 +157,9 @@ public class ReportGenerator extends DirectoryWalker {
         if (("gz").equals(ext)) {
             if (!file.getName().contains("inspector")) {
                 plotRate(file);
+            }
+            else {
+                plotInspector(file);
             }
 
         }
