@@ -22,8 +22,9 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>2 Rows, 2 Columns, A</title>
+    <title>Messaging Performance Report Index</title>
     <style type="text/css">
+
 
 		body {
 			margin: 0;
@@ -42,7 +43,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 			width: 100%;
 			height: 100px;
 			overflow: hidden; /* Disables scrollbars on the header frame. To enable scrollbars, change "hidden" to "scroll" */
-			background: #4d739b;
+			background: #white;
 		}
 
 		#nav {
@@ -52,7 +53,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 			bottom: 0;
 			width: 230px;
 			overflow: auto; /* Scrollbars will appear on this frame only when there's enough content to require scrolling. To disable scrollbars, change to "hidden", or use "scroll" to enable permanent scrollbars */
-			background: #4298f4;
+			background: #ffffff;
 		}
 
 		#logo {
@@ -84,7 +85,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 		}
 
 		nav ul a {
-			color: darkgreen;
+			color: black;
 			text-decoration: none;
 		}
 
@@ -97,6 +98,53 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 			height: 100%;
 			width: 100%;
 		}
+
+
+        table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 8px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+
+    #test {
+      -webkit-column-count: 3; /* Chrome, Safari, Opera */
+      -moz-column-count: 3; /* Firefox */
+      column-count: 3;
+      position: relative
+    }
+
+    #outer-grid {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 10px;
+
+    }
+    #outer-grid > div {
+      background-color: white;
+      color: white;
+      padding: 10px;
+    }
+    #report-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 5px;
+    }
+    #report-grid > div {
+      background: white;
+      padding: 10px;
+      position: sticky;
+    }
 
 		</style>
 
@@ -113,42 +161,25 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 <main>
     <div class="innertube">
 
-        <h1>Heading</h1>
-        <p>test test test</p>
+        <h1>Test Report</h1>
+        <table>
+            <tr>
+                <th>Host</th>
+                <th>Type</th>
+                <th>Test Number</th>
+                <th>Result</th>
 
-
-        <h2>Heading2</h2>
-        <p>test2 test2 test2</p>
+            </tr>
+            {% for reportDir in reportDirs %}
+            <tr>
+                <td><a href="{{reportDir.reportDir}}/index.html ">{{ reportDir.nodeHost }}</a> </td>
+                <td>{{ reportDir.nodeType }} </td>
+                <td>{{ reportDir.testNum }} </td>
+                <td>{{ reportDir.isTestSuccessful }} </td>
+            </tr>
+            {% endfor %}
+        </table>
     </div>
 </main>
-
-<nav id="nav">
-    <div class="innertube">
-        <h1>Sender</h1>
-        <ul>
-            <li><a href="#">Link 1</a></li>
-            <li><a href="#">Link 2</a></li>
-            <li><a href="#">Link 3</a></li>
-            <li><a href="#">Link 4</a></li>
-            <li><a href="#">Link 5</a></li>
-        </ul>
-        <h1>Receiver</h1>
-        <ul>
-            <li><a href="#">Link 1</a></li>
-            <li><a href="#">Link 2</a></li>
-            <li><a href="#">Link 3</a></li>
-            <li><a href="#">Link 4</a></li>
-            <li><a href="#">Link 5</a></li>
-        </ul>
-        <h1>Inspector</h1>
-        <ul>
-            <li><a href="#">Link 1</a></li>
-            <li><a href="#">Link 2</a></li>
-            <li><a href="#">Link 3</a></li>
-            <li><a href="#">Link 4</a></li>
-            <li><a href="#">Link 5</a></li>
-        </ul>
-    </div>
-</nav>
 </body>
 </html>
