@@ -28,12 +28,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 
-public class ReportRenderer {
-    private static final Logger logger = LoggerFactory.getLogger(ReportRenderer.class);
+public class NodeReportRenderer {
+    private static final Logger logger = LoggerFactory.getLogger(NodeReportRenderer.class);
 
     private Map<String, Object> context = new HashMap<>();;
 
-    public ReportRenderer(Map<String, Object> context) {
+    public NodeReportRenderer(Map<String, Object> context) {
         this.context = context;
     }
 

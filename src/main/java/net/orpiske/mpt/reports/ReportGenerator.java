@@ -154,9 +154,11 @@ public class ReportGenerator extends DirectoryWalker {
 
         Map<String, Object> context = ReportContextBuilder.toContext(tmpList);
 
+        // Generate the host report
         Set<String> reports = (Set<String>) context.get("reportDirs");
         for (String report : reports) {
-            ReportRenderer reportRenderer = new ReportRenderer(context);
+            Map<String, Object> nodeReportContext = NodeContextBuilder.toContext(report);
+            NodeReportRenderer reportRenderer = new NodeReportRenderer(nodeReportContext);
 
             try {
                 File outFile = new File(report, "index.html");
@@ -165,10 +167,6 @@ public class ReportGenerator extends DirectoryWalker {
                 e.printStackTrace();
             }
         }
-
-
-
-
     }
 
 }
