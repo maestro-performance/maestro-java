@@ -22,7 +22,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 <html>
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
-    <title>2 Rows, 2 Columns, A</title>
+    <title>Messaging Performance Report</title>
     <style type="text/css">
 
 		body {
@@ -42,7 +42,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 			width: 100%;
 			height: 100px;
 			overflow: hidden; /* Disables scrollbars on the header frame. To enable scrollbars, change "hidden" to "scroll" */
-			background: #4d739b;
+			background: #white;
 		}
 
 		#nav {
@@ -52,7 +52,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 			bottom: 0;
 			width: 230px;
 			overflow: auto; /* Scrollbars will appear on this frame only when there's enough content to require scrolling. To disable scrollbars, change to "hidden", or use "scroll" to enable permanent scrollbars */
-			background: #4298f4;
+			background: #ffffff;
 		}
 
 		#logo {
@@ -84,7 +84,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 		}
 
 		nav ul a {
-			color: darkgreen;
+			color: black;
 			text-decoration: none;
 		}
 
@@ -98,43 +98,125 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 			width: 100%;
 		}
 
-		</style>
+    #test {
+      -webkit-column-count: 3; /* Chrome, Safari, Opera */
+      -moz-column-count: 3; /* Firefox */
+      column-count: 3;
+      position: relative
+    }
 
+    #outer-grid {
+      display: grid;
+      grid-template-rows: 1fr 1fr;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 10px;
+
+    }
+    #outer-grid > div {
+      background-color: white;
+      color: white;
+      padding: 10px;
+    }
+    #report-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      grid-gap: 5px;
+    }
+    #report-grid > div {
+      background: white;
+      padding: 10px;
+      position: sticky;
+    }
+		</style>
 </head>
 
 <body>
 
 <header id="header">
     <div id="logo">
-        <h1>CoolLogo</h1>
+        <h1>Host: {{ node }} </h1>
     </div>
 </header>
 
 <main>
-    <div class="innertube">
-
-        <h1>Heading</h1>
-        <p>test test test</p>
-
-
-        <h2>Heading2</h2>
-        <p>test2 test2 test2</p>
+    <div id="test">
+        <div id="outer-grid">
+            <div>
+                <div>
+                    <div>
+                        <h2 id="summary">Test Summary</h2>
+                    </div>
+                    {% if nodeType == "inspector" %}
+                    <div>
+                        <p>
+                            <b>Messaging System:</b> {{ productName }} {{ productVersion }}
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            <b>System Report:</b> {{ jvmName }} {{ jvmVersion }} - {{ jvmPackageVersion }}
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            <b>Operating System:</b> {{ operatingSystemName }} - {{ operatingSystemVersion }}
+                        </p>
+                    </div>
+                    {% endif %}
+                    <div>
+                        <p>
+                            <b>Message Size:</b> {{ messageSize }} bytes w/ 5% size variation
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            <b>Messaging Protocol:</b> AMQP
+                        </p>
+                    </div>
+                    <div>
+                        <p>
+                            <b>Test Duration:</b> 24h
+                        </p>
+                    </div>
+                </div>
+                {% if nodeType == "receiver" %}
+                <div>
+                    <h2 id="all-per">Latency: all data range</h2>
+                    <img src="{{nodeType}}d-latency-0_all.png" />
+                </div>
+                <div>
+                    <h2 id="90th-per">Latency: 90ᵗʰ percentile</h2>
+                    <p></p>
+                    <img src="{{nodeType}}d-latency-0_90.png" />
+                </div>
+                <div>
+                    <h2 id="99th-per">Latency: 99ᵗʰ percentile</h2>
+                    <p></p>
+                    <img src="{{nodeType}}d-latency-0_99.png"  />
+                </div>
+                {% endif %}
+                {% if nodeType == "receiver" or nodeType == "sender" %}
+                <div>
+                    <h2 id="rate">Rate</h2>
+                    <p></p>
+                    <img src="{{nodeType}}d-rate-0_rate.png"  />
+                </div>
+                {% endif %}
+            </div>
+        </div>
     </div>
 </main>
 
 <nav id="nav">
     <div class="innertube">
-        {% for node in nodes %}
-
-        <h1>{{ node }} </h1>
+        <h1>{{ nodeType |title }} </h1>
         <ul>
-            <li><a href="#">Link 1</a></li>
-            <li><a href="#">Link 2</a></li>
-            <li><a href="#">Link 3</a></li>
-            <li><a href="#">Link 4</a></li>
-            <li><a href="#">Link 5</a></li>
+            <li><a href="#summary">Test Summary</a></li>
+            <li><a href="#all-per">Full Range</a></li>
+            <li><a href="#90th-per">90ᵗʰ percentile</a></li>
+            <li><a href="#99th-per">99ᵗʰ percentile</a></li>
+            <li><a href="#rate">Throughput Rate</a></li>
         </ul>
-        {% endfor %}
     </div>
 </nav>
 </body>
