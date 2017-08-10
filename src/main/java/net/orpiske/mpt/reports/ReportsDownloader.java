@@ -52,7 +52,7 @@ public class ReportsDownloader {
     }
 
     private String buildDir(String host) {
-        // "/tmp/mpt/groovy/success/1
+        // "/tmp/mpt/groovy/success/1/host
         return baseDir + File.separator + reportTypeDir + File.separator + Integer.toString(testNum) + File.separator
                 + host;
     }
@@ -71,6 +71,8 @@ public class ReportsDownloader {
 
             downloadReport(host, reportSource, name);
         }
+
+        downloadReport(host, reportSource, "test.properties");
     }
 
     private void downloadReceiverReports(String host, String reportSource) throws ResourceExchangeException {
@@ -83,10 +85,14 @@ public class ReportsDownloader {
 
             downloadReport(host, reportSource, latReport);
         }
+
+        downloadReport(host, reportSource, "test.properties");
     }
 
     private void downloadInspectorReports(String host, String reportSource) throws ResourceExchangeException {
         downloadReport(host, reportSource, "broker-jvm-inspector.csv.gz");
+        downloadReport(host, reportSource, "test.properties");
+        downloadReport(host, reportSource, "broker.properties");
     }
 
     public void downloadLastSuccessful(final String type, final String host, final String name) {

@@ -119,8 +119,11 @@ public class ReportGenerator extends DirectoryWalker {
             plotHdr(file);
         }
 
-        if (("csv.gz").equals(ext)) {
-            plotRate(file);
+        if (("gz").equals(ext)) {
+            if (!file.getName().contains("inspector")) {
+                plotRate(file);
+            }
+
         }
     }
 
@@ -155,13 +158,15 @@ public class ReportGenerator extends DirectoryWalker {
         Map<String, Object> context = ReportContextBuilder.toContext(tmpList);
 
         // Generate the host report
-        Set<String> reports = (Set<String>) context.get("reportDirs");
-        for (String report : reports) {
+        Set<ReportDirInfo> reports = (Set<ReportDirInfo>) context.get("reportDirs");
+
+        for (ReportDirInfo report : reports) {
+            logger.info("Processing report dir: {}", report);
             Map<String, Object> nodeReportContext = NodeContextBuilder.toContext(report);
             NodeReportRenderer reportRenderer = new NodeReportRenderer(nodeReportContext);
 
             try {
-                File outFile = new File(report, "index.html");
+                File outFile = new File(report.getReportDir(), "index.html");
                 FileUtils.writeStringToFile(outFile, reportRenderer.renderNodeInfo(), Charsets.UTF_8);
             } catch (Exception e) {
                 e.printStackTrace();

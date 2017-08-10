@@ -27,13 +27,13 @@ public class ReportContextBuilder {
         Set<String> nodes = new HashSet<>();
         Set<String> nodeTypes = new HashSet<>();
         Set<Integer> tests = new HashSet<>();
-        Set<String> reportDirs = new HashSet<>();
+        Set<ReportDirInfo> reportDirs = new HashSet<>();
 
         for (ReportFile reportFile : reportFiles) {
             nodes.add(reportFile.getNodeHost());
             nodeTypes.add(reportFile.getNodeType().getValue());
             tests.add(reportFile.getTestNum());
-            reportDirs.add(reportFile.getReportDir());
+            reportDirs.add(new ReportDirInfo(reportFile.getReportDir(), reportFile.getNodeType().getValue()));
         }
 
         context.put("nodes", nodes);

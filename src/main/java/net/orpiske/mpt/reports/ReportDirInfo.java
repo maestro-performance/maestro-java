@@ -16,39 +16,43 @@
 
 package net.orpiske.mpt.reports;
 
-import org.apache.commons.io.FilenameUtils;
+public class ReportDirInfo {
+    private String reportDir;
+    private String nodeType;
 
-import java.io.File;
+    public ReportDirInfo(String reportDir, String nodeType) {
+        this.reportDir = reportDir;
+        this.nodeType = nodeType;
+    }
 
-public class MptReportFile extends ReportFile {
-    private File rateImg;
+    public String getReportDir() {
+        return reportDir;
+    }
 
-    public MptReportFile(File file) {
-        super(file);
+    public void setReportDir(String reportDir) {
+        this.reportDir = reportDir;
+    }
 
-        // Removes the gz
-        String baseName = FilenameUtils.removeExtension(file.getPath());
-        // Removes the csv
-        baseName = FilenameUtils.removeExtension(baseName);
+    public String getNodeType() {
+        return nodeType;
+    }
 
-        rateImg = new File(baseName);
+    public void setNodeType(String nodeType) {
+        this.nodeType = nodeType;
     }
 
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
-        if (!super.equals(o)) return false;
 
-        MptReportFile that = (MptReportFile) o;
+        ReportDirInfo that = (ReportDirInfo) o;
 
-        return rateImg != null ? rateImg.equals(that.rateImg) : that.rateImg == null;
+        return reportDir != null ? reportDir.equals(that.reportDir) : that.reportDir == null;
     }
 
     @Override
     public int hashCode() {
-        int result = super.hashCode();
-        result = 31 * result + (rateImg != null ? rateImg.hashCode() : 0);
-        return result;
+        return reportDir != null ? reportDir.hashCode() : 0;
     }
 }

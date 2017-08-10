@@ -85,4 +85,33 @@ public class ReportFile {
     public String getReportDir() {
         return file.getParent();
     }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+
+        ReportFile that = (ReportFile) o;
+
+        if (reportSuccessful != that.reportSuccessful) return false;
+        if (testNum != that.testNum) return false;
+        if (testSuccessful != that.testSuccessful) return false;
+        if (file != null ? !file.equals(that.file) : that.file != null) return false;
+        if (reportFailure != null ? !reportFailure.equals(that.reportFailure) : that.reportFailure != null)
+            return false;
+        if (nodeType != that.nodeType) return false;
+        return nodeHost != null ? nodeHost.equals(that.nodeHost) : that.nodeHost == null;
+    }
+
+    @Override
+    public int hashCode() {
+        int result = file != null ? file.hashCode() : 0;
+        result = 31 * result + (reportSuccessful ? 1 : 0);
+        result = 31 * result + (reportFailure != null ? reportFailure.hashCode() : 0);
+        result = 31 * result + (nodeType != null ? nodeType.hashCode() : 0);
+        result = 31 * result + (nodeHost != null ? nodeHost.hashCode() : 0);
+        result = 31 * result + testNum;
+        result = 31 * result + (testSuccessful ? 1 : 0);
+        return result;
+    }
 }

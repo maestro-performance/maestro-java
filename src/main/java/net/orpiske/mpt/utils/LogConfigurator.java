@@ -106,6 +106,9 @@ public class LogConfigurator {
     public static void silent() {
         Properties properties = new Properties();
 
+        configureCommon(properties);
         configureSilent(properties);
+
+        PropertyConfigurator.configure(properties);
     }
 }
