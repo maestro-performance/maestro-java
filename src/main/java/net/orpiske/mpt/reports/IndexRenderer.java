@@ -22,16 +22,15 @@ import org.slf4j.LoggerFactory;
 import java.util.Map;
 
 
-public class NodeReportRenderer extends AbstractRenderer {
-    private static final Logger logger = LoggerFactory.getLogger(NodeReportRenderer.class);
+public class IndexRenderer extends AbstractRenderer {
+    private static final Logger logger = LoggerFactory.getLogger(IndexRenderer.class);
 
-    public NodeReportRenderer(Map<String, Object> context) {
+    public IndexRenderer(Map<String, Object> context) {
         super(context);
     }
 
-
     @Override
     public String render() throws Exception {
-        return super.render("index-node.html");
+        return super.render("index-main.html");
     }
 }

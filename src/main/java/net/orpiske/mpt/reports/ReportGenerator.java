@@ -205,10 +205,18 @@ public class ReportGenerator extends DirectoryWalker {
 
             try {
                 File outFile = new File(report.getReportDir(), "index.html");
-                FileUtils.writeStringToFile(outFile, reportRenderer.renderNodeInfo(), Charsets.UTF_8);
+                FileUtils.writeStringToFile(outFile, reportRenderer.render(), Charsets.UTF_8);
             } catch (Exception e) {
                 e.printStackTrace();
             }
+        }
+
+        IndexRenderer indexRenderer = new IndexRenderer(context);
+        File outFile = new File(path, "index.html");
+        try {
+            FileUtils.writeStringToFile(outFile, indexRenderer.render(), Charsets.UTF_8);
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

@@ -16,13 +16,33 @@
 
 package net.orpiske.mpt.reports;
 
+import org.apache.commons.io.FilenameUtils;
+
+import java.io.File;
+
 public class ReportDirInfo {
     private String reportDir;
     private String nodeType;
 
+    private String nodeHost;
+    private int testNum;
+    private boolean testSuccessful;
+
     public ReportDirInfo(String reportDir, String nodeType) {
         this.reportDir = reportDir;
         this.nodeType = nodeType;
+
+        File file = new File(reportDir);
+
+        nodeHost = FilenameUtils.getBaseName(file.getName());
+
+        File testNumDir = file.getParentFile();
+        testNum = Integer.parseInt(FilenameUtils.getBaseName(testNumDir.getName()));
+
+        File resultType = testNumDir.getParentFile();
+        if (resultType.getName().contains("success")) {
+            testSuccessful = true;
+        }
     }
 
     public String getReportDir() {
@@ -41,6 +61,35 @@ public class ReportDirInfo {
         this.nodeType = nodeType;
     }
 
+    public String getNodeHost() {
+        return nodeHost;
+    }
+
+    public void setNodeHost(String nodeHost) {
+        this.nodeHost = nodeHost;
+    }
+
+    public int getTestNum() {
+        return testNum;
+    }
+
+    public void setTestNum(int testNum) {
+        this.testNum = testNum;
+    }
+
+    public boolean isTestSuccessful() {
+        return testSuccessful;
+    }
+
+    public void setTestSuccessful(boolean testSuccessful) {
+        this.testSuccessful = testSuccessful;
+    }
+
+    @Override
+    public int hashCode() {
+        return reportDir != null ? reportDir.hashCode() : 0;
+    }
+
     @Override
     public boolean equals(Object o) {
         if (this == o) return true;
@@ -49,10 +98,5 @@ public class ReportDirInfo {
         ReportDirInfo that = (ReportDirInfo) o;
 
         return reportDir != null ? reportDir.equals(that.reportDir) : that.reportDir == null;
-    }
-
-    @Override
-    public int hashCode() {
-        return reportDir != null ? reportDir.hashCode() : 0;
     }
 }
