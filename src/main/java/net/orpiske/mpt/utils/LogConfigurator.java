@@ -17,7 +17,6 @@ package net.orpiske.mpt.utils;
 
 import org.apache.log4j.PropertyConfigurator;
 
-import java.io.File;
 import java.util.Properties;
 
 /**
@@ -110,5 +109,7 @@ public class LogConfigurator {
         configureSilent(properties);
 
         PropertyConfigurator.configure(properties);
+
+
     }
 }
