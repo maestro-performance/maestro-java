@@ -27,7 +27,9 @@ public class ReportContextBuilder {
         Set<String> nodes = new HashSet<>();
         Set<String> nodeTypes = new HashSet<>();
         Set<Integer> tests = new HashSet<>();
-        Set<ReportDirInfo> reportDirs = new HashSet<>();
+
+        // This one needs to be ordered
+        Set<ReportDirInfo> reportDirs = new LinkedHashSet<>();
 
         for (ReportFile reportFile : reportFiles) {
             nodes.add(reportFile.getNodeHost());
@@ -35,6 +37,8 @@ public class ReportContextBuilder {
             tests.add(reportFile.getTestNum());
             reportDirs.add(new ReportDirInfo(reportFile.getReportDir(), reportFile.getNodeType().getValue()));
         }
+
+
 
         context.put("nodes", nodes);
         context.put("nodeTypes", nodeTypes);
