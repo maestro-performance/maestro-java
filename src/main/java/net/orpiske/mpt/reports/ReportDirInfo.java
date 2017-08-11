@@ -149,6 +149,22 @@ public class ReportDirInfo {
         return parallelCount;
     }
 
+    public boolean isVariableSize() {
+        return variableSize;
+    }
+
+    public void setVariableSize(boolean variableSize) {
+        this.variableSize = variableSize;
+    }
+
+    public int getFcl() {
+        return fcl;
+    }
+
+    public void setFcl(int fcl) {
+        this.fcl = fcl;
+    }
+
     @Override
     public int hashCode() {
         return reportDir != null ? reportDir.hashCode() : 0;
