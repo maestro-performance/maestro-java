@@ -18,12 +18,10 @@ package net.orpiske.mpt.reports;
 
 import com.google.common.base.Charsets;
 import com.hubspot.jinjava.Jinjava;
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -39,14 +37,9 @@ public abstract class AbstractRenderer {
     protected String render(final String name) throws Exception {
         Jinjava jinjava = new Jinjava();
 
-        String text = null;
-        try {
-            File template = new File(this.getClass().getResource(name).toURI());
+        String text;
 
-            text = FileUtils.readFileToString(template, Charsets.UTF_8.name());
-        } catch (IOException e) {
-            logger.error(e.getMessage(), e);
-        }
+        text = IOUtils.toString(this.getClass().getResourceAsStream(name), Charsets.UTF_8);
 
         return jinjava.render(text, context);
     }
