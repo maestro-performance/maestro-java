@@ -109,7 +109,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
         td, th {
             border: 1px solid #dddddd;
             text-align: left;
-            padding: 8px;
+            padding: 6px;
         }
 
         tr:nth-child(even) {
@@ -154,7 +154,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 
 <header id="header">
     <div id="logo">
-        <h1>CoolLogo</h1>
+        <h1>Messaging Performance Report - Index</h1>
     </div>
 </header>
 
@@ -162,20 +162,27 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
     <div class="innertube">
 
         <h1>Test Report</h1>
+        <p><b>Fail condition</b>: {% if reportDir.fcl > 0 %} {{ reportDir.fcl }} {% else %} Not specificied {% endif %}</p>
+
         <table>
             <tr>
+                <th>Test Number</th>
                 <th>Host</th>
                 <th>Type</th>
-                <th>Test Number</th>
+                <th>Target Rate</th>
+                <th>Number of Connections per Host</th>
+                <th>Message Size</th>
                 <th>Result</th>
-
             </tr>
             {% for reportDir in reportDirs %}
             <tr>
+                <td><a href="{{reportDir.reportDir}}/index.html ">{{ reportDir.testNum }}</a></td>
                 <td><a href="{{reportDir.reportDir}}/index.html ">{{ reportDir.nodeHost }}</a> </td>
                 <td>{{ reportDir.nodeType }} </td>
-                <td>{{ reportDir.testNum }} </td>
-                <td>{{ reportDir.isTestSuccessful }} </td>
+                <td>{{ reportDir.rate }} msg p/ sec </td>
+                <td>{{ reportDir.parallelCount }} </td>
+                <td>{{ reportDir.messageSize }} bytes</td>
+                <td>{% if reportDir.testSuccessful == true %} passed {% else %} failed {% endif %}</td>
             </tr>
             {% endfor %}
         </table>
