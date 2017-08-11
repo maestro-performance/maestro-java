@@ -21,7 +21,7 @@ import java.util.*;
 public class ReportContextBuilder {
     private ReportContextBuilder() {}
 
-    public static Map<String, Object> toContext(List<ReportFile> reportFiles) {
+    public static Map<String, Object> toContext(List<ReportFile> reportFiles, String baseDir) {
         Map<String, Object> context = new HashMap<>();
 
         Set<String> nodes = new HashSet<>();
@@ -35,7 +35,7 @@ public class ReportContextBuilder {
             nodes.add(reportFile.getNodeHost());
             nodeTypes.add(reportFile.getNodeType().getValue());
             tests.add(reportFile.getTestNum());
-            reportDirs.add(new ReportDirInfo(reportFile.getReportDir(), reportFile.getNodeType().getValue()));
+            reportDirs.add(new ReportDirInfo(baseDir, reportFile.getReportDir(), reportFile.getNodeType().getValue()));
         }
 
 

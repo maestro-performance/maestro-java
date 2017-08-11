@@ -40,8 +40,13 @@ import java.util.*;
 
 public class ReportGenerator extends DirectoryWalker {
     private static Logger logger = LoggerFactory.getLogger(ReportGenerator.class);
+    private String initialPath;
 
     private List<ReportFile> files = new LinkedList<>();
+
+    public ReportGenerator(String initialPath) {
+        this.initialPath = initialPath;
+    }
 
     private void plotHdr(File file) {
         try {
@@ -62,7 +67,8 @@ public class ReportGenerator extends DirectoryWalker {
             plotter.setOutputHeight(600);
             plotter.plot(hdrData.getPercentile(), hdrData.getValue());
 
-            files.add(new HdrHistogramReportFile(file));
+            String normalizedName = file.getPath().replace(initialPath, "");
+            files.add(new HdrHistogramReportFile(new File(normalizedName)));
         }
         catch (Throwable t) {
             logger.error("Unable to generate report for {}", file.getPath());
@@ -98,7 +104,9 @@ public class ReportGenerator extends DirectoryWalker {
             plotter.setOutputWidth(1024);
             plotter.setOutputHeight(600);
             plotter.plot(rateData.getRatePeriods(), rateData.getRateValues());
-            files.add(new MptReportFile(file));
+
+            String normalizedName = file.getPath().replace(initialPath, "");
+            files.add(new MptReportFile(new File(normalizedName)));
         }
         catch (Throwable t) {
             logger.error("Unable to generate report for {}", file.getPath());
@@ -131,6 +139,9 @@ public class ReportGenerator extends DirectoryWalker {
             plotter.setOutputWidth(1024);
             plotter.setOutputHeight(600);
             plotter.plot(bmicData);
+
+            String normalizedName = file.getPath().replace(initialPath, "");
+            files.add(new MptReportFile(new File(normalizedName)));
         }
         catch (Throwable t) {
             logger.error("Unable to generate report for {}", file.getPath());
@@ -189,22 +200,23 @@ public class ReportGenerator extends DirectoryWalker {
 
 
     public static void generate(String path) {
-        ReportGenerator walker = new ReportGenerator();
+        ReportGenerator walker = new ReportGenerator(path);
 
         List<ReportFile> tmpList = walker.generate(new File(path));
 
-        Map<String, Object> context = ReportContextBuilder.toContext(tmpList);
+        Map<String, Object> context = ReportContextBuilder.toContext(tmpList, path);
 
         // Generate the host report
         Set<ReportDirInfo> reports = (Set<ReportDirInfo>) context.get("reportDirs");
 
         for (ReportDirInfo report : reports) {
-            logger.info("Processing report dir: {}", report);
+            logger.info("Processing report dir: {}", report.getReportDir());
             Map<String, Object> nodeReportContext = NodeContextBuilder.toContext(report);
             NodeReportRenderer reportRenderer = new NodeReportRenderer(nodeReportContext);
 
             try {
-                File outFile = new File(report.getReportDir(), "index.html");
+                String outDir = path + report.getReportDir();
+                File outFile = new File(outDir, "index.html");
                 FileUtils.writeStringToFile(outFile, reportRenderer.render(), Charsets.UTF_8);
             } catch (Exception e) {
                 e.printStackTrace();

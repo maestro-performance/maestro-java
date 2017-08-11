@@ -40,7 +40,7 @@ public class ReportDirInfo {
     private boolean variableSize;
     private int fcl;
 
-    public ReportDirInfo(String reportDir, String nodeType) {
+    public ReportDirInfo(String baseDir, String reportDir, String nodeType) {
         this.reportDir = reportDir;
         this.nodeType = nodeType;
 
@@ -56,7 +56,7 @@ public class ReportDirInfo {
             testSuccessful = true;
         }
 
-        loadProperties(new File(reportDir, "test.properties"));
+        loadProperties(new File(baseDir + File.separator + reportDir, "test.properties"));
     }
 
     private void loadProperties(File testProperties) {
