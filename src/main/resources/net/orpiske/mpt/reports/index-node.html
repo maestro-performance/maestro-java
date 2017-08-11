@@ -202,6 +202,18 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                     <img src="{{nodeType}}d-rate-0_rate.png"  />
                 </div>
                 {% endif %}
+                {% if nodeType == "inspector" %}
+                <div>
+                    <h2 id="queue-size">Broker Queue Size</h2>
+                    <p></p>
+                    <img src="broker-jvm-{{nodeType}}_queue_size.png"  />
+                </div>
+                <div>
+                    <h2 id="eden-memory">Broker Queue Size</h2>
+                    <p></p>
+                    <img src="broker-jvm-{{nodeType}}_eden_memory.png"  />
+                </div>
+                {% endif %}
             </div>
         </div>
     </div>
@@ -212,10 +224,18 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
         <h1>{{ nodeType |title }} </h1>
         <ul>
             <li><a href="#summary">Test Summary</a></li>
+            {% if nodeType == "receiver" %}
             <li><a href="#all-per">Full Range</a></li>
             <li><a href="#90th-per">90ᵗʰ percentile</a></li>
             <li><a href="#99th-per">99ᵗʰ percentile</a></li>
+            {% endif %}
+            {% if nodeType == "receiver" or nodeType == "sender" %}
             <li><a href="#rate">Throughput Rate</a></li>
+            {% endif %}
+            {% if nodeType == "inspector" %}
+            <li><a href="#queue-size">Queue Size</a></li>
+            <li><a href="#eden-memory">Eden Memory</a></li>
+            {% endif %}
         </ul>
     </div>
 </nav>
