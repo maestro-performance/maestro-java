@@ -19,6 +19,11 @@ package net.orpiske.mpt.reports;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.util.Map;
+import java.util.Properties;
 
 public class ReportDirInfo {
     private String reportDir;
@@ -26,7 +31,14 @@ public class ReportDirInfo {
 
     private String nodeHost;
     private int testNum;
-    private boolean testSuccessful;
+    private boolean testSuccessful = false;
+
+    private long duration;
+    private long messageSize;
+    private int rate;
+    private int parallelCount;
+    private boolean variableSize;
+    private int fcl;
 
     public ReportDirInfo(String reportDir, String nodeType) {
         this.reportDir = reportDir;
@@ -42,6 +54,42 @@ public class ReportDirInfo {
         File resultType = testNumDir.getParentFile();
         if (resultType.getName().contains("success")) {
             testSuccessful = true;
+        }
+
+        loadProperties(new File(reportDir, "test.properties"));
+    }
+
+    private void loadProperties(File testProperties) {
+        if (testProperties.exists()) {
+            Properties prop = new Properties();
+
+            try (FileInputStream in = new FileInputStream(testProperties)) {
+                prop.load(in);
+
+                duration = Long.parseLong(prop.getProperty("duration"));
+                messageSize = Long.parseLong(prop.getProperty("messageSize"));
+                rate = Integer.parseInt(prop.getProperty("rate"));
+                parallelCount = Integer.parseInt(prop.getProperty("parallelCount"));
+
+                // Optional stuff
+                String varSizeStr = prop.getProperty("variableSize");
+
+                if (varSizeStr != null && varSizeStr.equals("1")) {
+                    variableSize = true;
+                }
+
+                // Optional stuff
+                String fclStr = prop.getProperty("fcl");
+
+                if (fclStr != null) {
+                    fcl = Integer.parseInt(fclStr);
+                }
+
+            } catch (FileNotFoundException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 
@@ -83,6 +131,22 @@ public class ReportDirInfo {
 
     public void setTestSuccessful(boolean testSuccessful) {
         this.testSuccessful = testSuccessful;
+    }
+
+    public long getDuration() {
+        return duration;
+    }
+
+    public long getMessageSize() {
+        return messageSize;
+    }
+
+    public int getRate() {
+        return rate;
+    }
+
+    public int getParallelCount() {
+        return parallelCount;
     }
 
     @Override
