@@ -37,7 +37,7 @@ import net.orpiske.mpt.utils.LogConfigurator
 
 class IterativeTestExecutor {
     private Maestro maestro;
-    private int rate = 350;
+    private int rate = 600;
     private int parallelCount = 1;
     private final maximumLatency = 300;
     private boolean failed = false;
@@ -181,7 +181,8 @@ class IterativeTestExecutor {
 
                 execNum++;
                 rate += 10
-
+                println "Sleeping for 10 seconds to let the broker catch up"
+                Thread.sleep(10000)
             }
         }
         catch (Exception e) {
@@ -201,5 +202,5 @@ executor.run(brokerURL);
 maestro.stop()
 
 
-LogConfigurator.debug()
+LogConfigurator.verbose()
 ReportGenerator.generate("/tmp/mpt/groovy")
