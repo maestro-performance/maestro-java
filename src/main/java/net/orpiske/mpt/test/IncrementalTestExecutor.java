@@ -134,7 +134,7 @@ public class IncrementalTestExecutor {
         maestro.startSender();
     }
 
-    public void run(String brokerURL) {
+    public void run() {
         try {
             // Clean up the topic
             maestro.collect();
