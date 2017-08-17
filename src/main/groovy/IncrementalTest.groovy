@@ -16,16 +16,10 @@
 
 
 import net.orpiske.mpt.maestro.Maestro
-import net.orpiske.mpt.maestro.client.MaestroNoteProcessor
-import net.orpiske.mpt.maestro.notes.MaestroNote
-import net.orpiske.mpt.maestro.notes.PingResponse
-import net.orpiske.mpt.maestro.notes.TestFailedNotification
-import net.orpiske.mpt.maestro.notes.TestSuccessfulNotification
 import net.orpiske.mpt.reports.ReportGenerator
 import net.orpiske.mpt.reports.ReportsDownloader
 import net.orpiske.mpt.test.IncrementalTestExecutor
 import net.orpiske.mpt.test.IncrementalTestProfile
-import net.orpiske.mpt.utils.DurationUtils
 import net.orpiske.mpt.utils.LogConfigurator
 import net.orpiske.mpt.utils.TestDuration
 

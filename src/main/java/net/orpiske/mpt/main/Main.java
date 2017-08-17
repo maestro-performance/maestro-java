@@ -18,7 +18,6 @@ package net.orpiske.mpt.main;
 
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.utils.Constants;
-import net.orpiske.mpt.utils.LogConfigurator;
 import org.apache.commons.cli.*;
 import org.eclipse.paho.client.mqttv3.MqttException;
 

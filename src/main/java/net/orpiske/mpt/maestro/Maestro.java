@@ -21,7 +21,6 @@ import net.orpiske.mpt.maestro.client.MaestroCollectorExecutor;
 import net.orpiske.mpt.maestro.client.MaestroTopics;
 import net.orpiske.mpt.maestro.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.notes.*;
-import net.orpiske.mpt.utils.LogConfigurator;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;

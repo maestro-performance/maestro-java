@@ -16,7 +16,10 @@
 
 package net.orpiske.mpt.maestro.client;
 
-import net.orpiske.mpt.maestro.notes.*;
+import net.orpiske.mpt.maestro.notes.MaestroNote;
+import net.orpiske.mpt.maestro.notes.PingResponse;
+import net.orpiske.mpt.maestro.notes.TestFailedNotification;
+import net.orpiske.mpt.maestro.notes.TestSuccessfulNotification;
 
 import java.util.List;
 
