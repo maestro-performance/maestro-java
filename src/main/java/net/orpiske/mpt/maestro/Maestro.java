@@ -19,6 +19,7 @@ package net.orpiske.mpt.maestro;
 import net.orpiske.mpt.maestro.client.MaestroClient;
 import net.orpiske.mpt.maestro.client.MaestroCollectorExecutor;
 import net.orpiske.mpt.maestro.client.MaestroTopics;
+import net.orpiske.mpt.maestro.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.notes.*;
 import net.orpiske.mpt.utils.LogConfigurator;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -71,21 +72,25 @@ public class Maestro {
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
     }
 
-    public void setDuration(final String value) throws MqttException, IOException {
+    public void setDuration(final Object value) throws MqttException, IOException, MaestroException {
         SetRequest maestroNote = new SetRequest();
 
-        maestroNote.setDurationType(value);
+        if (value instanceof String) {
+            maestroNote.setDurationType((String) value);
+        }
+        else {
+            if (Long.class.isInstance(value)) {
+                maestroNote.setDurationType(Long.toString((long) value));
+            }
+            else {
+                throw new MaestroException("Invalid duration type class " + value.getClass());
+            }
+        }
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
     }
 
-    public void setDuration(final long value) throws MqttException, IOException {
-        SetRequest maestroNote = new SetRequest();
 
-        maestroNote.setDurationType(Long.toString(value));
-
-        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
-    }
 
     public void setLogLevel(final String value) throws MqttException, IOException {
         SetRequest maestroNote = new SetRequest();

@@ -17,6 +17,9 @@
 package net.orpiske.mpt.test;
 
 import net.orpiske.mpt.maestro.Maestro;
+import net.orpiske.mpt.maestro.exceptions.MaestroException;
+import net.orpiske.mpt.utils.DurationUtils;
+import net.orpiske.mpt.utils.TestDuration;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +36,17 @@ public class IncrementalTestProfile {
     private int rate = INITIAL_RATE;
     private int parallelCount = 1;
     private final int maximumLatency = 600;
-    private long duration;
+    private TestDuration duration;
+    private String size;
 
-    public IncrementalTestProfile(String brokerURL, int rate, int parallelCount, long duration) {
+    private int testExecutionNumber;
+
+    public IncrementalTestProfile(String brokerURL, int rate, int parallelCount, TestDuration duration, String size) {
         this.brokerURL = brokerURL;
         this.rate = rate;
         this.parallelCount = parallelCount;
         this.duration = duration;
+        this.size = size;
     }
 
     public String getBrokerURL() {
@@ -58,11 +65,15 @@ public class IncrementalTestProfile {
         return maximumLatency;
     }
 
-    public long getDuration() {
+    public int getTestExecutionNumber() {
+        return testExecutionNumber;
+    }
+
+    public TestDuration getDuration() {
         return duration;
     }
 
-    public void apply(Maestro maestro) throws MqttException, IOException {
+        public void apply(Maestro maestro) throws MqttException, IOException, MaestroException {
         logger.info("Setting broker to {}", brokerURL);
         maestro.setBroker(brokerURL);
 
@@ -73,19 +84,20 @@ public class IncrementalTestProfile {
         maestro.setParallelCount(this.parallelCount);
 
         logger.info("Setting duration to {}", this.duration);
-        maestro.setDuration(this.duration);
+        maestro.setDuration(this.duration.getDuration());
 
         logger.info("Setting fail-condition-latency to {}", this.maximumLatency);
         maestro.setFCL(this.maximumLatency);
 
         // Variable message size
-        maestro.setMessageSize("~256");
+        maestro.setMessageSize(size);
     }
 
 
 
     public void increment() {
         rate += 50;
+        testExecutionNumber++;
 
         if (rate > CEILING_RATE) {
             parallelCount++;
@@ -97,13 +109,17 @@ public class IncrementalTestProfile {
         }
     }
 
+
     @Override
     public String toString() {
         return "IncrementalTestProfile{" +
-                "rate=" + rate +
+                "brokerURL='" + brokerURL + '\'' +
+                ", rate=" + rate +
                 ", parallelCount=" + parallelCount +
                 ", maximumLatency=" + maximumLatency +
                 ", duration=" + duration +
+                ", size='" + size + '\'' +
+                ", testExecutionNumber=" + testExecutionNumber +
                 '}';
     }
 }

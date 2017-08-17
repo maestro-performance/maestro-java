@@ -17,12 +17,10 @@
 package net.orpiske.mpt.test;
 
 import net.orpiske.mpt.maestro.Maestro;
-import net.orpiske.mpt.maestro.client.MaestroNoteProcessor;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
 import net.orpiske.mpt.maestro.notes.PingResponse;
-import net.orpiske.mpt.maestro.notes.TestFailedNotification;
-import net.orpiske.mpt.maestro.notes.TestSuccessfulNotification;
 import net.orpiske.mpt.reports.ReportsDownloader;
+import net.orpiske.mpt.utils.DurationParseException;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,64 +34,29 @@ public class IncrementalTestExecutor {
     private Maestro maestro;
     private IncrementalTestProfile testProfile;
 
-    private boolean failed = false;
-    private int notifications = 0;
-    private int execNum = 0;
+    private long replyRetries;
 
     private ReportsDownloader reportsDownloader;
+    private IncrementalTestProcessor testProcessor;
 
     public IncrementalTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                   final IncrementalTestProfile testProfile)
-    {
+                                   final IncrementalTestProfile testProfile) throws DurationParseException {
         this.maestro = maestro;
         this.reportsDownloader = reportsDownloader;
         this.testProfile = testProfile;
+        this.testProcessor = new IncrementalTestProcessor(testProfile, reportsDownloader);
+
+        replyRetries = this.testProfile.getDuration().getNumericDuration();
     }
 
-    class IterativeTestProcessor extends MaestroNoteProcessor {
-        @Override
-        protected void processPingResponse(PingResponse note) {
-            logger.info("Elapsed time from {}: {} ms", note.getName(), note.getElapsed());
-        }
-
-
-        @Override
-        protected void processNotifySuccess(TestSuccessfulNotification note) {
-            logger.info("Test successful on {} after {} executions", note.getName(), execNum);
-            logger.info("Test parameters used: " + testProfile.toString());
-
-            String type = note.getName().split("@")[0];
-            String host = note.getName().split("@")[1];
-
-            reportsDownloader.setReportTypeDir("success");
-            reportsDownloader.downloadLastSuccessful(type, host, note.getName());
-
-            notifications++;
-        }
-
-        @Override
-        protected void processNotifyFail(TestFailedNotification note) {
-            logger.info("Test failed on {} after {} executions", note.getName(), execNum);
-            logger.info("Test parameter used");
-
-            String type = note.getName().split("@")[0];
-            String host = note.getName().split("@")[1];
-
-            reportsDownloader.setReportTypeDir("failed");
-            reportsDownloader.downloadLastFailed(type, host, note.getName());
-
-            failed = true;
-            notifications++;
-        }
-    }
 
     private void processReplies(int numPeers) {
-        long repeat = this.testProfile.getDuration();
+        long repeat = (replyRetries * 2);
 
-        while (notifications != numPeers) {
+        while (testProcessor.getNotifications() != numPeers) {
             List<MaestroNote> replies = maestro.collect(1000, 1);
 
-            (new IterativeTestProcessor()).process(replies);
+            testProcessor.process(replies);
             repeat--;
             logger.debug("Estimated time for test completion: {} secs", repeat);
 
@@ -101,7 +64,6 @@ public class IncrementalTestExecutor {
                 break;
             }
         }
-
     }
 
     private int getNumPeers() throws MqttException, IOException, InterruptedException {
@@ -127,7 +89,7 @@ public class IncrementalTestExecutor {
 
 
     private void startServices() throws MqttException, IOException {
-        notifications = 0;
+        testProcessor.resetNotifications();
 
         maestro.startReceiver();
         maestro.startInspector();
@@ -139,17 +101,16 @@ public class IncrementalTestExecutor {
             // Clean up the topic
             maestro.collect();
 
-            while (!failed) {
+            while (!testProcessor.isFailed()) {
                 int numPeers = getNumPeers();
 
-                reportsDownloader.setTestNum(execNum);
+                reportsDownloader.setTestNum(testProfile.getTestExecutionNumber());
                 reportsDownloader.setParallelCount(testProfile.getParallelCount());
 
                 testProfile.apply(maestro);
                 startServices();
                 processReplies(numPeers);
 
-                execNum++;
                 testProfile.increment();
 
                 logger.info("Sleeping for 10 seconds to let the broker catch up");
