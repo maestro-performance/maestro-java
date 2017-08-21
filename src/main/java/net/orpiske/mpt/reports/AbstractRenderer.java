@@ -18,10 +18,16 @@ package net.orpiske.mpt.reports;
 
 import com.google.common.base.Charsets;
 import com.hubspot.jinjava.Jinjava;
+import com.hubspot.jinjava.JinjavaConfig;
+import com.hubspot.jinjava.loader.FileLocator;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -35,7 +41,22 @@ public abstract class AbstractRenderer {
     }
 
     protected String render(final String name) throws Exception {
-        Jinjava jinjava = new Jinjava();
+        JinjavaConfig config = new JinjavaConfig();
+        FileLocator fileLocator = null;
+        Jinjava jinjava = null;
+
+        try {
+            File currentDir = new File(Paths.get(".").toAbsolutePath().normalize().toString());
+
+            fileLocator = new FileLocator(currentDir);
+
+            jinjava = new Jinjava(config);
+            jinjava.setResourceLocator(fileLocator);
+        } catch (FileNotFoundException e) {
+            logger.warn("Unable to find the current working directory: " + e.getMessage(), e);
+
+            jinjava = new Jinjava(config);
+        }
 
         String text;
 

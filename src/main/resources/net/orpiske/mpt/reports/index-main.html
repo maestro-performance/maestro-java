@@ -164,6 +164,8 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
         <h1>Test Report</h1>
         <p><b>Fail condition</b>: {% set firstReport = reportDirs|first %} {% if firstReport.fcl > 0 %} Latency is greater than {{firstReport.fcl}}ms {% else %} Not specified {% endif %}</p>
 
+        {% include "main-header.html" ignore missing %}
+
         <table>
             <tr>
                 <th>Test Number</th>
