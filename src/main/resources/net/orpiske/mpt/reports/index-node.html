@@ -206,12 +206,32 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                 <div>
                     <h2 id="queue-size">Broker Queue Size</h2>
                     <p></p>
-                    <img src="broker-jvm-{{nodeType}}_queue_size.png"  />
+                    <img src="broker-jvm-{{nodeType}}_queue_data.png"  />
                 </div>
                 <div>
-                    <h2 id="eden-memory">Broker Queue Size</h2>
+                    <h2 id="system-memory">System Memory</h2>
+                    <p></p>
+                    <img src="broker-jvm-{{nodeType}}_memory.png"  />
+                </div>
+                <div>
+                    <h2 id="eden-memory">Eden Memory</h2>
                     <p></p>
                     <img src="broker-jvm-{{nodeType}}_eden_memory.png"  />
+                </div>
+                <div>
+                    <h2 id="tenured-memory">Tenured Memory</h2>
+                    <p></p>
+                    <img src="broker-jvm-{{nodeType}}_tenured_memory.png"  />
+                </div>
+                <div>
+                    <h2 id="survivor-memory">Survivor Memory</h2>
+                    <p></p>
+                    <img src="broker-jvm-{{nodeType}}_survivor_memory.png"  />
+                </div>
+                <div>
+                    <h2 id="pm-memory">Permgen/Metaspace Memory</h2>
+                    <p></p>
+                    <img src="broker-jvm-{{nodeType}}_pm_memory.png"  />
                 </div>
                 {% endif %}
             </div>
@@ -233,8 +253,11 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
             <li><a href="#rate">Throughput Rate</a></li>
             {% endif %}
             {% if nodeType == "inspector" %}
-            <li><a href="#queue-size">Queue Size</a></li>
-            <li><a href="#eden-memory">Eden Memory</a></li>
+            <li><a href="#queue-size">Broker Queue Size</a></li>
+            <li><a href="#system-memory">System Memory</a></li>
+            <li><a href="#tenured-memory">Tenured Memory</a></li>
+            <li><a href="#survivor-memory">Survivor Memory</a></li>
+            <li><a href="#pm-memory">Permgen/Metaspace Memory</a></li>
             {% endif %}
         </ul>
     </div>
