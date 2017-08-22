@@ -14,13 +14,14 @@
  *  limitations under the License.
  */
 
-
 import net.orpiske.mpt.maestro.Maestro
+import net.orpiske.mpt.reports.ReportDirProcessor
 import net.orpiske.mpt.reports.ReportGenerator
 import net.orpiske.mpt.reports.ReportsDownloader
 import net.orpiske.mpt.test.IncrementalTestExecutor
 import net.orpiske.mpt.test.IncrementalTestProfile
 import net.orpiske.mpt.utils.LogConfigurator
+import net.orpiske.mpt.utils.MessageSize
 import net.orpiske.mpt.utils.TestDuration
 
 @GrabConfig(systemClassLoader=true)
@@ -43,13 +44,25 @@ maestro = new Maestro(maestroURL)
 
 ReportsDownloader reportsDownloader = new ReportsDownloader("/tmp/maestro");
 
-IncrementalTestProfile testProfile = new IncrementalTestProfile(brokerURL, 100, 1,
-        TestDuration.newInstance("30s"), "~256");
+IncrementalTestProfile testProfile = new IncrementalTestProfile();
 
-IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile);
+testProfile.setBrokerURL(brokerURL)
+testProfile.setInitialRate(500);
+testProfile.setDuration(TestDuration.newInstance("30s"));
+testProfile.setMessageSize(MessageSize.variable(256));
+testProfile.setMaximumLatency(200)
+
+IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
+
+if (!testExecutor.run()) {
+    maestro.stop()
+
+    ReportGenerator.generate("/tmp/mpt/groovy")
+    return 1
+}
+
+maestro.stop()
+ReportGenerator.generate("/tmp/maestro")
+return 0
 
 
-testExecutor.run();
-maestro.stop();
-
-ReportGenerator.generate("/tmp/mpt/groovy")
