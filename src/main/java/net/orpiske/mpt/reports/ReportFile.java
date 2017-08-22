@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.reports;
 
+import net.orpiske.mpt.reports.node.NodeType;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;

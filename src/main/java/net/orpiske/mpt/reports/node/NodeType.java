@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.reports;
+package net.orpiske.mpt.reports.node;
 
 public enum NodeType {
     SENDER("sender"),

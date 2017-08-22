@@ -27,6 +27,9 @@ import net.orpiske.mdp.plot.RateData;
 import net.orpiske.mdp.plot.RateDataProcessor;
 import net.orpiske.mdp.plot.RatePlotter;
 import net.orpiske.mdp.plot.RateReader;
+import net.orpiske.mpt.reports.index.IndexRenderer;
+import net.orpiske.mpt.reports.node.NodeContextBuilder;
+import net.orpiske.mpt.reports.node.NodeReportRenderer;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.DirectoryWalker;
 import org.apache.commons.io.FileUtils;
@@ -152,6 +155,7 @@ public class ReportGenerator extends DirectoryWalker {
             reportFile.setReportFailure(t);
         }
     }
+
 
     @Override
     protected void handleFile(File file, int depth, Collection results)

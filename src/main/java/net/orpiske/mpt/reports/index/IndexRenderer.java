@@ -14,8 +14,9 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.reports;
+package net.orpiske.mpt.reports.index;
 
+import net.orpiske.mpt.reports.AbstractRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
