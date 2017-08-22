@@ -16,20 +16,12 @@
 
 package net.orpiske.mpt.reports;
 
-import net.orpiske.bmic.plot.BmicData;
-import net.orpiske.bmic.plot.BmicPlotter;
-import net.orpiske.bmic.plot.BmicReader;
-import net.orpiske.hhp.plot.HdrData;
-import net.orpiske.hhp.plot.HdrLogProcessorWrapper;
-import net.orpiske.hhp.plot.HdrPlotter;
-import net.orpiske.hhp.plot.HdrReader;
-import net.orpiske.mdp.plot.RateData;
-import net.orpiske.mdp.plot.RateDataProcessor;
-import net.orpiske.mdp.plot.RatePlotter;
-import net.orpiske.mdp.plot.RateReader;
 import net.orpiske.mpt.reports.index.IndexRenderer;
 import net.orpiske.mpt.reports.node.NodeContextBuilder;
 import net.orpiske.mpt.reports.node.NodeReportRenderer;
+import net.orpiske.mpt.reports.plotter.BmicPlotter;
+import net.orpiske.mpt.reports.plotter.HdrPlotter;
+import net.orpiske.mpt.reports.plotter.RatePlotter;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.DirectoryWalker;
 import org.apache.commons.io.FileUtils;
@@ -52,108 +44,30 @@ public class ReportGenerator extends DirectoryWalker {
     }
 
     private void plotHdr(File file) {
-        try {
-            // HDR Converter
-            HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper();
+        HdrPlotter plotter = new HdrPlotter();
 
-            String csvFile = processorWrapper.convertLog(file.getPath());
+        plotter.plot(file);
 
-            // CSV Reader
-            HdrReader reader = new HdrReader();
+        String normalizedName = file.getPath().replace(initialPath, "");
+        files.add(new HdrHistogramReportFile(new File(normalizedName)));
 
-            HdrData hdrData = reader.read(csvFile);
-
-            // HdrPlotter
-            HdrPlotter plotter = new HdrPlotter(FilenameUtils.removeExtension(file.getPath()));
-
-            plotter.setOutputWidth(1024);
-            plotter.setOutputHeight(600);
-            plotter.plot(hdrData.getPercentile(), hdrData.getValue());
-
-            String normalizedName = file.getPath().replace(initialPath, "");
-            files.add(new HdrHistogramReportFile(new File(normalizedName)));
-        }
-        catch (Throwable t) {
-            logger.error("Unable to generate report for {}", file.getPath());
-            logger.error("Exception: ", t);
-
-            ReportFile reportFile = new HdrHistogramReportFile(file);
-            reportFile.setReportSuccessful(false);
-            reportFile.setReportFailure(t);
-        }
     }
 
     private void plotRate(File file) {
-        try {
-            RateDataProcessor rateDataProcessor = new RateDataProcessor();
-            RateReader rateReader = new RateReader(rateDataProcessor);
+        RatePlotter plotter = new RatePlotter();
 
-            rateReader.read(file.getPath());
+        plotter.plot(file);
 
-            RateData rateData = rateDataProcessor.getRateData();
-
-            // Removes the gz
-            String baseName = FilenameUtils.removeExtension(file.getPath());
-            // Removes the csv
-            baseName = FilenameUtils.removeExtension(baseName);
-
-            // Plotter
-            RatePlotter plotter = new RatePlotter(FilenameUtils.removeExtension(baseName));
-            logger.debug("Number of records to plot: {} ", rateData.getRatePeriods().size());
-            for (Date d : rateData.getRatePeriods()) {
-                logger.debug("Adding date record for plotting: {}", d);
-            }
-
-            plotter.setOutputWidth(1024);
-            plotter.setOutputHeight(600);
-            plotter.plot(rateData.getRatePeriods(), rateData.getRateValues());
-
-            String normalizedName = file.getPath().replace(initialPath, "");
-            files.add(new MptReportFile(new File(normalizedName)));
-        }
-        catch (Throwable t) {
-            logger.error("Unable to generate report for {}", file.getPath());
-            logger.error("Exception: ", t);
-
-            ReportFile reportFile = new MptReportFile(file);
-            reportFile.setReportSuccessful(false);
-            reportFile.setReportFailure(t);
-        }
+        String normalizedName = file.getPath().replace(initialPath, "");
+        files.add(new MptReportFile(new File(normalizedName)));
     }
 
     private void plotInspector(File file) {
-        try {
-            BmicReader bmicReader = new BmicReader();
+        BmicPlotter plotter = new BmicPlotter();
 
-            BmicData bmicData = bmicReader.read(file.getPath());
-
-            // Removes the gz
-            String baseName = FilenameUtils.removeExtension(file.getPath());
-            // Removes the csv
-            baseName = FilenameUtils.removeExtension(baseName);
-
-            // Plotter
-            BmicPlotter plotter = new BmicPlotter(baseName);
-            logger.debug("Number of records to plot: {} ", bmicData.getTimestamps().size());
-            for (Date d : bmicData.getTimestamps()) {
-                logger.debug("Adding date record for plotting: {}", d);
-            }
-
-            plotter.setOutputWidth(1024);
-            plotter.setOutputHeight(600);
-            plotter.plot(bmicData);
-
-            String normalizedName = file.getPath().replace(initialPath, "");
-            files.add(new MptReportFile(new File(normalizedName)));
-        }
-        catch (Throwable t) {
-            logger.error("Unable to generate report for {}", file.getPath());
-            logger.error("Exception: ", t);
-
-            ReportFile reportFile = new MptReportFile(file);
-            reportFile.setReportSuccessful(false);
-            reportFile.setReportFailure(t);
-        }
+        plotter.plot(file);
+        String normalizedName = file.getPath().replace(initialPath, "");
+        files.add(new MptReportFile(new File(normalizedName)));
     }
 
 
@@ -176,7 +90,6 @@ public class ReportGenerator extends DirectoryWalker {
             else {
                 plotInspector(file);
             }
-
         }
     }
 
