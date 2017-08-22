@@ -110,7 +110,7 @@ public class ReportsDownloader {
             }
         }
         catch (Exception e) {
-            logger.error("Error: " + e.getMessage(), e);
+            logger.error("Error: {}", e.getMessage(), e);
         }
     }
 
@@ -129,7 +129,7 @@ public class ReportsDownloader {
             }
         }
         catch (Exception e) {
-            logger.error("Error: " + e.getMessage(), e);
+            logger.error("Error: {}", e.getMessage(), e);
         }
     }
 
