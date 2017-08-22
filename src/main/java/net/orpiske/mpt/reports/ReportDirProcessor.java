@@ -16,22 +16,20 @@
 
 package net.orpiske.mpt.reports;
 
-import net.orpiske.mpt.reports.index.IndexRenderer;
-import net.orpiske.mpt.reports.node.NodeContextBuilder;
-import net.orpiske.mpt.reports.node.NodeReportRenderer;
 import net.orpiske.mpt.reports.plotter.BmicPlotter;
 import net.orpiske.mpt.reports.plotter.HdrPlotter;
 import net.orpiske.mpt.reports.plotter.RatePlotter;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.DirectoryWalker;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.LinkedList;
+import java.util.List;
 
 public class ReportDirProcessor extends DirectoryWalker {
     private static Logger logger = LoggerFactory.getLogger(ReportDirProcessor.class);
@@ -50,7 +48,6 @@ public class ReportDirProcessor extends DirectoryWalker {
 
         String normalizedName = file.getPath().replace(initialPath, "");
         files.add(new HdrHistogramReportFile(new File(normalizedName)));
-
     }
 
     private void plotRate(File file) {
@@ -114,39 +111,4 @@ public class ReportDirProcessor extends DirectoryWalker {
 
         return files;
     }
-
-
-    public static void generate(String path) {
-        ReportDirProcessor walker = new ReportDirProcessor(path);
-
-        List<ReportFile> tmpList = walker.generate(new File(path));
-
-        Map<String, Object> context = ReportContextBuilder.toContext(tmpList, path);
-
-        // Generate the host report
-        Set<ReportDirInfo> reports = (Set<ReportDirInfo>) context.get("reportDirs");
-
-        for (ReportDirInfo report : reports) {
-            logger.info("Processing report dir: {}", report.getReportDir());
-            Map<String, Object> nodeReportContext = NodeContextBuilder.toContext(report);
-            NodeReportRenderer reportRenderer = new NodeReportRenderer(nodeReportContext);
-
-            try {
-                String outDir = path + report.getReportDir();
-                File outFile = new File(outDir, "index.html");
-                FileUtils.writeStringToFile(outFile, reportRenderer.render(), Charsets.UTF_8);
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }
-
-        IndexRenderer indexRenderer = new IndexRenderer(context);
-        File outFile = new File(path, "index.html");
-        try {
-            FileUtils.writeStringToFile(outFile, indexRenderer.render(), Charsets.UTF_8);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-    }
-
 }
