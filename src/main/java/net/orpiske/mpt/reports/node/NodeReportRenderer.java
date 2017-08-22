@@ -33,6 +33,6 @@ public class NodeReportRenderer extends AbstractRenderer {
 
     @Override
     public String render() throws Exception {
-        return super.render("index-node.html");
+        return super.render("/net/orpiske/mpt/reports/index-node.html");
     }
 }

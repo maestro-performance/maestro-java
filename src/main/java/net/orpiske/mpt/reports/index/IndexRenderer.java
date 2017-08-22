@@ -32,6 +32,6 @@ public class IndexRenderer extends AbstractRenderer {
 
     @Override
     public String render() throws Exception {
-        return super.render("index-main.html");
+        return super.render("/net/orpiske/mpt/reports/index-main.html");
     }
 }
