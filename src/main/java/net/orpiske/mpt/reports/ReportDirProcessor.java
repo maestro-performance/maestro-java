@@ -33,13 +33,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class ReportGenerator extends DirectoryWalker {
-    private static Logger logger = LoggerFactory.getLogger(ReportGenerator.class);
+public class ReportDirProcessor extends DirectoryWalker {
+    private static Logger logger = LoggerFactory.getLogger(ReportDirProcessor.class);
     private String initialPath;
 
     private List<ReportFile> files = new LinkedList<>();
 
-    public ReportGenerator(String initialPath) {
+    public ReportDirProcessor(String initialPath) {
         this.initialPath = initialPath;
     }
 
@@ -117,7 +117,7 @@ public class ReportGenerator extends DirectoryWalker {
 
 
     public static void generate(String path) {
-        ReportGenerator walker = new ReportGenerator(path);
+        ReportDirProcessor walker = new ReportDirProcessor(path);
 
         List<ReportFile> tmpList = walker.generate(new File(path));
 
