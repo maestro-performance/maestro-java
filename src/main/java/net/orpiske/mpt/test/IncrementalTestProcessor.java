@@ -82,6 +82,28 @@ class IncrementalTestProcessor extends MaestroNoteProcessor {
         this.failed = failed;
     }
 
+    public boolean isSuccessful() {
+        if (testProfile.getParallelCount() >= testProfile.getCeilingParallelCount()) {
+            if (testProfile.getRate() >= testProfile.getCeilingRate()) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public boolean isCompleted() {
+        if (isFailed()) {
+            return true;
+        }
+
+        if (isSuccessful()) {
+            return true;
+        }
+
+        return false;
+    }
+
     public int getNotifications() {
         return notifications;
     }

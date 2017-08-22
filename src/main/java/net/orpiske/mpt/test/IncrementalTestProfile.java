@@ -28,51 +28,134 @@ import java.io.IOException;
 public class IncrementalTestProfile {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestProfile.class);
 
-    private int INITIAL_RATE = 100;
-    private int CEILING_RATE = 500;
+    private int initialRate = 100;
+    private int ceilingRate = 500;
+    private int rateIncrement = 50;
+
+    private int initialParallelCount = 1;
+    private int ceilingParallelCount = 16;
+    private int parallelCountIncrement = 1;
+
+    private int rate = initialRate;
+    private int parallelCount = initialParallelCount;
 
     private String brokerURL;
-    private int rate = INITIAL_RATE;
-    private int parallelCount = 1;
-    private final int maximumLatency = 600;
+
+    private int maximumLatency = 600;
     private TestDuration duration;
-    private String size;
+    private String messageSize;
 
     private int testExecutionNumber;
 
-    public IncrementalTestProfile(String brokerURL, int rate, int parallelCount, TestDuration duration, String size) {
+    public IncrementalTestProfile() {
+
+    }
+
+    public IncrementalTestProfile(String brokerURL, int rate, int parallelCount, TestDuration duration, String messageSize) {
         this.brokerURL = brokerURL;
         this.rate = rate;
         this.parallelCount = parallelCount;
         this.duration = duration;
-        this.size = size;
+        this.messageSize = messageSize;
     }
 
-    public String getBrokerURL() {
-        return brokerURL;
+    public int getInitialRate() {
+        return initialRate;
     }
 
-    public int getRate() {
-        return rate;
+    public void setInitialRate(int initialRate) {
+        this.initialRate = initialRate;
+    }
+
+    public int getCeilingRate() {
+        return ceilingRate;
+    }
+
+    public void setCeilingRate(int ceilingRate) {
+        this.ceilingRate = ceilingRate;
+    }
+
+    public int getInitialParallelCount() {
+        return initialParallelCount;
+    }
+
+    public void setInitialParallelCount(int initialParallelCount) {
+        this.initialParallelCount = initialParallelCount;
     }
 
     public int getParallelCount() {
         return parallelCount;
     }
 
+    public int getCeilingParallelCount() {
+        return ceilingParallelCount;
+    }
+
+    public void setCeilingParallelCount(int ceilingParallelCount) {
+        this.ceilingParallelCount = ceilingParallelCount;
+    }
+
+    public String getBrokerURL() {
+        return brokerURL;
+    }
+
+    public void setBrokerURL(String brokerURL) {
+        this.brokerURL = brokerURL;
+    }
+
+    public int getRate() {
+        return rate;
+    }
+
     public int getMaximumLatency() {
         return maximumLatency;
     }
 
-    public int getTestExecutionNumber() {
-        return testExecutionNumber;
+    public void setMaximumLatency(int maximumLatency) {
+        this.maximumLatency = maximumLatency;
     }
 
     public TestDuration getDuration() {
         return duration;
     }
 
-        public void apply(Maestro maestro) throws MqttException, IOException, MaestroException {
+    public void setDuration(TestDuration duration) {
+        this.duration = duration;
+    }
+
+    public String getMessageSize() {
+        return messageSize;
+    }
+
+    public void setMessageSize(String messageSize) {
+        this.messageSize = messageSize;
+    }
+
+    public int getTestExecutionNumber() {
+        return testExecutionNumber;
+    }
+
+    public void setTestExecutionNumber(int testExecutionNumber) {
+        this.testExecutionNumber = testExecutionNumber;
+    }
+
+    public int getRateIncrement() {
+        return rateIncrement;
+    }
+
+    public void setRateIncrement(int rateIncrement) {
+        this.rateIncrement = rateIncrement;
+    }
+
+    public int getParallelCountIncrement() {
+        return parallelCountIncrement;
+    }
+
+    public void setParallelCountIncrement(int parallelCountIncrement) {
+        this.parallelCountIncrement = parallelCountIncrement;
+    }
+
+    public void apply(Maestro maestro) throws MqttException, IOException, MaestroException {
         logger.info("Setting broker to {}", brokerURL);
         maestro.setBroker(brokerURL);
 
@@ -88,24 +171,25 @@ public class IncrementalTestProfile {
         logger.info("Setting fail-condition-latency to {}", this.maximumLatency);
         maestro.setFCL(this.maximumLatency);
 
-        // Variable message size
-        maestro.setMessageSize(size);
+        // Variable message messageSize
+        maestro.setMessageSize(messageSize);
     }
 
 
-
     public void increment() {
-        rate += 50;
+        rate += rateIncrement;
         testExecutionNumber++;
 
-        if (rate > CEILING_RATE) {
-            parallelCount++;
-            rate = INITIAL_RATE;
 
-            logger.info("Reached the virtual ceiling. Increasing number of parallel connections to: {}",
+        if (rate > ceilingRate) {
+            parallelCount += parallelCountIncrement;
+            rate = initialRate;
+
+            logger.info("Reached the virtual ceiling. Increased number of parallel connections to: {}",
                     parallelCount);
-            logger.info("Setting target rate to {}", rate);
         }
+
+        logger.info("Set target rate to {}", rate);
     }
 
 
@@ -117,7 +201,7 @@ public class IncrementalTestProfile {
                 ", parallelCount=" + parallelCount +
                 ", maximumLatency=" + maximumLatency +
                 ", duration=" + duration +
-                ", size='" + size + '\'' +
+                ", messageSize='" + messageSize + '\'' +
                 ", testExecutionNumber=" + testExecutionNumber +
                 '}';
     }

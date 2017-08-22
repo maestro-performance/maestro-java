@@ -96,12 +96,12 @@ public class IncrementalTestExecutor {
         maestro.startSender();
     }
 
-    public void run() {
+    public boolean run() {
         try {
             // Clean up the topic
             maestro.collect();
 
-            while (!testProcessor.isFailed()) {
+            while (!testProcessor.isCompleted()) {
                 int numPeers = getNumPeers();
 
                 reportsDownloader.setTestNum(testProfile.getTestExecutionNumber());
@@ -116,9 +116,15 @@ public class IncrementalTestExecutor {
                 logger.info("Sleeping for 10 seconds to let the broker catch up");
                 Thread.sleep(10000);
             }
+
+            if (testProcessor.isSuccessful()) {
+                return true;
+            }
         }
         catch (Exception e) {
             logger.error("Error: {}", e.getMessage(), e);
         }
+
+        return false;
     }
 }
