@@ -188,9 +188,9 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                 {% if nodeType == "receiver" %}
                 <div>
                     <h2 id="all-per">Latency: all data range</h2>
-                    {% for connection in range(parallelCount | int) %}
 
-                        {% set rcvLatFilename = nodeType + "d-latency-" + connection + "_all.png" %}
+
+                        {% set rcvLatFilename = nodeType + "d-latency_all.png" %}
                         {% set rcvLatFilenameExists = rcvLatFilename|fe(baseDir, reportDirInfo.reportDir) %}
 
                         {% if rcvLatFilenameExists %}
@@ -207,28 +207,25 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                 </div>
                 <div>
                     <h2 id="90th-per">Latency: 90ᵗʰ percentile</h2>
-                    {% for connection in range(parallelCount | int) %}
-                        {% set rcvLatFilename = nodeType + "d-latency-" + connection + "_90.png" %}
-                        {% set rcvLatFilenameExists = rcvLatFilename|fe(baseDir, reportDirInfo.reportDir) %}
 
-                        {% if rcvLatFilenameExists %}
+                    {% set rcvLatFilename = nodeType + "d-latency_90.png" %}
+                    {% set rcvLatFilenameExists = rcvLatFilename|fe(baseDir, reportDirInfo.reportDir) %}
 
-                        <p>Connection {{connection}}</p>
-                        <img src="{{rcvLatFilename}}" />
-                        {% else %}
+                    {% if rcvLatFilenameExists %}
 
-                        <p>Connection {{connection}}</p>
-                        <p><b>Error:</b> the plotted report file for this connection is missing. This
-                            is likely caused due to an error on the load generator backend</p>
-                        {% endif %}
+                    <p>Connection {{connection}}</p>
+                    <img src="{{rcvLatFilename}}" />
+                    {% else %}
 
-                    {% endfor %}
+                    <p>Connection {{connection}}</p>
+                    <p><b>Error:</b> the plotted report file for this connection is missing. This
+                        is likely caused due to an error on the load generator backend</p>
+                    {% endif %}
+
                 </div>
                 <div>
                     <h2 id="99th-per">Latency: 99ᵗʰ percentile</h2>
-                    {% for connection in range(parallelCount | int) %}
-
-                    {% set rcvLatFilename = nodeType + "d-latency-" + connection + "_99.png" %}
+                    {% set rcvLatFilename = nodeType + "d-latency_99.png" %}
                     {% set rcvLatFilenameExists = rcvLatFilename|fe(baseDir, reportDirInfo.reportDir) %}
 
                     {% if rcvLatFilenameExists %}
@@ -241,15 +238,12 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                     <p><b>Error:</b> the plotted report file for this connection is missing. This
                         is likely caused due to an error on the load generator backend</p>
                     {% endif %}
-                    {% endfor %}
                 </div>
                 {% endif %}
                 {% if nodeType == "receiver" or nodeType == "sender" %}
                 <div>
                     <h2 id="rate">Rate</h2>
-                    {% for connection in range(parallelCount | int) %}
-
-                    {% set rcvRateFilename = nodeType + "d-rate-" + connection + "_rate.png" %}
+                    {% set rcvRateFilename = nodeType + "d-rate_rate.png" %}
                     {% set rcvRateFilenameExists = rcvRateFilename|fe(baseDir, reportDirInfo.reportDir) %}
 
                     {% if rcvRateFilenameExists %}
@@ -262,7 +256,6 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                     <p><b>Error:</b> the plotted report file for this connection is missing. This
                         is likely caused due to an error on the load generator backend</p>
                     {% endif %}
-                    {% endfor %}
                 </div>
 
                 {% endif %}
