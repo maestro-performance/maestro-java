@@ -18,8 +18,6 @@ package net.orpiske.mpt.reports.plotter;
 
 import net.orpiske.bmic.plot.BmicData;
 import net.orpiske.bmic.plot.BmicReader;
-import net.orpiske.mpt.reports.MptReportFile;
-import net.orpiske.mpt.reports.ReportFile;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,13 +31,13 @@ public class BmicPlotter implements Plotter {
 
     @Override
     public boolean plot(File file) {
+        // Removes the gz
+        String baseName = FilenameUtils.removeExtension(file.getPath());
+        // Removes the csv
+        baseName = FilenameUtils.removeExtension(baseName);
+
         try {
             BmicData bmicData = bmicReader.read(file.getPath());
-
-            // Removes the gz
-            String baseName = FilenameUtils.removeExtension(file.getPath());
-            // Removes the csv
-            baseName = FilenameUtils.removeExtension(baseName);
 
             // Plotter
             net.orpiske.bmic.plot.BmicPlotter plotter = new net.orpiske.bmic.plot.BmicPlotter(baseName);
@@ -55,12 +53,7 @@ public class BmicPlotter implements Plotter {
             return true;
         }
         catch (Throwable t) {
-            logger.error("Unable to plot report file {}: {}", file.getPath(), t.getMessage());
-            logger.trace("Exception: ", t);
-
-            ReportFile reportFile = new MptReportFile(file);
-            reportFile.setReportSuccessful(false);
-            reportFile.setReportFailure(t);
+            handlePlotException(file, t);
         }
 
         return false;

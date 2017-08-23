@@ -19,8 +19,6 @@ package net.orpiske.mpt.reports.plotter;
 import net.orpiske.hhp.plot.HdrData;
 import net.orpiske.hhp.plot.HdrLogProcessorWrapper;
 import net.orpiske.hhp.plot.HdrReader;
-import net.orpiske.mpt.reports.HdrHistogramReportFile;
-import net.orpiske.mpt.reports.ReportFile;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,12 +49,9 @@ public class HdrPlotter implements Plotter {
             return true;
         }
         catch (Throwable t) {
-            logger.error("Unable to plot report file {}: {}", file.getPath(), t.getMessage());
-            logger.trace("Exception: ", t);
+            String baseName = FilenameUtils.removeExtension(file.getPath());
 
-            ReportFile reportFile = new HdrHistogramReportFile(file);
-            reportFile.setReportSuccessful(false);
-            reportFile.setReportFailure(t);
+            handlePlotException(file, t);
         }
 
         return false;

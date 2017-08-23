@@ -19,8 +19,6 @@ package net.orpiske.mpt.reports.plotter;
 import net.orpiske.mdp.plot.RateData;
 import net.orpiske.mdp.plot.RateDataProcessor;
 import net.orpiske.mdp.plot.RateReader;
-import net.orpiske.mpt.reports.MptReportFile;
-import net.orpiske.mpt.reports.ReportFile;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,15 +33,16 @@ public class RatePlotter implements Plotter {
 
     @Override
     public boolean plot(File file) {
+        // Removes the gz
+        String baseName = FilenameUtils.removeExtension(file.getPath());
+
+        // Removes the csv
+        baseName = FilenameUtils.removeExtension(baseName);
+
         try {
             rateReader.read(file.getPath());
 
             RateData rateData = rateDataProcessor.getRateData();
-
-            // Removes the gz
-            String baseName = FilenameUtils.removeExtension(file.getPath());
-            // Removes the csv
-            baseName = FilenameUtils.removeExtension(baseName);
 
             // Plotter
             net.orpiske.mdp.plot.RatePlotter plotter = new net.orpiske.mdp.plot.RatePlotter(FilenameUtils.removeExtension(baseName));
@@ -59,12 +58,7 @@ public class RatePlotter implements Plotter {
             return true;
         }
         catch (Throwable t) {
-            logger.error("Unable to plot report file {}: {}", file.getPath(), t.getMessage());
-            logger.trace("Exception: ", t);
-
-            ReportFile reportFile = new MptReportFile(file);
-            reportFile.setReportSuccessful(false);
-            reportFile.setReportFailure(t);
+            handlePlotException(file, t);
         }
 
         return false;
