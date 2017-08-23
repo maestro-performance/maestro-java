@@ -59,8 +59,8 @@ public class RatePlotter implements Plotter {
             return true;
         }
         catch (Throwable t) {
-            logger.error("Unable to generate report for {}", file.getPath());
-            logger.error("Exception: ", t);
+            logger.error("Unable to generate report for {}: {}", file.getPath(), t.getMessage());
+            logger.trace("Exception: ", t);
 
             ReportFile reportFile = new MptReportFile(file);
             reportFile.setReportSuccessful(false);
