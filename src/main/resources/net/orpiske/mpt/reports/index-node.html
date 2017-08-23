@@ -179,29 +179,42 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                         </p>
                     </div>
                 </div>
+
+                <p>Parallel count = {{parallelCount}}</p>
                 {% if nodeType == "receiver" %}
                 <div>
                     <h2 id="all-per">Latency: all data range</h2>
-                    <img src="{{nodeType}}d-latency-0_all.png" />
+                    {% for connection in range(parallelCount | int) %}
+                    <p>Connection #{{connection}}</p>
+                    <img src="{{nodeType}}d-latency-{{connection}}_all.png" />
+                    {% endfor %}
                 </div>
                 <div>
                     <h2 id="90th-per">Latency: 90ᵗʰ percentile</h2>
-                    <p></p>
-                    <img src="{{nodeType}}d-latency-0_90.png" />
+                    {% for connection in range(parallelCount | int) %}
+                    <p>Connection #{{connection}}</p>
+                    <img src="{{nodeType}}d-latency-{{connection}}_90.png" />
+                    {% endfor %}
                 </div>
                 <div>
                     <h2 id="99th-per">Latency: 99ᵗʰ percentile</h2>
-                    <p></p>
-                    <img src="{{nodeType}}d-latency-0_99.png"  />
+                    {% for connection in range(parallelCount | int) %}
+                    <p>Connection #{{connection}}</p>
+                    <img src="{{nodeType}}d-latency-{{connection}}_99.png"  />
+                    {% endfor %}
                 </div>
                 {% endif %}
                 {% if nodeType == "receiver" or nodeType == "sender" %}
                 <div>
                     <h2 id="rate">Rate</h2>
-                    <p></p>
-                    <img src="{{nodeType}}d-rate-0_rate.png"  />
+                    {% for connection in range(parallelCount | int) %}
+                    <p>Connection #{{connection}}</p>
+                    <img src="{{nodeType}}d-rate-{{connection}}_rate.png" />
+                    {% endfor %}
                 </div>
+
                 {% endif %}
+
                 {% if nodeType == "inspector" %}
                 <div>
                     <h2 id="queue-size">Broker Queue Size</h2>
