@@ -16,12 +16,13 @@
 
 package net.orpiske.mpt.reports;
 
+import java.io.File;
 import java.util.*;
 
 public class ReportContextBuilder {
     private ReportContextBuilder() {}
 
-    public static Map<String, Object> toContext(List<ReportFile> reportFiles, String baseDir) {
+    public static Map<String, Object> toContext(List<ReportFile> reportFiles, File baseDir) {
         Map<String, Object> context = new HashMap<>();
 
         Set<String> nodes = new HashSet<>();
@@ -33,9 +34,16 @@ public class ReportContextBuilder {
 
         for (ReportFile reportFile : reportFiles) {
             nodes.add(reportFile.getNodeHost());
-            nodeTypes.add(reportFile.getNodeType().getValue());
+
+            String nodeType = reportFile.getNodeType().getValue();
+            nodeTypes.add(nodeType);
             tests.add(reportFile.getTestNum());
-            reportDirs.add(new ReportDirInfo(baseDir, reportFile.getReportDir(), reportFile.getNodeType().getValue()));
+
+            ReportDirInfo reportDirInfo =
+                    new ReportDirInfo(baseDir.getPath(), reportFile.getReportDir(), nodeType);
+
+
+            reportDirs.add(reportDirInfo);
         }
 
 
