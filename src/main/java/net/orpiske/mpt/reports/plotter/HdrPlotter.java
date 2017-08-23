@@ -51,7 +51,7 @@ public class HdrPlotter implements Plotter {
             return true;
         }
         catch (Throwable t) {
-            logger.error("Unable to generate report for {}: {}", file.getPath(), t.getMessage());
+            logger.error("Unable to plot report file {}: {}", file.getPath(), t.getMessage());
             logger.trace("Exception: ", t);
 
             ReportFile reportFile = new HdrHistogramReportFile(file);
