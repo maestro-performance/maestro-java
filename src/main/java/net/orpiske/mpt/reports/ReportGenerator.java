@@ -44,7 +44,7 @@ public class ReportGenerator {
 
         for (ReportDirInfo report : reports) {
             logger.info("Processing report dir: {}", report.getReportDir());
-            Map<String, Object> nodeReportContext = NodeContextBuilder.toContext(report);
+            Map<String, Object> nodeReportContext = NodeContextBuilder.toContext(report, new File(path));
             NodeReportRenderer reportRenderer = new NodeReportRenderer(nodeReportContext);
 
             try {

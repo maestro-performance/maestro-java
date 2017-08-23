@@ -33,9 +33,9 @@ public class NodeContextBuilder {
 
     private NodeContextBuilder() {}
 
-    public static Map<String, Object> toContext(ReportDirInfo reportDirInfo) {
+    public static Map<String, Object> toContext(ReportDirInfo reportDirInfo, File baseDir) {
         Map<String, Object> context = new HashMap<>();
-        File file = new File(reportDirInfo.getReportDir());
+        File file = new File(baseDir, reportDirInfo.getReportDir());
 
         context.put("node", file.getName());
         context.put("nodeType", reportDirInfo.getNodeType());
@@ -56,7 +56,7 @@ public class NodeContextBuilder {
                 prop.load(in);
 
                 for (Map.Entry e : prop.entrySet()) {
-                    logger.debug("Addding entry {} with value {}", e.getKey(), e.getValue());
+                    logger.debug("Adding entry {} with value {}", e.getKey(), e.getValue());
                     context.put((String) e.getKey(), e.getValue());
                 }
             } catch (FileNotFoundException e) {
@@ -64,6 +64,9 @@ public class NodeContextBuilder {
             } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+        else {
+            logger.debug("There are no properties file at {}", testProperties.getPath());
         }
     }
 
