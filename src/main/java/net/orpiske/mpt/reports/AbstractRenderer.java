@@ -20,6 +20,7 @@ import com.google.common.base.Charsets;
 import com.hubspot.jinjava.Jinjava;
 import com.hubspot.jinjava.JinjavaConfig;
 import com.hubspot.jinjava.loader.FileLocator;
+import net.orpiske.mpt.reports.custom.FileExists;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
@@ -45,17 +46,17 @@ public abstract class AbstractRenderer {
         FileLocator fileLocator = null;
         Jinjava jinjava = null;
 
+        jinjava = new Jinjava(config);
+        jinjava.getGlobalContext().registerFilter(new FileExists());
+
         try {
             File currentDir = new File(Paths.get(".").toAbsolutePath().normalize().toString());
 
             fileLocator = new FileLocator(currentDir);
 
-            jinjava = new Jinjava(config);
             jinjava.setResourceLocator(fileLocator);
         } catch (FileNotFoundException e) {
             logger.warn("Unable to find the current working directory: " + e.getMessage(), e);
-
-            jinjava = new Jinjava(config);
         }
 
         String text;

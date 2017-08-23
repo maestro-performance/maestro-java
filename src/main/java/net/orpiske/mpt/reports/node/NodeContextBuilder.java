@@ -41,6 +41,8 @@ public class NodeContextBuilder {
         context.put("nodeType", reportDirInfo.getNodeType());
         context.put("testNumber", file.getParentFile().getName());
         context.put("result", file.getParentFile().getParentFile().getName());
+        context.put("reportDirInfo", reportDirInfo);
+        context.put("baseDir", baseDir);
 
         loadProperties(context, new File(file,"test.properties"));
         loadProperties(context, new File(file,"broker.properties"));

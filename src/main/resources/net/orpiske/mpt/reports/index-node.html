@@ -178,29 +178,69 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                             <b>Test Duration:</b> 24h
                         </p>
                     </div>
+                    <div>
+                        <p>
+                            <b>Parallel Count:</b> {{parallelCount}}
+                        </p>
+                    </div>
                 </div>
 
-                <p>Parallel count = {{parallelCount}}</p>
                 {% if nodeType == "receiver" %}
                 <div>
                     <h2 id="all-per">Latency: all data range</h2>
                     {% for connection in range(parallelCount | int) %}
-                    <p>Connection #{{connection}}</p>
-                    <img src="{{nodeType}}d-latency-{{connection}}_all.png" />
+
+                        {% set rcvLatFilename = nodeType + "d-latency-" + connection + "_all.png" %}
+                        {% set rcvLatFilenameExists = rcvLatFilename|fe(baseDir, reportDirInfo.reportDir) %}
+
+                        {% if rcvLatFilenameExists %}
+                        <p>Connection {{connection}}</p>
+                        <img src="{{rcvLatFilename}}" />
+                        {% else %}
+                        <p>Connection {{connection}}</p>
+                        <p><b>Error:</b> the plotted report file for this connection is missing. This
+                        is likely caused due to an error on the load generator backend</p>
+                        {% endif %}
+
                     {% endfor %}
+
                 </div>
                 <div>
                     <h2 id="90th-per">Latency: 90ᵗʰ percentile</h2>
                     {% for connection in range(parallelCount | int) %}
-                    <p>Connection #{{connection}}</p>
-                    <img src="{{nodeType}}d-latency-{{connection}}_90.png" />
+                        {% set rcvLatFilename = nodeType + "d-latency-" + connection + "_90.png" %}
+                        {% set rcvLatFilenameExists = rcvLatFilename|fe(baseDir, reportDirInfo.reportDir) %}
+
+                        {% if rcvLatFilenameExists %}
+
+                        <p>Connection {{connection}}</p>
+                        <img src="{{rcvLatFilename}}" />
+                        {% else %}
+
+                        <p>Connection {{connection}}</p>
+                        <p><b>Error:</b> the plotted report file for this connection is missing. This
+                            is likely caused due to an error on the load generator backend</p>
+                        {% endif %}
+
                     {% endfor %}
                 </div>
                 <div>
                     <h2 id="99th-per">Latency: 99ᵗʰ percentile</h2>
                     {% for connection in range(parallelCount | int) %}
-                    <p>Connection #{{connection}}</p>
-                    <img src="{{nodeType}}d-latency-{{connection}}_99.png"  />
+
+                    {% set rcvLatFilename = nodeType + "d-latency-" + connection + "_99.png" %}
+                    {% set rcvLatFilenameExists = rcvLatFilename|fe(baseDir, reportDirInfo.reportDir) %}
+
+                    {% if rcvLatFilenameExists %}
+
+                    <p>Connection {{connection}}</p>
+                    <img src="{{rcvLatFilename}}"  />
+                    {% else %}
+
+                    <p>Connection {{connection}}</p>
+                    <p><b>Error:</b> the plotted report file for this connection is missing. This
+                        is likely caused due to an error on the load generator backend</p>
+                    {% endif %}
                     {% endfor %}
                 </div>
                 {% endif %}
@@ -208,8 +248,20 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                 <div>
                     <h2 id="rate">Rate</h2>
                     {% for connection in range(parallelCount | int) %}
-                    <p>Connection #{{connection}}</p>
-                    <img src="{{nodeType}}d-rate-{{connection}}_rate.png" />
+
+                    {% set rcvRateFilename = nodeType + "d-rate-" + connection + "_rate.png" %}
+                    {% set rcvRateFilenameExists = rcvRateFilename|fe(baseDir, reportDirInfo.reportDir) %}
+
+                    {% if rcvRateFilenameExists %}
+
+                    <p>Connection {{connection}}</p>
+                    <img src="{{rcvRateFilename}}" />
+                    {% else %}
+
+                    <p>Connection {{connection}}</p>
+                    <p><b>Error:</b> the plotted report file for this connection is missing. This
+                        is likely caused due to an error on the load generator backend</p>
+                    {% endif %}
                     {% endfor %}
                 </div>
 
