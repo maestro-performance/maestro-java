@@ -35,16 +35,18 @@ public class ReportGenerator {
     public static void generate(String path) {
         ReportDirProcessor walker = new ReportDirProcessor(path);
 
-        List<ReportFile> tmpList = walker.generate(new File(path));
+        File baseDir = new File(path);
 
-        Map<String, Object> context = ReportContextBuilder.toContext(tmpList, path);
+        List<ReportFile> tmpList = walker.generate(baseDir);
+
+        Map<String, Object> context = ReportContextBuilder.toContext(tmpList, baseDir);
 
         // Generate the host report
         Set<ReportDirInfo> reports = (Set<ReportDirInfo>) context.get("reportDirs");
 
         for (ReportDirInfo report : reports) {
             logger.info("Processing report dir: {}", report.getReportDir());
-            Map<String, Object> nodeReportContext = NodeContextBuilder.toContext(report, new File(path));
+            Map<String, Object> nodeReportContext = NodeContextBuilder.toContext(report, baseDir);
             NodeReportRenderer reportRenderer = new NodeReportRenderer(nodeReportContext);
 
             try {
