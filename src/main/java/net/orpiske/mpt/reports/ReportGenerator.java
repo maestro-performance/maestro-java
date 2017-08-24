@@ -53,6 +53,7 @@ public class ReportGenerator {
                 String outDir = path + report.getReportDir();
                 File outFile = new File(outDir, "index.html");
                 FileUtils.writeStringToFile(outFile, reportRenderer.render(), Charsets.UTF_8);
+                reportRenderer.copyResources(outFile.getParentFile());
             } catch (Exception e) {
                 e.printStackTrace();
             }

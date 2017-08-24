@@ -25,8 +25,7 @@ import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.*;
 import java.nio.file.Paths;
 import java.util.HashMap;
 import java.util.Map;
@@ -63,6 +62,27 @@ public abstract class AbstractRenderer {
         text = IOUtils.toString(this.getClass().getResourceAsStream(name), Charsets.UTF_8);
 
         return jinjava.render(text, context);
+    }
+
+    protected void copyResources(File path, String resource, String outName) throws IOException {
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
+
+        // Skip duplicate static resources
+        File outputFile = new File(path, outName);
+        if (outputFile.exists()) {
+            return;
+        }
+
+        try {
+            inputStream = this.getClass().getResourceAsStream(resource);
+            outputStream = new FileOutputStream(outputFile);
+
+            IOUtils.copy(inputStream, outputStream);
+        } finally {
+            IOUtils.closeQuietly(inputStream);
+            IOUtils.closeQuietly(outputStream);
+        }
     }
 
     abstract public String render() throws Exception;

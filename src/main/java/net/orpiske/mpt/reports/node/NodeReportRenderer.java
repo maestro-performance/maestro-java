@@ -20,6 +20,8 @@ import net.orpiske.mpt.reports.AbstractRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.Map;
 
 
@@ -34,5 +36,10 @@ public class NodeReportRenderer extends AbstractRenderer {
     @Override
     public String render() throws Exception {
         return super.render("/net/orpiske/mpt/reports/index-node.html");
+    }
+
+    public void copyResources(File path) throws IOException {
+        super.copyResources(path, "/net/orpiske/mpt/reports/favicon.png", "favicon.png");
+
     }
 }

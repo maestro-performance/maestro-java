@@ -38,24 +38,8 @@ public class IndexRenderer extends AbstractRenderer {
     }
 
     public void copyResources(File path) throws IOException {
-        final String resource = "/net/orpiske/mpt/reports/sorttable.js";
+        super.copyResources(path, "/net/orpiske/mpt/reports/sorttable.js", "sorttable.js");
+        super.copyResources(path, "/net/orpiske/mpt/reports/favicon.png", "favicon.png");
 
-        InputStream sortableStream = null;
-        // OutputStream outputStream = null;
-        Writer writer = null;
-
-        try {
-
-            sortableStream = this.getClass().getResourceAsStream(resource);
-
-            File outputFile = new File(path, "sorttable.js");
-            /// outputStream = new FileOutputStream(outputFile.getName());
-            writer = new FileWriter(outputFile);
-
-            IOUtils.copy(sortableStream, writer);
-        } finally {
-            IOUtils.closeQuietly(sortableStream);
-            IOUtils.closeQuietly(writer);
-        }
     }
 }
