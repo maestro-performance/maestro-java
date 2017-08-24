@@ -105,7 +105,6 @@ public class IncrementalTestExecutor {
                 int numPeers = getNumPeers();
 
                 reportsDownloader.setTestNum(testProfile.getTestExecutionNumber());
-                reportsDownloader.setParallelCount(testProfile.getParallelCount());
 
                 testProfile.apply(maestro);
                 startServices();

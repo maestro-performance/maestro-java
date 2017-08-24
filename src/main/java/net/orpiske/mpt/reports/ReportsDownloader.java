@@ -31,16 +31,11 @@ public class ReportsDownloader {
 
     private String baseDir;
     private String reportTypeDir;
-    private int parallelCount;
     private int testNum;
 
 
     public ReportsDownloader(String baseDir) {
         this.baseDir = baseDir;
-    }
-
-    public void setParallelCount(int parallelCount) {
-        this.parallelCount = parallelCount;
     }
 
     public void setTestNum(int testNum) {
@@ -66,25 +61,23 @@ public class ReportsDownloader {
     }
 
     private void downloadSenderReports(String host, String reportSource) throws ResourceExchangeException {
-        for (int i = 0; i < parallelCount; i++) {
-            String name = "senderd-rate-" + Integer.toString(i) + ".csv.gz";
+        String name = "senderd-rate.csv.gz";
 
-            downloadReport(host, reportSource, name);
-        }
+        downloadReport(host, reportSource, name);
+
 
         downloadReport(host, reportSource, "test.properties");
     }
 
     private void downloadReceiverReports(String host, String reportSource) throws ResourceExchangeException {
-        for (int i = 0; i < parallelCount; i++) {
-            String tpReport = "receiverd-rate-" + Integer.toString(i) + ".csv.gz";
+        String tpReport = "receiverd-rate.csv.gz";
 
-            downloadReport(host, reportSource, tpReport);
+        downloadReport(host, reportSource, tpReport);
 
-            String latReport = "receiverd-latency-" + Integer.toString(i) + ".hdr";
+        String latReport = "receiverd-latency.hdr";
 
-            downloadReport(host, reportSource, latReport);
-        }
+        downloadReport(host, reportSource, latReport);
+
 
         downloadReport(host, reportSource, "test.properties");
     }
