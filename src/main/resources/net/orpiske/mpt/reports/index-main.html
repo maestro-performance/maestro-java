@@ -112,8 +112,13 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
             padding: 6px;
         }
 
-        tr:nth-child(even) {
-            background-color: #dddddd;
+        .passed {
+            background-color: green;
+            color: lightyellow;
+        }
+        .failed {
+            background-color: red;
+            color: white;
         }
 
     #test {
@@ -184,7 +189,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                 <td>{{ reportDir.rate }} msg/sec </td>
                 <td>{{ reportDir.parallelCount }} </td>
                 <td>{{ reportDir.messageSize }} bytes {% if reportDir.variableSize == true %} (+/- 5% variation) {% endif %} </td>
-                <td>{% if reportDir.testSuccessful == true %} passed {% else %} failed {% endif %}</td>
+                <td class={% if reportDir.testSuccessful %} "passed" {% else %} "failed" {% endif %}>{% if reportDir.testSuccessful == true %} passed {% else %} failed {% endif %}</td>
             </tr>
             {% endfor %}
         </table>
