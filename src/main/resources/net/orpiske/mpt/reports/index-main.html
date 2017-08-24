@@ -23,6 +23,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8">
     <title>Messaging Performance Report Index</title>
+    <script src="sorttable.js"></script>
     <style type="text/css">
 
 
@@ -106,6 +107,17 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
             width: 100%;
         }
 
+        table.sortable thead {
+            background-color:#eee;
+            color:#666666;
+            font-weight: bold;
+            cursor: default;
+        }
+
+        table.sortable th:not(.sorttable_sorted):not(.sorttable_sorted_reverse):not(.sorttable_nosort):after {
+            content: " \25B4\25BE"
+        }
+
         td, th {
             border: 1px solid #dddddd;
             text-align: left;
@@ -171,7 +183,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 
         {% include "main-header.html" ignore missing %}
 
-        <table>
+        <table class="sortable">
             <tr>
                 <th>Test Number</th>
                 <th>Host</th>

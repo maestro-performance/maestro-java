@@ -62,6 +62,7 @@ public class ReportGenerator {
         File outFile = new File(path, "index.html");
         try {
             FileUtils.writeStringToFile(outFile, indexRenderer.render(), Charsets.UTF_8);
+            indexRenderer.copyResources(baseDir);
         } catch (Exception e) {
             e.printStackTrace();
         }

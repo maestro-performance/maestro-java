@@ -17,9 +17,12 @@
 package net.orpiske.mpt.reports.index;
 
 import net.orpiske.mpt.reports.AbstractRenderer;
+import org.apache.commons.io.Charsets;
+import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.*;
 import java.util.Map;
 
 
@@ -33,5 +36,27 @@ public class IndexRenderer extends AbstractRenderer {
     @Override
     public String render() throws Exception {
         return super.render("/net/orpiske/mpt/reports/index-main.html");
+    }
+
+    public void copyResources(File path) throws IOException {
+        final String resource = "/net/orpiske/mpt/reports/sorttable.js";
+
+        InputStream sortableStream = null;
+        // OutputStream outputStream = null;
+        Writer writer = null;
+
+        try {
+
+            sortableStream = this.getClass().getResourceAsStream(resource);
+
+            File outputFile = new File(path, "sorttable.js");
+            /// outputStream = new FileOutputStream(outputFile.getName());
+            writer = new FileWriter(outputFile);
+
+            IOUtils.copy(sortableStream, writer);
+        } finally {
+            IOUtils.closeQuietly(sortableStream);
+            IOUtils.closeQuietly(writer);
+        }
     }
 }
