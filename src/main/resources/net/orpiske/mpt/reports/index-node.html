@@ -218,7 +218,6 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 
                     {% if rcvLatFilenameExists %}
 
-                    <p>Connection {{connection}}</p>
                     <img src="{{rcvLatFilename}}" />
                     {% else %}
 
@@ -250,11 +249,9 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 
                     {% if rcvRateFilenameExists %}
 
-                    <p>Connection {{connection}}</p>
                     <img src="{{rcvRateFilename}}" />
                     {% else %}
 
-                    <p>Connection {{connection}}</p>
                     <p><b>Error:</b> the plotted report file for this connection is missing. This
                         is likely caused due to an error on the load generator backend</p>
                     {% endif %}
