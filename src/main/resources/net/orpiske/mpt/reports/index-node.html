@@ -176,7 +176,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                         {% endif %}
                         <tr>
                             <td>Message Size</td>
-                            <td>{{ messageSize }} bytes w/ 5% size variation</td>
+                            <td>{{ messageSize }} bytes {% if variableSize == 1 %} (+/- 5% variation) {% endif %} </td>
                         </tr>
                         <tr>
                             <td>Messaging Protocol</td>
