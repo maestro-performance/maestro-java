@@ -98,6 +98,22 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 			width: 100%;
 		}
 
+		table {
+            font-family: arial, sans-serif;
+            border-collapse: collapse;
+            width: 100%;
+        }
+
+        td, th {
+            border: 1px solid #dddddd;
+            text-align: left;
+            padding: 6px;
+        }
+
+        tr:nth-child(even) {
+            background-color: #dddddd;
+        }
+
     #outer-grid {
       display: grid;
       grid-template-rows: 1fr 1fr;
@@ -139,43 +155,42 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                     <div>
                         <h1 id="summary">Test Summary</h1>
                     </div>
-                    {% if nodeType == "inspector" %}
-                    <div>
-                        <p>
-                            <b>Messaging System:</b> {{ productName }} {{ productVersion }}
-                        </p>
-                    </div>
-                    <div>
-                        <p>
-                            <b>System Report:</b> {{ jvmName }} {{ jvmVersion }} - {{ jvmPackageVersion }}
-                        </p>
-                    </div>
-                    <div>
-                        <p>
-                            <b>Operating System:</b> {{ operatingSystemName }} - {{ operatingSystemVersion }}
-                        </p>
-                    </div>
-                    {% endif %}
-                    <div>
-                        <p>
-                            <b>Message Size:</b> {{ messageSize }} bytes w/ 5% size variation
-                        </p>
-                    </div>
-                    <div>
-                        <p>
-                            <b>Messaging Protocol:</b> AMQP
-                        </p>
-                    </div>
-                    <div>
-                        <p>
-                            <b>Test Duration:</b> {{ duration }} seconds
-                        </p>
-                    </div>
-                    <div>
-                        <p>
-                            <b>Parallel Count:</b> {{parallelCount}}
-                        </p>
-                    </div>
+                    <table>
+                        <tr>
+                            <th>Parameter</th>
+                            <th>Value</th>
+                        </tr>
+                        {% if nodeType == "inspector" %}
+                        <tr>
+                            <td>Messaging System</td>
+                            <td>{{ productName }} {{ productVersion }}</td>
+                        </tr>
+                        <tr>
+                            <td>System Report</td>
+                            <td>{{ jvmName }} {{ jvmVersion }} - {{ jvmPackageVersion }}</td>
+                        </tr>
+                        <tr>
+                            <td>Operating System</td>
+                            <td>{{ operatingSystemName }} - {{ operatingSystemVersion }}</td>
+                        </tr>
+                        {% endif %}
+                        <tr>
+                            <td>Message Size</td>
+                            <td>{{ messageSize }} bytes w/ 5% size variation</td>
+                        </tr>
+                        <tr>
+                            <td>Messaging Protocol</td>
+                            <td>AMQP</td>
+                        </tr>
+                        <tr>
+                            <td>Test Duration</td>
+                            <td>{{ duration }} seconds</td>
+                        </tr>
+                        <tr>
+                            <td>Parallel Count</td>
+                            <td>{{parallelCount}}</td>
+                        </tr>
+                    </table>
                 </div>
 
                 {% if nodeType == "receiver" %}
