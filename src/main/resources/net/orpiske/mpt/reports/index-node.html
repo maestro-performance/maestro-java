@@ -31,8 +31,8 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 			overflow: hidden;
 			height: 100%;
 			max-height: 100%;
-			font-family:Sans-serif;
-			line-height: 1.5em;
+			font-family: Verdana, Geneva, sans-serif;
+			line-height: 1.3em;
 		}
 
 		#header {
@@ -107,7 +107,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
     }
     #outer-grid > div {
       background-color: white;
-      color: white;
+      color: black;
       padding: 10px;
     }
     #report-grid {
@@ -127,7 +127,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 
 <header id="header">
     <div id="logo">
-        <h1>Host: {{ node }} </h1>
+        <h1>{{ nodeType |title }} at {{ node }} </h1>
     </div>
 </header>
 
@@ -137,7 +137,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
             <div>
                 <div>
                     <div>
-                        <h2 id="summary">Test Summary</h2>
+                        <h1 id="summary">Test Summary</h1>
                     </div>
                     {% if nodeType == "inspector" %}
                     <div>
@@ -187,10 +187,8 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                         {% set rcvLatFilenameExists = rcvLatFilename|fe(baseDir, reportDirInfo.reportDir) %}
 
                         {% if rcvLatFilenameExists %}
-                        <p>Connection {{connection}}</p>
                         <img src="{{rcvLatFilename}}" />
                         {% else %}
-                        <p>Connection {{connection}}</p>
                         <p><b>Error:</b> the plotted report file for this connection is missing. This
                         is likely caused due to an error on the load generator backend</p>
                         {% endif %}
@@ -291,7 +289,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 
 <nav id="nav">
     <div class="innertube">
-        <h1>{{ nodeType |title }} </h1>
+        <h1>Reports</h1>
         <ul>
             <li><a href="#summary">Test Summary</a></li>
             {% if nodeType == "receiver" %}
