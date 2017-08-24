@@ -39,5 +39,6 @@ maestro.stopSender()
 maestro.stopReceiver()
 maestro.stopInspector()
 
-println "Done"
+println "Sent"
+maestro.stop()
 
