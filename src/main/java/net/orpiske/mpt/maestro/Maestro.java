@@ -198,6 +198,12 @@ public class Maestro {
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
     }
 
+    public void halt() throws MqttException, IOException {
+        Halt maestroNote = new Halt();
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
     public List<MaestroNote> collect() {
         return collectorExecutor.collect();
     }
