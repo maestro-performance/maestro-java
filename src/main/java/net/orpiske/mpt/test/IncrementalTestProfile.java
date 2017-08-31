@@ -36,8 +36,8 @@ public class IncrementalTestProfile {
     private int ceilingParallelCount = 16;
     private int parallelCountIncrement = 1;
 
-    private int rate = initialRate;
-    private int parallelCount = initialParallelCount;
+    protected int rate = initialRate;
+    protected int parallelCount = initialParallelCount;
 
     private String brokerURL;
 
