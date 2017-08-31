@@ -45,7 +45,7 @@ public class IncrementalTestProfile {
     private TestDuration duration;
     private String messageSize;
 
-    private int testExecutionNumber;
+    protected int testExecutionNumber;
 
     public IncrementalTestProfile() {
 
