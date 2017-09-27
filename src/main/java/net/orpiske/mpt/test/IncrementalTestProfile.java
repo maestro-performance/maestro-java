@@ -65,6 +65,7 @@ public class IncrementalTestProfile {
 
     public void setInitialRate(int initialRate) {
         this.initialRate = initialRate;
+        this.rate = rate;
     }
 
     public int getCeilingRate() {
@@ -81,6 +82,7 @@ public class IncrementalTestProfile {
 
     public void setInitialParallelCount(int initialParallelCount) {
         this.initialParallelCount = initialParallelCount;
+        this.parallelCount = initialParallelCount;
     }
 
     public int getParallelCount() {
