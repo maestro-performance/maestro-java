@@ -23,6 +23,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.Date;
 
 public class BmicPlotter implements Plotter {
@@ -37,6 +38,10 @@ public class BmicPlotter implements Plotter {
         baseName = FilenameUtils.removeExtension(baseName);
 
         try {
+            if (!file.exists()) {
+                throw new IOException("File " + file.getPath() + " does not exist");
+            }
+
             BmicData bmicData = bmicReader.read(file.getPath());
 
             // Plotter

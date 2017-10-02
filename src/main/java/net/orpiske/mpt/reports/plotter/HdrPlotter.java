@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 
 public class HdrPlotter implements Plotter {
     private static Logger logger = LoggerFactory.getLogger(HdrPlotter.class);
@@ -34,6 +35,10 @@ public class HdrPlotter implements Plotter {
     @Override
     public boolean plot(File file) {
         try {
+            if (!file.exists()) {
+                throw new IOException("File " + file.getPath() + " does not exist");
+            }
+
             String csvFile = processorWrapper.convertLog(file.getPath());
 
             // CSV Reader
