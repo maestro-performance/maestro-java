@@ -30,7 +30,7 @@ import java.util.List;
 /**
  * A maestro instance
  */
-public class Maestro {
+public final class Maestro {
     private MaestroClient maestroClient = null;
     private MaestroCollectorExecutor collectorExecutor;
     private Thread collectorThread;
