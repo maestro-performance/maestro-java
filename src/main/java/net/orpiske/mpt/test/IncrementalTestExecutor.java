@@ -28,7 +28,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.util.List;
 
-public class IncrementalTestExecutor {
+public class IncrementalTestExecutor implements TestExecutor {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestExecutor.class);
 
     private Maestro maestro;
