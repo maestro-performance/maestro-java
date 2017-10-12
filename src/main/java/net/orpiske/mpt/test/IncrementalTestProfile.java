@@ -65,7 +65,7 @@ public class IncrementalTestProfile {
 
     public void setInitialRate(int initialRate) {
         this.initialRate = initialRate;
-        this.rate = rate;
+        this.rate = initialRate;
     }
 
     public int getCeilingRate() {
