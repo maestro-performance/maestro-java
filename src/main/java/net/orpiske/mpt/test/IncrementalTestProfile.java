@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class IncrementalTestProfile {
+public class IncrementalTestProfile implements TestProfile {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestProfile.class);
 
     private int initialRate = 100;
