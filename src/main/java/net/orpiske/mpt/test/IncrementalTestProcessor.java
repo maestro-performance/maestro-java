@@ -16,100 +16,40 @@
 
 package net.orpiske.mpt.test;
 
-import net.orpiske.mpt.maestro.client.MaestroNoteProcessor;
-import net.orpiske.mpt.maestro.notes.PingResponse;
-import net.orpiske.mpt.maestro.notes.TestFailedNotification;
-import net.orpiske.mpt.maestro.notes.TestSuccessfulNotification;
 import net.orpiske.mpt.reports.ReportsDownloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class IncrementalTestProcessor extends MaestroNoteProcessor {
+class IncrementalTestProcessor extends AbstractTestProcessor {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestProcessor.class);
 
-    private ReportsDownloader reportsDownloader;
     private IncrementalTestProfile testProfile;
 
-    private boolean failed = false;
-    private int notifications = 0;
-
+    /**
+     * Constructor
+     * @param testProfile
+     * @param reportsDownloader
+     */
     IncrementalTestProcessor(IncrementalTestProfile testProfile, ReportsDownloader reportsDownloader) {
+        super(testProfile, reportsDownloader);
+
         this.testProfile = testProfile;
-        this.reportsDownloader = reportsDownloader;
-    }
-
-    @Override
-    protected void processPingResponse(PingResponse note) {
-        logger.info("Elapsed time from {}: {} ms", note.getName(), note.getElapsed());
-    }
-
-    @Override
-    protected void processNotifySuccess(TestSuccessfulNotification note) {
-        logger.info("Test successful on {} after {} executions", note.getName(),
-                testProfile.getTestExecutionNumber());
-        logger.info("Test parameters used: " + testProfile.toString());
-
-        String type = note.getName().split("@")[0];
-        String host = note.getName().split("@")[1];
-
-        reportsDownloader.setReportTypeDir("success");
-        reportsDownloader.downloadLastSuccessful(type, host, note.getName());
-
-        notifications++;
-    }
-
-    @Override
-    protected void processNotifyFail(TestFailedNotification note) {
-        logger.info("Test failed on {} after {} executions", note.getName(),
-                testProfile.getTestExecutionNumber());
-        logger.info("Test parameter used");
-
-        String type = note.getName().split("@")[0];
-        String host = note.getName().split("@")[1];
-
-        reportsDownloader.setReportTypeDir("failed");
-        reportsDownloader.downloadLastFailed(type, host, note.getName());
-
-        failed = true;
-        notifications++;
-    }
-
-    public boolean isFailed() {
-        return failed;
-    }
-
-    public void setFailed(boolean failed) {
-        this.failed = failed;
     }
 
     public boolean isSuccessful() {
         if (testProfile.getParallelCount() >= testProfile.getCeilingParallelCount()) {
+            logger.trace("Profile parallel count {} exceeds the profile ceiling count {}", testProfile.getParallelCount(),
+                    testProfile.getCeilingParallelCount());
+
             if (testProfile.getRate() >= testProfile.getCeilingRate()) {
+                logger.trace("Profile rate {} exceeds the profile ceiling rate {}", testProfile.getRate(),
+                        testProfile.getCeilingRate());
+
                 return true;
             }
         }
 
         return false;
-    }
-
-    public boolean isCompleted() {
-        if (isFailed()) {
-            return true;
-        }
-
-        if (isSuccessful()) {
-            return true;
-        }
-
-        return false;
-    }
-
-    public int getNotifications() {
-        return notifications;
-    }
-
-    public void resetNotifications() {
-        this.notifications = 0;
     }
 }
 
