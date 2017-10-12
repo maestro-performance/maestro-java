@@ -16,6 +16,17 @@ import java.io.IOException;
 public interface TestProfile {
 
     /**
+     * Get the test execution number
+     * @return the test execution number
+     */
+    int getTestExecutionNumber();
+
+    /**
+     * Increment the test execution number
+     */
+    void incrementTestExecutionNumber();
+
+    /**
      * Apply a test profile using a maestro instance
      * @param maestro the maestro instance to apply the profile to
      * @throws MqttException if unable to send the MQTT request

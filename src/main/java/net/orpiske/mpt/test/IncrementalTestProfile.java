@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class IncrementalTestProfile implements TestProfile {
+public class IncrementalTestProfile extends AbstractTestProfile {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestProfile.class);
 
     private int initialRate = 100;
@@ -44,8 +44,6 @@ public class IncrementalTestProfile implements TestProfile {
     private int maximumLatency = 600;
     private TestDuration duration;
     private String messageSize;
-
-    protected int testExecutionNumber;
 
     public IncrementalTestProfile() {
 
@@ -133,13 +131,6 @@ public class IncrementalTestProfile implements TestProfile {
         this.messageSize = messageSize;
     }
 
-    public int getTestExecutionNumber() {
-        return testExecutionNumber;
-    }
-
-    public void setTestExecutionNumber(int testExecutionNumber) {
-        this.testExecutionNumber = testExecutionNumber;
-    }
 
     public int getRateIncrement() {
         return rateIncrement;
@@ -184,7 +175,7 @@ public class IncrementalTestProfile implements TestProfile {
 
     public void increment() {
         rate += rateIncrement;
-        testExecutionNumber++;
+        incrementTestExecutionNumber();
 
 
         if (rate > ceilingRate) {
@@ -202,13 +193,18 @@ public class IncrementalTestProfile implements TestProfile {
     @Override
     public String toString() {
         return "IncrementalTestProfile{" +
-                "brokerURL='" + brokerURL + '\'' +
+                "initialRate=" + initialRate +
+                ", ceilingRate=" + ceilingRate +
+                ", rateIncrement=" + rateIncrement +
+                ", initialParallelCount=" + initialParallelCount +
+                ", ceilingParallelCount=" + ceilingParallelCount +
+                ", parallelCountIncrement=" + parallelCountIncrement +
                 ", rate=" + rate +
                 ", parallelCount=" + parallelCount +
+                ", brokerURL='" + brokerURL + '\'' +
                 ", maximumLatency=" + maximumLatency +
                 ", duration=" + duration +
                 ", messageSize='" + messageSize + '\'' +
-                ", testExecutionNumber=" + testExecutionNumber +
-                '}';
+                "} " + super.toString();
     }
 }
