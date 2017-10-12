@@ -77,4 +77,19 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
         return numPeers;
     }
+
+    protected void processReplies(AbstractTestProcessor testProcessor, long repeat, int numPeers) {
+        while (testProcessor.getNotifications() != numPeers) {
+            List<MaestroNote> replies = getMaestro().collect(1000, 1);
+
+            testProcessor.process(replies);
+            repeat--;
+            logger.debug("Estimated time for test completion: {} secs", repeat);
+
+            if (repeat == 0) {
+                break;
+            }
+        }
+    }
+
 }

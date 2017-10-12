@@ -17,20 +17,17 @@
 package net.orpiske.mpt.test;
 
 import net.orpiske.mpt.maestro.Maestro;
-import net.orpiske.mpt.maestro.notes.MaestroNote;
 import net.orpiske.mpt.reports.ReportsDownloader;
 import net.orpiske.mpt.utils.DurationParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 public class IncrementalTestExecutor extends AbstractTestExecutor {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestExecutor.class);
 
     private IncrementalTestProfile testProfile;
 
-    private long replyRetries;
+    private long repeat;
     private IncrementalTestProcessor testProcessor;
 
     public IncrementalTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
@@ -40,26 +37,9 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
         this.testProfile = testProfile;
         this.testProcessor = new IncrementalTestProcessor(testProfile, reportsDownloader);
 
-        replyRetries = this.testProfile.getDuration().getNumericDuration();
+        long replyRetries = this.testProfile.getDuration().getNumericDuration();
+        repeat = (replyRetries * 2);
     }
-
-
-    private void processReplies(int numPeers) {
-        long repeat = (replyRetries * 2);
-
-        while (testProcessor.getNotifications() != numPeers) {
-            List<MaestroNote> replies = getMaestro().collect(1000, 1);
-
-            testProcessor.process(replies);
-            repeat--;
-            logger.debug("Estimated time for test completion: {} secs", repeat);
-
-            if (repeat == 0) {
-                break;
-            }
-        }
-    }
-
 
     public boolean run() {
         try {
@@ -75,7 +55,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                 testProcessor.resetNotifications();
 
                 startServices();
-                processReplies(numPeers);
+                processReplies(testProcessor, repeat, numPeers);
 
                 testProfile.increment();
 
