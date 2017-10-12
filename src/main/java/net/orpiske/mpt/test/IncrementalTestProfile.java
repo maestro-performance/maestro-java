@@ -164,8 +164,12 @@ public class IncrementalTestProfile {
         logger.info("Setting rate to {}", rate);
         maestro.setRate(rate);
 
+        logger.info("Rate increment value is {}", rateIncrement);
+
         logger.info("Setting parallel count to {}", this.parallelCount);
         maestro.setParallelCount(this.parallelCount);
+
+        logger.info("Parallel count increment value is {}", this.parallelCountIncrement);
 
         logger.info("Setting duration to {}", this.duration);
         maestro.setDuration(this.duration.getDuration());
