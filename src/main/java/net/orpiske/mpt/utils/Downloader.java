@@ -44,32 +44,14 @@ public class Downloader {
 
 	private static void copy(final Resource<InputStream> resource,
 			final OutputStream output) throws IOException {
-		InputStream input = resource.getPayload();
-
-		long i = 0;
 		long total = resource.getResourceInfo().getSize();
 
-		for (i = 0; i < total; i++) {
-			output.write(input.read());
+		logger.info("Downloading {} from the server", FileUtils.byteCountToDisplaySize(total));
 
-			if ((i % (1024 * 512)) == 0) {
-				double percentComplete = 0;
+		InputStream input = resource.getPayload();
+		IOUtils.copy(input, output);
 
-				if (i > 0) {
-					percentComplete = i / ((double) total /100.0);
-				}
-				else {
-					percentComplete = 0.0;
-				}
-
-
-				System.out.print("\r" + (int) percentComplete + "% complete (" + i + " of "
-						+ total + ")");
-			}
-		}
-
-		System.out.print("\r100% complete (" + i + " of " + total + ")\n");
-
+		logger.info("Download completed successfully");
 		output.flush();
 
 	}
