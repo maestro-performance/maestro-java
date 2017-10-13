@@ -8,6 +8,11 @@ public interface MultiPointProfile {
         private String name;
         private String brokerURL;
 
+        public EndPoint(String name, String topic, String brokerURL) {
+            this.topic = topic;
+            this.name = name;
+            this.brokerURL = brokerURL;
+        }
 
         public String getTopic() {
             return topic;
