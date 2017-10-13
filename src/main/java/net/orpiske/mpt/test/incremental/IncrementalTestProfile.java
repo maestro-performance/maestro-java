@@ -14,10 +14,11 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.test;
+package net.orpiske.mpt.test.incremental;
 
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.maestro.exceptions.MaestroException;
+import net.orpiske.mpt.test.AbstractTestProfile;
 import net.orpiske.mpt.utils.TestDuration;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;

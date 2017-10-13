@@ -81,7 +81,7 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
      * Tests whether the test was successful
      * @return true if successful or false otherwise
      */
-    abstract boolean isSuccessful();
+    public abstract boolean isSuccessful();
 
     public boolean isCompleted() {
         if (isFailed()) {

@@ -14,13 +14,14 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.test;
+package net.orpiske.mpt.test.incremental;
 
 import net.orpiske.mpt.reports.ReportsDownloader;
+import net.orpiske.mpt.test.AbstractTestProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class IncrementalTestProcessor extends AbstractTestProcessor {
+public class IncrementalTestProcessor extends AbstractTestProcessor {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestProcessor.class);
 
     private IncrementalTestProfile testProfile;
@@ -30,7 +31,7 @@ class IncrementalTestProcessor extends AbstractTestProcessor {
      * @param testProfile
      * @param reportsDownloader
      */
-    IncrementalTestProcessor(IncrementalTestProfile testProfile, ReportsDownloader reportsDownloader) {
+    public IncrementalTestProcessor(IncrementalTestProfile testProfile, ReportsDownloader reportsDownloader) {
         super(testProfile, reportsDownloader);
 
         this.testProfile = testProfile;
@@ -51,5 +52,7 @@ class IncrementalTestProcessor extends AbstractTestProcessor {
 
         return false;
     }
+
+
 }
 

@@ -18,8 +18,8 @@ import net.orpiske.mpt.maestro.Maestro
 import net.orpiske.mpt.reports.ReportDirProcessor
 import net.orpiske.mpt.reports.ReportGenerator
 import net.orpiske.mpt.reports.ReportsDownloader
-import net.orpiske.mpt.test.IncrementalTestExecutor
-import net.orpiske.mpt.test.IncrementalTestProfile
+import net.orpiske.mpt.test.incremental.IncrementalTestExecutor
+import net.orpiske.mpt.test.incremental.IncrementalTestProfile
 import net.orpiske.mpt.utils.LogConfigurator
 import net.orpiske.mpt.utils.MessageSize
 import net.orpiske.mpt.utils.TestDuration

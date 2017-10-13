@@ -14,10 +14,11 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.test;
+package net.orpiske.mpt.test.incremental;
 
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.reports.ReportsDownloader;
+import net.orpiske.mpt.test.AbstractTestExecutor;
 import net.orpiske.mpt.utils.DurationParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
