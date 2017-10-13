@@ -20,6 +20,7 @@ import net.orpiske.mpt.reports.plotter.BmicPlotter;
 import net.orpiske.mpt.reports.plotter.HdrPlotter;
 import net.orpiske.mpt.reports.plotter.RatePlotter;
 import org.apache.commons.io.DirectoryWalker;
+import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,6 +79,8 @@ public class ReportDirProcessor extends DirectoryWalker {
 
         if (("hdr").equals(ext)) {
             plotHdr(file);
+
+            FileUtils.deleteQuietly(file);
         }
 
         if (("gz").equals(ext)) {
@@ -87,6 +90,8 @@ public class ReportDirProcessor extends DirectoryWalker {
             else {
                 plotInspector(file);
             }
+
+            FileUtils.deleteQuietly(file);
         }
     }
 
