@@ -33,11 +33,10 @@ public class ReportGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ReportGenerator.class);
 
     public static void generate(String path) {
-        ReportDirProcessor walker = new ReportDirProcessor(path);
-
         File baseDir = new File(path);
 
-        List<ReportFile> tmpList = walker.generate(baseDir);
+        ReportDirProcessor processor = new ReportDirProcessor(path);
+        List<ReportFile> tmpList = processor.generate(baseDir);
 
         Map<String, Object> context = ReportContextBuilder.toContext(tmpList, baseDir);
 
@@ -67,5 +66,8 @@ public class ReportGenerator {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        ReportDirPostProcessor postProcessor = new ReportDirPostProcessor(path);
+        postProcessor.postProcess(baseDir);
     }
 }

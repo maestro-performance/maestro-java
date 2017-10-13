@@ -16,9 +16,6 @@
 
 package net.orpiske.mpt.reports;
 
-import net.orpiske.mpt.reports.plotter.BmicPlotter;
-import net.orpiske.mpt.reports.plotter.HdrPlotter;
-import net.orpiske.mpt.reports.plotter.RatePlotter;
 import org.apache.commons.io.DirectoryWalker;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
@@ -32,70 +29,39 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ReportDirProcessor extends DirectoryWalker {
-    private static Logger logger = LoggerFactory.getLogger(ReportDirProcessor.class);
+public class ReportDirPostProcessor extends DirectoryWalker {
+    private static Logger logger = LoggerFactory.getLogger(ReportDirPostProcessor.class);
     private String initialPath;
 
     private List<ReportFile> files = new LinkedList<>();
 
-    public ReportDirProcessor(String initialPath) {
+    public ReportDirPostProcessor(String initialPath) {
         this.initialPath = initialPath;
     }
-
-    private void plotHdr(File file) {
-        HdrPlotter plotter = new HdrPlotter();
-
-        plotter.plot(file);
-
-        String normalizedName = file.getPath().replace(initialPath, "");
-        files.add(new HdrHistogramReportFile(new File(normalizedName)));
-    }
-
-    private void plotRate(File file) {
-        RatePlotter plotter = new RatePlotter();
-
-        plotter.plot(file);
-
-        String normalizedName = file.getPath().replace(initialPath, "");
-        files.add(new MptReportFile(new File(normalizedName)));
-    }
-
-    private void plotInspector(File file) {
-        BmicPlotter plotter = new BmicPlotter();
-
-        plotter.plot(file);
-        String normalizedName = file.getPath().replace(initialPath, "");
-        files.add(new MptReportFile(new File(normalizedName)));
-    }
-
 
     @Override
     protected void handleFile(File file, int depth, Collection results)
             throws IOException
 
     {
-        logger.debug("Processing file {}", file.getPath());
+        logger.debug("Post processing file {}", file.getPath());
         String ext = FilenameUtils.getExtension(file.getName());
 
-        if (("hdr").equals(ext)) {
-            plotHdr(file);
-        }
+        switch (ext) {
+            case "hdr":
+            case "gz":
+            case "csv":
+                FileUtils.deleteQuietly(file);
+            default:
 
-        if (("gz").equals(ext)) {
-            if (!file.getName().contains("inspector")) {
-                plotRate(file);
-            }
-            else {
-                plotInspector(file);
-            }
         }
     }
 
     @SuppressWarnings("unchecked")
-    public List<ReportFile> generate(final File reportsDir) {
+    public List<ReportFile> postProcess(final File reportsDir) {
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Processing downloaded reports on {}", reportsDir.getName());
+            logger.debug("Post processing downloaded reports on {}", reportsDir.getName());
         }
 
         try {
