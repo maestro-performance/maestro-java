@@ -15,11 +15,11 @@
  */
 
 import net.orpiske.mpt.maestro.Maestro
-import net.orpiske.mpt.reports.ReportDirProcessor
 import net.orpiske.mpt.reports.ReportGenerator
 import net.orpiske.mpt.reports.ReportsDownloader
 import net.orpiske.mpt.test.incremental.IncrementalTestExecutor
 import net.orpiske.mpt.test.incremental.IncrementalTestProfile
+import net.orpiske.mpt.test.incremental.singlepoint.SimpleTestProfile
 import net.orpiske.mpt.utils.LogConfigurator
 import net.orpiske.mpt.utils.MessageSize
 import net.orpiske.mpt.utils.TestDuration
@@ -44,7 +44,7 @@ maestro = new Maestro(maestroURL)
 
 ReportsDownloader reportsDownloader = new ReportsDownloader("/tmp/maestro");
 
-IncrementalTestProfile testProfile = new IncrementalTestProfile();
+IncrementalTestProfile testProfile = new SimpleTestProfile();
 
 testProfile.setBrokerURL(brokerURL)
 testProfile.setInitialRate(500);

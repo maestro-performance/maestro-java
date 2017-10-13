@@ -26,7 +26,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
-public class IncrementalTestProfile extends AbstractTestProfile {
+public abstract class IncrementalTestProfile extends AbstractTestProfile {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestProfile.class);
 
     private int initialRate = 100;
@@ -40,22 +40,12 @@ public class IncrementalTestProfile extends AbstractTestProfile {
     protected int rate = initialRate;
     protected int parallelCount = initialParallelCount;
 
-    private String brokerURL;
-
     private int maximumLatency = 600;
     private TestDuration duration;
     private String messageSize;
 
     public IncrementalTestProfile() {
 
-    }
-
-    public IncrementalTestProfile(String brokerURL, int rate, int parallelCount, TestDuration duration, String messageSize) {
-        this.brokerURL = brokerURL;
-        this.rate = rate;
-        this.parallelCount = parallelCount;
-        this.duration = duration;
-        this.messageSize = messageSize;
     }
 
     public int getInitialRate() {
@@ -94,14 +84,6 @@ public class IncrementalTestProfile extends AbstractTestProfile {
 
     public void setCeilingParallelCount(int ceilingParallelCount) {
         this.ceilingParallelCount = ceilingParallelCount;
-    }
-
-    public String getBrokerURL() {
-        return brokerURL;
-    }
-
-    public void setBrokerURL(String brokerURL) {
-        this.brokerURL = brokerURL;
     }
 
     public int getRate() {
@@ -149,30 +131,7 @@ public class IncrementalTestProfile extends AbstractTestProfile {
         this.parallelCountIncrement = parallelCountIncrement;
     }
 
-    public void apply(Maestro maestro) throws MqttException, IOException, MaestroException {
-        logger.info("Setting broker to {}", brokerURL);
-        maestro.setBroker(brokerURL);
-
-        logger.info("Setting rate to {}", rate);
-        maestro.setRate(rate);
-
-        logger.info("Rate increment value is {}", rateIncrement);
-
-        logger.info("Setting parallel count to {}", this.parallelCount);
-        maestro.setParallelCount(this.parallelCount);
-
-        logger.info("Parallel count increment value is {}", this.parallelCountIncrement);
-
-        logger.info("Setting duration to {}", this.duration);
-        maestro.setDuration(this.duration.getDuration());
-
-        logger.info("Setting fail-condition-latency to {}", this.maximumLatency);
-        maestro.setFCL(this.maximumLatency);
-
-        // Variable message messageSize
-        maestro.setMessageSize(messageSize);
-    }
-
+    abstract public void apply(Maestro maestro) throws MqttException, IOException, MaestroException;
 
     public void increment() {
         rate += rateIncrement;
@@ -202,7 +161,6 @@ public class IncrementalTestProfile extends AbstractTestProfile {
                 ", parallelCountIncrement=" + parallelCountIncrement +
                 ", rate=" + rate +
                 ", parallelCount=" + parallelCount +
-                ", brokerURL='" + brokerURL + '\'' +
                 ", maximumLatency=" + maximumLatency +
                 ", duration=" + duration +
                 ", messageSize='" + messageSize + '\'' +
