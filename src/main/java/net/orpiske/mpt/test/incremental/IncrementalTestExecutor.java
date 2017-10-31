@@ -28,7 +28,8 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
     private IncrementalTestProfile testProfile;
 
-    private long repeat;
+    private long repeat = 10000;
+    private long coolDownPeriod;
     private IncrementalTestProcessor testProcessor;
 
     public IncrementalTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
@@ -60,8 +61,8 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
                 testProfile.increment();
 
-                logger.info("Sleeping for 10 seconds to let the broker catch up");
-                Thread.sleep(10000);
+                logger.info("Sleeping for {} milliseconds to let the broker catch up", coolDownPeriod);
+                Thread.sleep(coolDownPeriod);
             }
 
             if (testProcessor.isSuccessful()) {
@@ -73,5 +74,15 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
         }
 
         return false;
+    }
+
+    @Override
+    public long getCoolDownPeriod() {
+        return coolDownPeriod;
+    }
+
+    @Override
+    public void setCoolDownPeriod(long period) {
+        this.coolDownPeriod = period;
     }
 }
