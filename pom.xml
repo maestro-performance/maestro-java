@@ -39,5 +39,6 @@
         <module>maestro-client</module>
         <module>maestro-cli</module>
         <module>maestro-tests</module>
+        <module>maestro-exporter</module>
     </modules>
 </project>
