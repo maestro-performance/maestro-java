@@ -21,6 +21,11 @@ import org.msgpack.core.MessageUnpacker;
 import java.io.IOException;
 
 public class StatsResponse extends MaestroResponse {
+    private int childCount;
+    private String role;
+    private String roleInfo;
+    private short statsType;
+
     private String timestamp;
     private long count;
     private double rate;
@@ -28,6 +33,11 @@ public class StatsResponse extends MaestroResponse {
 
     public StatsResponse(MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_STATS, unpacker);
+
+        childCount = unpacker.unpackInt();
+        role = unpacker.unpackString();
+        roleInfo = unpacker.unpackString();
+        statsType = unpacker.unpackShort();
 
         timestamp = unpacker.unpackString();
         count = unpacker.unpackLong();
@@ -49,5 +59,21 @@ public class StatsResponse extends MaestroResponse {
 
     public double getLatency() {
         return latency;
+    }
+
+    public int getChildCount() {
+        return childCount;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public String getRoleInfo() {
+        return roleInfo;
+    }
+
+    public short getStatsType() {
+        return statsType;
     }
 }
