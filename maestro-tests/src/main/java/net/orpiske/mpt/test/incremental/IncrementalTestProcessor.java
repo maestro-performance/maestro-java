@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.incremental;
+package net.orpiske.mpt.test.incremental;
 
 import net.orpiske.mpt.reports.ReportsDownloader;
 import net.orpiske.mpt.test.AbstractTestProcessor;

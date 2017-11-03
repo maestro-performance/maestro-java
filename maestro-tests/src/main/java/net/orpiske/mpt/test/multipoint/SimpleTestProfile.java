@@ -14,12 +14,12 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.multipoint;
+package net.orpiske.mpt.test.multipoint;
 
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.maestro.exceptions.MaestroException;
 import net.orpiske.mpt.test.MultiPointProfile;
-import net.orpiske.mpt.incremental.IncrementalTestProfile;
+import net.orpiske.mpt.test.incremental.IncrementalTestProfile;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

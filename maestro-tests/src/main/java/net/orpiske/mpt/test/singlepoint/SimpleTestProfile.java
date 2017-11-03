@@ -1,6 +1,6 @@
-package net.orpiske.mpt.singlepoint;
+package net.orpiske.mpt.test.singlepoint;
 
-import net.orpiske.mpt.incremental.IncrementalTestProfile;
+import net.orpiske.mpt.test.incremental.IncrementalTestProfile;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.maestro.exceptions.MaestroException;
 import net.orpiske.mpt.test.SinglePointProfile;
