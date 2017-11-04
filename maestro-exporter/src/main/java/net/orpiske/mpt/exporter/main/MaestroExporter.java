@@ -45,8 +45,9 @@ public class MaestroExporter {
 
     private void processNotes(List<MaestroNote> notes) {
 
-        senderChildCount.reset();;
+        senderChildCount.reset();
         receiverChildCount.reset();
+
         senderRate.reset();
         receiverRate.reset();
 
@@ -74,23 +75,22 @@ public class MaestroExporter {
 
     }
 
+
     public int run(int port) throws MqttException, IOException {
         logger.info("Exporting metrics on 0.0.0.0:" + port);
 
         HTTPServer server = new HTTPServer(port);
 
+
         while (running) {
             logger.debug("Sending requests");
             maestro.statsRequest();
 
-            try {
-                Thread.sleep(5000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            List<MaestroNote> notes = maestro.collect(1000, 5);
 
-            List<MaestroNote> notes = maestro.collect();
-            processNotes(notes);
+            if (notes != null) {
+                processNotes(notes);
+            }
 
             try {
                 Thread.sleep(10000);
