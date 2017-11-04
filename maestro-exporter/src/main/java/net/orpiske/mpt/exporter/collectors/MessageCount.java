@@ -18,27 +18,36 @@ package net.orpiske.mpt.exporter.collectors;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
+import net.orpiske.mpt.maestro.notes.StatsResponse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class MessageCount extends Collector {
     private String type;
-    private long count;
+    private StatsResponse stats;
 
     public MessageCount(final String type) {
         this.type = type;
     }
 
-    public List<MetricFamilySamples> collect() {
-        List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
+    public List<Collector.MetricFamilySamples> collect() {
+        List<Collector.MetricFamilySamples> mfs = new ArrayList<Collector.MetricFamilySamples>();
 
-        mfs.add(new GaugeMetricFamily(type + "_message_count", "Number of messages " + type, count));
+        if (stats != null) {
+            GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_" + type + "_message_count",
+                    "Connection count", Arrays.asList("peer"));
+
+            labeledGauge.addMetric(Arrays.asList(stats.getName()), stats.getCount());
+
+            mfs.add(labeledGauge);
+        }
 
         return mfs;
     }
 
-    public void incrementCount(long count) {
-        this.count += count;
+    public void eval(StatsResponse stats) {
+        this.stats = stats;
     }
 }

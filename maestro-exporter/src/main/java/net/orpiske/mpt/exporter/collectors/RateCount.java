@@ -18,31 +18,36 @@ package net.orpiske.mpt.exporter.collectors;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
+import net.orpiske.mpt.maestro.notes.StatsResponse;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 
 public class RateCount extends Collector {
     private String type;
-    private double count;
+    private StatsResponse stats;
 
     public RateCount(final String type) {
         this.type = type;
     }
 
-    public List<MetricFamilySamples> collect() {
-        List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
+    public List<Collector.MetricFamilySamples> collect() {
+        List<Collector.MetricFamilySamples> mfs = new ArrayList<Collector.MetricFamilySamples>();
 
-        mfs.add(new GaugeMetricFamily(type + "_rate", "Current rate for " + type, count));
+        if (stats != null) {
+            GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_" + type + "_rate",
+                    "Rate", Arrays.asList("peer"));
+
+            labeledGauge.addMetric(Arrays.asList(stats.getName()), stats.getRate());
+
+            mfs.add(labeledGauge);
+        }
 
         return mfs;
     }
 
-    public void incrementCount(double count) {
-        this.count += count;
-    }
-
-    public void reset() {
-        count = 0;
+    public void eval(StatsResponse stats) {
+        this.stats = stats;
     }
 }

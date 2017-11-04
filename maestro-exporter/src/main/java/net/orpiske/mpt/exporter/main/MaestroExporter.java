@@ -45,26 +45,21 @@ public class MaestroExporter {
 
     private void processNotes(List<MaestroNote> notes) {
 
-        senderChildCount.reset();
-        receiverChildCount.reset();
-
-        senderRate.reset();
-        receiverRate.reset();
 
         for (MaestroNote note : notes) {
             if (note instanceof StatsResponse) {
                 StatsResponse statsResponse = (StatsResponse) note;
 
                 if (statsResponse.getRole().equals("sender")) {
-                    messagesSent.incrementCount(statsResponse.getCount());
-                    senderChildCount.incrementCount(statsResponse.getChildCount());
-                    senderRate.incrementCount(statsResponse.getRate());
+                    messagesSent.eval(statsResponse);
+                    senderChildCount.eval(statsResponse);
+                    senderRate.eval(statsResponse);
                 }
                 else {
                     if (statsResponse.getRole().equals("receiver")) {
-                        messagesReceived.incrementCount(statsResponse.getCount());
-                        receiverChildCount.incrementCount(statsResponse.getChildCount());
-                        receiverRate.incrementCount(statsResponse.getRate());
+                        messagesReceived.eval(statsResponse);
+                        receiverChildCount.eval(statsResponse);
+                        receiverRate.eval(statsResponse);
                     }
                 }
             }
@@ -79,23 +74,32 @@ public class MaestroExporter {
     public int run(int port) throws MqttException, IOException {
         logger.info("Exporting metrics on 0.0.0.0:" + port);
 
-        HTTPServer server = new HTTPServer(port);
+        HTTPServer server = null;
+
+        try {
+            server = new HTTPServer(port);
 
 
-        while (running) {
-            logger.debug("Sending requests");
-            maestro.statsRequest();
+            while (running) {
+                logger.debug("Sending requests");
+                maestro.statsRequest();
 
-            List<MaestroNote> notes = maestro.collect(1000, 5);
+                List<MaestroNote> notes = maestro.collect(1000, 5);
 
-            if (notes != null) {
-                processNotes(notes);
+                if (notes != null) {
+                    processNotes(notes);
+                }
+
+                try {
+                    Thread.sleep(10000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-
-            try {
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        }
+        finally {
+            if (server != null) {
+                server.stop();
             }
         }
 
