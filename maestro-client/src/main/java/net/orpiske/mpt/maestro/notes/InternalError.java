@@ -20,4 +20,9 @@ public class InternalError extends MaestroResponse {
     public InternalError() {
         super(MaestroCommand.MAESTRO_NOTE_INTERNAL_ERROR);
     }
+
+    @Override
+    public String toString() {
+        return "InternalError{} " + super.toString();
+    }
 }

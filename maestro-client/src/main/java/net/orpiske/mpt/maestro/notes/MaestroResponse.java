@@ -50,4 +50,12 @@ public class MaestroResponse extends MaestroNote {
     public void setName(String name) {
         this.name = name;
     }
+
+    @Override
+    public String toString() {
+        return "MaestroResponse{" +
+                "id='" + id + '\'' +
+                ", name='" + name + '\'' +
+                "} " + super.toString();
+    }
 }

@@ -122,4 +122,12 @@ public class SetRequest extends MaestroRequest {
 
         return packer;
     }
+
+    @Override
+    public String toString() {
+        return "SetRequest{" +
+                "option=" + option +
+                ", value='" + value + '\'' +
+                "} " + super.toString();
+    }
 }

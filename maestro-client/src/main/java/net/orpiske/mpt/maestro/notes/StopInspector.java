@@ -20,4 +20,9 @@ public class StopInspector extends MaestroRequest {
     public StopInspector() {
         super(MaestroCommand.MAESTRO_NOTE_STOP_INSPECTOR);
     }
+
+    @Override
+    public String toString() {
+        return "StopInspector{} " + super.toString();
+    }
 }

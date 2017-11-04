@@ -76,4 +76,18 @@ public class StatsResponse extends MaestroResponse {
     public short getStatsType() {
         return statsType;
     }
+
+    @Override
+    public String toString() {
+        return "StatsResponse{" +
+                "childCount=" + childCount +
+                ", role='" + role + '\'' +
+                ", roleInfo='" + roleInfo + '\'' +
+                ", statsType=" + statsType +
+                ", timestamp='" + timestamp + '\'' +
+                ", count=" + count +
+                ", rate=" + rate +
+                ", latency=" + latency +
+                "} " + super.toString();
+    }
 }

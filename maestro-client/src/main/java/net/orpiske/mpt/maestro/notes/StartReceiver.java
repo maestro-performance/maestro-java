@@ -20,4 +20,9 @@ public class StartReceiver extends MaestroRequest {
     public StartReceiver() {
         super(MaestroCommand.MAESTRO_NOTE_START_RECEIVER);
     }
+
+    @Override
+    public String toString() {
+        return "StartReceiver{} " + super.toString();
+    }
 }

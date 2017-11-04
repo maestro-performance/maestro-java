@@ -20,4 +20,9 @@ public class AbnormalDisconnect extends MaestroResponse {
     public AbnormalDisconnect() {
         super(MaestroCommand.MAESTRO_NOTE_ABNORMAL_DISCONNECT);
     }
+
+    @Override
+    public String toString() {
+        return "AbnormalDisconnect{} " + super.toString();
+    }
 }

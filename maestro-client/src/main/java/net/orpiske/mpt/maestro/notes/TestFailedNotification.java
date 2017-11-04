@@ -40,4 +40,11 @@ public class TestFailedNotification extends MaestroNotification {
     public void setMessage(String message) {
         this.message = message;
     }
+
+    @Override
+    public String toString() {
+        return "TestFailedNotification{" +
+                "message='" + message + '\'' +
+                "} " + super.toString();
+    }
 }

@@ -20,4 +20,9 @@ public class StopSender extends MaestroRequest {
     public StopSender() {
         super(MaestroCommand.MAESTRO_NOTE_STOP_SENDER);
     }
+
+    @Override
+    public String toString() {
+        return "StopSender{} " + super.toString();
+    }
 }

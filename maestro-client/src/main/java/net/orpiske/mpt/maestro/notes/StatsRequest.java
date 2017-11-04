@@ -20,4 +20,9 @@ public class StatsRequest extends MaestroRequest {
     public StatsRequest() {
         super(MaestroCommand.MAESTRO_NOTE_STATS);
     }
+
+    @Override
+    public String toString() {
+        return "StatsRequest{} " + super.toString();
+    }
 }

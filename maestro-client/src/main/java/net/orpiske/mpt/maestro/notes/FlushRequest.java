@@ -20,4 +20,9 @@ public class FlushRequest extends MaestroRequest {
     public FlushRequest() {
         super(MaestroCommand.MAESTRO_NOTE_FLUSH);
     }
+
+    @Override
+    public String toString() {
+        return "FlushRequest{} " + super.toString();
+    }
 }

@@ -20,4 +20,9 @@ public class OkResponse extends MaestroResponse {
     public OkResponse() {
         super(MaestroCommand.MAESTRO_NOTE_OK);
     }
+
+    @Override
+    public String toString() {
+        return "OkResponse{} " + super.toString();
+    }
 }

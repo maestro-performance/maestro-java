@@ -20,4 +20,9 @@ public class ProtocolError extends MaestroResponse {
     public ProtocolError() {
         super(MaestroCommand.MAESTRO_NOTE_PROTOCOL_ERROR);
     }
+
+    @Override
+    public String toString() {
+        return "ProtocolError{} " + super.toString();
+    }
 }

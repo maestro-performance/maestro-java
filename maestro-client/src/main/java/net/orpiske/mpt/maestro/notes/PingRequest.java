@@ -65,4 +65,12 @@ public class PingRequest extends MaestroRequest {
 
         return packer;
     }
+
+    @Override
+    public String toString() {
+        return "PingRequest{" +
+                "sec=" + sec +
+                ", usec=" + usec +
+                "} " + super.toString();
+    }
 }

@@ -40,4 +40,11 @@ public class PingResponse extends MaestroResponse {
     public void setElapsed(long elapsed) {
         this.elapsed = elapsed;
     }
+
+    @Override
+    public String toString() {
+        return "PingResponse{" +
+                "elapsed=" + elapsed +
+                "} " + super.toString();
+    }
 }

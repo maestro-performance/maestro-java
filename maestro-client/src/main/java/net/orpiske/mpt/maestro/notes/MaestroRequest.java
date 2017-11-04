@@ -20,4 +20,9 @@ public abstract class MaestroRequest extends MaestroNote {
     public MaestroRequest(MaestroCommand maestroCommand) {
         super(MaestroNoteType.MAESTRO_TYPE_REQUEST, maestroCommand);
     }
+
+    @Override
+    public String toString() {
+        return "MaestroRequest{} " + super.toString();
+    }
 }

@@ -20,4 +20,9 @@ public class Halt extends MaestroRequest {
     public Halt() {
         super(MaestroCommand.MAESTRO_NOTE_HALT);
     }
+
+    @Override
+    public String toString() {
+        return "Halt{} " + super.toString();
+    }
 }

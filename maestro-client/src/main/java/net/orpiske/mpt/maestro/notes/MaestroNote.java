@@ -62,4 +62,12 @@ public class MaestroNote {
 
         return packer.toByteArray();
     }
+
+    @Override
+    public String toString() {
+        return "MaestroNote{" +
+                "noteType=" + noteType +
+                ", maestroCommand=" + maestroCommand +
+                '}';
+    }
 }

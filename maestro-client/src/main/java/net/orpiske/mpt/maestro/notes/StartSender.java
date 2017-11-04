@@ -20,4 +20,9 @@ public class StartSender extends MaestroRequest {
     public StartSender() {
         super(MaestroCommand.MAESTRO_NOTE_START_SENDER);
     }
+
+    @Override
+    public String toString() {
+        return "StartSender{} " + super.toString();
+    }
 }
