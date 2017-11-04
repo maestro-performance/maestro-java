@@ -70,7 +70,7 @@ public class Main {
             help(options, -1);
         }
 
-        String portTmp = cmdLine.getOptionValue('e');
+        String portTmp = cmdLine.getOptionValue('p');
         if (portTmp != null) {
             port = Integer.parseInt(portTmp);
         }
