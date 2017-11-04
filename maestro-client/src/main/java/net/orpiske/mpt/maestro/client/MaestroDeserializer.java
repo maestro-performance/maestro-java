@@ -39,6 +39,9 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_NOTIFY_SUCCESS: {
                 return new TestSuccessfulNotification(unpacker);
             }
+            case MAESTRO_NOTE_ABNORMAL_DISCONNECT: {
+                return new AbnormalDisconnect(unpacker);
+            }
             default: {
                 throw new MalformedNoteException("Invalid notification command: " + tmpCommand);
             }
@@ -58,9 +61,6 @@ public class MaestroDeserializer {
             }
             case MAESTRO_NOTE_INTERNAL_ERROR: {
                 return new net.orpiske.mpt.maestro.notes.InternalError();
-            }
-            case MAESTRO_NOTE_ABNORMAL_DISCONNECT: {
-                return new AbnormalDisconnect();
             }
             case MAESTRO_NOTE_PROTOCOL_ERROR: {
                 return new ProtocolError();

@@ -16,13 +16,35 @@
 
 package net.orpiske.mpt.maestro.notes;
 
-public class AbnormalDisconnect extends MaestroResponse {
+import org.msgpack.core.MessageUnpacker;
+
+import java.io.IOException;
+
+public class AbnormalDisconnect extends MaestroNotification {
+    private String message;
+
     public AbnormalDisconnect() {
         super(MaestroCommand.MAESTRO_NOTE_ABNORMAL_DISCONNECT);
     }
 
+    public AbnormalDisconnect(MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_ABNORMAL_DISCONNECT, unpacker);
+
+        message = unpacker.unpackString();
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
     @Override
     public String toString() {
-        return "AbnormalDisconnect{} " + super.toString();
+        return "AbnormalDisconnect{" +
+                "message='" + message + '\'' +
+                "} " + super.toString();
     }
 }
