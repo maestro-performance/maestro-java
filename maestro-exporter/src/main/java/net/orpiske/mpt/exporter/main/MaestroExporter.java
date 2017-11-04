@@ -36,7 +36,6 @@ public class MaestroExporter {
 
     private boolean running = true;
     private Maestro maestro = null;
-    private MaestroCollector maestroCollector;
 
     static {
         messagesSent = new MessageCount("sent");
@@ -68,7 +67,6 @@ public class MaestroExporter {
 
     public MaestroExporter(final String maestroUrl) throws MqttException {
         maestro = new Maestro(maestroUrl);
-        maestroCollector = new MaestroCollector(maestroUrl);
 
         messagesSent.register();
         messagesReceived.register();
