@@ -30,7 +30,7 @@ public class MaestroExporter {
     private static final ConnectionCount senderChildCount = new ConnectionCount("sender");
     private static final ConnectionCount receiverChildCount = new ConnectionCount("receiver");
 
-    public MaestroExporter(final String maestroUrl, final String exportUrl) throws MqttException {
+    public MaestroExporter(final String maestroUrl) throws MqttException {
         maestro = new Maestro(maestroUrl);
         maestroCollector = new MaestroCollector(maestroUrl);
 
@@ -74,8 +74,10 @@ public class MaestroExporter {
 
     }
 
-    public int run() throws MqttException, IOException {
-        HTTPServer server = new HTTPServer(9200);
+    public int run(int port) throws MqttException, IOException {
+        logger.info("Exporting metrics on 0.0.0.0:" + port);
+
+        HTTPServer server = new HTTPServer(port);
 
         while (running) {
             logger.debug("Sending requests");

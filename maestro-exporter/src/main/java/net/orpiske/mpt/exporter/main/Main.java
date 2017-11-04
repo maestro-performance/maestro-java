@@ -21,8 +21,8 @@ import java.io.IOException;
 import org.apache.commons.cli.*;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
-import net.orpiske.mpt.utils.*;
-import utils.LogConfigurator;
+import net.orpiske.mpt.utils.LogConfigurator;
+import net.orpiske.mpt.utils.Constants;
 
 
 public class Main {
@@ -30,7 +30,7 @@ public class Main {
     private static Options options;
 
     private static String maestroUrl;
-    private static String exportUrl;
+    private static int port = 9200;
 
     /**
      * Prints the help for the action and exit
@@ -50,10 +50,10 @@ public class Main {
         options = new Options();
 
         options.addOption("h", "help", false, "prints the help");
-        options.addOption("m", "maestro-maestroUrl", true,
+        options.addOption("m", "maestro-url", true,
                 "maestro URL to connect to");
-        options.addOption("e", "export-maestroUrl", true,
-                "export URL where the data will be available");
+        options.addOption("p", "port", true,
+                "port used to export metrics (default to 9200)");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -70,10 +70,11 @@ public class Main {
             help(options, -1);
         }
 
-        exportUrl = cmdLine.getOptionValue('e');
-        if (exportUrl == null) {
-            help(options, -1);
+        String portTmp = cmdLine.getOptionValue('e');
+        if (portTmp != null) {
+            port = Integer.parseInt(portTmp);
         }
+
     }
 
     public static void main(String[] args) {
@@ -82,9 +83,9 @@ public class Main {
         LogConfigurator.debug();
 
         try {
-            MaestroExporter exporter = new MaestroExporter(maestroUrl, exportUrl);
+            MaestroExporter exporter = new MaestroExporter(maestroUrl);
 
-            exporter.run();
+            exporter.run(port);
 
         } catch (MqttException e) {
             System.err.println(e.getMessage());
