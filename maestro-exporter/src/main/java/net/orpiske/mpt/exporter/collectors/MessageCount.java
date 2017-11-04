@@ -37,7 +37,7 @@ public class MessageCount extends Collector {
 
         if (stats != null) {
             GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_message_count",
-                    "Connection count", Arrays.asList("peer", "type"));
+                    "Message count", Arrays.asList("peer", "type"));
 
             labeledGauge.addMetric(Arrays.asList(stats.getName(), type), stats.getCount());
 
