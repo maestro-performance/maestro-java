@@ -26,8 +26,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public class PingInfo extends Collector {
+    private static GaugeMetricFamily labeledGauge;
     private String type;
     private PingResponse ping;
+
+    static {
+        labeledGauge = new GaugeMetricFamily("maestro_ping",
+                "Ping", Arrays.asList("peer", "type"));
+    }
 
     public PingInfo(final String type) {
         this.type = type;
@@ -37,9 +43,6 @@ public class PingInfo extends Collector {
         List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
 
         if (ping != null) {
-            GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_ping",
-                    "Ping", Arrays.asList("peer", "type"));
-
             labeledGauge.addMetric(Arrays.asList(ping.getName(), type), ping.getElapsed());
 
             mfs.add(labeledGauge);

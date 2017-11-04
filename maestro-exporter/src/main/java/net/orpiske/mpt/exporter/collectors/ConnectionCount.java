@@ -28,6 +28,13 @@ public class ConnectionCount extends Collector {
     private String type;
     private StatsResponse stats;
 
+    private static GaugeMetricFamily labeledGauge;
+
+    static {
+        labeledGauge = new GaugeMetricFamily("maestro_connection_count",
+                "Connection count", Arrays.asList("peer", "type"));
+    }
+
     public ConnectionCount(final String type) {
         this.type = type;
     }
@@ -36,9 +43,6 @@ public class ConnectionCount extends Collector {
         List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
 
         if (stats != null) {
-            GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_connection_count",
-                    "Connection count", Arrays.asList("peer", "type"));
-
             labeledGauge.addMetric(Arrays.asList(stats.getName(), type), stats.getChildCount());
 
             mfs.add(labeledGauge);

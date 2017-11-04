@@ -25,8 +25,14 @@ import java.util.Arrays;
 import java.util.List;
 
 public class MessageCount extends Collector {
+    private static GaugeMetricFamily labeledGauge;
     private String type;
     private StatsResponse stats;
+
+    static {
+        labeledGauge = new GaugeMetricFamily("maestro_message_count",
+                "Message count", Arrays.asList("peer", "type"));
+    }
 
     public MessageCount(final String type) {
         this.type = type;
@@ -36,9 +42,6 @@ public class MessageCount extends Collector {
         List<Collector.MetricFamilySamples> mfs = new ArrayList<Collector.MetricFamilySamples>();
 
         if (stats != null) {
-            GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_message_count",
-                    "Message count", Arrays.asList("peer", "type"));
-
             labeledGauge.addMetric(Arrays.asList(stats.getName(), type), stats.getCount());
 
             mfs.add(labeledGauge);
