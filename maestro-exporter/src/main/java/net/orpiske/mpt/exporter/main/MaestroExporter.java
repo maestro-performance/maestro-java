@@ -1,5 +1,6 @@
 package net.orpiske.mpt.exporter.main;
 
+import io.prometheus.client.Counter;
 import io.prometheus.client.exporter.HTTPServer;
 import net.orpiske.mpt.exporter.collectors.ConnectionCount;
 import net.orpiske.mpt.exporter.collectors.MessageCount;
@@ -7,9 +8,7 @@ import net.orpiske.mpt.exporter.collectors.PingInfo;
 import net.orpiske.mpt.exporter.collectors.RateCount;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.maestro.client.MaestroCollector;
-import net.orpiske.mpt.maestro.notes.MaestroNote;
-import net.orpiske.mpt.maestro.notes.PingResponse;
-import net.orpiske.mpt.maestro.notes.StatsResponse;
+import net.orpiske.mpt.maestro.notes.*;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,20 +19,52 @@ import java.util.List;
 public class MaestroExporter {
     private static final Logger logger = LoggerFactory.getLogger(MaestroExporter.class);
 
+    private static final MessageCount messagesSent;
+    private static final MessageCount messagesReceived;
+    private static final RateCount senderRate;
+    private static final RateCount receiverRate;
+
+    private static final ConnectionCount senderChildCount;
+    private static final ConnectionCount receiverChildCount;
+
+    private static final PingInfo senderPingInfo;
+    private static final PingInfo receiverPingInfo;
+
+    private static final Counter failures;
+    private static final Counter successes;
+    private static final Counter abnormal;
+
     private boolean running = true;
     private Maestro maestro = null;
     private MaestroCollector maestroCollector;
 
-    private static final MessageCount messagesSent = new MessageCount("sent");
-    private static final MessageCount messagesReceived = new MessageCount("received");
-    private static final RateCount senderRate = new RateCount("sender");
-    private static final RateCount receiverRate = new RateCount("receiver");
+    static {
+        messagesSent = new MessageCount("sent");
+        messagesReceived = new MessageCount("received");
+        senderRate = new RateCount("sender");
+        receiverRate = new RateCount("receiver");
 
-    private static final ConnectionCount senderChildCount = new ConnectionCount("sender");
-    private static final ConnectionCount receiverChildCount = new ConnectionCount("receiver");
+        senderChildCount = new ConnectionCount("sender");
+        receiverChildCount = new ConnectionCount("receiver");
 
-    private static final PingInfo senderPingInfo = new PingInfo("sender");
-    private static final PingInfo receiverPingInfo = new PingInfo("receiver");
+        senderPingInfo = new PingInfo("sender");
+        receiverPingInfo = new PingInfo("receiver");
+
+
+        failures = Counter.build()
+                 .name("maestro_failures")
+                 .help("Test failures")
+                 .register();
+
+        successes = Counter.build().name("maestro_success")
+                .help("Test success")
+                .register();
+
+        abnormal = Counter.build().name("maestro_abnormal_disconnect")
+                .help("Abnormal disconnect count")
+                .register();
+
+    }
 
     public MaestroExporter(final String maestroUrl) throws MqttException {
         maestro = new Maestro(maestroUrl);
@@ -83,6 +114,22 @@ public class MaestroExporter {
                             receiverPingInfo.eval(pingResponse);
                         }
                     }
+                }
+                else {
+                   if (note instanceof TestFailedNotification) {
+                       failures.inc();
+                   }
+                   else {
+                       if (note instanceof TestSuccessfulNotification) {
+                           successes.inc();
+                       }
+                       else {
+                           if (note instanceof AbnormalDisconnect) {
+                               abnormal.inc();
+                           }
+                       }
+                   }
+
                 }
             }
 
