@@ -13,7 +13,7 @@
  See the License for the specific language governing permissions and
  limitations under the License.
  */
-package utils;
+package net.orpiske.mpt.utils;
 
 import org.apache.log4j.PropertyConfigurator;
 
