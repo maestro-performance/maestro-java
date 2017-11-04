@@ -36,10 +36,10 @@ public class MessageCount extends Collector {
         List<Collector.MetricFamilySamples> mfs = new ArrayList<Collector.MetricFamilySamples>();
 
         if (stats != null) {
-            GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_" + type + "_message_count",
-                    "Connection count", Arrays.asList("peer"));
+            GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_message_count",
+                    "Connection count", Arrays.asList("peer", "type"));
 
-            labeledGauge.addMetric(Arrays.asList(stats.getName()), stats.getCount());
+            labeledGauge.addMetric(Arrays.asList(stats.getName(), type), stats.getCount());
 
             mfs.add(labeledGauge);
         }

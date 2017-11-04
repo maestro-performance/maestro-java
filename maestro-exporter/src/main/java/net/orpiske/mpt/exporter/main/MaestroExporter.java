@@ -3,10 +3,12 @@ package net.orpiske.mpt.exporter.main;
 import io.prometheus.client.exporter.HTTPServer;
 import net.orpiske.mpt.exporter.collectors.ConnectionCount;
 import net.orpiske.mpt.exporter.collectors.MessageCount;
+import net.orpiske.mpt.exporter.collectors.PingInfo;
 import net.orpiske.mpt.exporter.collectors.RateCount;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.maestro.client.MaestroCollector;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
+import net.orpiske.mpt.maestro.notes.PingResponse;
 import net.orpiske.mpt.maestro.notes.StatsResponse;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
@@ -30,6 +32,9 @@ public class MaestroExporter {
     private static final ConnectionCount senderChildCount = new ConnectionCount("sender");
     private static final ConnectionCount receiverChildCount = new ConnectionCount("receiver");
 
+    private static final PingInfo senderPingInfo = new PingInfo("sender");
+    private static final PingInfo receiverPingInfo = new PingInfo("receiver");
+
     public MaestroExporter(final String maestroUrl) throws MqttException {
         maestro = new Maestro(maestroUrl);
         maestroCollector = new MaestroCollector(maestroUrl);
@@ -41,6 +46,9 @@ public class MaestroExporter {
 
         senderChildCount.register();
         receiverChildCount.register();
+
+        senderPingInfo.register();
+        receiverPingInfo.register();
     }
 
     private void processNotes(List<MaestroNote> notes) {
@@ -60,6 +68,20 @@ public class MaestroExporter {
                         messagesReceived.eval(statsResponse);
                         receiverChildCount.eval(statsResponse);
                         receiverRate.eval(statsResponse);
+                    }
+                }
+            }
+            else {
+                if (note instanceof PingResponse) {
+                    PingResponse pingResponse = (PingResponse) note;
+
+                    if (pingResponse.getName().contains("sender")) {
+                        senderPingInfo.eval(pingResponse);
+                    }
+                    else {
+                        if (pingResponse.getName().contains("receiver")) {
+                            receiverPingInfo.eval(pingResponse);
+                        }
                     }
                 }
             }
@@ -83,6 +105,7 @@ public class MaestroExporter {
             while (running) {
                 logger.debug("Sending requests");
                 maestro.statsRequest();
+                maestro.pingRequest();
 
                 List<MaestroNote> notes = maestro.collect(1000, 5);
 

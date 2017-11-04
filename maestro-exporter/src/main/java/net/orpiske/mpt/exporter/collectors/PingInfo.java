@@ -18,28 +18,29 @@ package net.orpiske.mpt.exporter.collectors;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
-import net.orpiske.mpt.maestro.notes.StatsResponse;
+import io.prometheus.client.SummaryMetricFamily;
+import net.orpiske.mpt.maestro.notes.PingResponse;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ConnectionCount extends Collector {
+public class PingInfo extends Collector {
     private String type;
-    private StatsResponse stats;
+    private PingResponse ping;
 
-    public ConnectionCount(final String type) {
+    public PingInfo(final String type) {
         this.type = type;
     }
 
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
 
-        if (stats != null) {
-            GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_connection_count",
-                    "Connection count", Arrays.asList("peer", "type"));
+        if (ping != null) {
+            GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_ping",
+                    "Ping", Arrays.asList("peer", "type"));
 
-            labeledGauge.addMetric(Arrays.asList(stats.getName(), type), stats.getChildCount());
+            labeledGauge.addMetric(Arrays.asList(ping.getName(), type), ping.getElapsed());
 
             mfs.add(labeledGauge);
         }
@@ -47,7 +48,7 @@ public class ConnectionCount extends Collector {
         return mfs;
     }
 
-    public void eval(StatsResponse stats) {
-        this.stats = stats;
+    public void eval(PingResponse stats) {
+        this.ping = stats;
     }
 }
