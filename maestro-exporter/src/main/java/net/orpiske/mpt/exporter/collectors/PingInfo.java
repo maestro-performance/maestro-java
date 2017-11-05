@@ -18,40 +18,54 @@ package net.orpiske.mpt.exporter.collectors;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
-import io.prometheus.client.SummaryMetricFamily;
 import net.orpiske.mpt.maestro.notes.PingResponse;
+import net.orpiske.mpt.utils.NodeUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class PingInfo extends Collector {
-    private static GaugeMetricFamily labeledGauge;
-    private String type;
-    private PingResponse ping;
+    private static final Logger logger = LoggerFactory.getLogger(PingInfo.class);
+    private static PingInfo instance = null;
 
-    static {
-        labeledGauge = new GaugeMetricFamily("maestro_ping",
-                "Ping", Arrays.asList("peer", "type"));
+    private Map<String, PingResponse> records = new HashMap<>();
+
+    private PingInfo() {}
+
+    public synchronized static PingInfo getInstance() {
+        if (instance == null) {
+            instance = new PingInfo();
+        }
+
+        return instance;
     }
 
-    public PingInfo(final String type) {
-        this.type = type;
-    }
 
     public List<MetricFamilySamples> collect() {
         List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
 
-        if (ping != null) {
-            labeledGauge.addMetric(Arrays.asList(ping.getName(), type), ping.getElapsed());
+        GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_ping",
+                "Ping", Arrays.asList("peer", "type"));
 
-            mfs.add(labeledGauge);
+        logger.trace("Number of values to process: {}", records.values().size());
+        for (PingResponse pingResponse : records.values()) {
+            String nodeName = pingResponse.getName();
+            String type = NodeUtils.getTypeFromName(nodeName);
+
+            logger.trace("Adding record for {}/{}", pingResponse.getName(), pingResponse.getId());
+            labeledGauge.addMetric(Arrays.asList(pingResponse.getName(), type),
+                    pingResponse.getElapsed());
         }
 
+        mfs.add(labeledGauge);
+        records.clear();
         return mfs;
     }
 
-    public void eval(PingResponse stats) {
-        this.ping = stats;
+    public void record(PingResponse pingResponse) {
+        logger.trace("Recording ping for {}/{}", pingResponse.getName(), pingResponse.getId());
+        records.put(pingResponse.getId(), pingResponse);
     }
+
 }

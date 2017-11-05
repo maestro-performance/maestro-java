@@ -19,38 +19,47 @@ package net.orpiske.mpt.exporter.collectors;
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import net.orpiske.mpt.maestro.notes.StatsResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
+import java.util.*;
 
 public class MessageCount extends Collector {
-    private static GaugeMetricFamily labeledGauge;
-    private String type;
-    private StatsResponse stats;
+    private static final Logger logger = LoggerFactory.getLogger(MessageCount.class);
+    private static MessageCount instance = null;
 
-    static {
-        labeledGauge = new GaugeMetricFamily("maestro_message_count",
-                "Message count", Arrays.asList("peer", "type"));
-    }
+    private Map<String, StatsResponse> records = new HashMap<>();
 
-    public MessageCount(final String type) {
-        this.type = type;
+    private MessageCount() { }
+
+    public synchronized static MessageCount getInstance() {
+        if (instance == null) {
+            instance = new MessageCount();
+        }
+
+        return instance;
     }
 
     public List<Collector.MetricFamilySamples> collect() {
         List<Collector.MetricFamilySamples> mfs = new ArrayList<Collector.MetricFamilySamples>();
 
-        if (stats != null) {
-            labeledGauge.addMetric(Arrays.asList(stats.getName(), type), stats.getCount());
+        GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_message_count",
+                "Message count", Arrays.asList("peer", "type"));
 
-            mfs.add(labeledGauge);
+        logger.trace("Number of values to process: {}", records.values().size());
+
+        for (StatsResponse stats : records.values()) {
+            logger.trace("Adding record for {}/{}", stats.getName(), stats.getId());
+            labeledGauge.addMetric(Arrays.asList(stats.getName(), stats.getRole()), stats.getCount());
         }
 
+        mfs.add(labeledGauge);
+        records.clear();
         return mfs;
     }
 
-    public void eval(StatsResponse stats) {
-        this.stats = stats;
+    public void record(StatsResponse stats) {
+        logger.trace("Recording message count for {}/{}", stats.getName(), stats.getId());
+        records.put(stats.getId(), stats);
     }
 }

@@ -7,7 +7,6 @@ import net.orpiske.mpt.exporter.collectors.MessageCount;
 import net.orpiske.mpt.exporter.collectors.PingInfo;
 import net.orpiske.mpt.exporter.collectors.RateCount;
 import net.orpiske.mpt.maestro.Maestro;
-import net.orpiske.mpt.maestro.client.MaestroCollector;
 import net.orpiske.mpt.maestro.notes.*;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
@@ -19,16 +18,11 @@ import java.util.List;
 public class MaestroExporter {
     private static final Logger logger = LoggerFactory.getLogger(MaestroExporter.class);
 
-    private static final MessageCount messagesSent;
-    private static final MessageCount messagesReceived;
-    private static final RateCount senderRate;
-    private static final RateCount receiverRate;
+    private static final MessageCount messageCounter;
+    private static final RateCount rateCounter;
+    private static final ConnectionCount connectionCounter;
 
-    private static final ConnectionCount senderChildCount;
-    private static final ConnectionCount receiverChildCount;
-
-    private static final PingInfo senderPingInfo;
-    private static final PingInfo receiverPingInfo;
+    private static final PingInfo pingInfo;
 
     private static final Counter failures;
     private static final Counter successes;
@@ -38,28 +32,22 @@ public class MaestroExporter {
     private Maestro maestro = null;
 
     static {
-        messagesSent = new MessageCount("sent");
-        messagesReceived = new MessageCount("received");
-        senderRate = new RateCount("sender");
-        receiverRate = new RateCount("receiver");
-
-        senderChildCount = new ConnectionCount("sender");
-        receiverChildCount = new ConnectionCount("receiver");
-
-        senderPingInfo = new PingInfo("sender");
-        receiverPingInfo = new PingInfo("receiver");
+        messageCounter = MessageCount.getInstance();
+        rateCounter = RateCount.getInstance();
+        connectionCounter = ConnectionCount.getInstance();
+        pingInfo = PingInfo.getInstance();
 
 
         failures = Counter.build()
-                 .name("maestro_failures")
+                 .name("maestro_test_failures")
                  .help("Test failures")
                  .register();
 
-        successes = Counter.build().name("maestro_success")
+        successes = Counter.build().name("maestro_test_success")
                 .help("Test success")
                 .register();
 
-        abnormal = Counter.build().name("maestro_abnormal_disconnect")
+        abnormal = Counter.build().name("maestro_peer_abnormal_disconnect")
                 .help("Abnormal disconnect count")
                 .register();
 
@@ -68,16 +56,10 @@ public class MaestroExporter {
     public MaestroExporter(final String maestroUrl) throws MqttException {
         maestro = new Maestro(maestroUrl);
 
-        messagesSent.register();
-        messagesReceived.register();
-        senderRate.register();
-        receiverRate.register();
-
-        senderChildCount.register();
-        receiverChildCount.register();
-
-        senderPingInfo.register();
-        receiverPingInfo.register();
+        messageCounter.register();
+        rateCounter.register();
+        connectionCounter.register();
+        pingInfo.register();
     }
 
     private void processNotes(List<MaestroNote> notes) {
@@ -87,31 +69,15 @@ public class MaestroExporter {
             if (note instanceof StatsResponse) {
                 StatsResponse statsResponse = (StatsResponse) note;
 
-                if (statsResponse.getRole().equals("sender")) {
-                    messagesSent.eval(statsResponse);
-                    senderChildCount.eval(statsResponse);
-                    senderRate.eval(statsResponse);
-                }
-                else {
-                    if (statsResponse.getRole().equals("receiver")) {
-                        messagesReceived.eval(statsResponse);
-                        receiverChildCount.eval(statsResponse);
-                        receiverRate.eval(statsResponse);
-                    }
-                }
+                rateCounter.record(statsResponse);
+                messageCounter.record(statsResponse);
+                connectionCounter.record(statsResponse);
             }
             else {
                 if (note instanceof PingResponse) {
                     PingResponse pingResponse = (PingResponse) note;
 
-                    if (pingResponse.getName().contains("sender")) {
-                        senderPingInfo.eval(pingResponse);
-                    }
-                    else {
-                        if (pingResponse.getName().contains("receiver")) {
-                            receiverPingInfo.eval(pingResponse);
-                        }
-                    }
+                    pingInfo.record(pingResponse);
                 }
                 else {
                    if (note instanceof TestFailedNotification) {
@@ -127,14 +93,11 @@ public class MaestroExporter {
                            }
                        }
                    }
-
                 }
             }
 
             logger.trace("Note: {}", note.toString());
         }
-
-
     }
 
 
