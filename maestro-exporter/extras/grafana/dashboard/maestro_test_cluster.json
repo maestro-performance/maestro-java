@@ -347,6 +347,7 @@
             {
               "expr": "maestro_peer_abnormal_disconnect{instance=\"$instance\",job=\"maestro_exporter\"}",
               "format": "time_series",
+              "instant": true,
               "intervalFactor": 2,
               "refId": "A"
             }
@@ -829,7 +830,7 @@
         "allValue": null,
         "current": {},
         "datasource": "${DS_PROMETHEUS}",
-        "hide": 0,
+        "hide": 2,
         "includeAll": false,
         "label": "Maestro Peer",
         "multi": false,
@@ -898,5 +899,5 @@
   },
   "timezone": "",
   "title": "Maestro Test Cluster",
-  "version": 6
+  "version": 7
 }
