@@ -5,6 +5,7 @@ import net.orpiske.mpt.maestro.notes.PingResponse;
 import net.orpiske.mpt.maestro.notes.TestFailedNotification;
 import net.orpiske.mpt.maestro.notes.TestSuccessfulNotification;
 import net.orpiske.mpt.reports.ReportsDownloader;
+import net.orpiske.mpt.utils.NodeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -44,8 +45,8 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
                 testProfile.getTestExecutionNumber());
         logger.info("Test parameters used: " + testProfile.toString());
 
-        String type = note.getName().split("@")[0];
-        String host = note.getName().split("@")[1];
+        String type = NodeUtils.getTypeFromName(note.getName());
+        String host = NodeUtils.getHostFromName(note.getName());
 
         reportsDownloader.setReportTypeDir("success");
         reportsDownloader.downloadLastSuccessful(type, host, note.getName());
@@ -59,8 +60,8 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
                 testProfile.getTestExecutionNumber());
         logger.info("Test parameter used");
 
-        String type = note.getName().split("@")[0];
-        String host = note.getName().split("@")[1];
+        String type = NodeUtils.getTypeFromName(note.getName());
+        String host = NodeUtils.getHostFromName(note.getName());
 
         reportsDownloader.setReportTypeDir("failed");
         reportsDownloader.downloadLastFailed(type, host, note.getName());
