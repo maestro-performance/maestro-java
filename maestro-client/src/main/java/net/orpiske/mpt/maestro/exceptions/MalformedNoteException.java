@@ -16,6 +16,8 @@
 
 package net.orpiske.mpt.maestro.exceptions;
 
+import net.orpiske.mpt.common.exceptions.MaestroException;
+
 public class MalformedNoteException extends MaestroException {
     public MalformedNoteException(String message) {
         super(message);

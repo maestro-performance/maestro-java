@@ -2,7 +2,7 @@ package net.orpiske.mpt.test;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.maestro.Maestro;
-import net.orpiske.mpt.maestro.exceptions.MaestroException;
+import net.orpiske.mpt.common.exceptions.MaestroException;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;

@@ -20,7 +20,7 @@ import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.maestro.client.MaestroClient;
 import net.orpiske.mpt.maestro.client.MaestroCollectorExecutor;
 import net.orpiske.mpt.maestro.client.MaestroTopics;
-import net.orpiske.mpt.maestro.exceptions.MaestroException;
+import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.notes.*;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
