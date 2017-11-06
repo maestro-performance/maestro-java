@@ -103,5 +103,5 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
     }
 
 
-    protected abstract void messageArrived(MaestroNote node);
+    protected abstract void messageArrived(MaestroNote note);
 }
