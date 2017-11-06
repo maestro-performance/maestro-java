@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.maestro.client;
 
+import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.MqttClient;
@@ -33,7 +34,7 @@ public class MaestroClient {
 
     private MqttClient mqttClient;
 
-    public MaestroClient(final String url) throws MqttException {
+    public MaestroClient(final String url) throws MaestroConnectionException {
         // The client uses the mqtt://<host> url format so it's the same as the C client
         String adjustedUrl = StringUtils.replace(url, "mqtt", "tcp");
 
@@ -41,25 +42,45 @@ public class MaestroClient {
         String clientId = uuid.toString();
         MemoryPersistence memoryPersistence = new MemoryPersistence();
 
-        mqttClient = new MqttClient(adjustedUrl, "maestro-java-" + clientId, memoryPersistence);
+        try {
+            mqttClient = new MqttClient(adjustedUrl, "maestro-java-" + clientId, memoryPersistence);
+        }
+        catch (MqttException e) {
+            throw new MaestroConnectionException("Unable create a MQTT client instance : " + e.getMessage(),
+                    e);
+        }
     }
 
-    public void connect() throws MqttException {
+    public void connect() throws MaestroConnectionException {
         MqttConnectOptions connOpts = new MqttConnectOptions();
 
         connOpts.setCleanSession(true);
 
-        mqttClient.connect();
+        try {
+            mqttClient.connect();
+        }
+        catch (MqttException e) {
+            throw new MaestroConnectionException("Unable to establish a connection to Maestro: " + e.getMessage(), e);
+        }
     }
 
-    public void disconnect() throws MqttException {
-        mqttClient.disconnect();
+    public void disconnect() throws MaestroConnectionException {
+        try {
+            mqttClient.disconnect();
+        }
+        catch (MqttException e) {
+            throw new MaestroConnectionException("Unable to disconnect cleanly from Maestro: " + e.getMessage(), e);
+        }
     }
 
-    public void publish(final String topic, final MaestroNote note) throws MqttException, IOException {
+    public void publish(final String topic, final MaestroNote note) throws MaestroConnectionException, IOException {
         byte[] bytes = note.serialize();
 
-        mqttClient.publish(topic, bytes, 0, false);
+        try {
+            mqttClient.publish(topic, bytes, 0, false);
+        } catch (MqttException e) {
+            throw new MaestroConnectionException("Unable to publish message: " + e.getMessage(), e);
+        }
     }
 
 }

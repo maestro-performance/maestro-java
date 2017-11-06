@@ -1,5 +1,6 @@
 package net.orpiske.mpt.test;
 
+import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.maestro.exceptions.MaestroException;
 import org.eclipse.paho.client.mqttv3.MqttException;
@@ -33,5 +34,5 @@ public interface TestProfile {
      * @throws IOException I/O and serialization errors
      * @throws MaestroException Incorrect or invalid parameters
      */
-    void apply(Maestro maestro) throws MqttException, IOException, MaestroException;
+    void apply(Maestro maestro) throws MaestroConnectionException, IOException, MaestroException;
 }

@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.maestro.client;
 
+import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.maestro.exceptions.MalformedNoteException;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
 import org.apache.commons.lang3.StringUtils;
@@ -30,68 +31,20 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
 
-public class MaestroCollector implements MqttCallback {
+public class MaestroCollector extends AbstractMaestroPeer {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollector.class);
 
-    private MqttClient mqttClient;
+
     private List<MaestroNote> collected = Collections.synchronizedList(new LinkedList<MaestroNote>());
 
-    public MaestroCollector(final String url) throws MqttException {
-        // The client uses the mqtt://<host> url format so it's the same as the C client
-        String adjustedUrl = StringUtils.replace(url, "mqtt", "tcp");
-
-        UUID uuid = UUID.randomUUID();
-        String clientId = uuid.toString();
-        MemoryPersistence memoryPersistence = new MemoryPersistence();
-
-        mqttClient = new MqttClient(adjustedUrl, "maestro-java-collector" + clientId, memoryPersistence);
-        mqttClient.setCallback(this);
+    public MaestroCollector(final String url) throws MaestroConnectionException {
+        super(url, "maestro-java-collector");
     }
 
-    public void connect() throws MqttException {
-        MqttConnectOptions connOpts = new MqttConnectOptions();
 
-        connOpts.setCleanSession(true);
-
-        mqttClient.connect();
-    }
-
-    public void disconnect() throws MqttException {
-        mqttClient.disconnect();
-    }
-
-    public void subscribe() throws MqttException {
-        logger.debug("Subscribing to the maestro topics");
-
-        mqttClient.subscribe(MaestroTopics.MAESTRO_TOPICS);
-    }
-
-    public void connectionLost(Throwable throwable) {
-
-    }
-
-    public void messageArrived(String s, MqttMessage mqttMessage) {
-        logger.trace("Message arrived");
-
-        byte[] payload = mqttMessage.getPayload();
-
-        try {
-            MaestroNote note = MaestroDeserializer.deserialize(payload);
-            logger.trace("Message type: " + note.getClass());
-
-            collected.add(note);
-        } catch (MalformedNoteException e) {
-            logger.error("Invalid message type: " + e.getMessage(), e);
-        } catch (IOException e) {
-            logger.error("I/O error: " + e.getMessage(), e);
-        } catch (Exception e) {
-            logger.error("Unhandled exception: " + e.getMessage(), e);
-        }
-
-    }
-
-    public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
-
+    @Override
+    protected void messageArrived(MaestroNote note) {
+        collected.add(note);
     }
 
     public synchronized List<MaestroNote> collect() {

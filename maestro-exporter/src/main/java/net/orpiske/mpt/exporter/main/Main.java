@@ -18,6 +18,7 @@ package net.orpiske.mpt.exporter.main;
 
 import java.io.IOException;
 
+import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import org.apache.commons.cli.*;
 import org.eclipse.paho.client.mqttv3.MqttException;
 
@@ -87,7 +88,7 @@ public class Main {
 
             exporter.run(port);
 
-        } catch (MqttException e) {
+        } catch (MaestroConnectionException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         } catch (IOException e) {

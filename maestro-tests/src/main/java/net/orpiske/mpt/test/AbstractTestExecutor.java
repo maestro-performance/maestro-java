@@ -1,5 +1,6 @@
 package net.orpiske.mpt.test;
 
+import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
 import net.orpiske.mpt.maestro.notes.PingResponse;
@@ -44,7 +45,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      * @throws MqttException
      * @throws IOException
      */
-    protected void startServices() throws MqttException, IOException {
+    protected void startServices() throws MaestroConnectionException, IOException {
         maestro.startReceiver();
         maestro.startInspector();
         maestro.startSender();
@@ -57,7 +58,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      * @throws IOException
      * @throws InterruptedException
      */
-    protected int getNumPeers() throws MqttException, IOException, InterruptedException {
+    protected int getNumPeers() throws MaestroConnectionException, IOException, InterruptedException {
         int numPeers = 0;
 
         logger.debug("Collecting responses to ensure topic is clean prior to pinging nodes");

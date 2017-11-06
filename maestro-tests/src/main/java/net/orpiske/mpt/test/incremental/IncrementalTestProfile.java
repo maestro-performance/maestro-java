@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.test.incremental;
 
+import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.maestro.exceptions.MaestroException;
 import net.orpiske.mpt.test.AbstractTestProfile;
@@ -131,7 +132,7 @@ public abstract class IncrementalTestProfile extends AbstractTestProfile {
         this.parallelCountIncrement = parallelCountIncrement;
     }
 
-    abstract public void apply(Maestro maestro) throws MqttException, IOException, MaestroException;
+    abstract public void apply(Maestro maestro) throws MaestroConnectionException, IOException, MaestroException;
 
     public void increment() {
         rate += rateIncrement;
