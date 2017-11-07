@@ -35,7 +35,7 @@
 
     <modules>
         <module>maestro-common</module>
-        <module>maestro-utils</module>
+        <module>maestro-contrib</module>
         <module>maestro-reports</module>
         <module>maestro-client</module>
         <module>maestro-cli</module>
