@@ -1,4 +1,4 @@
-package net.orpiske.mpt.maestro.worker;
+package net.orpiske.mpt.maestro.worker.base;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.maestro.client.AbstractMaestroPeer;
@@ -10,7 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
-import java.util.Date;
 
 public class MaestroWorkerManager extends AbstractMaestroPeer {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
