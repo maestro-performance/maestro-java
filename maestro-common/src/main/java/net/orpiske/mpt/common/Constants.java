@@ -13,26 +13,24 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
+package net.orpiske.mpt.common;
 
-package net.orpiske.mpt.utils.exceptions;
+/**
+ * Application constants
+ * @author Otavio R. Piske <angusyoung@gmail.com>
+ *
+ */
+public final class Constants {
 
-public class DurationParseException extends Exception {
-    public DurationParseException() {
-    }
+	public static final String VERSION = "1.0.0";
 
-    public DurationParseException(String message) {
-        super(message);
-    }
+	public static final String BIN_NAME = "maestro-java";
 
-    public DurationParseException(String message, Throwable cause) {
-        super(message, cause);
-    }
 
-    public DurationParseException(Throwable cause) {
-        super(cause);
-    }
+	/**
+	 * Restricted constructor
+	 */
+	private Constants() {}
 
-    public DurationParseException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
-    }
+
 }

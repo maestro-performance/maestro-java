@@ -14,30 +14,25 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.utils;
+package net.orpiske.mpt.common.exceptions;
 
-public class NodeUtils {
-
-    private NodeUtils() {}
-
-
-    /**
-     * Given a peer name of format type@host, returns the type
-     * @param name
-     * @return
-     */
-    public static String getTypeFromName(final String name) {
-        return name.split("@")[0];
-
+public class DurationParseException extends Exception {
+    public DurationParseException() {
     }
 
+    public DurationParseException(String message) {
+        super(message);
+    }
 
-    /**
-     * Given a peer name of format type@host, returns the name
-     * @param name
-     * @return
-     */
-    public static String getHostFromName(final String name) {
-        return name.split("@")[1];
+    public DurationParseException(String message, Throwable cause) {
+        super(message, cause);
+    }
+
+    public DurationParseException(Throwable cause) {
+        super(cause);
+    }
+
+    public DurationParseException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
+        super(message, cause, enableSuppression, writableStackTrace);
     }
 }

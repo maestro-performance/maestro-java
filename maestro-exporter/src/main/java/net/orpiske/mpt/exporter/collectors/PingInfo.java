@@ -19,7 +19,7 @@ package net.orpiske.mpt.exporter.collectors;
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
 import net.orpiske.mpt.maestro.notes.PingResponse;
-import net.orpiske.mpt.utils.NodeUtils;
+import net.orpiske.mpt.common.NodeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

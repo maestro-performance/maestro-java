@@ -14,45 +14,12 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.utils;
+package net.orpiske.mpt.common;
 
 import org.junit.Assert;
 import org.junit.Test;
-import net.orpiske.mpt.utils.exceptions.*;
+import net.orpiske.mpt.common.exceptions.*;
 
-/*
-if (!convert_and_check("1d", 86400)) {
-		return EXIT_FAILURE;
-	}
-
-	if (!convert_and_check("1d1h", 90000)) {
-		return EXIT_FAILURE;
-	}
-
-	if (!convert_and_check("1d1h1m", 90060)) {
-		return EXIT_FAILURE;
-	}
-
-	if (!convert_and_check("1d1h1m1s", 90061)) {
-		return EXIT_FAILURE;
-	}
-
-	if (!convert_and_check("2d1m1s", 172861)) {
-		return EXIT_FAILURE;
-	}
-
-	if (convert_and_check("2dm1s", 172861)) {
-		return EXIT_FAILURE;
-	}
-
-	if (convert_and_check(NULL, 172861)) {
-		return EXIT_FAILURE;
-	}
-
-	if (convert_and_check("1", 1)) {
-		return EXIT_FAILURE;
-	}
- */
 
 public class DurationUtilsTest {
 

@@ -14,9 +14,9 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.utils;
+package net.orpiske.mpt.common;
 
-import net.orpiske.mpt.utils.exceptions.DurationParseException;
+import net.orpiske.mpt.common.exceptions.DurationParseException;
 
 import java.time.Duration;
 

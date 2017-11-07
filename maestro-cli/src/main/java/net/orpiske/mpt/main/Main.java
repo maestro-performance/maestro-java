@@ -18,9 +18,8 @@ package net.orpiske.mpt.main;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.maestro.Maestro;
-import net.orpiske.mpt.utils.Constants;
+import net.orpiske.mpt.common.Constants;
 import org.apache.commons.cli.*;
-import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
 

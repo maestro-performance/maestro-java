@@ -13,24 +13,31 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.orpiske.mpt.utils;
 
-/**
- * Application constants
- * @author Otavio R. Piske <angusyoung@gmail.com>
- *
- */
-public final class Constants {
+package net.orpiske.mpt.common;
 
-	public static final String VERSION = "1.0.0";
+public class NodeUtils {
 
-	public static final String BIN_NAME = "maestro-java";
+    private NodeUtils() {}
 
 
-	/**
-	 * Restricted constructor
-	 */
-	private Constants() {}
+    /**
+     * Given a peer name of format type@host, returns the type
+     * @param name
+     * @return
+     */
+    public static String getTypeFromName(final String name) {
+        return name.split("@")[0];
+
+    }
 
 
+    /**
+     * Given a peer name of format type@host, returns the name
+     * @param name
+     * @return
+     */
+    public static String getHostFromName(final String name) {
+        return name.split("@")[1];
+    }
 }

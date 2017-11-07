@@ -20,10 +20,9 @@ import java.io.IOException;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import org.apache.commons.cli.*;
-import org.eclipse.paho.client.mqttv3.MqttException;
 
-import net.orpiske.mpt.utils.LogConfigurator;
-import net.orpiske.mpt.utils.Constants;
+import net.orpiske.mpt.common.LogConfigurator;
+import net.orpiske.mpt.common.Constants;
 
 
 public class Main {
