@@ -42,5 +42,6 @@
         <module>maestro-tests</module>
         <module>maestro-exporter</module>
         <module>maestro-worker</module>
+        <module>maestro-drivers</module>
     </modules>
 </project>
