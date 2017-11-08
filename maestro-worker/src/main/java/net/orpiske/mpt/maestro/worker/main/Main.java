@@ -31,7 +31,8 @@ public class Main {
     private static Options options;
 
     private static String maestroUrl;
-    private static int port = 9200;
+    private static String driver;
+    private static String role;
 
     /**
      * Prints the help for the action and exit
@@ -53,8 +54,10 @@ public class Main {
         options.addOption("h", "help", false, "prints the help");
         options.addOption("m", "maestro-url", true,
                 "maestro URL to connect to");
-        options.addOption("p", "port", true,
-                "port used to export metrics (default to 9200)");
+        options.addOption("d", "driver", true,
+                "maestro driver to use");
+        options.addOption("r", "role", true,
+                "worker role (sender or receiver)");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -71,9 +74,14 @@ public class Main {
             help(options, -1);
         }
 
-        String portTmp = cmdLine.getOptionValue('p');
-        if (portTmp != null) {
-            port = Integer.parseInt(portTmp);
+        String driver = cmdLine.getOptionValue('d');
+        if (driver == null) {
+            help(options, -1);
+        }
+
+        String role = cmdLine.getOptionValue('r');
+        if (role == null) {
+            help(options, -1);
         }
 
     }
