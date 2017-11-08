@@ -37,7 +37,7 @@ public class MaestroCollectorExecutor implements Runnable {
         maestroCollector.connect();
 
         logger.debug("Subscribing the collector");
-        maestroCollector.subscribe();
+        maestroCollector.subscribe(MaestroTopics.MAESTRO_TOPICS);
     }
 
     public void run() {

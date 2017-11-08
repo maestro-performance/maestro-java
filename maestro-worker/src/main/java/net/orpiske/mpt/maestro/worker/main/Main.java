@@ -19,6 +19,7 @@ package net.orpiske.mpt.maestro.worker.main;
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.Constants;
 import net.orpiske.mpt.common.LogConfigurator;
+import net.orpiske.mpt.maestro.client.MaestroTopics;
 import net.orpiske.mpt.maestro.worker.base.MaestroWorkerManager;
 import org.apache.commons.cli.*;
 
@@ -87,7 +88,7 @@ public class Main {
             MaestroWorkerManager maestroWorkerManager = new MaestroWorkerManager(maestroUrl, "test");
 
             maestroWorkerManager.connect();
-            maestroWorkerManager.subscribe();
+            maestroWorkerManager.subscribe(MaestroTopics.MAESTRO_SENDER_TOPICS);
 
             while (true) {
                 try {

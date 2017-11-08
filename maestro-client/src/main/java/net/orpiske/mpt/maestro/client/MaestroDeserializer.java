@@ -100,6 +100,9 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_FLUSH: {
                 return new FlushRequest();
             }
+            case MAESTRO_NOTE_STATS: {
+                return new StatsRequest();
+            }
             default: {
                 throw new MalformedNoteException("Invalid request command: " + tmpCommand);
             }

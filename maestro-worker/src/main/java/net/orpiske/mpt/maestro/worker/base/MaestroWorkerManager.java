@@ -5,6 +5,7 @@ import net.orpiske.mpt.maestro.client.AbstractMaestroPeer;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
 import net.orpiske.mpt.maestro.notes.PingRequest;
 import net.orpiske.mpt.maestro.notes.StartSender;
+import net.orpiske.mpt.maestro.notes.StatsRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,15 +21,19 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 
 
     protected void messageArrived(MaestroNote note) {
+        logger.debug("Some message arrived");
 
         if (note instanceof PingRequest) {
             maestroMessageArrived((PingRequest) note);
         }
+        if (note instanceof StatsRequest) {
+            maestroMessageArrived((StatsRequest) note);
+        }
     }
 
 
-    protected void maestroMessageArrived(StartSender note) {
-
+    protected void maestroMessageArrived(StatsRequest note) {
+        logger.debug("Stats request received");
     }
 
     protected void maestroMessageArrived(PingRequest note) {

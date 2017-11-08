@@ -73,11 +73,11 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
         }
     }
 
-    public void subscribe() throws MaestroConnectionException {
+    public void subscribe(final String[] topics) throws MaestroConnectionException {
         logger.debug("Subscribing to the maestro topics");
 
         try {
-            mqttClient.subscribe(MaestroTopics.MAESTRO_TOPICS);
+            mqttClient.subscribe(topics);
         }
         catch (MqttException e) {
             throw new MaestroConnectionException("Unable to subscribe to Maestro topics: " + e.getMessage(), e);
@@ -93,6 +93,7 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
             MaestroNote note = MaestroDeserializer.deserialize(payload);
             logger.trace("Message type: " + note.getClass());
 
+            messageArrived(note);
         } catch (MalformedNoteException e) {
             logger.error("Invalid message type: " + e.getMessage(), e);
         } catch (IOException e) {
