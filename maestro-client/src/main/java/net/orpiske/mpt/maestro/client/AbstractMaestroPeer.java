@@ -74,7 +74,7 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
     }
 
     public void subscribe(final String[] topics) throws MaestroConnectionException {
-        logger.debug("Subscribing to the maestro topics");
+        logger.debug("Subscribing to maestro topics {}", topics);
 
         try {
             mqttClient.subscribe(topics);

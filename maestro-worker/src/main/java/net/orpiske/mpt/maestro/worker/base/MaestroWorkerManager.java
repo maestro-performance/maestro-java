@@ -21,7 +21,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 
 
     protected void messageArrived(MaestroNote note) {
-        logger.debug("Some message arrived");
+        logger.debug("Some message arrived: {}", note.toString());
 
         if (note instanceof PingRequest) {
             maestroMessageArrived((PingRequest) note);
@@ -44,6 +44,6 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 
         Duration d = Duration.between(creation, now);
 
-        logger.debug("Elapsed: {} ", d.getNano() / 1000);
+        logger.debug("Elapsed: {}", d.getNano() / 1000);
     }
 }

@@ -18,48 +18,37 @@ package net.orpiske.mpt.maestro.client;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
 
-public class MaestroCollectorExecutor implements Runnable {
+/**
+ * A simplified executor to be used along with a maestro client. It is meant to run in a thread,
+ * along side with the sending peer. Received messages can be collected via collect method.
+ */
+public class MaestroCollectorExecutor extends AbstractMaestroExecutor {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollectorExecutor.class);
-
     private MaestroCollector maestroCollector = null;
-    private volatile boolean exit = false;
 
+    /**
+     * Constructor
+     * @param url Maestro broker URL
+     * @throws MaestroConnectionException if unable to connect to the Maestro broker
+     */
     public MaestroCollectorExecutor(final String url) throws MaestroConnectionException {
-        maestroCollector = new MaestroCollector(url);
+        super(new MaestroCollector(url));
 
-        logger.debug("Connecting the collector");
-        maestroCollector.connect();
+        logger.trace("Created a new maestro collector executor");
 
-        logger.debug("Subscribing the collector");
-        maestroCollector.subscribe(MaestroTopics.MAESTRO_TOPICS);
+        getMaestroPeer().subscribe(MaestroTopics.MAESTRO_TOPICS);
     }
 
-    public void run() {
-        while (!exit) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage(), e);
-            }
-        }
-    }
 
-    public void stop() {
-        try {
-            maestroCollector.disconnect();
-        } catch (MaestroConnectionException e) {
-            logger.debug(e.getMessage(), e);
-        }
-
-        exit = true;
-    }
-
+    /**
+     * Collect the messages received in background
+     * @return A list of messages received in background
+     */
     public List<MaestroNote> collect() {
         return maestroCollector.collect();
     }

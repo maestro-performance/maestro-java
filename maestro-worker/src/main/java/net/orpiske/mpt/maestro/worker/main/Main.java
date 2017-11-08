@@ -85,18 +85,10 @@ public class Main {
 
         try {
 
-            MaestroWorkerManager maestroWorkerManager = new MaestroWorkerManager(maestroUrl, "test");
+            MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroUrl);
 
-            maestroWorkerManager.connect();
-            maestroWorkerManager.subscribe(MaestroTopics.MAESTRO_SENDER_TOPICS);
 
-            while (true) {
-                try {
-                    Thread.sleep(10000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            executor.run();
 
         } catch (MaestroConnectionException e) {
             System.err.println(e.getMessage());
