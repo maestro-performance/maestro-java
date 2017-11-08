@@ -2,10 +2,7 @@ package net.orpiske.mpt.maestro.worker.base;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.maestro.client.AbstractMaestroPeer;
-import net.orpiske.mpt.maestro.notes.MaestroNote;
-import net.orpiske.mpt.maestro.notes.PingRequest;
-import net.orpiske.mpt.maestro.notes.StartSender;
-import net.orpiske.mpt.maestro.notes.StatsRequest;
+import net.orpiske.mpt.maestro.notes.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,11 +26,104 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         if (note instanceof StatsRequest) {
             maestroMessageArrived((StatsRequest) note);
         }
+
+        if (note instanceof FlushRequest) {
+            maestroMessageArrived((FlushRequest) note);
+        }
+
+        if (note instanceof Halt) {
+            maestroMessageArrived((Halt) note);
+        }
+        if (note instanceof SetRequest) {
+            maestroMessageArrived((SetRequest) note);
+        }
+
+        if (note instanceof StartInspector) {
+            maestroMessageArrived((StartInspector) note);
+        }
+
+        if (note instanceof StartReceiver) {
+            maestroMessageArrived((StartReceiver) note);
+        }
+        if (note instanceof StartSender) {
+            maestroMessageArrived((StartSender) note);
+        }
+
+        if (note instanceof StopInspector) {
+            maestroMessageArrived((StopInspector) note);
+        }
+
+        if (note instanceof StopReceiver) {
+            maestroMessageArrived((StopReceiver) note);
+        }
+        if (note instanceof StopSender) {
+            maestroMessageArrived((StopSender) note);
+        }
+
+        if (note instanceof TestFailedNotification) {
+            maestroMessageArrived((TestFailedNotification) note);
+        }
+
+        if (note instanceof TestSuccessfulNotification) {
+            maestroMessageArrived((TestSuccessfulNotification) note);
+        }
+
+        if (note instanceof AbnormalDisconnect) {
+            maestroMessageArrived((AbnormalDisconnect) note);
+        }
     }
 
 
     protected void maestroMessageArrived(StatsRequest note) {
         logger.debug("Stats request received");
+    }
+
+    protected void maestroMessageArrived(FlushRequest note) {
+        logger.debug("Flush request received");
+    }
+
+    protected void maestroMessageArrived(Halt note) {
+        logger.debug("Halt request received");
+    }
+
+    protected void maestroMessageArrived(SetRequest note) {
+        logger.debug("Set request received");
+    }
+
+    protected void maestroMessageArrived(StartInspector note) {
+        logger.debug("Start inspector request received");
+    }
+
+    protected void maestroMessageArrived(StartReceiver note) {
+        logger.debug("Stats request received");
+    }
+
+    protected void maestroMessageArrived(StartSender note) {
+        logger.debug("Start sender request received");
+    }
+
+    protected void maestroMessageArrived(StopInspector note) {
+        logger.debug("Stop inspector request received");
+    }
+
+    protected void maestroMessageArrived(StopReceiver note) {
+        logger.debug("Stop receiver request received");
+    }
+
+    protected void maestroMessageArrived(StopSender note) {
+        logger.debug("Stop sender request received");
+    }
+
+    protected void maestroMessageArrived(TestFailedNotification note) {
+        logger.debug("Test failed notification received");
+    }
+
+    protected void maestroMessageArrived(TestSuccessfulNotification note) {
+        logger.debug("Test successful notification received");
+    }
+
+    protected void maestroMessageArrived(AbnormalDisconnect note) {
+        logger.debug("Abnormal disconnect notification received");
     }
 
     protected void maestroMessageArrived(PingRequest note) {
