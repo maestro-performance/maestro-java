@@ -1,8 +1,10 @@
 package net.orpiske.mpt.maestro.worker.base;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
+import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.common.worker.MaestroWorker;
 import net.orpiske.mpt.maestro.client.AbstractMaestroPeer;
+import net.orpiske.mpt.maestro.client.MaestroClient;
 import net.orpiske.mpt.maestro.client.MaestroTopics;
 import net.orpiske.mpt.maestro.notes.*;
 import org.slf4j.Logger;
@@ -14,16 +16,20 @@ import java.time.Instant;
 
 public class MaestroWorkerManager extends AbstractMaestroPeer {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
+
+    private MaestroClient client;
     private MaestroWorker worker;
     private String host;
 
-    public MaestroWorkerManager(final String url, final String role, final String host, final MaestroWorker worker) throws MaestroConnectionException {
+    public MaestroWorkerManager(final String url, final String role, final String host, final MaestroWorker worker) throws MaestroException {
         super(url, role);
+
+        client = new MaestroClient(url);
+        client.connect();
 
         this.worker = worker;
         this.host = host;
     }
-
 
     protected void noteArrived(MaestroNote note) throws IOException, MaestroConnectionException {
         logger.debug("Some message arrived: {}", note.toString());
@@ -184,7 +190,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         response.setName(clientName + "@" + host);
         response.setId(getId());
 
-        publish(MaestroTopics.MAESTRO_TOPIC, response);
+        client.publish(MaestroTopics.MAESTRO_TOPIC, response);
 
     }
 }
