@@ -17,6 +17,7 @@
 package net.orpiske.mpt.maestro.notes;
 
 import org.msgpack.core.MessageBufferPacker;
+import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
@@ -53,7 +54,7 @@ public class SetRequest extends MaestroRequest {
             this.value = value;
         }
 
-        public Option from(long value) {
+        static public Option from(long value) {
             switch ((int) value) {
                 case 0: return MAESTRO_NOTE_OPT_SET_BROKER;
                 case 1: return MAESTRO_NOTE_OPT_SET_DURATION_TYPE;
@@ -74,6 +75,13 @@ public class SetRequest extends MaestroRequest {
 
     public SetRequest() {
         super(MaestroCommand.MAESTRO_NOTE_SET);
+    }
+
+    public SetRequest(MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_SET);
+
+        this.option = Option.from(unpacker.unpackLong());
+        this.value = unpacker.unpackString();
     }
 
     private void set(final Option option, final String value) {

@@ -103,6 +103,30 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_STATS: {
                 return new StatsRequest();
             }
+            case MAESTRO_NOTE_START_RECEIVER: {
+                return new StartReceiver();
+            }
+            case MAESTRO_NOTE_STOP_RECEIVER: {
+                return new StopReceiver();
+            }
+            case MAESTRO_NOTE_START_SENDER: {
+                return new StartSender();
+            }
+            case MAESTRO_NOTE_STOP_SENDER: {
+                return new StopSender();
+            }
+            case MAESTRO_NOTE_START_INSPECTOR: {
+                return new StartInspector();
+            }
+            case MAESTRO_NOTE_STOP_INSPECTOR: {
+                return new StopInspector();
+            }
+            case MAESTRO_NOTE_SET: {
+                return new SetRequest(unpacker);
+            }
+            case MAESTRO_NOTE_HALT: {
+                return new Halt();
+            }
             default: {
                 throw new MalformedNoteException("Invalid request command: " + tmpCommand);
             }
