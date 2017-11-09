@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.maestro.client;
 
+import net.orpiske.mpt.common.URLUtils;
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
 import org.apache.commons.lang3.StringUtils;
@@ -35,8 +36,7 @@ public class MaestroClient {
     private MqttClient mqttClient;
 
     public MaestroClient(final String url) throws MaestroConnectionException {
-        // The client uses the mqtt://<host> url format so it's the same as the C client
-        String adjustedUrl = StringUtils.replace(url, "mqtt", "tcp");
+        String adjustedUrl = URLUtils.sanizeURL(url);
 
         UUID uuid = UUID.randomUUID();
         String clientId = uuid.toString();
