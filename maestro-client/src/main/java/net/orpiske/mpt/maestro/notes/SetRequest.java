@@ -113,6 +113,14 @@ public class SetRequest extends MaestroRequest {
         set(Option.MAESTRO_NOTE_OPT_FCL, value);
     }
 
+    public Option getOption() {
+        return option;
+    }
+
+    public String getValue() {
+        return value;
+    }
+
     @Override
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
