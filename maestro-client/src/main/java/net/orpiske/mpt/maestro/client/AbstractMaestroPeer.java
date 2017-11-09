@@ -104,6 +104,13 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
     }
 
 
+    /**
+     * Publish a maestro message
+     * @param topic the topic to publish the message to
+     * @param note the note to publish
+     * @throws IOException in case of I/O errors
+     * @throws MaestroConnectionException in case it fails to publish the message to the broker
+     */
     protected void publish(final String topic, final MaestroNote note) throws IOException, MaestroConnectionException {
         try {
             mqttClient.publish(topic, note.serialize(), 0, false);
