@@ -22,8 +22,8 @@ import net.ssorj.quiver.QuiverArrowJms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QuiverDriver implements MaestroSenderWorker {
-    private static final Logger logger = LoggerFactory.getLogger(QuiverDriver.class);
+public class QuiverWorker implements MaestroSenderWorker {
+    private static final Logger logger = LoggerFactory.getLogger(QuiverWorker.class);
 
     private String brokerUrl;
     private String duration;
