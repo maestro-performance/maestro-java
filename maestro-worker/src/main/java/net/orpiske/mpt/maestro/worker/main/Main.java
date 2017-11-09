@@ -20,6 +20,7 @@ import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.Constants;
 import net.orpiske.mpt.common.LogConfigurator;
 import net.orpiske.mpt.common.worker.MaestroDriver;
+import net.orpiske.mpt.common.worker.MaestroWorker;
 import org.apache.commons.cli.*;
 
 
@@ -28,7 +29,7 @@ public class Main {
     private static Options options;
 
     private static String maestroUrl;
-    private static String driver;
+    private static String worker;
     private static String role;
 
     /**
@@ -51,8 +52,8 @@ public class Main {
         options.addOption("h", "help", false, "prints the help");
         options.addOption("m", "maestro-url", true,
                 "maestro URL to connect to");
-        options.addOption("d", "driver", true,
-                "maestro driver to use");
+        options.addOption("w", "worker", true,
+                "maestro worker to use");
         options.addOption("r", "role", true,
                 "worker role (sender or receiver)");
 
@@ -71,12 +72,12 @@ public class Main {
             help(options, -1);
         }
 
-        String driver = cmdLine.getOptionValue('d');
-        if (driver == null) {
+        worker = cmdLine.getOptionValue('w');
+        if (worker == null) {
             help(options, -1);
         }
 
-        String role = cmdLine.getOptionValue('r');
+        role = cmdLine.getOptionValue('r');
         if (role == null) {
             help(options, -1);
         }
@@ -90,7 +91,9 @@ public class Main {
 
         try {
 
-            MaestroDriver driver = null;
+            Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
+
+            MaestroWorker w = clazz.newInstance();
 
             MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroUrl, null);
 
@@ -99,6 +102,12 @@ public class Main {
 
         } catch (MaestroConnectionException e) {
             System.err.println(e.getMessage());
+            e.printStackTrace();
+        } catch (IllegalAccessException e) {
+            e.printStackTrace();
+        } catch (InstantiationException e) {
+            e.printStackTrace();
+        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 
