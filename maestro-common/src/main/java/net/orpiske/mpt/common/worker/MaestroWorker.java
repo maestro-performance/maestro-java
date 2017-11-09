@@ -31,5 +31,7 @@ public interface MaestroWorker {
 
     void start();
     void stop();
+    void halt();
+    Stats stats();
 
 }

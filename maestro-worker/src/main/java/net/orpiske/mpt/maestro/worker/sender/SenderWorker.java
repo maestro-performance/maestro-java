@@ -17,6 +17,7 @@
 package net.orpiske.mpt.maestro.worker.sender;
 
 import net.orpiske.mpt.common.worker.MaestroSenderWorker;
+import net.orpiske.mpt.common.worker.Stats;
 
 public class SenderWorker implements MaestroSenderWorker {
     @Override
@@ -67,5 +68,15 @@ public class SenderWorker implements MaestroSenderWorker {
     @Override
     public void stop() {
 
+    }
+
+    @Override
+    public void halt() {
+
+    }
+
+    @Override
+    public Stats stats() {
+        return null;
     }
 }
