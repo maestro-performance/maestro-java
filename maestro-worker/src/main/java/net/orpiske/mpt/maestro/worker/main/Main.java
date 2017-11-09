@@ -19,11 +19,8 @@ package net.orpiske.mpt.maestro.worker.main;
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.Constants;
 import net.orpiske.mpt.common.LogConfigurator;
-import net.orpiske.mpt.maestro.client.MaestroTopics;
-import net.orpiske.mpt.maestro.worker.base.MaestroWorkerManager;
+import net.orpiske.mpt.common.worker.MaestroDriver;
 import org.apache.commons.cli.*;
-
-import java.io.IOException;
 
 
 public class Main {
@@ -93,7 +90,9 @@ public class Main {
 
         try {
 
-            MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroUrl);
+            MaestroDriver driver = null;
+
+            MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroUrl, null);
 
 
             executor.run();

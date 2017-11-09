@@ -1,6 +1,7 @@
 package net.orpiske.mpt.maestro.worker.base;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
+import net.orpiske.mpt.common.worker.MaestroWorker;
 import net.orpiske.mpt.maestro.client.AbstractMaestroPeer;
 import net.orpiske.mpt.maestro.notes.*;
 import org.slf4j.Logger;
@@ -11,9 +12,12 @@ import java.time.Instant;
 
 public class MaestroWorkerManager extends AbstractMaestroPeer {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
+    private MaestroWorker worker;
 
-    public MaestroWorkerManager(final String url, final String clientName) throws MaestroConnectionException {
+    public MaestroWorkerManager(final String url, final String clientName, final MaestroWorker worker) throws MaestroConnectionException {
         super(url, clientName);
+
+        this.worker = worker;
     }
 
 
@@ -88,6 +92,42 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 
     protected void maestroMessageArrived(SetRequest note) {
         logger.debug("Set request received");
+
+        switch (note.getOption()) {
+            case MAESTRO_NOTE_OPT_SET_BROKER: {
+                worker.setBroker(note.getValue());
+                break;
+            }
+            case MAESTRO_NOTE_OPT_SET_DURATION_TYPE: {
+                worker.setDuration(note.getValue());
+                break;
+            }
+            case MAESTRO_NOTE_OPT_SET_LOG_LEVEL: {
+                worker.setLogLevel(note.getValue());
+                break;
+            }
+            case MAESTRO_NOTE_OPT_SET_PARALLEL_COUNT: {
+                worker.setParallelCount(note.getValue());
+                break;
+            }
+            case MAESTRO_NOTE_OPT_SET_MESSAGE_SIZE: {
+                worker.setMessageSize(note.getValue());
+                break;
+            }
+            case MAESTRO_NOTE_OPT_SET_THROTTLE: {
+                worker.setThrottle(note.getValue());
+                break;
+            }
+            case MAESTRO_NOTE_OPT_SET_RATE: {
+                worker.setRate(note.getValue());
+                break;
+            }
+            case MAESTRO_NOTE_OPT_FCL: {
+                worker.setFCL(note.getValue());
+                break;
+            }
+        }
+
     }
 
     protected void maestroMessageArrived(StartInspector note) {

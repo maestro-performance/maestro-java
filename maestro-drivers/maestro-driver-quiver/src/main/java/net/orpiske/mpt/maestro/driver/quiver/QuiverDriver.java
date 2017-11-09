@@ -12,17 +12,20 @@ public class QuiverDriver {
 
     public void load() {
 
+
+    }
+
+    public int run() {
         String[] args = {""};
 
         try {
             QuiverArrowJms.doMain(args);
         } catch (Exception e) {
             e.printStackTrace();
+
+            return 1;
         }
 
-    }
-
-    public int run() {
         return 0;
     }
 
