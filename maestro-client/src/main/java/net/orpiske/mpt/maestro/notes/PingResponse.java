@@ -23,8 +23,8 @@ import java.io.IOException;
 public class PingResponse extends MaestroResponse {
     private long elapsed;
 
-    public PingResponse(MaestroCommand maestroCommand) {
-        super(maestroCommand);
+    public PingResponse() {
+        super(MaestroCommand.MAESTRO_NOTE_PING);
     }
 
     public PingResponse(MessageUnpacker unpacker) throws IOException {
