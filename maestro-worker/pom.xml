@@ -78,4 +78,22 @@
         </plugins>
     </build>
 
+    <profiles>
+        <profile>
+            <id>Quiver</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+
+            <dependencies>
+                <dependency>
+                    <groupId>net.orpiske</groupId>
+                    <artifactId>maestro-worker-quiver</artifactId>
+                    <version>1.2.0-SNAPSHOT</version>
+                </dependency>
+
+            </dependencies>
+        </profile>
+    </profiles>
+
 </project>

@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.maestro.notes;
 
+import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
@@ -39,6 +40,15 @@ public class PingResponse extends MaestroResponse {
 
     public void setElapsed(long elapsed) {
         this.elapsed = elapsed;
+    }
+
+    @Override
+    protected MessageBufferPacker pack() throws IOException {
+        MessageBufferPacker packer = super.pack();
+
+        packer.packLong(this.elapsed);
+
+        return packer;
     }
 
     @Override

@@ -1,6 +1,7 @@
 package net.orpiske.mpt.maestro.client;
 
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.UUID;
 
 import org.apache.commons.lang3.StringUtils;
@@ -18,6 +19,8 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroPeer.class);
 
     private MqttClient mqttClient;
+    protected String clientName;
+    protected String id;
 
     public AbstractMaestroPeer(final String url, final String clientName) throws MaestroConnectionException {
 
@@ -28,8 +31,11 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
         String clientId = uuid.toString();
         MemoryPersistence memoryPersistence = new MemoryPersistence();
 
+        this.id = clientId;
+        this.clientName = clientName;
+
         try {
-            mqttClient = new MqttClient(adjustedUrl, clientName + clientId, memoryPersistence);
+            mqttClient = new MqttClient(adjustedUrl, clientName + "." + clientId, memoryPersistence);
             mqttClient.setCallback(this);
         }
         catch (MqttException e) {
@@ -38,10 +44,29 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
         }
     }
 
+    public String getClientName() {
+        return clientName;
+    }
+
+    public void setClientName(String clientName) {
+        this.clientName = clientName;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public void connectionLost(Throwable throwable) {
         logger.warn("Connection lost");
     }
 
+    public boolean isConnected() {
+        return mqttClient.isConnected();
+    }
 
     @Override
     public void deliveryComplete(IMqttDeliveryToken iMqttDeliveryToken) {
@@ -53,6 +78,7 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
         MqttConnectOptions connOpts = new MqttConnectOptions();
 
         connOpts.setCleanSession(true);
+        connOpts.setKeepAliveInterval(15000);
 
         try {
             mqttClient.connect();
@@ -74,10 +100,16 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
     }
 
     public void subscribe(final String[] topics) throws MaestroConnectionException {
-        logger.debug("Subscribing to maestro topics {}", topics);
+        logger.debug("Subscribing to maestro topics {}", Arrays.toString(topics));
+
+        int qos[] = new int[topics.length];
+
+        for (int i = 0; i < topics.length; i++) {
+            qos[i] = 0;
+        }
 
         try {
-            mqttClient.subscribe(topics);
+            mqttClient.subscribe(topics, qos);
         }
         catch (MqttException e) {
             throw new MaestroConnectionException("Unable to subscribe to Maestro topics: " + e.getMessage(), e);
@@ -93,7 +125,7 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
             MaestroNote note = MaestroDeserializer.deserialize(payload);
             logger.trace("Message type: " + note.getClass());
 
-            messageArrived(note);
+            noteArrived(note);
         } catch (MalformedNoteException e) {
             logger.error("Invalid message type: " + e.getMessage(), e);
         } catch (IOException e) {
@@ -123,7 +155,7 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
      * The entry point for handling Maestro messages
      * @param note
      */
-    protected abstract void messageArrived(MaestroNote note);
+    protected abstract void noteArrived(MaestroNote note) throws IOException, MaestroConnectionException;
 
 
 }

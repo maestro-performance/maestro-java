@@ -25,11 +25,10 @@ import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.UUID;
+
 
 public class MaestroCollector extends AbstractMaestroPeer {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollector.class);
@@ -43,7 +42,7 @@ public class MaestroCollector extends AbstractMaestroPeer {
 
 
     @Override
-    protected void messageArrived(MaestroNote note) {
+    protected void noteArrived(MaestroNote note) {
         collected.add(note);
     }
 

@@ -21,9 +21,6 @@ public class AbstractMaestroExecutor implements Runnable {
      */
     public AbstractMaestroExecutor(final AbstractMaestroPeer maestroPeer) throws MaestroConnectionException {
         this.maestroPeer = maestroPeer;
-
-        logger.debug("Connecting the maestro broker");
-        maestroPeer.connect();
     }
 
 
@@ -39,9 +36,26 @@ public class AbstractMaestroExecutor implements Runnable {
      * Runs the executor
      */
     public final void run() {
+        logger.debug("Connecting the maestro broker");
+        try {
+            maestroPeer.connect();
+            maestroPeer.subscribe(MaestroTopics.MAESTRO_SENDER_TOPICS);
+
+        } catch (MaestroConnectionException e) {
+            e.printStackTrace();
+
+            return;
+        }
+
         while (!exit) {
             try {
-                Thread.sleep(1000);
+                logger.debug("Waiting for data ...");
+
+                if (!maestroPeer.isConnected()) {
+                    logger.error("Disconnected from the broker");
+                }
+
+                Thread.sleep(10000);
             } catch (InterruptedException e) {
                 logger.error(e.getMessage(), e);
             }
@@ -54,6 +68,7 @@ public class AbstractMaestroExecutor implements Runnable {
      */
     public final void stop() {
         try {
+            logger.debug("Disconnecting the peer");
             maestroPeer.disconnect();
         } catch (MaestroConnectionException e) {
             logger.debug(e.getMessage(), e);

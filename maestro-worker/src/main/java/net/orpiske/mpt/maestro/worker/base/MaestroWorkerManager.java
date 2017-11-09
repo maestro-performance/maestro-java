@@ -3,94 +3,98 @@ package net.orpiske.mpt.maestro.worker.base;
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.worker.MaestroWorker;
 import net.orpiske.mpt.maestro.client.AbstractMaestroPeer;
+import net.orpiske.mpt.maestro.client.MaestroTopics;
 import net.orpiske.mpt.maestro.notes.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 
 public class MaestroWorkerManager extends AbstractMaestroPeer {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
     private MaestroWorker worker;
+    private String host;
 
-    public MaestroWorkerManager(final String url, final String clientName, final MaestroWorker worker) throws MaestroConnectionException {
-        super(url, clientName);
+    public MaestroWorkerManager(final String url, final String role, final String host, final MaestroWorker worker) throws MaestroConnectionException {
+        super(url, role);
 
         this.worker = worker;
+        this.host = host;
     }
 
 
-    protected void messageArrived(MaestroNote note) {
+    protected void noteArrived(MaestroNote note) throws IOException, MaestroConnectionException {
         logger.debug("Some message arrived: {}", note.toString());
 
         if (note instanceof PingRequest) {
-            maestroMessageArrived((PingRequest) note);
+            noteArrived((PingRequest) note);
         }
         if (note instanceof StatsRequest) {
-            maestroMessageArrived((StatsRequest) note);
+            noteArrived((StatsRequest) note);
         }
 
         if (note instanceof FlushRequest) {
-            maestroMessageArrived((FlushRequest) note);
+            noteArrived((FlushRequest) note);
         }
 
         if (note instanceof Halt) {
-            maestroMessageArrived((Halt) note);
+            noteArrived((Halt) note);
         }
         if (note instanceof SetRequest) {
-            maestroMessageArrived((SetRequest) note);
+            noteArrived((SetRequest) note);
         }
 
         if (note instanceof StartInspector) {
-            maestroMessageArrived((StartInspector) note);
+            noteArrived((StartInspector) note);
         }
 
         if (note instanceof StartReceiver) {
-            maestroMessageArrived((StartReceiver) note);
+            noteArrived((StartReceiver) note);
         }
         if (note instanceof StartSender) {
-            maestroMessageArrived((StartSender) note);
+            noteArrived((StartSender) note);
         }
 
         if (note instanceof StopInspector) {
-            maestroMessageArrived((StopInspector) note);
+            noteArrived((StopInspector) note);
         }
 
         if (note instanceof StopReceiver) {
-            maestroMessageArrived((StopReceiver) note);
+            noteArrived((StopReceiver) note);
         }
         if (note instanceof StopSender) {
-            maestroMessageArrived((StopSender) note);
+            noteArrived((StopSender) note);
         }
 
         if (note instanceof TestFailedNotification) {
-            maestroMessageArrived((TestFailedNotification) note);
+            noteArrived((TestFailedNotification) note);
         }
 
         if (note instanceof TestSuccessfulNotification) {
-            maestroMessageArrived((TestSuccessfulNotification) note);
+            noteArrived((TestSuccessfulNotification) note);
         }
 
         if (note instanceof AbnormalDisconnect) {
-            maestroMessageArrived((AbnormalDisconnect) note);
+            noteArrived((AbnormalDisconnect) note);
         }
     }
 
 
-    protected void maestroMessageArrived(StatsRequest note) {
+    protected void noteArrived(StatsRequest note) {
         logger.debug("Stats request received");
     }
 
-    protected void maestroMessageArrived(FlushRequest note) {
+    protected void noteArrived(FlushRequest note) {
         logger.debug("Flush request received");
     }
 
-    protected void maestroMessageArrived(Halt note) {
+    protected void noteArrived(Halt note) {
         logger.debug("Halt request received");
     }
 
-    protected void maestroMessageArrived(SetRequest note) {
+    protected void noteArrived(SetRequest note) {
         logger.debug("Set request received");
 
         switch (note.getOption()) {
@@ -127,46 +131,45 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
                 break;
             }
         }
-
     }
 
-    protected void maestroMessageArrived(StartInspector note) {
+    protected void noteArrived(StartInspector note) {
         logger.debug("Start inspector request received");
     }
 
-    protected void maestroMessageArrived(StartReceiver note) {
+    protected void noteArrived(StartReceiver note) {
         logger.debug("Stats request received");
     }
 
-    protected void maestroMessageArrived(StartSender note) {
+    protected void noteArrived(StartSender note) {
         logger.debug("Start sender request received");
     }
 
-    protected void maestroMessageArrived(StopInspector note) {
+    protected void noteArrived(StopInspector note) {
         logger.debug("Stop inspector request received");
     }
 
-    protected void maestroMessageArrived(StopReceiver note) {
+    protected void noteArrived(StopReceiver note) {
         logger.debug("Stop receiver request received");
     }
 
-    protected void maestroMessageArrived(StopSender note) {
+    protected void noteArrived(StopSender note) {
         logger.debug("Stop sender request received");
     }
 
-    protected void maestroMessageArrived(TestFailedNotification note) {
+    protected void noteArrived(TestFailedNotification note) {
         logger.debug("Test failed notification received");
     }
 
-    protected void maestroMessageArrived(TestSuccessfulNotification note) {
+    protected void noteArrived(TestSuccessfulNotification note) {
         logger.debug("Test successful notification received");
     }
 
-    protected void maestroMessageArrived(AbnormalDisconnect note) {
+    protected void noteArrived(AbnormalDisconnect note) {
         logger.debug("Abnormal disconnect notification received");
     }
 
-    protected void maestroMessageArrived(PingRequest note) {
+    protected void noteArrived(PingRequest note) throws IOException, MaestroConnectionException {
         logger.debug("Creation seconds.micro: {}.{}", note.getSec(), note.getUsec());
 
         Instant creation = Instant.ofEpochSecond(note.getSec(), note.getUsec() * 1000);
@@ -175,5 +178,13 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         Duration d = Duration.between(creation, now);
 
         logger.debug("Elapsed: {}", d.getNano() / 1000);
+        PingResponse response = new PingResponse();
+
+        response.setElapsed(d.getNano() / 1000);
+        response.setName(clientName + "@" + host);
+        response.setId(getId());
+
+        publish(MaestroTopics.MAESTRO_TOPIC, response);
+
     }
 }

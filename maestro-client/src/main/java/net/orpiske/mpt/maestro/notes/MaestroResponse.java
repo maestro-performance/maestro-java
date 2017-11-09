@@ -16,13 +16,14 @@
 
 package net.orpiske.mpt.maestro.notes;
 
+import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
 public class MaestroResponse extends MaestroNote {
-    private String id;
-    private String name;
+    private String id = "";
+    private String name = "";
 
     public MaestroResponse(MaestroCommand maestroCommand) {
         super(MaestroNoteType.MAESTRO_TYPE_RESPONSE, maestroCommand);
@@ -49,6 +50,16 @@ public class MaestroResponse extends MaestroNote {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    protected MessageBufferPacker pack() throws IOException {
+        MessageBufferPacker packer = super.pack();
+
+        packer.packString(this.id);
+        packer.packString(this.name);
+
+        return packer;
     }
 
     @Override

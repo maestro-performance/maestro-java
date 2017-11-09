@@ -31,6 +31,7 @@ public class Main {
     private static String maestroUrl;
     private static String worker;
     private static String role;
+    private static String host;
 
     /**
      * Prints the help for the action and exit
@@ -56,6 +57,8 @@ public class Main {
                 "maestro worker to use");
         options.addOption("r", "role", true,
                 "worker role (sender or receiver)");
+        options.addOption("H", "host", true,
+                "this' host hostname");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -82,12 +85,17 @@ public class Main {
             help(options, -1);
         }
 
+        host = cmdLine.getOptionValue('H');
+        if (host == null) {
+            help(options, -1);
+        }
+
     }
 
     public static void main(String[] args) {
         processCommand(args);
 
-        LogConfigurator.debug();
+        LogConfigurator.trace();
 
         try {
 
@@ -95,10 +103,10 @@ public class Main {
 
             MaestroWorker w = clazz.newInstance();
 
-            MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroUrl, null);
-
+            MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroUrl, role, host, w);
 
             executor.run();
+            System.out.println("Finished execution ...");
 
         } catch (MaestroConnectionException e) {
             System.err.println(e.getMessage());

@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 public class MaestroWorkerExecutor extends AbstractMaestroExecutor {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerExecutor.class);
 
-    public MaestroWorkerExecutor(final String url, final MaestroWorker worker) throws MaestroConnectionException {
-        super(new MaestroWorkerManager(url, "default", worker));
-
-        getMaestroPeer().subscribe(MaestroTopics.MAESTRO_SENDER_TOPICS);
+    public MaestroWorkerExecutor(final String url, final String role, final String host, final MaestroWorker worker) throws MaestroConnectionException {
+        super(new MaestroWorkerManager(url, role, host, worker));
     }
+
+
 }
