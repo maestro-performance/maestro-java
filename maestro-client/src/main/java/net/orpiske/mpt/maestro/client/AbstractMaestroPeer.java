@@ -4,6 +4,7 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
 
+import net.orpiske.mpt.common.URLUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
@@ -18,14 +19,13 @@ import net.orpiske.mpt.maestro.notes.MaestroNote;
 public abstract class AbstractMaestroPeer implements MqttCallback {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroPeer.class);
 
-    private MqttClient mqttClient;
+    private MqttClient inboundEndPoint;
     protected String clientName;
     protected String id;
 
     public AbstractMaestroPeer(final String url, final String clientName) throws MaestroConnectionException {
 
-        // The client uses the mqtt://<host> url format so it's the same as the C client
-        String adjustedUrl = StringUtils.replace(url, "mqtt", "tcp");
+        String adjustedUrl = URLUtils.sanizeURL(url);
 
         UUID uuid = UUID.randomUUID();
         String clientId = uuid.toString();
@@ -35,8 +35,8 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
         this.clientName = clientName;
 
         try {
-            mqttClient = new MqttClient(adjustedUrl, clientName + "." + clientId, memoryPersistence);
-            mqttClient.setCallback(this);
+            inboundEndPoint = new MqttClient(adjustedUrl, clientName + ".inbound." + clientId, memoryPersistence);
+            inboundEndPoint.setCallback(this);
         }
         catch (MqttException e) {
             throw new MaestroConnectionException("Unable create a MQTT client instance : " + e.getMessage(),
@@ -65,7 +65,7 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
     }
 
     public boolean isConnected() {
-        return mqttClient.isConnected();
+        return inboundEndPoint.isConnected();
     }
 
     @Override
@@ -81,7 +81,7 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
         connOpts.setKeepAliveInterval(15000);
 
         try {
-            mqttClient.connect();
+            inboundEndPoint.connect();
         }
         catch (MqttException e) {
             throw new MaestroConnectionException("Unable to establish a connection to Maestro: " + e.getMessage(), e);
@@ -92,7 +92,7 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
         logger.debug("Disconnecting from maestro");
 
         try {
-            mqttClient.disconnect();
+            inboundEndPoint.disconnect();
         }
         catch (MqttException e) {
             throw new MaestroConnectionException("Unable to disconnect cleanly from Maestro: " + e.getMessage(), e);
@@ -109,7 +109,7 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
         }
 
         try {
-            mqttClient.subscribe(topics, qos);
+            inboundEndPoint.subscribe(topics, qos);
         }
         catch (MqttException e) {
             throw new MaestroConnectionException("Unable to subscribe to Maestro topics: " + e.getMessage(), e);
@@ -135,21 +135,6 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
         }
     }
 
-
-    /**
-     * Publish a maestro message
-     * @param topic the topic to publish the message to
-     * @param note the note to publish
-     * @throws IOException in case of I/O errors
-     * @throws MaestroConnectionException in case it fails to publish the message to the broker
-     */
-    protected void publish(final String topic, final MaestroNote note) throws IOException, MaestroConnectionException {
-        try {
-            mqttClient.publish(topic, note.serialize(), 0, false);
-        } catch (MqttException e) {
-            throw new MaestroConnectionException("Unable to publish a maestro message", e);
-        }
-    }
 
     /**
      * The entry point for handling Maestro messages
