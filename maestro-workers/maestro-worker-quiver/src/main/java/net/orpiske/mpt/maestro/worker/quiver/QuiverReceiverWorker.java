@@ -16,15 +16,14 @@
 
 package net.orpiske.mpt.maestro.worker.quiver;
 
-import net.orpiske.mpt.common.worker.MaestroSenderWorker;
+import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
 import net.orpiske.mpt.common.worker.Stats;
 import net.ssorj.quiver.QuiverArrowJms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-
-public class QuiverSenderWorker implements MaestroSenderWorker {
-    private static final Logger logger = LoggerFactory.getLogger(QuiverSenderWorker.class);
+public class QuiverReceiverWorker implements MaestroReceiverWorker {
+    private static final Logger logger = LoggerFactory.getLogger(QuiverReceiverWorker.class);
 
     private String brokerUrl;
     private String duration;
@@ -34,8 +33,6 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
     @Override
     public void setBroker(String url) {
         this.brokerUrl = url;
-
-
     }
 
     @Override
@@ -64,10 +61,8 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
     @Override
     public void setMessageSize(String messageSize) {
         if (messageSize.contains("~")) {
+            logger.warn("Variable message sizes are not supported on this worker");
             this.messageSize = messageSize.replace("~", "");
-
-            logger.warn("Variable message sizes are not supported on this worker. Set to: {}",
-                    this.messageSize);
         }
         else {
             this.messageSize = messageSize;
@@ -91,10 +86,10 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
 
     @Override
     public void start() {
-        logger.info("Starting the sender worker");
+        logger.info("Starting the receiver worker");
 
         try {
-            String[] args = QuiverArgumentBuilder.buildArguments("send", brokerUrl, duration, messageSize);
+            String[] args = QuiverArgumentBuilder.buildArguments("receive", brokerUrl, duration, messageSize);
 
             QuiverArrowJms.doMain(args);
         } catch (Exception e) {
@@ -116,5 +111,4 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
     public Stats stats() {
         return null;
     }
-
 }
