@@ -23,6 +23,8 @@ import net.orpiske.mpt.common.worker.*;
 import net.orpiske.mpt.maestro.client.MaestroTopics;
 import org.apache.commons.cli.*;
 
+import java.io.File;
+
 
 public class Main {
     private static CommandLine cmdLine;
@@ -32,6 +34,7 @@ public class Main {
     private static String worker;
     private static String role;
     private static String host;
+    private static String logDir;
 
     /**
      * Prints the help for the action and exit
@@ -58,6 +61,8 @@ public class Main {
         options.addOption("r", "role", true,
                 "worker role (sender or receiver)");
         options.addOption("H", "host", true,
+                "this' host hostname");
+        options.addOption("l", "log-dir", true,
                 "this' host hostname");
 
         try {
@@ -90,6 +95,10 @@ public class Main {
             help(options, -1);
         }
 
+        logDir = cmdLine.getOptionValue('l');
+        if (logDir == null) {
+            help(options, -1);
+        }
     }
 
     public static void main(String[] args) {
@@ -98,12 +107,11 @@ public class Main {
         LogConfigurator.trace();
 
         try {
-
             Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
 
             MaestroWorker w = clazz.newInstance();
 
-            MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroUrl, role, host, w);
+            MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroUrl, role, host, new File(logDir), w);
 
             if (w instanceof MaestroSenderWorker) {
                 executor.start(MaestroTopics.MAESTRO_SENDER_TOPICS);
