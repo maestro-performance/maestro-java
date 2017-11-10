@@ -18,6 +18,7 @@ package net.orpiske.mpt.common.worker;
 
 public interface MaestroWorker {
 
+
     void setBroker(final String url);
     void setDuration(final String duration);
     void setLogLevel(final String logLevel);
@@ -26,8 +27,6 @@ public interface MaestroWorker {
     void setThrottle(final String value);
     void setRate(final String rate);
 
-    // TODO: move to MaestroReceiverWorker
-    void setFCL(final String fcl);
 
     void start();
     void stop();

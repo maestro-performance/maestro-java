@@ -16,5 +16,20 @@
 
 package net.orpiske.mpt.common.worker;
 
+import net.orpiske.mpt.common.writers.RateWriter;
+
 public interface MaestroSenderWorker extends MaestroWorker {
+
+
+    /**
+     * Gets the rate writer
+     * @return
+     */
+    RateWriter getRateWriter();
+
+    /**
+     * Sets the rate writer
+     * @param rateWriter
+     */
+    void setRateWriter(RateWriter rateWriter);
 }
