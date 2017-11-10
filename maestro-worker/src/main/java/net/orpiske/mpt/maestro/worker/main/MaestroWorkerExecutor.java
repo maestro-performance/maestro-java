@@ -15,6 +15,4 @@ public class MaestroWorkerExecutor extends AbstractMaestroExecutor {
     public MaestroWorkerExecutor(final String url, final String role, final String host, final MaestroWorker worker) throws MaestroException {
         super(new MaestroWorkerManager(url, role, host, worker));
     }
-
-
 }

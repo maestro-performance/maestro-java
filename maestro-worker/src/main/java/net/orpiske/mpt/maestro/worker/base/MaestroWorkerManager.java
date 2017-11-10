@@ -24,6 +24,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
     private MaestroWorker worker;
     private String host;
 
+    private boolean running = true;
+
     public MaestroWorkerManager(final String url, final String role, final String host, final MaestroWorker worker) throws MaestroException {
         super(url, role);
 
@@ -32,6 +34,11 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 
         this.worker = worker;
         this.host = host;
+    }
+
+    @Override
+    public boolean isRunning() {
+        return running;
     }
 
     protected void noteArrived(MaestroNote note) throws IOException, MaestroConnectionException {
@@ -101,6 +108,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 
     protected void noteArrived(Halt note) {
         logger.debug("Halt request received");
+
+        running = false;
     }
 
     protected void noteArrived(SetRequest note) {

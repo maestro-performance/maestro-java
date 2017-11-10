@@ -46,6 +46,11 @@ public class MaestroCollector extends AbstractMaestroPeer {
         collected.add(note);
     }
 
+    @Override
+    public boolean isRunning() {
+        return true;
+    }
+
     public synchronized List<MaestroNote> collect() {
         List<MaestroNote> ret = new LinkedList<MaestroNote>(collected);
 

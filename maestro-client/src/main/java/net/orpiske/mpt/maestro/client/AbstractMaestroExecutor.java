@@ -12,7 +12,6 @@ public class AbstractMaestroExecutor implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollectorExecutor.class);
 
     private AbstractMaestroPeer maestroPeer;
-    private volatile boolean exit = false;
 
     /**
      * Constructor
@@ -33,21 +32,22 @@ public class AbstractMaestroExecutor implements Runnable {
     }
 
     /**
+     * Start running the executor
+     * @param topics the list of topics associated with this executor
+     * @throws MaestroConnectionException if unable to connect to the broker and subscribe to the topics
+     */
+    public void start(final String[] topics) throws MaestroConnectionException {
+        logger.debug("Connecting the maestro broker");
+
+        maestroPeer.connect();
+        maestroPeer.subscribe(topics);
+    }
+
+    /**
      * Runs the executor
      */
     public final void run() {
-        logger.debug("Connecting the maestro broker");
-        try {
-            maestroPeer.connect();
-            maestroPeer.subscribe(MaestroTopics.MAESTRO_SENDER_TOPICS);
-
-        } catch (MaestroConnectionException e) {
-            e.printStackTrace();
-
-            return;
-        }
-
-        while (!exit) {
+        while (maestroPeer.isRunning()) {
             try {
                 logger.debug("Waiting for data ...");
 
@@ -73,8 +73,6 @@ public class AbstractMaestroExecutor implements Runnable {
         } catch (MaestroConnectionException e) {
             logger.debug(e.getMessage(), e);
         }
-
-        exit = true;
     }
 
 }

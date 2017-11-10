@@ -142,5 +142,7 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
      */
     protected abstract void noteArrived(MaestroNote note) throws IOException, MaestroConnectionException;
 
+    public abstract boolean isRunning();
+
 
 }
