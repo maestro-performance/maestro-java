@@ -41,6 +41,20 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         return running;
     }
 
+    private void replyOk() {
+        OkResponse okResponse = new OkResponse();
+
+
+        okResponse.setName(clientName + "@" + host);
+        okResponse.setId(getId());
+
+        try {
+            client.publish(MaestroTopics.MAESTRO_TOPIC, okResponse);
+        } catch (Exception e) {
+            logger.error("Unable to publish the OK response {}", e.getMessage(), e);
+        }
+    }
+
     protected void noteArrived(MaestroNote note) throws IOException, MaestroConnectionException {
         logger.debug("Some message arrived: {}", note.toString());
 
@@ -149,6 +163,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
                 break;
             }
         }
+
+        replyOk();
     }
 
     protected void noteArrived(StartInspector note) {
@@ -157,6 +173,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         if (worker instanceof MaestroInspectorWorker) {
             worker.start();
         }
+
+        replyOk();
     }
 
     protected void noteArrived(StartReceiver note) {
@@ -165,6 +183,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         if (worker instanceof MaestroReceiverWorker) {
             worker.start();
         }
+
+        replyOk();
     }
 
     protected void noteArrived(StartSender note) {
@@ -173,6 +193,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         if (worker instanceof MaestroSenderWorker) {
             worker.start();
         }
+
+        replyOk();
     }
 
     protected void noteArrived(StopInspector note) {
@@ -181,6 +203,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         if (worker instanceof MaestroInspectorWorker) {
             worker.stop();
         }
+
+        replyOk();
     }
 
     protected void noteArrived(StopReceiver note) {
@@ -189,6 +213,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         if (worker instanceof MaestroReceiverWorker) {
             worker.stop();
         }
+
+        replyOk();
     }
 
     protected void noteArrived(StopSender note) {
@@ -197,18 +223,21 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         if (worker instanceof MaestroSenderWorker) {
             worker.stop();
         }
+
+        replyOk();
     }
 
     protected void noteArrived(TestFailedNotification note) {
-        logger.debug("Test failed notification received");
+        logger.info("Test failed notification received from {}: {}", note.getName(), note.getMessage());
+        worker.stop();
     }
 
     protected void noteArrived(TestSuccessfulNotification note) {
-        logger.debug("Test successful notification received");
+        logger.info("Test successful notification received from {}: {}", note.getName(), note.getMessage());
     }
 
     protected void noteArrived(AbnormalDisconnect note) {
-        logger.debug("Abnormal disconnect notification received");
+        logger.info("Abnormal disconnect notification received from {}: {}", note.getName(), note.getMessage());
     }
 
     protected void noteArrived(PingRequest note) throws IOException, MaestroConnectionException {
