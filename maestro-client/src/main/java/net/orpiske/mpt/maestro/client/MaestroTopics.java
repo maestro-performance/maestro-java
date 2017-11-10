@@ -28,7 +28,7 @@ public class MaestroTopics {
     public final static String[] MAESTRO_TOPICS = {MAESTRO_TOPIC, NOTIFICATION_TOPIC};
 
     public final static String[] MAESTRO_SENDER_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC, SENDER_DAEMONS};
-    public final static String[] MAESTRO_RECEIVER_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC, SENDER_DAEMONS};
+    public final static String[] MAESTRO_RECEIVER_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC, RECEIVER_DAEMONS};
     public final static String[] MAESTRO_INSPECTOR_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC, BROKER_INSPECTOR_DAEMONS};
 
     private MaestroTopics() {}
