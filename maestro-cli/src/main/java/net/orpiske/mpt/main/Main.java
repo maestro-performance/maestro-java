@@ -17,6 +17,7 @@
 package net.orpiske.mpt.main;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
+import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.common.Constants;
 import org.apache.commons.cli.*;
@@ -75,7 +76,7 @@ public class Main {
             maestro.pingRequest();
 
             System.exit(0);
-        } catch (MaestroConnectionException e) {
+        } catch (MaestroException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         } catch (IOException e) {

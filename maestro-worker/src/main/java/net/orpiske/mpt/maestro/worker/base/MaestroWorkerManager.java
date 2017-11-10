@@ -2,6 +2,9 @@ package net.orpiske.mpt.maestro.worker.base;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
+import net.orpiske.mpt.common.worker.MaestroInspectorWorker;
+import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
+import net.orpiske.mpt.common.worker.MaestroSenderWorker;
 import net.orpiske.mpt.common.worker.MaestroWorker;
 import net.orpiske.mpt.maestro.client.AbstractMaestroPeer;
 import net.orpiske.mpt.maestro.client.MaestroClient;
@@ -141,26 +144,50 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 
     protected void noteArrived(StartInspector note) {
         logger.debug("Start inspector request received");
+
+        if (worker instanceof MaestroInspectorWorker) {
+            worker.start();
+        }
     }
 
     protected void noteArrived(StartReceiver note) {
-        logger.debug("Stats request received");
+        logger.debug("Start receiver request received");
+
+        if (worker instanceof MaestroReceiverWorker) {
+            worker.start();
+        }
     }
 
     protected void noteArrived(StartSender note) {
         logger.debug("Start sender request received");
+
+        if (worker instanceof MaestroSenderWorker) {
+            worker.start();
+        }
     }
 
     protected void noteArrived(StopInspector note) {
         logger.debug("Stop inspector request received");
+
+        if (worker instanceof MaestroInspectorWorker) {
+            worker.stop();
+        }
     }
 
     protected void noteArrived(StopReceiver note) {
         logger.debug("Stop receiver request received");
+
+        if (worker instanceof MaestroReceiverWorker) {
+            worker.stop();
+        }
     }
 
     protected void noteArrived(StopSender note) {
         logger.debug("Stop sender request received");
+
+        if (worker instanceof MaestroSenderWorker) {
+            worker.stop();
+        }
     }
 
     protected void noteArrived(TestFailedNotification note) {
@@ -191,6 +218,5 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         response.setId(getId());
 
         client.publish(MaestroTopics.MAESTRO_TOPIC, response);
-
     }
 }

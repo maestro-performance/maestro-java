@@ -19,6 +19,7 @@ package net.orpiske.mpt.exporter.main;
 import java.io.IOException;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
+import net.orpiske.mpt.common.exceptions.MaestroException;
 import org.apache.commons.cli.*;
 
 import net.orpiske.mpt.common.LogConfigurator;
@@ -89,7 +90,7 @@ public class Main {
 
             exporter.run(port);
 
-        } catch (MaestroConnectionException e) {
+        } catch (MaestroException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         } catch (IOException e) {

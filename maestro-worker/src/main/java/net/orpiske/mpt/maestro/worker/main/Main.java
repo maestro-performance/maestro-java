@@ -19,6 +19,7 @@ package net.orpiske.mpt.maestro.worker.main;
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.Constants;
 import net.orpiske.mpt.common.LogConfigurator;
+import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.common.worker.MaestroDriver;
 import net.orpiske.mpt.common.worker.MaestroWorker;
 import org.apache.commons.cli.*;
@@ -108,7 +109,7 @@ public class Main {
             executor.run();
             System.out.println("Finished execution ...");
 
-        } catch (MaestroConnectionException e) {
+        } catch (MaestroException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         } catch (IllegalAccessException e) {

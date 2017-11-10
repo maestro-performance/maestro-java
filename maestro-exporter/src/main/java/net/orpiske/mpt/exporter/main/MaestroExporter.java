@@ -3,6 +3,7 @@ package net.orpiske.mpt.exporter.main;
 import io.prometheus.client.Counter;
 import io.prometheus.client.exporter.HTTPServer;
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
+import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.exporter.collectors.ConnectionCount;
 import net.orpiske.mpt.exporter.collectors.MessageCount;
 import net.orpiske.mpt.exporter.collectors.PingInfo;
@@ -54,7 +55,7 @@ public class MaestroExporter {
 
     }
 
-    public MaestroExporter(final String maestroUrl) throws MaestroConnectionException {
+    public MaestroExporter(final String maestroUrl) throws MaestroException {
         maestro = new Maestro(maestroUrl);
 
         messageCounter.register();

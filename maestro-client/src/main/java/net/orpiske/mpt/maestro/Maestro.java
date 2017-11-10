@@ -41,7 +41,7 @@ public final class Maestro {
      * @param url URL of the maestro broker
      * @throws MqttException if unable to connect to the maestro broker
      */
-    public Maestro(final String url) throws MaestroConnectionException {
+    public Maestro(final String url) throws MaestroException {
         collectorExecutor = new MaestroCollectorExecutor(url);
 
         maestroClient = new MaestroClient(url);
