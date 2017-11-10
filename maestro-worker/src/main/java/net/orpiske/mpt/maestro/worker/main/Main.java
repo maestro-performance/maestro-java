@@ -16,12 +16,11 @@
 
 package net.orpiske.mpt.maestro.worker.main;
 
-import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.Constants;
 import net.orpiske.mpt.common.LogConfigurator;
 import net.orpiske.mpt.common.exceptions.MaestroException;
-import net.orpiske.mpt.common.worker.MaestroDriver;
-import net.orpiske.mpt.common.worker.MaestroWorker;
+import net.orpiske.mpt.common.worker.*;
+import net.orpiske.mpt.maestro.client.MaestroTopics;
 import org.apache.commons.cli.*;
 
 
@@ -106,9 +105,23 @@ public class Main {
 
             MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroUrl, role, host, w);
 
-            executor.run();
-            System.out.println("Finished execution ...");
+            if (w instanceof MaestroSenderWorker) {
+                executor.start(MaestroTopics.MAESTRO_SENDER_TOPICS);
+            }
+            else {
+                if (w instanceof MaestroReceiverWorker) {
+                    executor.start(MaestroTopics.MAESTRO_RECEIVER_TOPICS);
+                }
+                else {
+                    if (w instanceof MaestroInspectorWorker) {
+                        executor.start(MaestroTopics.MAESTRO_INSPECTOR_TOPICS);
+                    }
+                }
+            }
 
+            executor.run();
+
+            System.out.println("Finished execution ...");
         } catch (MaestroException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
