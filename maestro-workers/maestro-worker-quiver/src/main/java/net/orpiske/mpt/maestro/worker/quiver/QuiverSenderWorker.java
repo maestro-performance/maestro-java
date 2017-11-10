@@ -22,23 +22,22 @@ import net.ssorj.quiver.QuiverArrowJms;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QuiverWorker implements MaestroSenderWorker {
-    private static final Logger logger = LoggerFactory.getLogger(QuiverWorker.class);
+import java.net.URI;
+import java.net.URISyntaxException;
+
+public class QuiverSenderWorker implements MaestroSenderWorker {
+    private static final Logger logger = LoggerFactory.getLogger(QuiverSenderWorker.class);
 
     private String brokerUrl;
     private String duration;
     private boolean verbose = false;
     private String messageSize;
 
-    /*
-    usage: quiver [-h] [-m COUNT] [--impl NAME] [--body-size COUNT] [--credit COUNT]
-              [--timeout SECONDS] [--output DIRECTORY] [--init-only] [--quiet]
-              [--verbose] ADDRESS
-     */
-
     @Override
     public void setBroker(String url) {
-        url.replace("amqp:", "");
+        this.brokerUrl = url;
+
+
     }
 
     @Override
@@ -67,8 +66,10 @@ public class QuiverWorker implements MaestroSenderWorker {
     @Override
     public void setMessageSize(String messageSize) {
         if (messageSize.contains("~")) {
-            logger.warn("Variable message sizes are not supported on this worker");
             this.messageSize = messageSize.replace("~", "");
+
+            logger.warn("Variable message sizes are not supported on this worker. Set to: {}",
+                    this.messageSize);
         }
         else {
             this.messageSize = messageSize;
@@ -93,6 +94,40 @@ public class QuiverWorker implements MaestroSenderWorker {
     @Override
     public void start() {
         logger.info("Starting the worker");
+
+        URI uri = null;
+        try {
+            uri = new URI(brokerUrl);
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+
+            return;
+        }
+
+        System.setProperty("arrow.jms.url", brokerUrl);
+        System.setProperty("java.naming.factory.initial", "org.apache.qpid.jms.jndi.JmsInitialContextFactory");
+
+        String port = (uri.getPort() > 0 ? Integer.toString(uri.getPort()) : "-");
+
+        String[] args = {
+                "client",
+                "active",
+                "send",
+                "maestro",
+                uri.getHost(),
+                port,
+                uri.getPath().substring(1),
+                duration,
+                messageSize,
+                "1024",
+                "0",
+                ""};
+
+        try {
+            QuiverArrowJms.doMain(args);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
@@ -109,20 +144,5 @@ public class QuiverWorker implements MaestroSenderWorker {
     public Stats stats() {
         return null;
     }
-
-    public int run() {
-        String[] args = {""};
-
-        try {
-            QuiverArrowJms.doMain(args);
-        } catch (Exception e) {
-            e.printStackTrace();
-
-            return 1;
-        }
-
-        return 0;
-    }
-
 
 }
