@@ -16,9 +16,12 @@
 
 package net.orpiske.mpt.maestro.worker.quiver;
 
+import net.orpiske.mpt.common.ConsoleHijacker;
 import net.orpiske.mpt.common.worker.MaestroSenderWorker;
 import net.orpiske.mpt.common.worker.Stats;
+import net.orpiske.mpt.common.writers.RateWriter;
 import net.ssorj.quiver.QuiverArrowJms;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,16 +29,36 @@ import org.slf4j.LoggerFactory;
 public class QuiverSenderWorker implements MaestroSenderWorker {
     private static final Logger logger = LoggerFactory.getLogger(QuiverSenderWorker.class);
 
+    private RateWriter rateWriter;
+
     private String brokerUrl;
     private String duration;
     private boolean verbose = false;
     private String messageSize;
 
+    public RateWriter getRateWriter() {
+        return rateWriter;
+    }
+
+    public void setRateWriter(RateWriter rateWriter) {
+        this.rateWriter = rateWriter;
+    }
+
+    public String getEta(String line) {
+        String[] lineParts = line.split(",");
+
+        return lineParts[1];
+    }
+
+    public String getAta(String line) {
+        String[] lineParts = line.split(",");
+
+        return lineParts[1];
+    }
+
     @Override
     public void setBroker(String url) {
         this.brokerUrl = url;
-
-
     }
 
     @Override
@@ -85,18 +108,30 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
     }
 
     @Override
-    public void setFCL(String fcl) {
-        logger.warn("Fail-condition-on-latency is not supported on this worker");
-    }
-
-    @Override
     public void start() {
         logger.info("Starting the sender worker");
 
         try {
             String[] args = QuiverArgumentBuilder.buildArguments("send", brokerUrl, duration, messageSize);
 
+            ConsoleHijacker ch = ConsoleHijacker.getInstance();
+
+            ch.start();
+
             QuiverArrowJms.doMain(args);
+
+            String data = ch.stop();
+
+            rateWriter.setConverter(new QuiverRateConverter());
+
+            String[] lines = StringUtils.split(data,"\n");
+
+            for (String line : lines) {
+                rateWriter.writeLine(getEta(line), getAta(line));
+            }
+
+            rateWriter.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }

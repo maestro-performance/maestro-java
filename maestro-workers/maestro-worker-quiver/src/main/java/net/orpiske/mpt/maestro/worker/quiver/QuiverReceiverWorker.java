@@ -16,14 +16,21 @@
 
 package net.orpiske.mpt.maestro.worker.quiver;
 
+import net.orpiske.mpt.common.ConsoleHijacker;
 import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
 import net.orpiske.mpt.common.worker.Stats;
+import net.orpiske.mpt.common.writers.LatencyWriter;
+import net.orpiske.mpt.common.writers.RateWriter;
 import net.ssorj.quiver.QuiverArrowJms;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class QuiverReceiverWorker implements MaestroReceiverWorker {
     private static final Logger logger = LoggerFactory.getLogger(QuiverReceiverWorker.class);
+
+    private RateWriter rateWriter;
+    private LatencyWriter latencyWriter;
 
     private String brokerUrl;
     private String duration;
@@ -33,6 +40,38 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
     @Override
     public void setBroker(String url) {
         this.brokerUrl = url;
+    }
+
+    @Override
+    public RateWriter getRateWriter() {
+        return rateWriter;
+    }
+
+    @Override
+    public void setRateWriter(RateWriter rateWriter) {
+        this.rateWriter = rateWriter;
+    }
+
+    @Override
+    public void setLatencyWriter(LatencyWriter latencyWriter) {
+        this.latencyWriter = latencyWriter;
+    }
+
+    @Override
+    public LatencyWriter getLatencyWriter() {
+        return latencyWriter;
+    }
+
+    public String getCreationTime(String line) {
+        String[] lineParts = line.split(",");
+
+        return lineParts[1];
+    }
+
+    public String getArrivalTime(String line) {
+        String[] lineParts = line.split(",");
+
+        return lineParts[2];
     }
 
     @Override
@@ -91,7 +130,31 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
         try {
             String[] args = QuiverArgumentBuilder.buildArguments("receive", brokerUrl, duration, messageSize);
 
+            ConsoleHijacker ch = ConsoleHijacker.getInstance();
+
+            ch.start();
+
             QuiverArrowJms.doMain(args);
+
+            String data = ch.stop();
+
+            rateWriter.setConverter(new QuiverRateConverter());
+
+            String[] lines = StringUtils.split(data,"\n");
+
+            for (String line : lines) {
+                String createdTime = getCreationTime(line);
+                String arrivedTime = getArrivalTime(line);
+
+                long latency = Long.parseLong(arrivedTime) - Long.parseLong(createdTime);
+
+                latencyWriter.writeLine(latency);
+                rateWriter.writeLine(createdTime, arrivedTime);
+            }
+
+            rateWriter.close();
+            latencyWriter.close();
+
         } catch (Exception e) {
             e.printStackTrace();
         }
