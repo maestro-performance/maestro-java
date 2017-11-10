@@ -1,5 +1,6 @@
 package net.orpiske.mpt.common.writers;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -20,9 +21,9 @@ public class RateWriter {
      * @param path file path
      * @throws IOException
      */
-    public RateWriter(final String path) throws IOException {
+    public RateWriter(final File path) throws IOException {
 
-        fileStream = new FileOutputStream(path );
+        fileStream = new FileOutputStream(path);
         gzipStream = new GZIPOutputStream(fileStream);
 
         gzipStream.write(new String("eta;ata\n").getBytes());

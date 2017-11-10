@@ -1,5 +1,6 @@
 package net.orpiske.mpt.common.writers;
 
+import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -27,7 +28,7 @@ public class LatencyWriter {
      * @param path file path
      * @throws IOException
      */
-    public LatencyWriter(final String path) throws IOException {
+    public LatencyWriter(final File path) throws IOException {
         fileStream = new FileOutputStream(path);
         logWriter = new HistogramLogWriter(fileStream);
 
