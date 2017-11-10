@@ -18,19 +18,67 @@ package net.orpiske.mpt.common.worker;
 
 public interface MaestroWorker {
 
-
+    /**
+     * Set the broker url
+     * @param url
+     */
     void setBroker(final String url);
+
+    /**
+     * Set the test duration
+     * @param duration
+     */
     void setDuration(final String duration);
+
+    /**
+     * Set the log level
+     * @param logLevel
+     */
     void setLogLevel(final String logLevel);
+
+    /**
+     * Sets the number of concurrent connections
+     * @param parallelCount
+     */
     void setParallelCount(final String parallelCount);
+
+    /**
+     * Sets the message size
+     * @param messageSize
+     */
     void setMessageSize(final String messageSize);
+
+    /**
+     * Sets the throttling value
+     * @param value
+     */
     void setThrottle(final String value);
+
+    /**
+     * Sets the target rate
+     * @param rate
+     */
     void setRate(final String rate);
 
-
+    /**
+     * Starts the test
+     */
     void start();
+
+    /**
+     * Stops the test execution
+     */
     void stop();
+
+    /**
+     * Halt the daemons
+     */
     void halt();
+
+    /**
+     * Provides the updated performance snapshot
+     * @return
+     */
     Stats stats();
 
 }
