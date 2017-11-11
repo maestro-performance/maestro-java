@@ -17,7 +17,6 @@ package net.orpiske.mpt.common;
 
 /**
  * Application constants
- * @author Otavio R. Piske <angusyoung@gmail.com>
  *
  */
 public final class Constants {
