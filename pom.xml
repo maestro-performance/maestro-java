@@ -24,6 +24,9 @@
     <artifactId>maestro-java</artifactId>
     <packaging>pom</packaging>
     <version>1.2.0-SNAPSHOT</version>
+    <properties>
+        <api.version.site>1.2</api.version.site>
+    </properties>
 
     <repositories>
         <repository>
@@ -32,6 +35,153 @@
         </repository>
     </repositories>
 
+    <scm>
+        <developerConnection>scm:git:git@github.com:orpiske/maestro-java.git</developerConnection>
+        <url>https://github.com/orpiske/maestro-java</url>
+        <tag>HEAD</tag>
+    </scm>
+
+    <licenses>
+        <license>
+            <name>The Apache Software License, Version 2.0</name>
+            <url>http://www.apache.org/licenses/LICENSE-2.0.txt</url>
+            <distribution>manual</distribution>
+            <comments>A business-friendly OSS license</comments>
+        </license>
+    </licenses>
+
+    <profiles>
+        <profile>
+            <id>Delivery</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>maven-assembly-plugin</artifactId>
+                        <configuration>
+                            <descriptors>
+                                <descriptor>
+                                    src/main/assembly/mpd-assembly.xml
+                                </descriptor>
+                            </descriptors>
+                            <appendAssemblyId>true</appendAssemblyId>
+                        </configuration>
+
+                        <executions>
+                            <execution>
+                                <id>dist-assembly</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>single</goal>
+                                </goals>
+                            </execution>
+                        </executions>
+                    </plugin>
+
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-release-plugin</artifactId>
+                        <version>2.5.3</version>
+                    </plugin>
+                </plugins>
+            </build>
+
+            <distributionManagement>
+                <repository>
+                    <id>bintray-orpiske-libs-release</id>
+                    <name>orpiske-libs-release</name>
+                    <url>https://api.bintray.com/maven/orpiske/libs-release/maestro-java/;publish=1</url>
+                </repository>
+            </distributionManagement>
+        </profile>
+
+
+
+        <profile>
+            <id>Site</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-site-plugin</artifactId>
+                        <version>3.6</version>
+                        <dependencies>
+                            <dependency>
+                                <groupId>org.apache.maven.wagon</groupId>
+                                <artifactId>wagon-ssh</artifactId>
+                                <version>3.0.0</version>
+                            </dependency>
+                        </dependencies>
+                    </plugin>
+                </plugins>
+            </build>
+
+            <distributionManagement>
+                <site>
+                    <id>orpiske.net</id>
+                    <name>SDM</name>
+                    <url>${orpiske.site}/files/javadoc/maestro-java-${api.version.site}/</url>
+                </site>
+            </distributionManagement>
+
+            <reporting>
+                <plugins>
+                    <plugin>
+                        <groupId>org.apache.maven.plugins</groupId>
+                        <artifactId>maven-javadoc-plugin</artifactId>
+                        <version>3.0.0-M1</version>
+
+                        <configuration>
+                            <!-- force links to Java 8 documentation (should happen automatically
+                                but doesn't) -->
+                            <javaApiLinks>
+                                <property>
+                                    <name>api_1.8</name>
+                                    <value>https://docs.oracle.com/javase/8/docs/api/</value>
+                                </property>
+                            </javaApiLinks>
+                            <!-- add license notice -->
+                            <bottom>
+                                <![CDATA[This documentation was released into the public domain.]]>
+                            </bottom>
+                            <tags>
+                                <tag>
+                                    <name>apiNote</name>
+                                    <placement>a</placement>
+                                    <head>API Note:</head>
+                                </tag>
+                                <tag>
+                                    <name>implSpec</name>
+                                    <placement>a</placement>
+                                    <head>Implementation Requirements:</head>
+                                </tag>
+                                <tag>
+                                    <name>implNote</name>
+                                    <placement>a</placement>
+                                    <head>Implementation Note:</head>
+                                </tag>
+                                <tag><name>param</name></tag>
+                                <tag><name>return</name></tag>
+                                <tag><name>throws</name></tag>
+                                <tag><name>since</name></tag>
+                                <tag><name>version</name></tag>
+                                <tag><name>serialData</name></tag>
+                                <tag><name>see</name></tag>
+                            </tags>
+                        </configuration>
+                    </plugin>
+
+                </plugins>
+            </reporting>
+
+        </profile>
+    </profiles>
 
     <modules>
         <module>maestro-common</module>
