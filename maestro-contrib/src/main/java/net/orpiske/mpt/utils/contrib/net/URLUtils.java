@@ -23,7 +23,7 @@ import java.net.URL;
 /**
  * URL manipulation utilities
  * 
- * @author Otavio R. Piske <angusyoung@gmail.com>
+ *
  * 
  */
 public final class URLUtils {
@@ -39,8 +39,7 @@ public final class URLUtils {
 
 	
 	/**
-	 * Given a filename with (mostly) standard parameters (ie.: 
-	 * abc.php?c=123&d=456)
+	 * Given a filename with (mostly) standard parameters
 	 * it will remove the parameters and return only the file name
 	 * @param filename the input file name
 	 * @return the file name without parameters

@@ -38,7 +38,7 @@ import java.util.HashMap;
 
 /**
  * Implements network resource exchange via HTTP
- * @author Otavio R. Piske <angusyoung@gmail.com>
+ *
  *
  */
 public class HttpResourceExchange implements ResourceExchange {

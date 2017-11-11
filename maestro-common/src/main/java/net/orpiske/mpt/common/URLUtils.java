@@ -10,7 +10,7 @@ public class URLUtils {
     private URLUtils() {}
 
     /**
-     * The client uses the mqtt://<host> url format so it's the same as the C client. This
+     * The client uses the mqtt://{host} url format so it's the same as the C client. This
      * method ensures that the URLs follows this format.
      * @param url
      * @return

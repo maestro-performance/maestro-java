@@ -5,6 +5,12 @@
 
     <modelVersion>4.0.0</modelVersion>
 
+    <parent>
+        <groupId>net.orpiske</groupId>
+        <artifactId>maestro-java</artifactId>
+        <version>1.2.0-SNAPSHOT</version>
+    </parent>
+
     <groupId>net.orpiske</groupId>
     <artifactId>maestro-worker</artifactId>
     <version>1.2.0-SNAPSHOT</version>

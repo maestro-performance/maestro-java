@@ -1,6 +1,7 @@
 package net.orpiske.mpt.test;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
+import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
 import net.orpiske.mpt.maestro.notes.PingResponse;
@@ -42,7 +43,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     /**
      * Start connected peers
-     * @throws MqttException
+     * @throws MaestroConnectionException
      * @throws IOException
      */
     protected void startServices() throws MaestroConnectionException, IOException {
@@ -54,7 +55,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     /**
      * Try to guess the number of connected peers
      * @return the number of connected peers (best guess)
-     * @throws MqttException
+     * @throws MaestroConnectionException
      * @throws IOException
      * @throws InterruptedException
      */

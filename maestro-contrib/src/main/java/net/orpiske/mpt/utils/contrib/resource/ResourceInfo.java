@@ -17,7 +17,7 @@ package net.orpiske.mpt.utils.contrib.resource;
 
 /**
  * Holds resource information
- * @author Otavio R. Piske <angusyoung@gmail.com>
+ *
  *
  */
 public class ResourceInfo {

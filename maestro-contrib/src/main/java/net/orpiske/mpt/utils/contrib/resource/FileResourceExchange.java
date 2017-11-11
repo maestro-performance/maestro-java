@@ -28,7 +28,7 @@ import java.net.URI;
 
 /**
  * Implements file/local resource exchange
- * @author Otavio R. Piske <angusyoung@gmail.com>
+ *
  *
  */
 public class FileResourceExchange implements ResourceExchange {

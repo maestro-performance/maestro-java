@@ -17,7 +17,7 @@ package net.orpiske.mpt.utils.contrib.resource.exceptions;
 
 /**
  * Network exchanges exception
- * @author Otavio R. Piske <angusyoung@gmail.com>
+ *
  *
  */
 @SuppressWarnings("serial")

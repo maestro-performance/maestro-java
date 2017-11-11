@@ -35,7 +35,7 @@ import java.net.URISyntaxException;
 /**
  * Implements the download function.
  *
- * @author Otavio R. Piske <angusyoung@gmail.com>
+ *
  *
  */
 public class Downloader {

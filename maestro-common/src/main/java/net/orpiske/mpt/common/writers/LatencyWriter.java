@@ -11,7 +11,7 @@ import org.HdrHistogram.*;
 /**
  * Writes the latency data in the HdrHistogram data format.
  *
- * @see https://github.com/HdrHistogram/HdrHistogram/
+ * @see <a href="https://github.com/HdrHistogram/HdrHistogram/">HdrHistogram</a> documentation
  */
 public class LatencyWriter {
     private OutputStream fileStream = null;

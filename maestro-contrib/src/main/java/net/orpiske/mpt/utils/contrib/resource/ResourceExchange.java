@@ -22,7 +22,7 @@ import java.net.URI;
 
 /**
  * Defines a simple interface for VFS-based exchanges
- * @author Otavio R. Piske <angusyoung@gmail.com>
+ *
  *
  */
 public interface ResourceExchange {
