@@ -33,7 +33,6 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
 
     private String brokerUrl;
     private String duration;
-    private boolean verbose = false;
     private String messageSize;
 
     public RateWriter getRateWriter() {
@@ -73,9 +72,7 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
 
     @Override
     public void setLogLevel(String logLevel) {
-        if (logLevel.equals("debug") || logLevel.equals("DEBUG")) {
-            this.verbose = true;
-        }
+        // NO-OP
     }
 
     @Override

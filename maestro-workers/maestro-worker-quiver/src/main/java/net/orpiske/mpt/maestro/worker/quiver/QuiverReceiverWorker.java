@@ -34,7 +34,6 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
 
     private String brokerUrl;
     private String duration;
-    private boolean verbose = false;
     private String messageSize;
 
     @Override
@@ -86,9 +85,7 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
 
     @Override
     public void setLogLevel(String logLevel) {
-        if (logLevel.equals("debug") || logLevel.equals("DEBUG")) {
-            this.verbose = true;
-        }
+        // NO-OP
     }
 
     @Override
