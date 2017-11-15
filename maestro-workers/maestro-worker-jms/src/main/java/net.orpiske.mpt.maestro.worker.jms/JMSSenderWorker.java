@@ -16,43 +16,35 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
+import net.orpiske.mpt.common.content.ContentStrategy;
+import net.orpiske.mpt.common.content.FixedSizeContent;
+import net.orpiske.mpt.common.content.VariableSizeContent;
 import net.orpiske.mpt.common.worker.MaestroSenderWorker;
 import net.orpiske.mpt.common.worker.Stats;
 import net.orpiske.mpt.common.writers.RateWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-import javax.jms.ConnectionFactory;
-import javax.jms.Destination;
-import javax.naming.Context;
-import javax.naming.InitialContext;
-import java.util.Hashtable;
 
 public class JMSSenderWorker implements MaestroSenderWorker {
-    private MaestroJMSClient client;
+    private static final Logger logger = LoggerFactory.getLogger(JMSSenderWorker.class);
 
-    public JMSSenderWorker() {
+    private ContentStrategy contentStrategy;
+    private RateWriter rateWriter;
 
-//        String url = System.getProperty("arrow.jms.url");
-//        assert url != null;
-//
-//        Hashtable<Object, Object> env = new Hashtable<Object, Object>();
-//        env.put("connectionFactory.ConnectionFactory", url);
-//        env.put("queue.queueLookup", path);
-//
-//        Context context = new InitialContext(env);;
-//        ConnectionFactory factory = (ConnectionFactory) context.lookup("ConnectionFactory");
-//        Destination queue = (Destination) context.lookup("queueLookup");
-    }
+    private String url;
+    private int messageSize;
 
     public RateWriter getRateWriter() {
-        return null;
+        return rateWriter;
     }
 
     public void setRateWriter(RateWriter rateWriter) {
-
+        this.rateWriter = rateWriter;
     }
 
     public void setBroker(String url) {
-
+        this.url = url;
     }
 
     public void setDuration(String duration) {
@@ -68,7 +60,18 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
     public void setMessageSize(String messageSize) {
+        if (messageSize.contains("~")) {
+            this.messageSize = Integer.parseInt(messageSize.replace("~", ""));
 
+            contentStrategy = new VariableSizeContent();
+        }
+        else {
+            this.messageSize = Integer.parseInt(messageSize);
+
+            contentStrategy = new FixedSizeContent();
+        }
+
+        contentStrategy.setSize(this.messageSize);
     }
 
     public void setThrottle(String value) {
@@ -80,7 +83,22 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
     public void start() {
+        try {
+            JMSSenderClient client;
 
+            client = new JMSSenderClient();
+
+            client.setUrl(url);
+            client.setContentStrategy(contentStrategy);
+
+            client.start();
+
+            while (true) {
+                client.sendMessages();
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     public void stop() {

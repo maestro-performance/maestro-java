@@ -27,134 +27,75 @@
 package net.orpiske.mpt.maestro.worker.jms;
 
 import javax.jms.*;
-import java.io.PrintWriter;
-import java.util.Arrays;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import java.net.URI;
+import java.util.Hashtable;
 
 class Client {
-    protected ConnectionFactory factory;
+    private Hashtable<Object, Object> env = new Hashtable<Object, Object>();
+
+    private String url;
     protected Destination queue;
-    protected String operation;
-    protected int messages;
     protected int bodySize;
-    protected int transactionSize;
 
-    protected boolean durable;
+    protected boolean durable = false;
 
-    protected int sent;
-    protected int received;
+    protected Connection conn;
 
     Client() {}
 
-    Client(ConnectionFactory factory, Destination queue, String operation,
-           int messages, int bodySize, int transactionSize, String[] flags) {
-        this.factory = factory;
-        this.queue = queue;
-        this.operation = operation;
-        this.messages = messages;
-        this.bodySize = bodySize;
-        this.transactionSize = transactionSize;
+    void start() throws Exception {
+        env.put("connectionFactory.ConnectionFactory", url);
 
-        this.durable = Arrays.asList(flags).contains("durable");
+        URI uri = new URI(url);
+        String path = uri.getPath().substring(1);
 
-        this.sent = 0;
-        this.received = 0;
+        env.put("queue.queueLookup", path);
+
+        Context context = new InitialContext(env);
+
+        ConnectionFactory factory = (ConnectionFactory) context.lookup("ConnectionFactory");
+
+        Destination queue = (Destination) context.lookup("queueLookup");
+        setQueue(queue);
+
+        conn = factory.createConnection();
+        conn.start();
     }
 
-    void run() {
+    void stop() {
         try {
-            Connection conn = factory.createConnection();
-            conn.start();
-
-            final Session session;
-
-            if (transactionSize > 0) {
-                session = conn.createSession(true, Session.SESSION_TRANSACTED);
-            } else {
-                session = conn.createSession(false, Session.AUTO_ACKNOWLEDGE);
-            }
-
-            if (operation.equals("send")) {
-                sendMessages(session);
-            } else if (operation.equals("receive")) {
-                receiveMessages(session);
-            } else {
-                throw new java.lang.IllegalStateException();
-            }
-
-            if (transactionSize > 0) {
-                session.commit();
-            }
-
             conn.close();
         } catch (JMSException e) {
-            throw new RuntimeException(e);
+            e.printStackTrace();
         }
     }
 
-    private static PrintWriter getOutputWriter() {
-        return new PrintWriter(System.out);
+    public Destination getQueue() {
+        return queue;
     }
 
-    void sendMessages(Session session) throws JMSException {
-        PrintWriter out = getOutputWriter();
-        MessageProducer producer = session.createProducer(queue);
-
-        if (durable) {
-            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-        } else {
-            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-        }
-
-        producer.setDisableMessageTimestamp(true);
-
-        byte[] body = new byte[bodySize];
-        Arrays.fill(body, (byte) 120);
-
-        while (sent < messages) {
-            BytesMessage message = session.createBytesMessage();
-            long stime = System.currentTimeMillis();
-
-            message.writeBytes(body);
-            message.setLongProperty("SendTime", stime);
-
-            producer.send(message);
-
-            out.printf("%s,%d\n", message.getJMSMessageID(), stime);
-
-            sent += 1;
-
-            if (transactionSize > 0 && (sent % transactionSize) == 0) {
-                session.commit();
-            }
-        }
-
-        out.flush();
+    public void setQueue(Destination queue) {
+        this.queue = queue;
     }
 
-    void receiveMessages(Session session) throws JMSException {
-        PrintWriter out = getOutputWriter();
-        MessageConsumer consumer = session.createConsumer(queue);
 
-        while (received < messages) {
-            BytesMessage message = (BytesMessage) consumer.receive();
-
-            if (message == null) {
-                throw new RuntimeException("Null receive");
-            }
-
-            String id = message.getJMSMessageID();
-            long stime = message.getLongProperty("SendTime");
-            long rtime = System.currentTimeMillis();
-
-            out.printf("%s,%d,%d\n", id, stime, rtime);
-
-            received += 1;
-
-            if (transactionSize > 0 && (received % transactionSize) == 0) {
-                session.commit();
-            }
-        }
-
-        out.flush();
+    public int getBodySize() {
+        return bodySize;
     }
+
+    public boolean isDurable() {
+        return durable;
+    }
+
+    protected Connection getConnection() {
+        return conn;
+    }
+
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
+
 }
