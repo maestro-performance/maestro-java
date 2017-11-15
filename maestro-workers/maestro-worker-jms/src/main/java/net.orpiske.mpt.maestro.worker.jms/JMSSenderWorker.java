@@ -35,7 +35,7 @@ import java.time.Instant;
 import java.util.concurrent.BlockingQueue;
 
 
-public class JMSSenderWorker implements MaestroSenderWorker {
+public class JMSSenderWorker implements MaestroSenderWorker, Runnable {
     private static final Logger logger = LoggerFactory.getLogger(JMSSenderWorker.class);
 
     private ContentStrategy contentStrategy;
@@ -174,5 +174,10 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     @Override
     public void setQueue(BlockingQueue<WorkerSnapshot> queue) {
         this.queue = queue;
+    }
+
+    @Override
+    public void run() {
+        start();
     }
 }

@@ -2,10 +2,7 @@ package net.orpiske.mpt.maestro.worker.base;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
-import net.orpiske.mpt.common.worker.MaestroInspectorWorker;
-import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
-import net.orpiske.mpt.common.worker.MaestroSenderWorker;
-import net.orpiske.mpt.common.worker.MaestroWorker;
+import net.orpiske.mpt.common.worker.*;
 import net.orpiske.mpt.common.writers.LatencyWriter;
 import net.orpiske.mpt.common.writers.RateWriter;
 import net.orpiske.mpt.maestro.client.AbstractMaestroPeer;
@@ -19,6 +16,8 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
+import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 public class MaestroWorkerManager extends AbstractMaestroPeer {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
@@ -28,6 +27,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
     private String host;
 
     private File logDir;
+    private BlockingQueue<WorkerSnapshot> queue;
 
     private boolean running = true;
 
@@ -40,6 +40,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         this.worker = worker;
         this.host = host;
         this.logDir = logDir;
+
+        queue = new LinkedBlockingQueue<>();
     }
 
     @Override
@@ -212,6 +214,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 
                 mrw.setRateWriter(new RateWriter(new File(testLogDir,"receiver-rate.gz")));
                 mrw.setLatencyWriter(new LatencyWriter(new File(testLogDir,"receiver-latency.hdr")));
+                mrw.setQueue(queue);
             } catch (IOException e) {
                 e.printStackTrace();
             }
@@ -232,11 +235,20 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
                 File testLogDir = findTestLogDir();
 
                 msw.setRateWriter(new RateWriter(new File(testLogDir, "sender-rate.gz")));
+                msw.setQueue(queue);
             } catch (IOException e) {
                 e.printStackTrace();
             }
 
-            msw.start();
+
+            if (msw instanceof Runnable) {
+                Thread t1 = new Thread((Runnable) msw,"worker1");
+
+                t1.start();
+            }
+            else {
+                msw.start();
+            }
         }
 
         replyOk();

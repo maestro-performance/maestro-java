@@ -30,7 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.concurrent.BlockingQueue;
 
-public class JMSReceiverWorker implements MaestroReceiverWorker {
+public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
     private static final Logger logger = LoggerFactory.getLogger(JMSReceiverWorker.class);
 
     private BlockingQueue<WorkerSnapshot> queue;
@@ -141,5 +141,10 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     @Override
     public void setQueue(BlockingQueue<WorkerSnapshot> queue) {
         this.queue = queue;
+    }
+
+    @Override
+    public void run() {
+        start();
     }
 }
