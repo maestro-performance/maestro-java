@@ -23,12 +23,14 @@ import net.orpiske.mpt.common.duration.TestDuration;
 import net.orpiske.mpt.common.duration.TestDurationBuilder;
 import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.common.worker.MaestroSenderWorker;
+import net.orpiske.mpt.common.worker.ThroughputStats;
 import net.orpiske.mpt.common.worker.WorkerSnapshot;
 import net.orpiske.mpt.common.writers.RateWriter;
 import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.BlockingQueue;
 
@@ -97,6 +99,8 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
     public void start() {
+        int sampleInterval = 10;
+
         try {
             JMSSenderClient client;
 
@@ -110,12 +114,15 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             Instant startTime = Instant.now();
 
             long count = 0;
+            long lastCount = 0;
 
             WorkerSnapshot snapshot = new WorkerSnapshot();
 
             long interval = 1000000 / rate;
 
             snapshot.setStartTime(startTime);
+
+            Instant last = startTime;
 
             while (duration.canContinue(snapshot)) {
                 snapshot.setCount(count);
@@ -128,6 +135,18 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
                 client.sendMessages();
                 count++;
+
+                long elapsedSecs = now.getEpochSecond() - last.getEpochSecond();
+                if (elapsedSecs >= sampleInterval) {
+                    long processedCount = count - lastCount;
+
+                    ThroughputStats tp = new ThroughputStats();
+
+                    tp.setCount(processedCount);
+                    tp.setDuration(Duration.ofMillis(now.toEpochMilli() - last.toEpochMilli()));
+
+
+                }
 
                 queue.add(SerializationUtils.clone(snapshot));
 
@@ -154,6 +173,6 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     @Override
     public void setQueue(BlockingQueue<WorkerSnapshot> queue) {
-
+        this.queue = queue;
     }
 }

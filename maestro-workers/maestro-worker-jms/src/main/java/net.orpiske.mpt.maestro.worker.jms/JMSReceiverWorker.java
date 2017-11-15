@@ -16,12 +16,28 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
+import net.orpiske.mpt.common.duration.TestDuration;
+import net.orpiske.mpt.common.duration.TestDurationBuilder;
+import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
+import net.orpiske.mpt.common.worker.MessageInfo;
 import net.orpiske.mpt.common.worker.WorkerSnapshot;
 import net.orpiske.mpt.common.writers.LatencyWriter;
 import net.orpiske.mpt.common.writers.RateWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.Instant;
+import java.util.concurrent.BlockingQueue;
 
 public class JMSReceiverWorker implements MaestroReceiverWorker {
+    private static final Logger logger = LoggerFactory.getLogger(JMSReceiverWorker.class);
+
+    private BlockingQueue<WorkerSnapshot> queue;
+    private TestDuration duration;
+
+    private String url;
+
     public void setFCL(String fcl) {
 
     }
@@ -47,7 +63,11 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     }
 
     public void setDuration(String duration) {
-
+        try {
+            this.duration = TestDurationBuilder.build(duration);
+        } catch (DurationParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setLogLevel(String logLevel) {
@@ -59,15 +79,47 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     }
 
     public void setMessageSize(String messageSize) {
-
+        // NO-OP
     }
 
     public void setThrottle(String value) {
-
+        // NO-OP
     }
 
     public void setRate(String rate) {
+        try {
+            JMSReceiverClient client = new JMSReceiverClient();
 
+            client = new JMSReceiverClient();
+
+            client.setUrl(url);
+
+            client.start();
+
+            Instant startTime = Instant.now();
+
+            long count = 0;
+
+            WorkerSnapshot snapshot = new WorkerSnapshot();
+
+            snapshot.setStartTime(startTime);
+
+
+            while (duration.canContinue(snapshot)) {
+                snapshot.setCount(count);
+
+                Instant now = Instant.now();
+                snapshot.setNow(now);
+
+                count++;
+                MessageInfo info = client.receiveMessages();
+
+
+
+            }
+        } catch (Exception e) {
+
+        }
     }
 
     public void start() {
@@ -84,5 +136,10 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
     public WorkerSnapshot stats() {
         return null;
+    }
+
+    @Override
+    public void setQueue(BlockingQueue<WorkerSnapshot> queue) {
+        this.queue = queue;
     }
 }

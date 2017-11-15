@@ -19,7 +19,6 @@ package net.orpiske.mpt.maestro.worker.jms;
 import net.orpiske.mpt.common.content.ContentStrategy;
 
 import javax.jms.*;
-import java.util.Arrays;
 
 public class JMSSenderClient extends Client {
     private ContentStrategy contentStrategy;

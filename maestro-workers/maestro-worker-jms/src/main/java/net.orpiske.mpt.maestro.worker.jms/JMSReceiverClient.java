@@ -16,10 +16,13 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
+import net.orpiske.mpt.common.worker.MessageInfo;
+
 import javax.jms.BytesMessage;
 import javax.jms.JMSException;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
+import java.time.Instant;
 
 public class JMSReceiverClient extends Client {
     private Session session;
@@ -33,15 +36,18 @@ public class JMSReceiverClient extends Client {
         consumer = session.createConsumer(queue);
     }
 
-    void receiveMessages(Session session) throws JMSException {
+    MessageInfo receiveMessages() throws JMSException {
         BytesMessage message = (BytesMessage) consumer.receive();
 
         if (message == null) {
             throw new RuntimeException("Null receive");
         }
 
-        String id = message.getJMSMessageID();
-        long stime = message.getLongProperty("SendTime");
-        long rtime = System.currentTimeMillis();
+        MessageInfo ret = new MessageInfo();
+
+        long ctime = message.getLongProperty("SendTime");
+        ret.setCreationTime(Instant.ofEpochMilli(ctime));
+
+        return ret;
     }
 }
