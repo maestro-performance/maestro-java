@@ -16,6 +16,8 @@
 
 package net.orpiske.mpt.common.worker;
 
+import java.util.concurrent.BlockingQueue;
+
 public interface MaestroWorker {
 
     /**
@@ -79,6 +81,14 @@ public interface MaestroWorker {
      * Provides the updated performance snapshot
      * @return
      */
-    Stats stats();
+    WorkerSnapshot stats();
+
+
+    /**
+     * Sets a queue for IPC-like communication of the performance
+     * snapshot
+     * @param queue
+     */
+    void setQueue(BlockingQueue<WorkerSnapshot> queue);
 
 }

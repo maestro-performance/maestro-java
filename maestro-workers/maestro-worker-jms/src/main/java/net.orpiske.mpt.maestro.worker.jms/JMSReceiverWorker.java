@@ -17,7 +17,7 @@
 package net.orpiske.mpt.maestro.worker.jms;
 
 import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
-import net.orpiske.mpt.common.worker.Stats;
+import net.orpiske.mpt.common.worker.WorkerSnapshot;
 import net.orpiske.mpt.common.writers.LatencyWriter;
 import net.orpiske.mpt.common.writers.RateWriter;
 
@@ -82,7 +82,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
     }
 
-    public Stats stats() {
+    public WorkerSnapshot stats() {
         return null;
     }
 }

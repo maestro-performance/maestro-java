@@ -20,7 +20,7 @@ import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.test.AbstractTestProfile;
-import net.orpiske.mpt.common.TestDuration;
+import net.orpiske.mpt.common.duration.TestDuration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

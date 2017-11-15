@@ -38,7 +38,7 @@ public class SimpleTestProfile extends IncrementalTestProfile implements SingleP
         logger.info("Parallel count increment value is {}", getParallelCountIncrement());
 
         logger.info("Setting duration to {}", getDuration());
-        maestro.setDuration(this.getDuration().getDuration());
+        maestro.setDuration(this.getDuration().toString());
 
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
         maestro.setFCL(getMaximumLatency());

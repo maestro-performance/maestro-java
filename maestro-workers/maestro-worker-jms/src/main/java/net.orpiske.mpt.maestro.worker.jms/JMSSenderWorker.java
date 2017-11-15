@@ -19,11 +19,18 @@ package net.orpiske.mpt.maestro.worker.jms;
 import net.orpiske.mpt.common.content.ContentStrategy;
 import net.orpiske.mpt.common.content.FixedSizeContent;
 import net.orpiske.mpt.common.content.VariableSizeContent;
+import net.orpiske.mpt.common.duration.TestDuration;
+import net.orpiske.mpt.common.duration.TestDurationBuilder;
+import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.common.worker.MaestroSenderWorker;
-import net.orpiske.mpt.common.worker.Stats;
+import net.orpiske.mpt.common.worker.WorkerSnapshot;
 import net.orpiske.mpt.common.writers.RateWriter;
+import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.time.Instant;
+import java.util.concurrent.BlockingQueue;
 
 
 public class JMSSenderWorker implements MaestroSenderWorker {
@@ -31,9 +38,12 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     private ContentStrategy contentStrategy;
     private RateWriter rateWriter;
+    private TestDuration duration;
+    private BlockingQueue<WorkerSnapshot> queue;
 
     private String url;
     private int messageSize;
+    private long rate;
 
     public RateWriter getRateWriter() {
         return rateWriter;
@@ -48,7 +58,11 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
     public void setDuration(String duration) {
-
+        try {
+            this.duration = TestDurationBuilder.build(duration);
+        } catch (DurationParseException e) {
+            e.printStackTrace();
+        }
     }
 
     public void setLogLevel(String logLevel) {
@@ -79,7 +93,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
     public void setRate(String rate) {
-
+        this.rate = Long.parseLong(rate);
     }
 
     public void start() {
@@ -93,8 +107,33 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
             client.start();
 
-            while (true) {
+            Instant startTime = Instant.now();
+
+            long count = 0;
+
+            WorkerSnapshot snapshot = new WorkerSnapshot();
+
+            long interval = 1000000 / rate;
+
+            snapshot.setStartTime(startTime);
+
+            while (duration.canContinue(snapshot)) {
+                snapshot.setCount(count);
+
+                Instant now = Instant.now();
+                snapshot.setNow(now);
+
+                Instant eta = now.plusNanos(interval * 1000);
+                snapshot.setEta(eta);
+
                 client.sendMessages();
+                count++;
+
+                queue.add(SerializationUtils.clone(snapshot));
+
+                if (eta.isBefore(now)) {
+                    Thread.sleep(now.minusNanos(eta.getNano()).getNano());
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();
@@ -109,7 +148,12 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     }
 
-    public Stats stats() {
+    public WorkerSnapshot stats() {
         return null;
+    }
+
+    @Override
+    public void setQueue(BlockingQueue<WorkerSnapshot> queue) {
+
     }
 }

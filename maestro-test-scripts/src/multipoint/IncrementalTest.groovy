@@ -65,7 +65,7 @@ testProfile.setRateIncrement(100)
 testProfile.setInitialParallelCount(2)
 testProfile.setCeilingParallelCount(2)
 
-testProfile.setDuration(TestDuration.newInstance("120s"));
+testProfile.setDuration(TestDurationBuilder.build("120s"));
 testProfile.setMessageSize(MessageSize.variable(256));
 testProfile.setMaximumLatency(200)
 

@@ -18,13 +18,15 @@ package net.orpiske.mpt.maestro.worker.quiver;
 
 import net.orpiske.mpt.common.ConsoleHijacker;
 import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
-import net.orpiske.mpt.common.worker.Stats;
+import net.orpiske.mpt.common.worker.WorkerSnapshot;
 import net.orpiske.mpt.common.writers.LatencyWriter;
 import net.orpiske.mpt.common.writers.RateWriter;
 import net.ssorj.quiver.QuiverArrowJms;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.concurrent.BlockingQueue;
 
 public class QuiverReceiverWorker implements MaestroReceiverWorker {
     private static final Logger logger = LoggerFactory.getLogger(QuiverReceiverWorker.class);
@@ -168,7 +170,12 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
     }
 
     @Override
-    public Stats stats() {
+    public WorkerSnapshot stats() {
         return null;
+    }
+
+    @Override
+    public void setQueue(BlockingQueue<WorkerSnapshot> queue) {
+        // NO-OP ... unnecessary for this worker type
     }
 }

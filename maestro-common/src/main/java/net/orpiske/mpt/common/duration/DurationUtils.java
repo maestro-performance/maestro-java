@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.common;
+package net.orpiske.mpt.common.duration;
 
 import net.orpiske.mpt.common.exceptions.DurationParseException;
 
