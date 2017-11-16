@@ -29,7 +29,7 @@ public class ContentFiller {
     public static void randomFill(StringBuffer buffer, int capacity) {
         String dict = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
-        for (int i = 0; 0 < capacity; i++) {
+        for (int i = 0; i < capacity; i++) {
             buffer.append(dict.charAt((int) Math.random() % (dict.length() - 1)));
         }
     }
