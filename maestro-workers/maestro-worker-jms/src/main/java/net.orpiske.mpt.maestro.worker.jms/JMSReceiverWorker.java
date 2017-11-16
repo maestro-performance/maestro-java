@@ -25,6 +25,7 @@ import net.orpiske.mpt.common.worker.WorkerOptions;
 import net.orpiske.mpt.common.worker.WorkerSnapshot;
 import net.orpiske.mpt.common.writers.LatencyWriter;
 import net.orpiske.mpt.common.writers.RateWriter;
+import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -97,9 +98,8 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
             long count = 0;
 
             snapshot = new WorkerSnapshot();
-
+            snapshot.setId(Thread.currentThread().getId());
             snapshot.setStartTime(startTime);
-
 
             while (duration.canContinue(snapshot) && isRunning()) {
                 snapshot.setCount(count);
@@ -109,8 +109,9 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
 
                 count++;
                 MessageInfo info = client.receiveMessages();
+
                 logger.trace("Received: {}", info);
-                queue.add(snapshot);
+                queue.add(SerializationUtils.clone(snapshot));
             }
         } catch (Exception e) {
             logger.error("Unable to start the worker: {}", e.getMessage(), e);

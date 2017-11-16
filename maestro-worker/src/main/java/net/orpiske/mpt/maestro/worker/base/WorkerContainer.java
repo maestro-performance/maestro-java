@@ -15,7 +15,12 @@ import java.util.concurrent.BlockingQueue;
 public final class WorkerContainer {
     private static WorkerContainer instance;
     private WorkerOptions workerOptions;
-    private List<MaestroWorker> workers = new LinkedList<>();
+    private List<WorkerRuntimeInfo> workers = new LinkedList<>();
+
+    private class WorkerRuntimeInfo {
+        public Thread thread;
+        public MaestroWorker worker;
+    }
 
     private WorkerContainer() {}
 
@@ -54,20 +59,24 @@ public final class WorkerContainer {
         int parallelCount = Integer.parseInt(workerOptions.getParallelCount());
 
         for (int i = 0; i < parallelCount; i++) {
-            MaestroWorker w = clazz.newInstance();
+            WorkerRuntimeInfo ri = new WorkerRuntimeInfo();
 
-            w.setWorkerOptions(workerOptions);
-            w.setQueue(snapshots);
+            ri.worker = clazz.newInstance();
 
-            w.start();
-            workers.add(w);
+            ri.worker.setWorkerOptions(workerOptions);
+            ri.worker.setQueue(snapshots);
+
+            ri.thread = new Thread((Runnable) ri.worker);
+            ri.thread.start();
+
+            workers.add(ri);
         }
     }
 
 
     public void stop() {
-        for (MaestroWorker worker : workers) {
-            worker.stop();
+        for (WorkerRuntimeInfo ri : workers) {
+            ri.worker.stop();
         }
     }
 }

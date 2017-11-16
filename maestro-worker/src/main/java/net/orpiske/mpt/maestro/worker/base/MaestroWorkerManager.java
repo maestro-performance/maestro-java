@@ -32,6 +32,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 
     private BlockingQueue<WorkerSnapshot> queue;
     private WorkerOptions workerOptions;
+    private Thread writerThread;
 
     private boolean running = true;
 
@@ -74,7 +75,6 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         logger.trace("Sending the OK reponse from {}", this.toString());
         OkResponse okResponse = new OkResponse();
 
-
         okResponse.setName(clientName + "@" + host);
         okResponse.setId(getId());
 
@@ -88,7 +88,6 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
     private void replyInternalError() {
         logger.trace("Sending the internal error reponse from {}", this.toString());
         InternalError errResponse = new InternalError();
-
 
         errResponse.setName(clientName + "@" + host);
         errResponse.setId(getId());
@@ -214,7 +213,17 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 
     private void doWorkerStart() {
         try {
+            logger.debug("Starting the worker {}", workerClass);
             container.start(workerClass, queue);
+
+            logger.debug("Creating the writer thread");
+            WorkerDataWriter wdw = new WorkerDataWriter(queue);
+
+            writerThread = new Thread(wdw);
+
+            logger.debug("Starting the writer thread");
+            writerThread.start();
+
             replyOk();
         } catch (Exception e) {
             logger.error("Unable to start workers from the container: {}", e.getMessage(), e);

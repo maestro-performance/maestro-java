@@ -119,6 +119,7 @@ public class JMSSenderWorker implements MaestroSenderWorker, Runnable {
             long lastCount = 0;
 
             snapshot = new WorkerSnapshot();
+            snapshot.setId(Thread.currentThread().getId());
 
             long interval = 1000000 / rate;
 
