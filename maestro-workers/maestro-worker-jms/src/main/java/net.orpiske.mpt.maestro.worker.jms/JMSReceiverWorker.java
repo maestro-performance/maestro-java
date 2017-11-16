@@ -87,6 +87,12 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
     }
 
     public void setRate(String rate) {
+
+    }
+
+    public void start() {
+        logger.info("Starting the test");
+
         try {
             JMSReceiverClient client = new JMSReceiverClient();
 
@@ -113,16 +119,11 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
 
                 count++;
                 MessageInfo info = client.receiveMessages();
-
-
-
+                logger.trace("Received: {}", info);
             }
         } catch (Exception e) {
 
         }
-    }
-
-    public void start() {
 
     }
 
