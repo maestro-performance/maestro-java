@@ -16,10 +16,13 @@
 
 package net.orpiske.mpt.common.content;
 
+import java.util.Random;
+
 /**
  * A variable-size String message content
  */
 public class VariableSizeContent implements ContentStrategy {
+    private Random random = new Random();
     private StringBuffer buffer;
     private int limit = 0;
 
@@ -29,8 +32,8 @@ public class VariableSizeContent implements ContentStrategy {
      */
     @Override
     public void setSize(int size) {
-        int lowerBound = 0;
-        int upperBound = 0;
+        int lowerBound;
+        int upperBound;
 
         if (size >= 100) {
             int bound = ((size / 100) * 5);
@@ -56,8 +59,6 @@ public class VariableSizeContent implements ContentStrategy {
      */
     @Override
     public String getContent() {
-        int start = ((int) Math.random() % limit);
-
-        return buffer.substring(start);
+        return buffer.substring(random.nextInt(limit));
     }
 }

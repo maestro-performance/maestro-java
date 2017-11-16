@@ -16,21 +16,28 @@
 
 package net.orpiske.mpt.common.content;
 
+import java.util.Random;
+
 /**
  * Random content filler
  */
 public class ContentFiller {
+    private static final String dict = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
 
     /**
-     * Fills a buffer with random data
+     * Fills a buffer with random data. The buffer must be empty, otherwise data will be
+     * appended
      * @param buffer the buffer to fill
      * @param capacity the buffer capacity
      */
     public static void randomFill(StringBuffer buffer, int capacity) {
-        String dict = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz";
+        Random r =  new Random();
 
+        int limit = dict.length() - 1;
         for (int i = 0; i < capacity; i++) {
-            buffer.append(dict.charAt((int) Math.random() % (dict.length() - 1)));
+            int pos = r.nextInt(limit);
+
+            buffer.append(dict.charAt(pos));
         }
     }
 }
