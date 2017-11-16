@@ -24,6 +24,7 @@ import net.orpiske.mpt.common.duration.TestDurationBuilder;
 import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.common.worker.MaestroSenderWorker;
 import net.orpiske.mpt.common.worker.ThroughputStats;
+import net.orpiske.mpt.common.worker.WorkerOptions;
 import net.orpiske.mpt.common.worker.WorkerSnapshot;
 import net.orpiske.mpt.common.writers.RateWriter;
 import org.apache.commons.lang3.SerializationUtils;
@@ -55,27 +56,7 @@ public class JMSSenderWorker implements MaestroSenderWorker, Runnable {
         this.rateWriter = rateWriter;
     }
 
-    public void setBroker(String url) {
-        this.url = url;
-    }
-
-    public void setDuration(String duration) {
-        try {
-            this.duration = TestDurationBuilder.build(duration);
-        } catch (DurationParseException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void setLogLevel(String logLevel) {
-
-    }
-
-    public void setParallelCount(String parallelCount) {
-
-    }
-
-    public void setMessageSize(String messageSize) {
+    private void setMessageSize(String messageSize) {
         if (messageSize.contains("~")) {
             this.messageSize = Integer.parseInt(messageSize.replace("~", ""));
 
@@ -90,12 +71,28 @@ public class JMSSenderWorker implements MaestroSenderWorker, Runnable {
         contentStrategy.setSize(this.messageSize);
     }
 
-    public void setThrottle(String value) {
-
+    private void setRate(String rate) {
+        this.rate = Long.parseLong(rate);
     }
 
-    public void setRate(String rate) {
-        this.rate = Long.parseLong(rate);
+    private void setBroker(String url) {
+        this.url = url;
+    }
+
+    private void setDuration(String duration) {
+        try {
+            this.duration = TestDurationBuilder.build(duration);
+        } catch (DurationParseException e) {
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public void setWorkerOptions(WorkerOptions workerOptions) {
+        setRate(workerOptions.getRate());
+        setDuration(workerOptions.getDuration());
+        setBroker(workerOptions.getBrokerURL());
+        setMessageSize(workerOptions.getMessageSize());
     }
 
     public void start() {

@@ -9,6 +9,7 @@ import net.orpiske.mpt.maestro.client.AbstractMaestroPeer;
 import net.orpiske.mpt.maestro.client.MaestroClient;
 import net.orpiske.mpt.maestro.client.MaestroTopics;
 import net.orpiske.mpt.maestro.notes.*;
+import net.orpiske.mpt.maestro.notes.InternalError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,25 +24,32 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
 
     private MaestroClient client;
-    private MaestroWorker worker;
+    private WorkerContainer container = WorkerContainer.getInstance();
     private String host;
+    private Class<MaestroWorker> workerClass;
 
     private File logDir;
+
     private BlockingQueue<WorkerSnapshot> queue;
+    private WorkerOptions workerOptions;
 
     private boolean running = true;
 
-    public MaestroWorkerManager(final String url, final String role, final String host, final File logDir, final MaestroWorker worker) throws MaestroException {
-        super(url, role);
 
-        client = new MaestroClient(url);
+    public MaestroWorkerManager(final String maestroURL, final String role, final String host, final File logDir,
+                                final Class<MaestroWorker> workerClass) throws MaestroException
+    {
+        super(maestroURL, role);
+
+        client = new MaestroClient(maestroURL);
         client.connect();
 
-        this.worker = worker;
+        this.workerClass = workerClass;
         this.host = host;
         this.logDir = logDir;
 
         queue = new LinkedBlockingQueue<>();
+        workerOptions = new WorkerOptions();
     }
 
     @Override
@@ -63,6 +71,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
     }
 
     private void replyOk() {
+        logger.trace("Sending the OK reponse from {}", this.toString());
         OkResponse okResponse = new OkResponse();
 
 
@@ -71,6 +80,21 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 
         try {
             client.publish(MaestroTopics.MAESTRO_TOPIC, okResponse);
+        } catch (Exception e) {
+            logger.error("Unable to publish the OK response {}", e.getMessage(), e);
+        }
+    }
+
+    private void replyInternalError() {
+        logger.trace("Sending the internal error reponse from {}", this.toString());
+        InternalError errResponse = new InternalError();
+
+
+        errResponse.setName(clientName + "@" + host);
+        errResponse.setId(getId());
+
+        try {
+            client.publish(MaestroTopics.MAESTRO_TOPIC, errResponse);
         } catch (Exception e) {
             logger.error("Unable to publish the OK response {}", e.getMessage(), e);
         }
@@ -152,113 +176,135 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 
         switch (note.getOption()) {
             case MAESTRO_NOTE_OPT_SET_BROKER: {
-                worker.setBroker(note.getValue());
+                workerOptions.setBrokerURL(note.getValue());
                 break;
             }
             case MAESTRO_NOTE_OPT_SET_DURATION_TYPE: {
-                worker.setDuration(note.getValue());
+                workerOptions.setDuration(note.getValue());
                 break;
             }
             case MAESTRO_NOTE_OPT_SET_LOG_LEVEL: {
-                worker.setLogLevel(note.getValue());
+                workerOptions.setLogLevel(note.getValue());
                 break;
             }
             case MAESTRO_NOTE_OPT_SET_PARALLEL_COUNT: {
-                worker.setParallelCount(note.getValue());
+                workerOptions.setParallelCount(note.getValue());
                 break;
             }
             case MAESTRO_NOTE_OPT_SET_MESSAGE_SIZE: {
-                worker.setMessageSize(note.getValue());
+                workerOptions.setMessageSize(note.getValue());
                 break;
             }
             case MAESTRO_NOTE_OPT_SET_THROTTLE: {
-                worker.setThrottle(note.getValue());
+                workerOptions.setThrottle(note.getValue());
                 break;
             }
             case MAESTRO_NOTE_OPT_SET_RATE: {
-                worker.setRate(note.getValue());
+                workerOptions.setRate(note.getValue());
                 break;
             }
             case MAESTRO_NOTE_OPT_FCL: {
-                if (worker instanceof MaestroReceiverWorker) {
-                    MaestroReceiverWorker mrw = (MaestroReceiverWorker) worker;
-
-                    mrw.setFCL(note.getValue());
-                    break;
-                }
-
+                workerOptions.setFcl(note.getValue());
             }
         }
 
+        container.setWorkerOptions(workerOptions);
         replyOk();
+    }
+
+    private void doWorkerStart() {
+        try {
+            container.start(workerClass, queue);
+            replyOk();
+        } catch (Exception e) {
+            logger.error("Unable to start workers from the container: {}", e.getMessage(), e);
+            replyInternalError();
+        }
     }
 
     protected void noteArrived(StartInspector note) {
         logger.debug("Start inspector request received");
 
-        if (worker instanceof MaestroInspectorWorker) {
-            worker.start();
+        if (MaestroInspectorWorker.class.isAssignableFrom(workerClass)) {
+            doWorkerStart();
         }
-
-        replyOk();
     }
 
     protected void noteArrived(StartReceiver note) {
         logger.debug("Start receiver request received");
 
-        if (worker instanceof MaestroReceiverWorker) {
-            MaestroReceiverWorker mrw = (MaestroReceiverWorker) worker;
-
-            try {
-                File testLogDir = findTestLogDir();
-
-                mrw.setRateWriter(new RateWriter(new File(testLogDir,"receiver-rate.gz")));
-                mrw.setLatencyWriter(new LatencyWriter(new File(testLogDir,"receiver-latency.hdr")));
-                mrw.setQueue(queue);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-            worker.start();
+        if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
+            doWorkerStart();
         }
 
-        replyOk();
+//        if (worker instanceof MaestroReceiverWorker) {
+//            MaestroReceiverWorker mrw = (MaestroReceiverWorker) worker;
+//
+//            try {
+//                File testLogDir = findTestLogDir();
+//
+//                mrw.setRateWriter(new RateWriter(new File(testLogDir,"receiver-rate.gz")));
+//                mrw.setLatencyWriter(new LatencyWriter(new File(testLogDir,"receiver-latency.hdr")));
+//                mrw.setQueue(queue);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//
+//            if (mrw instanceof Runnable) {
+//                logger.debug("Thread-capable receiver detected. Launching threads");
+//                Thread t1 = new Thread((Runnable) mrw,"receiver-worker-1");
+//
+//                t1.start();
+//            }
+//            else {
+//                logger.debug("Single-thread sender detected.");
+//                worker.start();
+//            }
+//        }
+//        replyOk();
     }
 
     protected void noteArrived(StartSender note) {
         logger.debug("Start sender request received");
 
-        if (worker instanceof MaestroSenderWorker) {
-            MaestroSenderWorker msw = (MaestroSenderWorker) worker;
-
-            try {
-                File testLogDir = findTestLogDir();
-
-                msw.setRateWriter(new RateWriter(new File(testLogDir, "sender-rate.gz")));
-                msw.setQueue(queue);
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-
-
-            if (msw instanceof Runnable) {
-                Thread t1 = new Thread((Runnable) msw,"worker1");
-
-                t1.start();
-            }
-            else {
-                msw.start();
-            }
+        if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
+            doWorkerStart();
         }
 
-        replyOk();
+
+//        if (worker instanceof MaestroSenderWorker) {
+//            MaestroSenderWorker msw = (MaestroSenderWorker) worker;
+//
+//            try {
+//                File testLogDir = findTestLogDir();
+//
+//                msw.setRateWriter(new RateWriter(new File(testLogDir, "sender-rate.gz")));
+//                msw.setQueue(queue);
+//            } catch (IOException e) {
+//                e.printStackTrace();
+//            }
+//
+//
+//            if (msw instanceof Runnable) {
+//                logger.debug("Thread-capable sender detected. Launching threads");
+//                Thread t1 = new Thread((Runnable) msw,"sender-worker-1");
+//
+//                t1.start();
+//            }
+//            else {
+//                logger.debug("Single-thread sender detected.");
+//                msw.start();
+//            }
+//        }
+//        replyOk();
     }
 
     protected void noteArrived(StopInspector note) {
         logger.debug("Stop inspector request received");
 
-        if (worker instanceof MaestroInspectorWorker) {
-            worker.stop();
+        if (MaestroInspectorWorker.class.isAssignableFrom(workerClass)) {
+            container.stop();
         }
 
         replyOk();
@@ -267,8 +313,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
     protected void noteArrived(StopReceiver note) {
         logger.debug("Stop receiver request received");
 
-        if (worker instanceof MaestroReceiverWorker) {
-            worker.stop();
+        if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
+            container.stop();
         }
 
         replyOk();
@@ -277,8 +323,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
     protected void noteArrived(StopSender note) {
         logger.debug("Stop sender request received");
 
-        if (worker instanceof MaestroSenderWorker) {
-            worker.stop();
+        if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
+            container.stop();
         }
 
         replyOk();
@@ -286,7 +332,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 
     protected void noteArrived(TestFailedNotification note) {
         logger.info("Test failed notification received from {}: {}", note.getName(), note.getMessage());
-        worker.stop();
+        container.stop();
     }
 
     protected void noteArrived(TestSuccessfulNotification note) {

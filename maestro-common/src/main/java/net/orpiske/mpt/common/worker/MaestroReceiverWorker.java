@@ -24,11 +24,6 @@ import net.orpiske.mpt.common.writers.RateWriter;
  */
 public interface MaestroReceiverWorker extends MaestroWorker {
 
-    /**
-     * Sets the fail-condition-on-latency fail condition
-     * @param fcl
-     */
-    void setFCL(final String fcl);
 
     /**
      * Gets the rate writer

@@ -18,6 +18,7 @@ package net.orpiske.mpt.maestro.worker.quiver;
 
 import net.orpiske.mpt.common.ConsoleHijacker;
 import net.orpiske.mpt.common.worker.MaestroSenderWorker;
+import net.orpiske.mpt.common.worker.WorkerOptions;
 import net.orpiske.mpt.common.worker.WorkerSnapshot;
 import net.orpiske.mpt.common.writers.RateWriter;
 import net.ssorj.quiver.QuiverArrowJms;
@@ -45,25 +46,23 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
         this.rateWriter = rateWriter;
     }
 
-    public String getEta(String line) {
+    private String getEta(String line) {
         String[] lineParts = line.split(",");
 
         return lineParts[1];
     }
 
-    public String getAta(String line) {
+    private String getAta(String line) {
         String[] lineParts = line.split(",");
 
         return lineParts[1];
     }
 
-    @Override
-    public void setBroker(String url) {
+    private void setBroker(String url) {
         this.brokerUrl = url;
     }
 
-    @Override
-    public void setDuration(String duration) {
+    private void setDuration(String duration) {
         if (duration.matches("[a-zA-Z]")) {
             // TODO: decide what to do here.
         }
@@ -72,19 +71,9 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
         }
     }
 
-    @Override
-    public void setLogLevel(String logLevel) {
-        // NO-OP
-    }
 
-    @Override
-    public void setParallelCount(String parallelCount) {
-        // TODO: unsupported ... what to do?
-        logger.warn("Concurrent connections are not supported on this worker");
-    }
 
-    @Override
-    public void setMessageSize(String messageSize) {
+    private void setMessageSize(String messageSize) {
         if (messageSize.contains("~")) {
             this.messageSize = messageSize.replace("~", "");
 
@@ -97,13 +86,10 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
     }
 
     @Override
-    public void setThrottle(String value) {
-        logger.warn("Concurrent connections are not supported on this worker");
-    }
-
-    @Override
-    public void setRate(String rate) {
-        logger.warn("Target rate is not supported on this worker");
+    public void setWorkerOptions(WorkerOptions workerOptions) {
+        setDuration(workerOptions.getDuration());
+        setBroker(workerOptions.getBrokerURL());
+        setMessageSize(workerOptions.getMessageSize());
     }
 
     @Override

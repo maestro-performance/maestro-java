@@ -21,6 +21,7 @@ import net.orpiske.mpt.common.duration.TestDurationBuilder;
 import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
 import net.orpiske.mpt.common.worker.MessageInfo;
+import net.orpiske.mpt.common.worker.WorkerOptions;
 import net.orpiske.mpt.common.worker.WorkerSnapshot;
 import net.orpiske.mpt.common.writers.LatencyWriter;
 import net.orpiske.mpt.common.writers.RateWriter;
@@ -38,10 +39,6 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
 
     private String url;
 
-    public void setFCL(String fcl) {
-
-    }
-
     public RateWriter getRateWriter() {
         return null;
     }
@@ -58,11 +55,15 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
         return null;
     }
 
-    public void setBroker(String url) {
+    private void setFCL(String fcl) {
+
+    }
+
+    private void setBroker(String url) {
         this.url = url;
     }
 
-    public void setDuration(String duration) {
+    private void setDuration(String duration) {
         try {
             this.duration = TestDurationBuilder.build(duration);
         } catch (DurationParseException e) {
@@ -70,24 +71,12 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
         }
     }
 
-    public void setLogLevel(String logLevel) {
 
-    }
 
-    public void setParallelCount(String parallelCount) {
-
-    }
-
-    public void setMessageSize(String messageSize) {
-        // NO-OP
-    }
-
-    public void setThrottle(String value) {
-        // NO-OP
-    }
-
-    public void setRate(String rate) {
-
+    @Override
+    public void setWorkerOptions(WorkerOptions workerOptions) {
+        setBroker(workerOptions.getBrokerURL());
+        setDuration(workerOptions.getDuration());
     }
 
     public void start() {

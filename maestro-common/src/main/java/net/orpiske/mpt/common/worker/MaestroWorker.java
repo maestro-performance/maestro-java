@@ -21,46 +21,10 @@ import java.util.concurrent.BlockingQueue;
 public interface MaestroWorker {
 
     /**
-     * Set the broker url
-     * @param url
+     * Sets the options for this worker
+     * @param workerOptions
      */
-    void setBroker(final String url);
-
-    /**
-     * Set the test duration
-     * @param duration
-     */
-    void setDuration(final String duration);
-
-    /**
-     * Set the log level
-     * @param logLevel
-     */
-    void setLogLevel(final String logLevel);
-
-    /**
-     * Sets the number of concurrent connections
-     * @param parallelCount
-     */
-    void setParallelCount(final String parallelCount);
-
-    /**
-     * Sets the message size
-     * @param messageSize
-     */
-    void setMessageSize(final String messageSize);
-
-    /**
-     * Sets the throttling value
-     * @param value
-     */
-    void setThrottle(final String value);
-
-    /**
-     * Sets the target rate
-     * @param rate
-     */
-    void setRate(final String rate);
+    void setWorkerOptions(WorkerOptions workerOptions);
 
     /**
      * Starts the test

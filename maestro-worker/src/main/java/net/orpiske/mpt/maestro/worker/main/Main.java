@@ -109,33 +109,34 @@ public class Main {
         try {
             Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
 
-            MaestroWorker w = clazz.newInstance();
+            MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroUrl, role, host, new File(logDir), clazz);
 
-            MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroUrl, role, host, new File(logDir), w);
-
-            if (w instanceof MaestroSenderWorker) {
-                executor.start(MaestroTopics.MAESTRO_SENDER_TOPICS);
-            }
-            else {
-                if (w instanceof MaestroReceiverWorker) {
+            switch (role) {
+                case "sender": {
+                    executor.start(MaestroTopics.MAESTRO_SENDER_TOPICS);
+                    executor.run();
+                    break;
+                }
+                case "receiver": {
                     executor.start(MaestroTopics.MAESTRO_RECEIVER_TOPICS);
+                    executor.run();
+                    break;
                 }
-                else {
-                    if (w instanceof MaestroInspectorWorker) {
-                        executor.start(MaestroTopics.MAESTRO_INSPECTOR_TOPICS);
-                    }
+                case "inspector": {
+                    executor.start(MaestroTopics.MAESTRO_INSPECTOR_TOPICS);
+                    executor.run();
+                    break;
+                }
+                default: {
+                    System.err.println("Invalid role name: " + role);
+                    System.exit(1);
+                    break;
                 }
             }
-
-            executor.run();
 
             System.out.println("Finished execution ...");
         } catch (MaestroException e) {
             System.err.println(e.getMessage());
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
             e.printStackTrace();
         } catch (ClassNotFoundException e) {
             e.printStackTrace();

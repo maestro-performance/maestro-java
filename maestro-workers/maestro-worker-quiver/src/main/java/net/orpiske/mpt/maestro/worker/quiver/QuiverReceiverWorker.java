@@ -18,6 +18,7 @@ package net.orpiske.mpt.maestro.worker.quiver;
 
 import net.orpiske.mpt.common.ConsoleHijacker;
 import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
+import net.orpiske.mpt.common.worker.WorkerOptions;
 import net.orpiske.mpt.common.worker.WorkerSnapshot;
 import net.orpiske.mpt.common.writers.LatencyWriter;
 import net.orpiske.mpt.common.writers.RateWriter;
@@ -38,10 +39,8 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
     private String duration;
     private String messageSize;
 
-    @Override
-    public void setBroker(String url) {
-        this.brokerUrl = url;
-    }
+
+
 
     @Override
     public RateWriter getRateWriter() {
@@ -63,20 +62,23 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
         return latencyWriter;
     }
 
-    public String getCreationTime(String line) {
+    private String getCreationTime(String line) {
         String[] lineParts = line.split(",");
 
         return lineParts[1];
     }
 
-    public String getArrivalTime(String line) {
+    private String getArrivalTime(String line) {
         String[] lineParts = line.split(",");
 
         return lineParts[2];
     }
 
-    @Override
-    public void setDuration(String duration) {
+    private void setBroker(String url) {
+        this.brokerUrl = url;
+    }
+
+    private void setDuration(String duration) {
         if (duration.matches("[a-zA-Z]")) {
             // TODO: decide what to do here.
         }
@@ -85,19 +87,7 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
         }
     }
 
-    @Override
-    public void setLogLevel(String logLevel) {
-        // NO-OP
-    }
-
-    @Override
-    public void setParallelCount(String parallelCount) {
-        // TODO: unsupported ... what to do?
-        logger.warn("Concurrent connections are not supported on this worker");
-    }
-
-    @Override
-    public void setMessageSize(String messageSize) {
+    private void setMessageSize(String messageSize) {
         if (messageSize.contains("~")) {
             logger.warn("Variable message sizes are not supported on this worker");
             this.messageSize = messageSize.replace("~", "");
@@ -107,19 +97,11 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
         }
     }
 
-    @Override
-    public void setThrottle(String value) {
-        logger.warn("Concurrent connections are not supported on this worker");
-    }
 
     @Override
-    public void setRate(String rate) {
-        logger.warn("Target rate is not supported on this worker");
-    }
-
-    @Override
-    public void setFCL(String fcl) {
-        logger.warn("Fail-condition-on-latency is not supported on this worker");
+    public void setWorkerOptions(WorkerOptions workerOptions) {
+        setBroker(workerOptions.getBrokerURL());
+        setDuration(workerOptions.getDuration());
     }
 
     @Override

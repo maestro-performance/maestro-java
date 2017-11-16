@@ -14,7 +14,7 @@ import java.io.File;
 public class MaestroWorkerExecutor extends AbstractMaestroExecutor {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerExecutor.class);
 
-    public MaestroWorkerExecutor(final String url, final String role, final String host, final File logDir, final MaestroWorker worker) throws MaestroException {
-        super(new MaestroWorkerManager(url, role, host, logDir, worker));
+    public MaestroWorkerExecutor(final String url, final String role, final String host, final File logDir, final Class<MaestroWorker> workerClass) throws MaestroException {
+        super(new MaestroWorkerManager(url, role, host, logDir, workerClass));
     }
 }
