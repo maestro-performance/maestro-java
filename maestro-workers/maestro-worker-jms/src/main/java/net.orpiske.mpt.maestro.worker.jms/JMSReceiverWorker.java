@@ -110,6 +110,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
                 count++;
                 MessageInfo info = client.receiveMessages();
                 logger.trace("Received: {}", info);
+                queue.add(snapshot);
             }
         } catch (Exception e) {
             logger.error("Unable to start the worker: {}", e.getMessage(), e);
