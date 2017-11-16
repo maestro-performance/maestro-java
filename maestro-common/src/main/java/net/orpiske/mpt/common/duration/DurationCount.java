@@ -29,7 +29,7 @@ public class DurationCount implements TestDuration {
     }
 
     public boolean canContinue(WorkerSnapshot snapshot) {
-        if (snapshot.getCount() >= count) {
+        if (snapshot.getCount() <= count) {
             return true;
         }
 
