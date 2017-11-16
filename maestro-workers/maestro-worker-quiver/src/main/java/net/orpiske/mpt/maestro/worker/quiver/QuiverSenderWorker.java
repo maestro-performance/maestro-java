@@ -38,6 +38,8 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
     private String duration;
     private String messageSize;
 
+    private boolean running = false;
+
     public RateWriter getRateWriter() {
         return rateWriter;
     }
@@ -101,6 +103,7 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
 
             ConsoleHijacker ch = ConsoleHijacker.getInstance();
 
+            running = true;
             ch.start();
 
             QuiverArrowJms.doMain(args);
@@ -118,18 +121,27 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
             rateWriter.close();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Unable to start the worker: {}", e.getMessage(), e);
+        }
+        finally {
+            running = false;
         }
     }
 
     @Override
-    public void stop() {
+    public boolean isRunning() {
+        return running;
+    }
 
+    @Override
+    public void stop() {
+        running = false;
+        Thread.currentThread().stop();
     }
 
     @Override
     public void halt() {
-
+        stop();
     }
 
     @Override

@@ -38,6 +38,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
     private TestDuration duration;
 
     private String url;
+    private boolean running = false;
 
     public RateWriter getRateWriter() {
         return null;
@@ -87,6 +88,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
 
             client.setUrl(url);
 
+            running = true;
             client.start();
 
             Instant startTime = Instant.now();
@@ -98,7 +100,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
             snapshot.setStartTime(startTime);
 
 
-            while (duration.canContinue(snapshot)) {
+            while (duration.canContinue(snapshot) && isRunning()) {
                 snapshot.setCount(count);
 
                 Instant now = Instant.now();
@@ -109,19 +111,30 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
                 logger.trace("Received: {}", info);
             }
         } catch (Exception e) {
-
+            logger.error("Unable to start the worker: {}", e.getMessage(), e);
+        }
+        finally {
+            running = false;
         }
 
     }
 
+    @Override
+    public boolean isRunning() {
+        return running;
+    }
+
+    @Override
     public void stop() {
-
+        running = false;
     }
 
+    @Override
     public void halt() {
-
+        stop();
     }
 
+    @Override
     public WorkerSnapshot stats() {
         return null;
     }

@@ -48,6 +48,8 @@ public class JMSSenderWorker implements MaestroSenderWorker, Runnable {
     private int messageSize;
     private long rate;
 
+    private boolean running = false;
+
     public RateWriter getRateWriter() {
         return rateWriter;
     }
@@ -107,6 +109,7 @@ public class JMSSenderWorker implements MaestroSenderWorker, Runnable {
             client.setUrl(url);
             client.setContentStrategy(contentStrategy);
 
+            running = true;
             client.start();
 
             Instant startTime = Instant.now();
@@ -122,7 +125,7 @@ public class JMSSenderWorker implements MaestroSenderWorker, Runnable {
 
             Instant last = startTime;
 
-            while (duration.canContinue(snapshot)) {
+            while (duration.canContinue(snapshot) && isRunning()) {
                 snapshot.setCount(count);
 
                 Instant now = Instant.now();
@@ -153,18 +156,29 @@ public class JMSSenderWorker implements MaestroSenderWorker, Runnable {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Unable to start the worker: {}", e.getMessage(), e);
+        }
+        finally {
+            running = false;
         }
     }
 
+    @Override
+    public boolean isRunning() {
+        return running;
+    }
+
+    @Override
     public void stop() {
-
+        running = false;
     }
 
+    @Override
     public void halt() {
-
+        stop();
     }
 
+    @Override
     public WorkerSnapshot stats() {
         return null;
     }

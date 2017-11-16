@@ -39,7 +39,7 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
     private String duration;
     private String messageSize;
 
-
+    private boolean running = false;
 
 
     @Override
@@ -113,6 +113,7 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
 
             ConsoleHijacker ch = ConsoleHijacker.getInstance();
 
+            running = true;
             ch.start();
 
             QuiverArrowJms.doMain(args);
@@ -137,18 +138,27 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
             latencyWriter.close();
 
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Unable to start the worker: {}", e.getMessage(), e);
+        }
+        finally {
+            running = false;
         }
     }
 
     @Override
-    public void stop() {
+    public boolean isRunning() {
+        return running;
+    }
 
+    @Override
+    public void stop() {
+        running = false;
+        Thread.currentThread().stop();
     }
 
     @Override
     public void halt() {
-
+        stop();
     }
 
     @Override
