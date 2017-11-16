@@ -18,7 +18,16 @@ package net.orpiske.mpt.common.worker;
 
 import java.util.concurrent.BlockingQueue;
 
+/**
+ * A common interface for any type of Maestro worker.
+ */
 public interface MaestroWorker {
+
+    /**
+     * Checks whether the worker is in running state.
+     * @return true if it is in running state or false otherwise
+     */
+    boolean isRunning();
 
     /**
      * Sets the options for this worker
@@ -51,7 +60,7 @@ public interface MaestroWorker {
     /**
      * Sets a queue for IPC-like communication of the performance
      * snapshot
-     * @param queue
+     * @param queue the blocking queue to use as IPC-like mechanism
      */
     void setQueue(BlockingQueue<WorkerSnapshot> queue);
 
