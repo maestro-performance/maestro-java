@@ -21,11 +21,20 @@ import java.io.Serializable;
 import java.time.Instant;
 
 public final class WorkerSnapshot implements Serializable {
+    private long id;
     private long count;
     private Instant startTime;
     private Instant now;
     private Instant eta;
     private PerfStats stats;
+
+    public long getId() {
+        return id;
+    }
+
+    public void setId(long id) {
+        this.id = id;
+    }
 
     public long getCount() {
         return count;
@@ -89,5 +98,17 @@ public final class WorkerSnapshot implements Serializable {
         result = 31 * result + (eta != null ? eta.hashCode() : 0);
         result = 31 * result + (stats != null ? stats.hashCode() : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "WorkerSnapshot{" +
+                "id=" + id +
+                ", count=" + count +
+                ", startTime=" + startTime +
+                ", now=" + now +
+                ", eta=" + eta +
+                ", stats=" + stats +
+                '}';
     }
 }
