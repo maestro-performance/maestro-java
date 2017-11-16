@@ -28,4 +28,11 @@ public class MessageInfo {
     public void setCreationTime(Instant creationTime) {
         this.creationTime = creationTime;
     }
+
+    @Override
+    public String toString() {
+        return "MessageInfo{" +
+                "creationTime=" + creationTime +
+                '}';
+    }
 }
