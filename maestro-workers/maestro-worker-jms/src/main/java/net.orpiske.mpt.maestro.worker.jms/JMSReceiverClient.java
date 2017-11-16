@@ -18,10 +18,7 @@ package net.orpiske.mpt.maestro.worker.jms;
 
 import net.orpiske.mpt.common.worker.MessageInfo;
 
-import javax.jms.BytesMessage;
-import javax.jms.JMSException;
-import javax.jms.MessageConsumer;
-import javax.jms.Session;
+import javax.jms.*;
 import java.time.Instant;
 
 public class JMSReceiverClient extends Client {
@@ -37,7 +34,7 @@ public class JMSReceiverClient extends Client {
     }
 
     MessageInfo receiveMessages() throws JMSException {
-        BytesMessage message = (BytesMessage) consumer.receive();
+        TextMessage message = (TextMessage) consumer.receive();
 
         if (message == null) {
             throw new RuntimeException("Null receive");

@@ -59,7 +59,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
     }
 
     public void setBroker(String url) {
-
+        this.url = url;
     }
 
     public void setDuration(String duration) {
@@ -95,8 +95,6 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
 
         try {
             JMSReceiverClient client = new JMSReceiverClient();
-
-            client = new JMSReceiverClient();
 
             client.setUrl(url);
 
