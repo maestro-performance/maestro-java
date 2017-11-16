@@ -43,6 +43,7 @@ public class JMSSenderWorker implements MaestroSenderWorker, Runnable {
     private RateWriter rateWriter;
     private TestDuration duration;
     private BlockingQueue<WorkerSnapshot> queue;
+    private WorkerSnapshot snapshot;
 
     private String url;
     private int messageSize;
@@ -117,7 +118,7 @@ public class JMSSenderWorker implements MaestroSenderWorker, Runnable {
             long count = 0;
             long lastCount = 0;
 
-            WorkerSnapshot snapshot = new WorkerSnapshot();
+            snapshot = new WorkerSnapshot();
 
             long interval = 1000000 / rate;
 
@@ -180,7 +181,7 @@ public class JMSSenderWorker implements MaestroSenderWorker, Runnable {
 
     @Override
     public WorkerSnapshot stats() {
-        return null;
+        return snapshot;
     }
 
     @Override

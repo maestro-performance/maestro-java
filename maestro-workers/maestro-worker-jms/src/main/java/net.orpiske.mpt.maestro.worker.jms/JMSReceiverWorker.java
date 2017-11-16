@@ -36,6 +36,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
 
     private BlockingQueue<WorkerSnapshot> queue;
     private TestDuration duration;
+    private WorkerSnapshot snapshot;
 
     private String url;
     private boolean running = false;
@@ -95,7 +96,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
 
             long count = 0;
 
-            WorkerSnapshot snapshot = new WorkerSnapshot();
+            snapshot = new WorkerSnapshot();
 
             snapshot.setStartTime(startTime);
 
@@ -136,7 +137,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
 
     @Override
     public WorkerSnapshot stats() {
-        return null;
+        return snapshot;
     }
 
     @Override
