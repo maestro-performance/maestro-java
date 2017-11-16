@@ -104,7 +104,7 @@ public class Main {
     public static void main(String[] args) {
         processCommand(args);
 
-        LogConfigurator.trace();
+        LogConfigurator.debug();
 
         try {
             Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
