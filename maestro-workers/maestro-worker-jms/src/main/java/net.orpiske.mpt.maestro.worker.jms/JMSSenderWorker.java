@@ -100,6 +100,7 @@ public class JMSSenderWorker implements MaestroSenderWorker, Runnable {
 
     public void start() {
         int sampleInterval = 10;
+        logger.info("Starting the test");
 
         try {
             JMSSenderClient client;
@@ -145,7 +146,7 @@ public class JMSSenderWorker implements MaestroSenderWorker, Runnable {
                     tp.setCount(processedCount);
                     tp.setDuration(Duration.ofMillis(now.toEpochMilli() - last.toEpochMilli()));
 
-
+                    logger.trace("Throughput stats: {}", tp);
                 }
 
                 queue.add(SerializationUtils.clone(snapshot));

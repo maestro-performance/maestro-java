@@ -37,4 +37,12 @@ public class LatencyStats implements PerfStats {
     public void setElapsed(Duration elapsed) {
         this.elapsed = elapsed;
     }
+
+    @Override
+    public String toString() {
+        return "LatencyStats{" +
+                "duration=" + duration +
+                ", elapsed=" + elapsed +
+                '}';
+    }
 }

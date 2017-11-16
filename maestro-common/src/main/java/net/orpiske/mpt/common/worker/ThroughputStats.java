@@ -46,4 +46,13 @@ public class ThroughputStats implements PerfStats {
     public void setRate(double rate) {
         this.rate = rate;
     }
+
+    @Override
+    public String toString() {
+        return "ThroughputStats{" +
+                "duration=" + duration +
+                ", count=" + count +
+                ", rate=" + rate +
+                '}';
+    }
 }
