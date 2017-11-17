@@ -21,7 +21,7 @@ import java.util.concurrent.BlockingQueue;
 /**
  * A common interface for any type of Maestro worker.
  */
-public interface MaestroWorker {
+public interface MaestroWorker extends Runnable {
 
     /**
      * Checks whether the worker is in running state.

@@ -36,7 +36,7 @@ import java.time.Instant;
 import java.util.concurrent.BlockingQueue;
 
 
-public class JMSSenderWorker implements MaestroSenderWorker, Runnable {
+public class JMSSenderWorker implements MaestroSenderWorker {
     private static final Logger logger = LoggerFactory.getLogger(JMSSenderWorker.class);
 
     private ContentStrategy contentStrategy;

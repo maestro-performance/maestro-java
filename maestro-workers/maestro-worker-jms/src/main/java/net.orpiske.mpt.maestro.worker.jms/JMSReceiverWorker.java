@@ -32,7 +32,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.concurrent.BlockingQueue;
 
-public class JMSReceiverWorker implements MaestroReceiverWorker,Runnable {
+public class JMSReceiverWorker implements MaestroReceiverWorker {
     private static final Logger logger = LoggerFactory.getLogger(JMSReceiverWorker.class);
 
     private BlockingQueue<WorkerSnapshot> queue;

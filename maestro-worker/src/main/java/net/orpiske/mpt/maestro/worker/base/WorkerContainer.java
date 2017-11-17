@@ -66,7 +66,7 @@ public final class WorkerContainer {
             ri.worker.setWorkerOptions(workerOptions);
             ri.worker.setQueue(snapshots);
 
-            ri.thread = new Thread((Runnable) ri.worker);
+            ri.thread = new Thread(ri.worker);
             ri.thread.start();
 
             workers.add(ri);
