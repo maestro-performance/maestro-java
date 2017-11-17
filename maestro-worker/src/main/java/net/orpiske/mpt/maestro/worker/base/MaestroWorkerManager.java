@@ -3,11 +3,11 @@ package net.orpiske.mpt.maestro.worker.base;
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.common.worker.*;
-import net.orpiske.mpt.common.writers.LatencyWriter;
-import net.orpiske.mpt.common.writers.RateWriter;
 import net.orpiske.mpt.maestro.client.AbstractMaestroPeer;
 import net.orpiske.mpt.maestro.client.MaestroClient;
+import net.orpiske.mpt.maestro.client.MaestroDeserializer;
 import net.orpiske.mpt.maestro.client.MaestroTopics;
+import net.orpiske.mpt.maestro.exceptions.MalformedNoteException;
 import net.orpiske.mpt.maestro.notes.*;
 import net.orpiske.mpt.maestro.notes.InternalError;
 import org.slf4j.Logger;
@@ -20,7 +20,7 @@ import java.time.Instant;
 import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.LinkedBlockingQueue;
 
-public class MaestroWorkerManager extends AbstractMaestroPeer {
+public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> implements MaestroEventListener {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
 
     private MaestroClient client;
@@ -38,9 +38,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 
 
     public MaestroWorkerManager(final String maestroURL, final String role, final String host, final File logDir,
-                                final Class<MaestroWorker> workerClass) throws MaestroException
-    {
-        super(maestroURL, role);
+                                final Class<MaestroWorker> workerClass) throws MaestroException {
+        super(maestroURL, role, MaestroDeserializer::deserializeEvent);
 
         client = new MaestroClient(maestroURL);
         client.connect();
@@ -99,78 +98,32 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         }
     }
 
-    protected void noteArrived(MaestroNote note) throws IOException, MaestroConnectionException {
+    @Override
+    protected final void noteArrived(MaestroEvent note) throws IOException, MaestroConnectionException {
         logger.debug("Some message arrived: {}", note.toString());
-
-        if (note instanceof PingRequest) {
-            noteArrived((PingRequest) note);
-        }
-        if (note instanceof StatsRequest) {
-            noteArrived((StatsRequest) note);
-        }
-
-        if (note instanceof FlushRequest) {
-            noteArrived((FlushRequest) note);
-        }
-
-        if (note instanceof Halt) {
-            noteArrived((Halt) note);
-        }
-        if (note instanceof SetRequest) {
-            noteArrived((SetRequest) note);
-        }
-
-        if (note instanceof StartInspector) {
-            noteArrived((StartInspector) note);
-        }
-
-        if (note instanceof StartReceiver) {
-            noteArrived((StartReceiver) note);
-        }
-        if (note instanceof StartSender) {
-            noteArrived((StartSender) note);
-        }
-
-        if (note instanceof StopInspector) {
-            noteArrived((StopInspector) note);
-        }
-
-        if (note instanceof StopReceiver) {
-            noteArrived((StopReceiver) note);
-        }
-        if (note instanceof StopSender) {
-            noteArrived((StopSender) note);
-        }
-
-        if (note instanceof TestFailedNotification) {
-            noteArrived((TestFailedNotification) note);
-        }
-
-        if (note instanceof TestSuccessfulNotification) {
-            noteArrived((TestSuccessfulNotification) note);
-        }
-
-        if (note instanceof AbnormalDisconnect) {
-            noteArrived((AbnormalDisconnect) note);
-        }
+        note.notify(this);
     }
 
 
-    protected void noteArrived(StatsRequest note) {
+    @Override
+    public void handle(StatsRequest note) {
         logger.debug("Stats request received");
     }
 
-    protected void noteArrived(FlushRequest note) {
+    @Override
+    public void handle(FlushRequest note) {
         logger.debug("Flush request received");
     }
 
-    protected void noteArrived(Halt note) {
+    @Override
+    public void handle(Halt note) {
         logger.debug("Halt request received");
 
         running = false;
     }
 
-    protected void noteArrived(SetRequest note) {
+    @Override
+    public void handle(SetRequest note) {
         logger.debug("Set request received");
 
         switch (note.getOption()) {
@@ -231,7 +184,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         }
     }
 
-    protected void noteArrived(StartInspector note) {
+    @Override
+    public void handle(StartInspector note) {
         logger.debug("Start inspector request received");
 
         if (MaestroInspectorWorker.class.isAssignableFrom(workerClass)) {
@@ -239,7 +193,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         }
     }
 
-    protected void noteArrived(StartReceiver note) {
+    @Override
+    public void handle(StartReceiver note) {
         logger.debug("Start receiver request received");
 
         if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
@@ -274,7 +229,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 //        replyOk();
     }
 
-    protected void noteArrived(StartSender note) {
+    @Override
+    public void handle(StartSender note) {
         logger.debug("Start sender request received");
 
         if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
@@ -309,7 +265,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
 //        replyOk();
     }
 
-    protected void noteArrived(StopInspector note) {
+    @Override
+    public void handle(StopInspector note) {
         logger.debug("Stop inspector request received");
 
         if (MaestroInspectorWorker.class.isAssignableFrom(workerClass)) {
@@ -319,7 +276,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         replyOk();
     }
 
-    protected void noteArrived(StopReceiver note) {
+    @Override
+    public void handle(StopReceiver note) {
         logger.debug("Stop receiver request received");
 
         if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
@@ -329,7 +287,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         replyOk();
     }
 
-    protected void noteArrived(StopSender note) {
+    @Override
+    public void handle(StopSender note) {
         logger.debug("Stop sender request received");
 
         if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
@@ -339,20 +298,24 @@ public class MaestroWorkerManager extends AbstractMaestroPeer {
         replyOk();
     }
 
-    protected void noteArrived(TestFailedNotification note) {
+    @Override
+    public void handle(TestFailedNotification note) {
         logger.info("Test failed notification received from {}: {}", note.getName(), note.getMessage());
         container.stop();
     }
 
-    protected void noteArrived(TestSuccessfulNotification note) {
+    @Override
+    public void handle(TestSuccessfulNotification note) {
         logger.info("Test successful notification received from {}: {}", note.getName(), note.getMessage());
     }
 
-    protected void noteArrived(AbnormalDisconnect note) {
+    @Override
+    public void handle(AbnormalDisconnect note) {
         logger.info("Abnormal disconnect notification received from {}: {}", note.getName(), note.getMessage());
     }
 
-    protected void noteArrived(PingRequest note) throws IOException, MaestroConnectionException {
+    @Override
+    public void handle(PingRequest note) throws MaestroConnectionException, MalformedNoteException {
         logger.debug("Creation seconds.micro: {}.{}", note.getSec(), note.getUsec());
 
         Instant creation = Instant.ofEpochSecond(note.getSec(), note.getUsec() * 1000);

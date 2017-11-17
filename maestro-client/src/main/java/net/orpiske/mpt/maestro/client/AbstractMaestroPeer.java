@@ -16,14 +16,15 @@ import net.orpiske.mpt.maestro.exceptions.MalformedNoteException;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
 
 // TODO: configure LWT
-public abstract class AbstractMaestroPeer implements MqttCallback {
+public abstract class AbstractMaestroPeer<T extends MaestroNote> implements MqttCallback {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroPeer.class);
 
     private MqttClient inboundEndPoint;
     protected String clientName;
     protected String id;
+    private final MaestroNoteDeserializer<? extends T> deserializer;
 
-    public AbstractMaestroPeer(final String url, final String clientName) throws MaestroConnectionException {
+    public AbstractMaestroPeer(final String url, final String clientName, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
 
         String adjustedUrl = URLUtils.sanizeURL(url);
 
@@ -42,6 +43,8 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
             throw new MaestroConnectionException("Unable create a MQTT client instance : " + e.getMessage(),
                     e);
         }
+
+        this.deserializer = deserializer;
     }
 
     public String getClientName() {
@@ -122,7 +125,7 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
         byte[] payload = mqttMessage.getPayload();
 
         try {
-            MaestroNote note = MaestroDeserializer.deserialize(payload);
+            final T note = deserializer.deserialize(payload);
             logger.trace("Message type: " + note.getClass());
 
             noteArrived(note);
@@ -140,7 +143,7 @@ public abstract class AbstractMaestroPeer implements MqttCallback {
      * The entry point for handling Maestro messages
      * @param note
      */
-    protected abstract void noteArrived(MaestroNote note) throws IOException, MaestroConnectionException;
+    protected abstract void noteArrived(T note) throws IOException, MaestroConnectionException;
 
     public abstract boolean isRunning();
 

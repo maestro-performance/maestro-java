@@ -28,7 +28,7 @@ import java.io.IOException;
 public class MaestroDeserializer {
     private static final Logger logger = LoggerFactory.getLogger(MaestroDeserializer.class);
 
-    private static MaestroNotification deserializeNotification(MessageUnpacker unpacker, byte[] bytes) throws IOException, MalformedNoteException {
+    private static MaestroNotification deserializeNotification(MessageUnpacker unpacker) throws IOException, MalformedNoteException {
         long tmpCommand = unpacker.unpackLong();
         MaestroCommand command = MaestroCommand.from(tmpCommand);
 
@@ -48,7 +48,7 @@ public class MaestroDeserializer {
         }
     }
 
-    private static MaestroResponse deserializeResponse(MessageUnpacker unpacker, byte[] bytes) throws IOException, MalformedNoteException {
+    private static MaestroResponse deserializeResponse(MessageUnpacker unpacker) throws IOException, MalformedNoteException {
         long tmpCommand = unpacker.unpackLong();
         MaestroCommand command = MaestroCommand.from(tmpCommand);
 
@@ -89,7 +89,7 @@ public class MaestroDeserializer {
 
     }
 
-    private static MaestroRequest deserializeRequest(MessageUnpacker unpacker, byte[] bytes) throws IOException, MalformedNoteException {
+    private static MaestroRequest deserializeRequest(MessageUnpacker unpacker) throws IOException, MalformedNoteException {
         long tmpCommand = unpacker.unpackLong();
         MaestroCommand command = MaestroCommand.from(tmpCommand);
 
@@ -133,21 +133,37 @@ public class MaestroDeserializer {
         }
     }
 
-    public static MaestroNote deserialize(byte[] bytes) throws IOException, MalformedNoteException {
-        MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(bytes);
-
-        try {
-            short tmpType = unpacker.unpackShort();
-            MaestroNoteType type = MaestroNoteType.from(tmpType);
+    public static MaestroEvent deserializeEvent(byte[] bytes) throws IOException, MalformedNoteException {
+        try (MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(bytes)){
+            final short tmpType = unpacker.unpackShort();
+            final MaestroNoteType type = MaestroNoteType.from(tmpType);
 
             switch (type) {
-                case MAESTRO_TYPE_REQUEST: return deserializeRequest(unpacker, bytes);
-                case MAESTRO_TYPE_RESPONSE: return deserializeResponse(unpacker, bytes);
-                case MAESTRO_TYPE_NOTIFICATION: return deserializeNotification(unpacker, bytes);
-                default: throw new MalformedNoteException("Invalid note type: " + tmpType);
+                case MAESTRO_TYPE_REQUEST:
+                    return deserializeRequest(unpacker);
+                case MAESTRO_TYPE_NOTIFICATION:
+                    return deserializeNotification(unpacker);
+                default:
+                    throw new MalformedNoteException("Invalid event type: " + tmpType);
             }
-        } finally {
-            unpacker.close();
+        }
+    }
+
+    public static MaestroNote deserialize(byte[] bytes) throws IOException, MalformedNoteException {
+        try (MessageUnpacker unpacker = MessagePack.newDefaultUnpacker(bytes)){
+            final short tmpType = unpacker.unpackShort();
+            final MaestroNoteType type = MaestroNoteType.from(tmpType);
+
+            switch (type) {
+                case MAESTRO_TYPE_REQUEST:
+                    return deserializeRequest(unpacker);
+                case MAESTRO_TYPE_RESPONSE:
+                    return deserializeResponse(unpacker);
+                case MAESTRO_TYPE_NOTIFICATION:
+                    return deserializeNotification(unpacker);
+                default:
+                    throw new MalformedNoteException("Invalid note type: " + tmpType);
+            }
         }
     }
 }

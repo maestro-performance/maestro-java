@@ -30,14 +30,14 @@ import java.util.LinkedList;
 import java.util.List;
 
 
-public class MaestroCollector extends AbstractMaestroPeer {
+public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollector.class);
 
 
     private List<MaestroNote> collected = Collections.synchronizedList(new LinkedList<MaestroNote>());
 
     public MaestroCollector(final String url) throws MaestroConnectionException {
-        super(url, "maestro-java-collector");
+        super(url, "maestro-java-collector",MaestroDeserializer::deserialize);
     }
 
 

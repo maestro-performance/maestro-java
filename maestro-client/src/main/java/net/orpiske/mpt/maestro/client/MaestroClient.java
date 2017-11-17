@@ -19,6 +19,7 @@ package net.orpiske.mpt.maestro.client;
 import net.orpiske.mpt.common.URLUtils;
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
+import net.orpiske.mpt.maestro.exceptions.MalformedNoteException;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
@@ -93,13 +94,19 @@ public class MaestroClient {
 
     /**
      * Publishes a message in the broker
+     *
      * @param topic the topic to publish the message
-     * @param note the maestro note to publish
+     * @param note  the maestro note to publish
      * @throws MaestroConnectionException if failed to publish the message
-     * @throws IOException in case of other I/O errors
+     * @throws MalformedNoteException     in case of other I/O errors
      */
-    public void publish(final String topic, final MaestroNote note) throws MaestroConnectionException, IOException {
-        byte[] bytes = note.serialize();
+    public void publish(final String topic, final MaestroNote note) throws MalformedNoteException, MaestroConnectionException {
+        final byte[] bytes;
+        try {
+            bytes = note.serialize();
+        } catch (IOException e) {
+            throw new MalformedNoteException(e.getMessage());
+        }
 
         try {
             mqttClient.publish(topic, bytes, 0, false);

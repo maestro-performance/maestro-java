@@ -16,7 +16,7 @@
 
 package net.orpiske.mpt.common.exceptions;
 
-public class MaestroException extends Exception {
+public class MaestroException extends RuntimeException {
     public MaestroException() {
         super();
     }

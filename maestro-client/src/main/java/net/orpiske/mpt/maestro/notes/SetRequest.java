@@ -140,6 +140,11 @@ public class SetRequest extends MaestroRequest {
     }
 
     @Override
+    public void notify(MaestroEventListener visitor) {
+        visitor.handle(this);
+    }
+
+    @Override
     public String toString() {
         return "SetRequest{" +
                 "option=" + option +

@@ -67,6 +67,11 @@ public class PingRequest extends MaestroRequest {
     }
 
     @Override
+    public void notify(MaestroEventListener visitor) {
+        visitor.handle(this);
+    }
+
+    @Override
     public String toString() {
         return "PingRequest{" +
                 "sec=" + sec +

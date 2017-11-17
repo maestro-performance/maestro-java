@@ -22,6 +22,11 @@ public class StartInspector extends MaestroRequest {
     }
 
     @Override
+    public void notify(MaestroEventListener visitor) {
+        visitor.handle(this);
+    }
+
+    @Override
     public String toString() {
         return "StartInspector{} " + super.toString();
     }

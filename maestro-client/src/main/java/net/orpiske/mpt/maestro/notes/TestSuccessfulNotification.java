@@ -42,6 +42,11 @@ public class TestSuccessfulNotification extends MaestroNotification {
     }
 
     @Override
+    public void notify(MaestroEventListener visitor) {
+        visitor.handle(this);
+    }
+
+    @Override
     public String toString() {
         return "TestSuccessfulNotification{" +
                 "message='" + message + '\'' +

@@ -20,7 +20,7 @@ import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
-public class MaestroNotification extends MaestroNote {
+public abstract class MaestroNotification extends MaestroEvent {
     private String id;
     private String name;
 

@@ -22,6 +22,11 @@ public class StartReceiver extends MaestroRequest {
     }
 
     @Override
+    public void notify(MaestroEventListener visitor) {
+        visitor.handle(this);
+    }
+
+    @Override
     public String toString() {
         return "StartReceiver{} " + super.toString();
     }

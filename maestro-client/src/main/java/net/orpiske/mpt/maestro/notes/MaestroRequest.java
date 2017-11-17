@@ -16,7 +16,7 @@
 
 package net.orpiske.mpt.maestro.notes;
 
-public abstract class MaestroRequest extends MaestroNote {
+public abstract class MaestroRequest extends MaestroEvent {
     public MaestroRequest(MaestroCommand maestroCommand) {
         super(MaestroNoteType.MAESTRO_TYPE_REQUEST, maestroCommand);
     }
