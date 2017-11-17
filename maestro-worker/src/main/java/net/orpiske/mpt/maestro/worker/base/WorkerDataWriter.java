@@ -18,25 +18,23 @@ public class WorkerDataWriter implements Runnable {
     @Override
     public void run() {
         logger.debug("Running the data writer");
-
-        while (true) {
-            for (int i = 0; i < queue.size(); i++) {
-                WorkerSnapshot workerSnapshot = null;
-                try {
-                    workerSnapshot = queue.take();
-
-                    logger.debug("Snapshot: {}", workerSnapshot);
-                } catch (InterruptedException e) {
-                    logger.debug("Writer thread was interrupted while fetching last snapshot: {}", e.getMessage(), e);
-                    break;
-                }
+        try {
+            while (true) {
+                //will block until an interrupt will arrie
+                final WorkerSnapshot workerSnapshot = queue.take();
+                logger.debug("Snapshot: {}", workerSnapshot);
             }
-
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                logger.debug("Writer thread was interrupted: {}", e.getMessage(), e);
-            }
+        } catch (InterruptedException e) {
+            logger.debug("Writer thread was interrupted while fetching last snapshot: {}", e.getMessage(), e);
         }
+        //drain the last remaining snapshots (if any)
+        logger.debug("Writer thread is draining any remaining snapshots after being interrupted");
+        long remainingSnapshots = 0;
+        WorkerSnapshot workerSnapshot;
+        while ((workerSnapshot = queue.poll()) != null) {
+            remainingSnapshots++;
+            logger.debug("Snapshot: {}", workerSnapshot);
+        }
+        logger.debug("Writer thread has drained {} remaining snapshots after being interrupted", remainingSnapshots);
     }
 }
