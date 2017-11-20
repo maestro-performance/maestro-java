@@ -71,6 +71,14 @@ public class MiniBroker {
 
         public void setRunning(boolean running) {
             this.running = running;
+
+            if (!running) {
+                try {
+                    broker.stop();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
         public void run() {
@@ -85,9 +93,11 @@ public class MiniBroker {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    return;
+                    break;
                 }
             }
+
+
         }
 
         public boolean isStarted() {
@@ -100,6 +110,8 @@ public class MiniBroker {
         brokerInstance = new BrokerInstance();
         thread = new Thread(brokerInstance);
 
+
+        brokerInstance.setRunning(true);
         thread.start();
     }
 

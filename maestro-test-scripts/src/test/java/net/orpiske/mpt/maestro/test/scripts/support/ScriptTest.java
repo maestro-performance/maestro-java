@@ -32,21 +32,21 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
-public class ScriptTest {
-    private static MiniBroker miniBroker;
-    private static MiniReceivingPeer miniReceivingPeer;
-    private static MiniSendingPeer miniSendingPeer;
-    private static Maestro maestro;
+public class ScriptTest extends EndToEndTest {
+    protected static MiniBroker miniBroker;
+    protected static MiniReceivingPeer miniReceivingPeer;
+    protected static MiniSendingPeer miniSendingPeer;
+    protected static Maestro maestro;
 
     @BeforeClass
     public static void setUp() throws Exception {
         LogConfigurator.silent();
 
-        miniBroker = new MiniBroker();
-        miniReceivingPeer = new MiniReceivingPeer();
-        miniSendingPeer = new MiniSendingPeer();
+        if (miniBroker == null) {
+            miniBroker = new MiniBroker();
 
-        miniBroker.start();
+            miniBroker.start();
+        }
 
         // TODO: probably there's a better way to do this
         while (!miniBroker.isStarted()) {
@@ -54,10 +54,21 @@ public class ScriptTest {
             Thread.sleep(1000);
         }
 
+        if (miniReceivingPeer == null) {
+            miniReceivingPeer = new MiniReceivingPeer();
+        }
+
         miniReceivingPeer.start();
+
+        if (miniSendingPeer == null) {
+            miniSendingPeer = new MiniSendingPeer();
+        }
+
         miniSendingPeer.start();
 
-        maestro = new Maestro("mqtt://localhost:1883");
+        if (maestro == null) {
+            maestro = new Maestro("mqtt://localhost:1883");
+        }
     }
 
     @AfterClass

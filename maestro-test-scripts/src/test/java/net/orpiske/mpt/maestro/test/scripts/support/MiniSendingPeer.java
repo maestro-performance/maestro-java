@@ -28,6 +28,7 @@ public class MiniSendingPeer {
 
 
     public void start() throws Exception {
+
         Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName("net.orpiske.mpt.maestro.worker.jms.JMSSenderWorker");
 
         executor = new MaestroWorkerExecutor("mqtt://localhost:1883", "sender", "localhost",
