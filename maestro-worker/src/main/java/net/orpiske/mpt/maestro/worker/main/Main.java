@@ -77,26 +77,32 @@ public class Main {
 
         maestroUrl = cmdLine.getOptionValue('m');
         if (maestroUrl == null) {
+            System.err.println("Maestro URL is missing (option -m)");
             help(options, -1);
         }
 
         worker = cmdLine.getOptionValue('w');
         if (worker == null) {
+            System.err.println("The worker class is missing (option -w)");
             help(options, -1);
         }
 
         role = cmdLine.getOptionValue('r');
         if (role == null) {
+            System.err.println("The worker role is missing (option -w)");
             help(options, -1);
         }
 
         host = cmdLine.getOptionValue('H');
         if (host == null) {
+            System.err.println("The peer hostname is missing (option -H)");
             help(options, -1);
         }
 
         logDir = cmdLine.getOptionValue('l');
         if (logDir == null) {
+            System.err.println("The log directory is missing (option -l)");
+
             help(options, -1);
         }
     }
