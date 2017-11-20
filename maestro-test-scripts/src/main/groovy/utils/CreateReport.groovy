@@ -18,8 +18,12 @@ import net.orpiske.mpt.reports.ReportGenerator
 
 @GrabConfig(systemClassLoader=true)
 
+@Grab(group='org.apache.commons', module='commons-lang3', version='3.6')
+
+@Grab(group='net.orpiske', module='maestro-common', version='1.2.0-SNAPSHOT')
+
 import net.orpiske.mpt.reports.ReportGenerator
-import LogConfigurator
+import net.orpiske.mpt.common.LogConfigurator
 
 LogConfigurator.verbose()
 ReportGenerator.generate(args[0])

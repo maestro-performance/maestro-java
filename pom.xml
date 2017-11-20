@@ -56,7 +56,30 @@
         </license>
     </licenses>
 
+    <modules>
+        <module>maestro-common</module>
+        <module>maestro-contrib</module>
+        <module>maestro-reports</module>
+        <module>maestro-client</module>
+        <module>maestro-cli</module>
+        <module>maestro-tests</module>
+        <module>maestro-exporter</module>
+        <module>maestro-worker</module>
+        <module>maestro-workers</module>
+    </modules>
+
     <profiles>
+        <profile>
+            <id>Groovy</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+            <modules>
+                <module>maestro-test-scripts</module>
+            </modules>
+        </profile>
+
+
         <profile>
             <id>Delivery</id>
             <activation>
@@ -189,15 +212,5 @@
         </profile>
     </profiles>
 
-    <modules>
-        <module>maestro-common</module>
-        <module>maestro-contrib</module>
-        <module>maestro-reports</module>
-        <module>maestro-client</module>
-        <module>maestro-cli</module>
-        <module>maestro-tests</module>
-        <module>maestro-exporter</module>
-        <module>maestro-worker</module>
-        <module>maestro-workers</module>
-    </modules>
+
 </project>

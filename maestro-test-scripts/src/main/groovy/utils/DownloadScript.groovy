@@ -15,12 +15,14 @@ package utils
  *  limitations under the License.
  */
 
-import Downloader
-import LogConfigurator
-
 @GrabConfig(systemClassLoader=true)
 
 @Grab(group='org.apache.commons', module='commons-lang3', version='3.6')
+
+@Grab(group='net.orpiske', module='maestro-common', version='1.2.0-SNAPSHOT')
+
+import net.orpiske.mpt.utils.Downloader
+import net.orpiske.mpt.common.LogConfigurator
 
 url = System.getenv("URL")
 dest = System.getenv("DESTINATION")

@@ -59,14 +59,14 @@ import net.orpiske.mpt.test.TestExecutor
 /**
  * A simple test executor class
  */
-class ShortTestExecutor implements TestExecutor {
+class ShortTestExecutorDuration implements TestExecutor {
     private Maestro maestro
     private int rate = 300
     private int parallelCount = 1
     private final maximumLatency = 500
     private String brokerURL
 
-    ShortTestExecutor(Maestro maestro) {
+    ShortTestExecutorDuration(Maestro maestro) {
         this.maestro = maestro;
     }
 
@@ -177,7 +177,7 @@ maestro = new Maestro(maestroURL)
 /**
  * Test execution via the test executor
  */
-ShortTestExecutor executor = new ShortTestExecutor(maestro)
+ShortTestExecutorDuration executor = new ShortTestExecutorDuration(maestro)
 executor.setBrokerURL(brokerURL)
 executor.run();
 maestro.stop()

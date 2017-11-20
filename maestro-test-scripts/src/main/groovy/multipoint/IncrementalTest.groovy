@@ -1,4 +1,5 @@
-package singlepoint
+package multipoint
+
 /*
  *  Copyright 2017 Otavio R. Piske <angusyoung@gmail.com>
  *
@@ -15,16 +16,6 @@ package singlepoint
  *  limitations under the License.
  */
 
-import Maestro
-import net.orpiske.mpt.reports.ReportGenerator
-import net.orpiske.mpt.reports.ReportsDownloader
-import net.orpiske.mpt.test.incremental.IncrementalTestExecutor
-import net.orpiske.mpt.test.incremental.IncrementalTestProfile
-import net.orpiske.mpt.test.incremental.singlepoint.SimpleTestProfile
-import LogConfigurator
-import MessageSize
-import TestDuration
-
 @GrabConfig(systemClassLoader=true)
 
 @Grab(group='commons-cli', module='commons-cli', version='1.3.1')
@@ -35,12 +26,27 @@ import TestDuration
 @GrabResolver(name='Eclipse', root='https://repo.eclipse.org/content/repositories/paho-releases/')
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
-@Grab(group='net.orpiske', module='hdr-histogram-plotter', version='1.0.0')
-@Grab(group='net.orpiske', module='mpt-data-plotter', version='1.0.0')
-@Grab(group='net.orpiske', module='bmic-data-plotter', version='1.0.0')
+// @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
+@Grab(group='net.orpiske', module='maestro-common', version='1.2.0-SNAPSHOT')
+@Grab(group='net.orpiske', module='maestro-client', version='1.2.0-SNAPSHOT')
+@Grab(group='net.orpiske', module='maestro-tests', version='1.2.0-SNAPSHOT')
+@Grab(group='net.orpiske', module='maestro-reports', version='1.2.0-SNAPSHOT')
+
+import net.orpiske.mpt.maestro.Maestro
+import net.orpiske.mpt.maestro.client.MaestroTopics
+import net.orpiske.mpt.reports.ReportGenerator
+import net.orpiske.mpt.reports.ReportsDownloader
+import net.orpiske.mpt.test.MultiPointProfile
+import net.orpiske.mpt.test.incremental.IncrementalTestExecutor
+import net.orpiske.mpt.test.incremental.IncrementalTestProfile
+import net.orpiske.mpt.test.multipoint.SimpleTestProfile
+import net.orpiske.mpt.common.LogConfigurator
+import net.orpiske.mpt.utils.MessageSize
+import net.orpiske.mpt.common.duration.TestDurationBuilder
 
 maestroURL = System.getenv("MAESTRO_BROKER")
-brokerURL = System.getenv("BROKER_URL")
+senderBrokerURL = System.getenv("SENDER_BROKER_URL")
+receiveBrokerURL = System.getenv("RECEIVER_BROKER_URL")
 
 LogConfigurator.verbose()
 
@@ -49,11 +55,20 @@ maestro = new Maestro(maestroURL)
 
 ReportsDownloader reportsDownloader = new ReportsDownloader("/tmp/maestro");
 
-IncrementalTestProfile testProfile = new SimpleTestProfile();
+IncrementalTestProfile testProfile = new SimpleTestProfile()
 
-testProfile.setBrokerURL(brokerURL)
+testProfile.addEndPoint(new MultiPointProfile.EndPoint("sender", MaestroTopics.SENDER_DAEMONS, senderBrokerURL))
+testProfile.addEndPoint(new MultiPointProfile.EndPoint("receiver", MaestroTopics.RECEIVER_DAEMONS, receiveBrokerURL))
+
 testProfile.setInitialRate(500);
-testProfile.setDuration(TestDuration.newInstance("30s"));
+testProfile.setCeilingRate(600)
+
+testProfile.setRateIncrement(100)
+
+testProfile.setInitialParallelCount(2)
+testProfile.setCeilingParallelCount(2)
+
+testProfile.setDuration(TestDurationBuilder.build("120s"));
 testProfile.setMessageSize(MessageSize.variable(256));
 testProfile.setMaximumLatency(200)
 
