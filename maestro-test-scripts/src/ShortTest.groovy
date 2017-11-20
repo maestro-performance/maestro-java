@@ -23,12 +23,16 @@
 @GrabResolver(name='Eclipse', root='https://repo.eclipse.org/content/repositories/paho-releases/')
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
-import Maestro
-import MaestroNoteProcessor
-import MaestroNote
-import PingResponse
-import TestFailedNotification
-import TestSuccessfulNotification
+@GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
+@Grab(group='net.orpiske', module='maestro-client', version='1.2.0-SNAPSHOT')
+@Grab(group='net.orpiske', module='maestro-client', version='1.2.0-SNAPSHOT')
+
+import net.orpiske.mpt.maestro.Maestro
+import net.orpiske.mpt.maestro.client.MaestroNoteProcessor
+import net.orpiske.mpt.maestro.notes.MaestroNote
+import net.orpiske.mpt.maestro.notes.PingResponse
+import net.orpiske.mpt.maestro.notes.TestFailedNotification
+import net.orpiske.mpt.maestro.notes.TestSuccessfulNotification
 
 class ShortTestExecutor {
     private Maestro maestro;
@@ -80,13 +84,13 @@ class ShortTestExecutor {
         maestro.setParallelCount(parallelCount)
 
         println "Setting duration"
-        maestro.setDuration("30s")
+        maestro.setDuration("30")
 
         println "Setting fail-condition-latency"
         maestro.setFCL(maximumLatency)
 
         // Variable message size
-        maestro.setMessageSize("~256")
+        maestro.setMessageSize("~100")
     }
 
     private void startServices() {
