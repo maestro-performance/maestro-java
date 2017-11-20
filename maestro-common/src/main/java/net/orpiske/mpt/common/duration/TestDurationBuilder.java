@@ -18,6 +18,8 @@ package net.orpiske.mpt.common.duration;
 
 import net.orpiske.mpt.common.exceptions.DurationParseException;
 
+import java.util.regex.Pattern;
+
 
 /**
  * Test duration builder
@@ -32,7 +34,7 @@ public class TestDurationBuilder {
      * @throws DurationParseException
      */
     public static TestDuration build(final String durationSpec) throws DurationParseException {
-        if (durationSpec.matches("[a-zA-Z]")) {
+        if (durationSpec.matches(".*[a-zA-Z].*")) {
             return new DurationTime(durationSpec);
         }
         else {
