@@ -14,48 +14,61 @@
  *  limitations under the License.
  */
 
-import Maestro
-import MaestroNote
-import MaestroNoteType
-
 @GrabConfig(systemClassLoader=true)
 
 @Grab(group='commons-cli', module='commons-cli', version='1.3.1')
 @Grab(group='org.apache.commons', module='commons-lang3', version='3.6')
-
 @Grab(group='org.msgpack', module='msgpack-core', version='0.8.3')
 
 @GrabResolver(name='Eclipse', root='https://repo.eclipse.org/content/repositories/paho-releases/')
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
+@GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
+@Grab(group='net.orpiske', module='maestro-client', version='1.2.0-SNAPSHOT')
+
+import net.orpiske.mpt.maestro.Maestro
+import net.orpiske.mpt.maestro.notes.MaestroNote
+
+/**
+ * This sample script shows how to use the Maestro client API to send a flush request to
+ * the test cluster
+ */
+
+
+/**
+ * Get the maestro broker URL via the MAESTRO_BROKER environment variable
+ */
 maestroURL = System.getenv("MAESTRO_BROKER")
 
+/**
+ * Connects to the Maestro broker
+ */
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
+/**
+ * Issue the flush request
+ */
 maestro.flushRequest()
 
+/**
+ * Collect any available response
+ */
 println "Collecting replies"
 List<MaestroNote> replies = maestro.collect(1000, 10)
 
+/**
+ * Process any response given. There may be none if no peers are attached to the
+ * broker
+ */
 println "Processing " + replies.size() + " replies"
 replies.each { MaestroNote note ->
-    switch (note.getNoteType()) {
-        case MaestroNoteType.MAESTRO_TYPE_RESPONSE:
-            print "Received response for "
-            break
-
-        case MaestroNoteType.MAESTRO_TYPE_REQUEST:
-            print "Received request for "
-            break
-        case MaestroNoteType.MAESTRO_TYPE_NOTIFICATION:
-            print "Received notification for "
-            break;
-    }
-
-    println note.getMaestroCommand()
+    println "Available responses on the broker: " + note
 }
 
+/**
+ * Stops the client
+ */
 maestro.stop()
 
 

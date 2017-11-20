@@ -15,23 +15,38 @@
  */
 
 
-import Maestro
-
 @GrabConfig(systemClassLoader=true)
 
 @Grab(group='commons-cli', module='commons-cli', version='1.3.1')
 @Grab(group='org.apache.commons', module='commons-lang3', version='3.6')
-
 @Grab(group='org.msgpack', module='msgpack-core', version='0.8.3')
 
 @GrabResolver(name='Eclipse', root='https://repo.eclipse.org/content/repositories/paho-releases/')
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
+@GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
+@Grab(group='net.orpiske', module='maestro-client', version='1.2.0-SNAPSHOT')
+@Grab(group='net.orpiske', module='maestro-client', version='1.2.0-SNAPSHOT')
+
+import net.orpiske.mpt.maestro.Maestro
+
+/**
+ * Another example: a simple use case of the higher level maestro client
+ */
+
+
+/**
+ * Get the maestro broker URL via the MAESTRO_BROKER environment variable
+ */
 maestroURL = System.getenv("MAESTRO_BROKER")
+
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
+/**
+ * Sends a stop command to all the test cluster
+ */
 println "Sending the stop commands"
 maestro.stopSender()
 maestro.stopReceiver()
