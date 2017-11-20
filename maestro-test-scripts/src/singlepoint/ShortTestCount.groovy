@@ -25,7 +25,7 @@
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
 @Grab(group='net.orpiske', module='maestro-client', version='1.2.0-SNAPSHOT')
-@Grab(group='net.orpiske', module='maestro-client', version='1.2.0-SNAPSHOT')
+@Grab(group='net.orpiske', module='maestro-tests', version='1.2.0-SNAPSHOT')
 
 import net.orpiske.mpt.maestro.Maestro
 import net.orpiske.mpt.maestro.client.MaestroNoteProcessor
@@ -34,17 +34,62 @@ import net.orpiske.mpt.maestro.notes.PingResponse
 import net.orpiske.mpt.maestro.notes.TestFailedNotification
 import net.orpiske.mpt.maestro.notes.TestSuccessfulNotification
 
-class ShortTestExecutor {
-    private Maestro maestro;
-    private int rate = 300;
-    private int parallelCount = 1;
-    private final maximumLatency = 500;
+import net.orpiske.mpt.test.TestExecutor
 
+/**
+ * This sample demonstrates how to create a more complex test execution with Maestro.
+ * Note that, for most cases, the executors should extend the AbstractTestExecutor
+ * and AbstractTestProcessor because they offer additional logic regarding handling the
+ * test notifications/completeness and better multi-peer support.
+ *
+ * In this test, the following behavior is being defined:
+ *
+ * 1. A executor is defined for the test
+ * 2. A processor to process the replies from the peers
+ * 3. Basic test setup logic
+ *
+ * URLs for the Maestro Broker and the test broker are set via MAESTRO_BROKER and
+ * BROKER_URL environment variables
+ */
+
+/**
+ * A simple test executor class
+ */
+class ShortTestExecutor implements TestExecutor {
+    private Maestro maestro
+    private int rate = 300
+    private int parallelCount = 1
+    private final maximumLatency = 500
+    private String brokerURL
 
     ShortTestExecutor(Maestro maestro) {
         this.maestro = maestro;
     }
 
+    String getBrokerURL() {
+        return brokerURL
+    }
+
+    void setBrokerURL(String brokerURL) {
+        this.brokerURL = brokerURL
+    }
+
+
+    /**
+     * These two methods are NO-OP in this case because there are no multiple iterations,
+     * therefore cool down period is not required/used
+     */
+    long getCoolDownPeriod() {
+        return 0;
+    }
+
+    void setCoolDownPeriod(long period) {
+        // NO-OP
+    }
+
+    /**
+     * The simple processor for Maestro responses
+     */
     class ShortTestProcessor extends MaestroNoteProcessor {
         @Override
         protected void processPingResponse(PingResponse note) {
@@ -60,8 +105,9 @@ class ShortTestExecutor {
         protected void processNotifyFail(TestFailedNotification note) {
             println "Test failed on " + note.getName()
         }
-    }
 
+
+    }
 
     private boolean processReplies() {
         println "Collecting replies "
@@ -99,7 +145,11 @@ class ShortTestExecutor {
         maestro.startSender()
     }
 
-    void run(String brokerURL) {
+    /**
+     * Test execution logic
+     * @return
+     */
+    boolean run() {
         setTestParameters(brokerURL)
         startServices()
         processReplies()
@@ -111,14 +161,21 @@ class ShortTestExecutor {
     }
 }
 
+/**
+ * Test setup.
+ */
 maestroURL = System.getenv("MAESTRO_BROKER")
 brokerURL = System.getenv("BROKER_URL")
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
+/**
+ * Test execution via the test executor
+ */
 ShortTestExecutor executor = new ShortTestExecutor(maestro)
-executor.run(brokerURL);
+executor.setBrokerURL(brokerURL)
+executor.run();
 maestro.stop()
 
 
