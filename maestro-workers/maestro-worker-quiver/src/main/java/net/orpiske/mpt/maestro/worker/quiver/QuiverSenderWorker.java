@@ -154,4 +154,8 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
         // NO-OP ... unnecessary for this worker type
     }
 
+    @Override
+    public void run() {
+        start();
+    }
 }

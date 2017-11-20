@@ -170,4 +170,9 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
     public void setQueue(BlockingQueue<WorkerSnapshot> queue) {
         // NO-OP ... unnecessary for this worker type
     }
+
+    @Override
+    public void run() {
+        start();
+    }
 }
