@@ -66,7 +66,7 @@ public class AbstractMaestroExecutor implements Runnable {
     /**
      * Stops the executor
      */
-    public final void stop() {
+    public void stop() {
         try {
             logger.debug("Disconnecting the peer");
             maestroPeer.disconnect();

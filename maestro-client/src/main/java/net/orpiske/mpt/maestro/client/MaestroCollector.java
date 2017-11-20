@@ -32,7 +32,7 @@ import java.util.List;
 
 public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollector.class);
-
+    private boolean running = true;
 
     private List<MaestroNote> collected = Collections.synchronizedList(new LinkedList<MaestroNote>());
 
@@ -46,9 +46,13 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         collected.add(note);
     }
 
+    public void setRunning(boolean running) {
+        this.running = running;
+    }
+
     @Override
     public boolean isRunning() {
-        return true;
+        return running;
     }
 
     public synchronized List<MaestroNote> collect() {

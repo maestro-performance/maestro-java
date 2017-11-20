@@ -41,6 +41,7 @@ public class MaestroCollectorExecutor extends AbstractMaestroExecutor {
 
         logger.trace("Created a new maestro collector executor");
 
+        getMaestroPeer().connect();
         getMaestroPeer().subscribe(MaestroTopics.MAESTRO_TOPICS);
     }
 
@@ -50,6 +51,16 @@ public class MaestroCollectorExecutor extends AbstractMaestroExecutor {
      * @return A list of messages received in background
      */
     public List<MaestroNote> collect() {
+        MaestroCollector maestroCollector = (MaestroCollector) super.getMaestroPeer();
+
         return maestroCollector.collect();
+    }
+
+    public void stop() {
+        super.stop();
+
+        MaestroCollector maestroCollector = (MaestroCollector) super.getMaestroPeer();
+
+        maestroCollector.setRunning(false);
     }
 }
