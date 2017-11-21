@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.utils;
+package net.orpiske.mpt.common.content;
 
 public class MessageSize {
     private MessageSize() {}

@@ -38,7 +38,7 @@ import net.orpiske.mpt.test.incremental.IncrementalTestExecutor
 import net.orpiske.mpt.test.incremental.IncrementalTestProfile
 import net.orpiske.mpt.test.singlepoint.SimpleTestProfile
 import net.orpiske.mpt.common.LogConfigurator
-import net.orpiske.mpt.utils.MessageSize
+import net.orpiske.mpt.common.content.MessageSize
 import net.orpiske.mpt.common.duration.TestDurationBuilder
 
 maestroURL = System.getenv("MAESTRO_BROKER")
