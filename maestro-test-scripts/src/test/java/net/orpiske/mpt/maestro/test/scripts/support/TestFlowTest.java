@@ -16,6 +16,9 @@
 
 package net.orpiske.mpt.maestro.test.scripts.support;
 
+import net.orpiske.jms.provider.activemq.ActiveMqProvider;
+import net.orpiske.jms.test.annotations.Provider;
+import net.orpiske.jms.test.runner.JmsTestRunner;
 import net.orpiske.mpt.common.LogConfigurator;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.maestro.notes.MaestroCommand;
@@ -25,33 +28,25 @@ import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Ignore;
 import org.junit.Test;
+import org.junit.runner.RunWith;
 
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+@RunWith(JmsTestRunner.class)
+@Provider(
+        value = ActiveMqProvider.class,
+        configuration = MiniBrokerConfiguration.class)
 public class TestFlowTest extends EndToEndTest {
-    protected static MiniBroker miniBroker;
     protected static MiniReceivingPeer miniReceivingPeer;
     protected static MiniSendingPeer miniSendingPeer;
     protected static Maestro maestro;
 
     @BeforeClass
     public static void setUp() throws Exception {
-        LogConfigurator.silent();
-
-        if (miniBroker == null) {
-            miniBroker = new MiniBroker();
-
-            miniBroker.start();
-        }
-
-        // TODO: probably there's a better way to do this
-        while (!miniBroker.isStarted()) {
-            System.out.println("Waiting for broker to start before starting the peer");
-            Thread.sleep(1000);
-        }
+        LogConfigurator.verbose();
 
         if (miniReceivingPeer == null) {
             miniReceivingPeer = new MiniReceivingPeer();
@@ -74,8 +69,12 @@ public class TestFlowTest extends EndToEndTest {
     public static void tearDown() throws Exception {
         miniReceivingPeer.stop();
         miniSendingPeer.stop();
-        miniBroker.stop();
     }
+
+    /*
+    TODO: this test is ignored because the workers are not yet sending the
+    success/failure notifications
+    */
 
     @Ignore
     @Test
@@ -87,6 +86,7 @@ public class TestFlowTest extends EndToEndTest {
         maestro.setMessageSize(100);
         maestro.setFCL(1000);
         maestro.setRate(100);
+
         maestro.setBroker("amqp://localhost:5672/unit.test.queue");
 
         List<MaestroNote> replies = maestro.collect(1000, 10);
@@ -97,13 +97,21 @@ public class TestFlowTest extends EndToEndTest {
         maestro.startSender();
         maestro.startReceiver();
 
+        // Get the OK replies
+        replies = maestro.collect(1000, 10);
+
         Thread.sleep(2000);
 
+        // Get the test result notification
         replies = maestro.collect(1000, 10);
-        assertTrue(replies.size() == 1);
+        assertTrue( "Replies don't match: " + replies.size(), replies.size() == 2);
 
-        MaestroNote note = replies.get(0);
-        assertEquals(note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
-        assertEquals(note.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_SUCCESS);
+        MaestroNote firstNote = replies.get(0);
+        assertEquals(firstNote.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
+        assertEquals(firstNote.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_SUCCESS);
+
+        MaestroNote secondNote = replies.get(1);
+        assertEquals(secondNote.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
+        assertEquals(secondNote.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_SUCCESS);
     }
 }
