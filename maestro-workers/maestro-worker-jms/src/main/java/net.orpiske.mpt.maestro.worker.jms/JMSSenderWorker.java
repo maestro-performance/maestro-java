@@ -18,8 +18,6 @@ package net.orpiske.mpt.maestro.worker.jms;
 
 import net.orpiske.mpt.common.content.ContentStrategy;
 import net.orpiske.mpt.common.content.ContentStrategyFactory;
-import net.orpiske.mpt.common.content.FixedSizeContent;
-import net.orpiske.mpt.common.content.VariableSizeContent;
 import net.orpiske.mpt.common.duration.TestDuration;
 import net.orpiske.mpt.common.duration.TestDurationBuilder;
 import net.orpiske.mpt.common.exceptions.DurationParseException;

@@ -17,12 +17,9 @@
 package net.orpiske.mpt.maestro;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
-import net.orpiske.mpt.maestro.client.MaestroClient;
-import net.orpiske.mpt.maestro.client.MaestroCollectorExecutor;
-import net.orpiske.mpt.maestro.client.MaestroTopics;
+import net.orpiske.mpt.maestro.client.*;
 import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.notes.*;
-import org.eclipse.paho.client.mqttv3.MqttException;
 
 import java.io.IOException;
 import java.util.List;
@@ -31,7 +28,7 @@ import java.util.List;
 /**
  * A maestro instance
  */
-public final class Maestro {
+public final class Maestro implements MaestroRequester {
     private MaestroClient maestroClient = null;
     private MaestroCollectorExecutor collectorExecutor;
     private Thread collectorThread;
@@ -140,10 +137,10 @@ public final class Maestro {
     /**
      * Sends a set duration request
      * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
+     * @throws MaestroException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setDuration(final Object value) throws MaestroConnectionException, IOException, MaestroException {
+    public void setDuration(final Object value) throws IOException, MaestroException {
         setDuration(MaestroTopics.ALL_DAEMONS, value);
     }
 
@@ -152,10 +149,10 @@ public final class Maestro {
      * Sends a set duration request
      * @param topic the topic to send the request to
      * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
+     * @throws MaestroException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setDuration(final String topic, final Object value) throws MaestroConnectionException, IOException, MaestroException {
+    public void setDuration(final String topic, final Object value) throws IOException, MaestroException {
         SetRequest maestroNote = new SetRequest();
 
         if (value instanceof String) {

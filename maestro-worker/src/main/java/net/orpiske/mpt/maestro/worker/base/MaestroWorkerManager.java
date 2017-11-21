@@ -3,13 +3,11 @@ package net.orpiske.mpt.maestro.worker.base;
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.common.worker.*;
+import net.orpiske.mpt.maestro.MaestroReceiverClient;
 import net.orpiske.mpt.maestro.client.AbstractMaestroPeer;
-import net.orpiske.mpt.maestro.client.MaestroClient;
 import net.orpiske.mpt.maestro.client.MaestroDeserializer;
-import net.orpiske.mpt.maestro.client.MaestroTopics;
 import net.orpiske.mpt.maestro.exceptions.MalformedNoteException;
 import net.orpiske.mpt.maestro.notes.*;
-import net.orpiske.mpt.maestro.notes.InternalError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,7 +21,7 @@ import java.util.List;
 public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> implements MaestroEventListener {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
 
-    private MaestroClient client;
+    private MaestroReceiverClient client;
     private WorkerContainer container = WorkerContainer.getInstance();
     private String host;
     private Class<MaestroWorker> workerClass;
@@ -40,7 +38,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
                                 final Class<MaestroWorker> workerClass) throws MaestroException {
         super(maestroURL, role, MaestroDeserializer::deserializeEvent);
 
-        client = new MaestroClient(maestroURL);
+        client = new MaestroReceiverClient(maestroURL, clientName, host, id);
         client.connect();
 
         this.workerClass = workerClass;
@@ -66,34 +64,6 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
         testLogDir.mkdirs();
         return testLogDir;
-    }
-
-    private void replyOk() {
-        logger.trace("Sending the OK response from {}", this.toString());
-        OkResponse okResponse = new OkResponse();
-
-        okResponse.setName(clientName + "@" + host);
-        okResponse.setId(getId());
-
-        try {
-            client.publish(MaestroTopics.MAESTRO_TOPIC, okResponse);
-        } catch (Exception e) {
-            logger.error("Unable to publish the OK response {}", e.getMessage(), e);
-        }
-    }
-
-    private void replyInternalError() {
-        logger.trace("Sending the internal error response from {}", this.toString());
-        InternalError errResponse = new InternalError();
-
-        errResponse.setName(clientName + "@" + host);
-        errResponse.setId(getId());
-
-        try {
-            client.publish(MaestroTopics.MAESTRO_TOPIC, errResponse);
-        } catch (Exception e) {
-            logger.error("Unable to publish the OK response {}", e.getMessage(), e);
-        }
     }
 
     @Override
@@ -159,7 +129,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         }
 
         container.setWorkerOptions(workerOptions);
-        replyOk();
+        client.replyOk();
     }
 
     private void doWorkerStart() {
@@ -176,10 +146,10 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
             logger.debug("Starting the writer thread");
             writerThread.start();
 
-            replyOk();
+            client.replyOk();
         } catch (Exception e) {
             logger.error("Unable to start workers from the container: {}", e.getMessage(), e);
-            replyInternalError();
+            client.replyInternalError();
         }
     }
 
@@ -272,7 +242,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
             container.stop();
         }
 
-        replyOk();
+        client.replyOk();
     }
 
     @Override
@@ -283,7 +253,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
             container.stop();
         }
 
-        replyOk();
+        client.replyOk();
     }
 
     @Override
@@ -294,7 +264,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
             container.stop();
         }
 
-        replyOk();
+        client.replyOk();
     }
 
     @Override
@@ -315,20 +285,6 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
     @Override
     public void handle(PingRequest note) throws MaestroConnectionException, MalformedNoteException {
-        logger.debug("Creation seconds.micro: {}.{}", note.getSec(), note.getUsec());
-
-        Instant creation = Instant.ofEpochSecond(note.getSec(), note.getUsec() * 1000);
-        Instant now = Instant.now();
-
-        Duration d = Duration.between(creation, now);
-
-        logger.debug("Elapsed: {}", d.getNano() / 1000);
-        PingResponse response = new PingResponse();
-
-        response.setElapsed(d.getNano() / 1000);
-        response.setName(clientName + "@" + host);
-        response.setId(getId());
-
-        client.publish(MaestroTopics.MAESTRO_TOPIC, response);
+        client.pingResponse(note.getSec(), note.getUsec());
     }
 }

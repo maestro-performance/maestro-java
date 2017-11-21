@@ -114,5 +114,4 @@ public class MaestroClient {
             throw new MaestroConnectionException("Unable to publish message: " + e.getMessage(), e);
         }
     }
-
 }
