@@ -71,7 +71,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
     }
 
     private void replyOk() {
-        logger.trace("Sending the OK reponse from {}", this.toString());
+        logger.trace("Sending the OK response from {}", this.toString());
         OkResponse okResponse = new OkResponse();
 
         okResponse.setName(clientName + "@" + host);
@@ -85,7 +85,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
     }
 
     private void replyInternalError() {
-        logger.trace("Sending the internal error reponse from {}", this.toString());
+        logger.trace("Sending the internal error response from {}", this.toString());
         InternalError errResponse = new InternalError();
 
         errResponse.setName(clientName + "@" + host);
