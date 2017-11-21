@@ -37,6 +37,9 @@ public class FixedSizeContent implements ContentStrategy {
         content = buffer.toString();
     }
 
+    /*
+     * @see ContentStrategy#setSize(String)
+     */
     @Override
     public void setSize(String sizeSpec) {
         setSize(Integer.parseInt(sizeSpec));

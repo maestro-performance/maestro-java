@@ -28,7 +28,7 @@ public interface ContentStrategy {
 
     /**
      * Sets the size based on a size specification string
-     * @param sizeSpec the size specification string (one of "~num" or "num", such as "~256" ok "256")
+     * @param sizeSpec the size specification string as formatted by ({@link MessageSize})
      */
     void setSize(String sizeSpec);
 

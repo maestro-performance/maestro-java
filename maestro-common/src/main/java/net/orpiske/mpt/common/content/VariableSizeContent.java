@@ -19,13 +19,12 @@ package net.orpiske.mpt.common.content;
 import java.util.Random;
 
 /**
- * A variable-size String message content
+ * A variable-size string message content
  */
 public class VariableSizeContent implements ContentStrategy {
     private Random random = new Random();
     private StringBuffer buffer;
     private int limit = 0;
-
 
     /*
      * @see ContentStrategy#setSize(int)
@@ -53,9 +52,8 @@ public class VariableSizeContent implements ContentStrategy {
         ContentFiller.randomFill(buffer, upperBound);
     }
 
-    /**
+    /*
      * @see ContentStrategy#setSize(String)
-     * @param sizeSpec
      */
     @Override
     public void setSize(String sizeSpec) {

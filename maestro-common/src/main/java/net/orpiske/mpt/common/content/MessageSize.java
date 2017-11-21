@@ -16,13 +16,29 @@
 
 package net.orpiske.mpt.common.content;
 
+/**
+ * Builds a message/content size specification String. The size specification is a specially-formatted string that
+ * determines the content size and other aspects of it (ie.: like whether it's variable or not). The format of the
+ * string is either "~num" (for variable size message content) or "num" (for fixed size message content), such as "~256"
+ * or "256"
+ */
 public class MessageSize {
     private MessageSize() {}
 
+    /**
+     * Formats a spec string for variable message content for the given size
+     * @param value the message size
+     * @return A size-spec string for the given size
+     */
     public static String variable(long value) {
         return "~" + Long.toString(value);
     }
 
+    /**
+     * Formats a spec string for fixed message content for the given size
+     * @param value the message size
+     * @return A fixed-size-spec string for the given size
+     */
     public static String fixed(long value) {
         return Long.toString(value);
     }
