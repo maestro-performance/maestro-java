@@ -23,7 +23,6 @@ public class FixedSizeContent implements ContentStrategy {
     private static String content;
     private StringBuffer buffer;
 
-
     /*
      * @see ContentStrategy#setSize(int)
      */
@@ -36,7 +35,11 @@ public class FixedSizeContent implements ContentStrategy {
         ContentFiller.randomFill(buffer, size);
 
         content = buffer.toString();
+    }
 
+    @Override
+    public void setSize(String sizeSpec) {
+        setSize(Integer.parseInt(sizeSpec));
     }
 
     /*

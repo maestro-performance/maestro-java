@@ -53,6 +53,14 @@ public class VariableSizeContent implements ContentStrategy {
         ContentFiller.randomFill(buffer, upperBound);
     }
 
+    /**
+     * @see ContentStrategy#setSize(String)
+     * @param sizeSpec
+     */
+    @Override
+    public void setSize(String sizeSpec) {
+        setSize(Integer.parseInt(sizeSpec.replace("~", "")));
+    }
 
     /*
      * @see ContentStrategy#getContent()

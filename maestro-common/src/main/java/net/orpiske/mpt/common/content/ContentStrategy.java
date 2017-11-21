@@ -26,6 +26,12 @@ public interface ContentStrategy {
      */
     void setSize(int size);
 
+    /**
+     * Sets the size based on a size specification string
+     * @param sizeSpec the size specification string (one of "~num" or "num", such as "~256" ok "256")
+     */
+    void setSize(String sizeSpec);
+
 
     /**
      * Gets the message content to send

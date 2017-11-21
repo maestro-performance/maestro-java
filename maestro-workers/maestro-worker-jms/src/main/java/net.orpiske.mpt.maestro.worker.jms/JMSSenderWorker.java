@@ -17,6 +17,7 @@
 package net.orpiske.mpt.maestro.worker.jms;
 
 import net.orpiske.mpt.common.content.ContentStrategy;
+import net.orpiske.mpt.common.content.ContentStrategyFactory;
 import net.orpiske.mpt.common.content.FixedSizeContent;
 import net.orpiske.mpt.common.content.VariableSizeContent;
 import net.orpiske.mpt.common.duration.TestDuration;
@@ -46,7 +47,6 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     private WorkerSnapshot snapshot;
 
     private String url;
-    private int messageSize;
     private long rate;
 
     private boolean running = false;
@@ -60,18 +60,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
     private void setMessageSize(String messageSize) {
-        if (messageSize.contains("~")) {
-            this.messageSize = Integer.parseInt(messageSize.replace("~", ""));
-
-            contentStrategy = new VariableSizeContent();
-        }
-        else {
-            this.messageSize = Integer.parseInt(messageSize);
-
-            contentStrategy = new FixedSizeContent();
-        }
-
-        contentStrategy.setSize(this.messageSize);
+        contentStrategy = ContentStrategyFactory.parse(messageSize);
     }
 
     private void setRate(String rate) {
