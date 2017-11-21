@@ -2,7 +2,7 @@ package net.orpiske.mpt.maestro;
 
 import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.client.MaestroClient;
-import net.orpiske.mpt.maestro.client.MaestroReceiver;
+import net.orpiske.mpt.common.client.MaestroReceiver;
 import net.orpiske.mpt.maestro.client.MaestroTopics;
 import net.orpiske.mpt.maestro.notes.InternalError;
 import net.orpiske.mpt.maestro.notes.OkResponse;

@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
+import net.orpiske.mpt.common.client.MaestroReceiver;
 import net.orpiske.mpt.common.duration.TestDuration;
 import net.orpiske.mpt.common.duration.TestDurationBuilder;
 import net.orpiske.mpt.common.exceptions.DurationParseException;
@@ -34,17 +35,26 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     private static final Logger logger = LoggerFactory.getLogger(JMSReceiverWorker.class);
 
     private TestDuration duration;
-    private String url;
-    private boolean running = false;
     private final AtomicLong messageCount = new AtomicLong(0);
     private volatile long startedEpochMillis = Long.MIN_VALUE;
     //TODO it could be injected by outside because the precision could be improved using ad-hoc clock timers
     private final SingleWriterRecorder latencyRecorder = new SingleWriterRecorder(TimeUnit.HOURS.toMillis(1), 3);
+    private MaestroReceiver receiverEndpoint;
+
+    private String url;
+    private boolean running = false;
+
 
     @Override
     public long messageCount() {
         return messageCount.get();
     }
+
+    @Override
+    public void setMaestroEndpoint(MaestroReceiver endpoint) {
+        this.receiverEndpoint = endpoint;
+    }
+
 
     @Override
     public long startedEpochMillis() {

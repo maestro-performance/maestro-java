@@ -18,6 +18,7 @@ package net.orpiske.mpt.common.worker;
 
 import net.orpiske.mpt.common.duration.TestDuration;
 import org.HdrHistogram.Histogram;
+import net.orpiske.mpt.common.client.MaestroReceiver;
 
 /**
  * A common interface for any type of Maestro worker.
@@ -37,6 +38,12 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
      * @param workerOptions
      */
     void setWorkerOptions(WorkerOptions workerOptions);
+
+    /**
+     * Sets an endpoint that workers can use to send notifications
+     * @param endpoint
+     */
+    void setMaestroEndpoint(MaestroReceiver endpoint);
 
     /**
      * Starts the test

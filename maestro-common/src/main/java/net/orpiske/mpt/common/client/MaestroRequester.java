@@ -1,4 +1,4 @@
-package net.orpiske.mpt.maestro.client;
+package net.orpiske.mpt.common.client;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
