@@ -52,7 +52,8 @@ public class AbstractMaestroExecutor implements Runnable {
                 logger.debug("Waiting for data ...");
 
                 if (!maestroPeer.isConnected()) {
-                    logger.error("Disconnected from the broker");
+                    logger.error("Disconnected from the broker: reconnecting");
+                    maestroPeer.connect();
                 }
 
                 Thread.sleep(10000);
