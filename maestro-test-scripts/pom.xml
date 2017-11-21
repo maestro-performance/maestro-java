@@ -103,6 +103,7 @@
             <groupId>org.apache.activemq</groupId>
             <artifactId>activemq-amqp</artifactId>
             <version>5.11.3</version>
+            <scope>test</scope>
         </dependency>
 
         <dependency>
