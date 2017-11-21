@@ -17,35 +17,30 @@
 package net.orpiske.mpt.common.duration;
 
 import net.orpiske.mpt.common.exceptions.DurationParseException;
-import net.orpiske.mpt.common.worker.WorkerSnapshot;
 
-import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 
 /**
  * Time-based test duration object
  */
 public class DurationTime implements TestDuration {
-    private Instant end;
-    private long numeric;
-    private String timeSpec;
+    private final long expectedDuration;
+    private final TimeUnit outputTimeUnit;
+    private final String timeSpec;
 
     public DurationTime(final String timeSpec) throws DurationParseException {
-        this.numeric = DurationUtils.parse(timeSpec);
+        this.expectedDuration = DurationUtils.parse(timeSpec);
         this.timeSpec = timeSpec;
+        this.outputTimeUnit = TimeUnit.SECONDS;
     }
 
-    public boolean canContinue(WorkerSnapshot snapshot) {
-        Instant now = snapshot.getNow();
-
-        if (now.isAfter(end) || now.equals(end)) {
-            return false;
-        }
-
-        return true;
+    public boolean canContinue(TestProgress snapshot) {
+        final long currentDuration = snapshot.elapsedTime(outputTimeUnit);
+        return currentDuration < expectedDuration;
     }
 
     public long getNumericDuration() {
-        return numeric;
+        return expectedDuration;
     }
 
     public String toString() {

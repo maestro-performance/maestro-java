@@ -16,7 +16,7 @@
 
 package net.orpiske.mpt.common.duration;
 
-import net.orpiske.mpt.common.worker.WorkerSnapshot;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -25,18 +25,49 @@ import net.orpiske.mpt.common.worker.WorkerSnapshot;
  */
 public interface TestDuration {
 
+    interface TestProgress {
+
+        /**
+         * It represent the start of the test in milliseconds using Unix Epoch in milliseconds.
+         * <p>
+         * If the test isn't started yet it is an arbitrary negative value.
+         */
+        long startedEpochMillis();
+
+        /**
+         * It represents the works done expressed in unit of time.
+         */
+        default long elapsedTime(TimeUnit outputTimeUnit) {
+            final long startedEpochMillis = startedEpochMillis();
+            if (startedEpochMillis < 0) {
+                return 0;
+            } else {
+                final long elapsedMillis = System.currentTimeMillis() - startedEpochMillis;
+                return outputTimeUnit.convert(elapsedMillis, TimeUnit.MILLISECONDS);
+            }
+        }
+
+        /**
+         * It represents the works done expressed in messages processed.
+         */
+        long messageCount();
+
+    }
+
 
     /**
      * Get the numeric time duration
+     *
      * @return the number of messages or the number of seconds for the test
      */
     long getNumericDuration();
 
 
     /**
-     * Whether the test can continue based on the current snapshot
-     * @param snapshot current snapshot
+     * Whether the test can continue based on the current test's progress
+     *
+     * @param progress current progresses
      * @return true if the test can continue or false otherwise
      */
-    boolean canContinue(WorkerSnapshot snapshot);
+    boolean canContinue(TestProgress progress);
 }

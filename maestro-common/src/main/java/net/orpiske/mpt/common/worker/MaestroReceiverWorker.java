@@ -16,37 +16,11 @@
 
 package net.orpiske.mpt.common.worker;
 
-import net.orpiske.mpt.common.writers.LatencyWriter;
-import net.orpiske.mpt.common.writers.RateWriter;
+import org.HdrHistogram.Histogram;
 
 /**
  * An interface for implementing maestro receivers
  */
 public interface MaestroReceiverWorker extends MaestroWorker {
-
-
-    /**
-     * Gets the rate writer
-     * @return
-     */
-    RateWriter getRateWriter();
-
-    /**
-     * Sets the rate writer
-     * @param rateWriter
-     */
-    void setRateWriter(RateWriter rateWriter);
-
-    /**
-     * Sets the latency writer
-     * @param latencyWriter
-     */
-    void setLatencyWriter(LatencyWriter latencyWriter);
-
-    /**
-     * Gets the latency writer
-     * @return
-     */
-    LatencyWriter getLatencyWriter();
 
 }

@@ -17,8 +17,8 @@ import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.BlockingQueue;
-import java.util.concurrent.LinkedBlockingQueue;
+import java.util.ArrayList;
+import java.util.List;
 
 public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> implements MaestroEventListener {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
@@ -30,7 +30,6 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
     private File logDir;
 
-    private BlockingQueue<WorkerSnapshot> queue;
     private WorkerOptions workerOptions;
     private Thread writerThread;
 
@@ -48,7 +47,6 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         this.host = host;
         this.logDir = logDir;
 
-        queue = new LinkedBlockingQueue<>();
         workerOptions = new WorkerOptions();
     }
 
@@ -166,11 +164,12 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
     private void doWorkerStart() {
         try {
+            final List<MaestroWorker> workers = new ArrayList<>();
             logger.debug("Starting the worker {}", workerClass);
-            container.start(workerClass, queue);
+            container.start(workerClass, workers);
 
             logger.debug("Creating the writer thread");
-            WorkerDataWriter wdw = new WorkerDataWriter(queue);
+            WorkerDataWriter wdw = new WorkerDataWriter(workers);
 
             writerThread = new Thread(wdw);
 

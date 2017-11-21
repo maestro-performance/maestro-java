@@ -16,21 +16,24 @@
 
 package net.orpiske.mpt.common.worker;
 
-import java.util.concurrent.BlockingQueue;
+import net.orpiske.mpt.common.duration.TestDuration;
+import org.HdrHistogram.Histogram;
 
 /**
  * A common interface for any type of Maestro worker.
  */
-public interface MaestroWorker extends Runnable {
+public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
 
     /**
      * Checks whether the worker is in running state.
+     *
      * @return true if it is in running state or false otherwise
      */
     boolean isRunning();
 
     /**
      * Sets the options for this worker
+     *
      * @param workerOptions
      */
     void setWorkerOptions(WorkerOptions workerOptions);
@@ -51,17 +54,14 @@ public interface MaestroWorker extends Runnable {
     void halt();
 
     /**
-     * Provides the updated performance snapshot
-     * @return
+     * It is able to take a snapshot of the current recorder latencies.
+     *
+     * @param intervalHistogram the new histogram to be used to record latencies from now on
+     * @return the old latencies histogram or {@code null} if none has been recorded.
      */
-    WorkerSnapshot stats();
+    default Histogram takeLatenciesSnapshot(Histogram intervalHistogram) {
+        return null;
+    }
 
-
-    /**
-     * Sets a queue for IPC-like communication of the performance
-     * snapshot
-     * @param queue the blocking queue to use as IPC-like mechanism
-     */
-    void setQueue(BlockingQueue<WorkerSnapshot> queue);
 
 }

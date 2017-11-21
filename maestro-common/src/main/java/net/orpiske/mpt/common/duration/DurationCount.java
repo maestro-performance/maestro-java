@@ -17,6 +17,7 @@
 package net.orpiske.mpt.common.duration;
 
 import net.orpiske.mpt.common.worker.WorkerSnapshot;
+import org.HdrHistogram.Histogram;
 
 /**
  * Count-based test duration object
@@ -28,8 +29,8 @@ public class DurationCount implements TestDuration {
         this.count = Long.parseLong(durationSpec);
     }
 
-    public boolean canContinue(WorkerSnapshot snapshot) {
-        if (snapshot.getCount() <= count) {
+    public boolean canContinue(TestProgress progress) {
+        if (progress.messageCount() <= count) {
             return true;
         }
 

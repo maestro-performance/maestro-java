@@ -24,39 +24,33 @@ import net.orpiske.mpt.common.duration.TestDuration;
 import net.orpiske.mpt.common.duration.TestDurationBuilder;
 import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.common.worker.MaestroSenderWorker;
-import net.orpiske.mpt.common.worker.ThroughputStats;
 import net.orpiske.mpt.common.worker.WorkerOptions;
-import net.orpiske.mpt.common.worker.WorkerSnapshot;
-import net.orpiske.mpt.common.writers.RateWriter;
-import org.apache.commons.lang3.SerializationUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 
 public class JMSSenderWorker implements MaestroSenderWorker {
     private static final Logger logger = LoggerFactory.getLogger(JMSSenderWorker.class);
-
     private ContentStrategy contentStrategy;
-    private RateWriter rateWriter;
     private TestDuration duration;
-    private BlockingQueue<WorkerSnapshot> queue;
-    private WorkerSnapshot snapshot;
-
+    private final AtomicLong messageCount = new AtomicLong(0);
+    private volatile long startedEpochMillis = Long.MIN_VALUE;
     private String url;
-    private long rate;
+    private long rate = 0;
 
     private boolean running = false;
 
-    public RateWriter getRateWriter() {
-        return rateWriter;
+    @Override
+    public long startedEpochMillis() {
+        return this.startedEpochMillis;
     }
 
-    public void setRateWriter(RateWriter rateWriter) {
-        this.rateWriter = rateWriter;
+    @Override
+    public long messageCount() {
+        return messageCount.get();
     }
 
     private void setMessageSize(String messageSize) {
@@ -87,8 +81,24 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         setMessageSize(workerOptions.getMessageSize());
     }
 
+    /**
+     * @return the expected start time of this operation
+     */
+    private static long waitUsingRate(final long startedTimeInNanos, final long count, final long intervalInNanos) throws InterruptedException {
+        final long now = System.nanoTime();
+        final long expectedTriggerTime = startedTimeInNanos + (count * intervalInNanos);
+        final long waitNanos = expectedTriggerTime - now;
+        if (waitNanos > 0) {
+            //TODO warns if waitNanos is below the precision offered by the OS
+            TimeUnit.NANOSECONDS.sleep(waitNanos);
+        }
+        //oops: too late!
+        return expectedTriggerTime;
+    }
+
     public void start() {
-        int sampleInterval = 10;
+        running = true;
+        startedEpochMillis = System.currentTimeMillis();
         logger.info("Starting the test");
 
         try {
@@ -98,58 +108,30 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
             client.setUrl(url);
             client.setContentStrategy(contentStrategy);
-
-            running = true;
             client.start();
 
-            Instant startTime = Instant.now();
-
+            final long startedTimeInNanos = System.nanoTime();
             long count = 0;
-            long lastCount = 0;
-
-            snapshot = new WorkerSnapshot();
-            snapshot.setId(Thread.currentThread().getId());
-
-            long interval = 1000000 / rate;
-
-            snapshot.setStartTime(startTime);
-
-            Instant last = startTime;
-
-            while (duration.canContinue(snapshot) && isRunning()) {
-                snapshot.setCount(count);
-
-                Instant now = Instant.now();
-                snapshot.setNow(now);
-
-                Instant eta = now.plusNanos(interval * 1000);
-                snapshot.setEta(eta);
-
+            final long intervalInNanos = this.rate > 0 ? 1_000_000_000L / rate : 0;
+            if (logger.isDebugEnabled()) {
+                logger.debug("JMS Sender [" + Thread.currentThread().getId() + "] - has started firing events with interval= " + intervalInNanos + " ns [" + rate + " msg/sec]");
+            }
+            while (duration.canContinue(this) && isRunning()) {
+                if (intervalInNanos > 0) {
+                    //TODO the expected start time could be used to be sent instead of the real one to measure
+                    //without coordinated omission
+                    waitUsingRate(startedTimeInNanos, count, intervalInNanos);
+                }
                 client.sendMessages();
                 count++;
-
-                long elapsedSecs = now.getEpochSecond() - last.getEpochSecond();
-                if (elapsedSecs >= sampleInterval) {
-                    long processedCount = count - lastCount;
-
-                    ThroughputStats tp = new ThroughputStats();
-
-                    tp.setCount(processedCount);
-                    tp.setDuration(Duration.ofMillis(now.toEpochMilli() - last.toEpochMilli()));
-
-                    logger.trace("Throughput stats: {}", tp);
-                }
-
-                queue.add(SerializationUtils.clone(snapshot));
-
-                if (eta.isBefore(now)) {
-                    Thread.sleep(now.minusNanos(eta.getNano()).getNano());
-                }
+                //update message sent count
+                this.messageCount.lazySet(count);
             }
+        } catch (InterruptedException e) {
+            logger.error("JMS Sender [" + Thread.currentThread().getId() + "] interrupted while sending messages: {}", e.getMessage());
         } catch (Exception e) {
             logger.error("Unable to start the worker: {}", e.getMessage(), e);
-        }
-        finally {
+        } finally {
             running = false;
         }
     }
@@ -167,16 +149,6 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     @Override
     public void halt() {
         stop();
-    }
-
-    @Override
-    public WorkerSnapshot stats() {
-        return snapshot;
-    }
-
-    @Override
-    public void setQueue(BlockingQueue<WorkerSnapshot> queue) {
-        this.queue = queue;
     }
 
     @Override

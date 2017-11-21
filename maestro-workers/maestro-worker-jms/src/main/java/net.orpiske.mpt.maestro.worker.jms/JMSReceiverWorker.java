@@ -22,40 +22,33 @@ import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
 import net.orpiske.mpt.common.worker.MessageInfo;
 import net.orpiske.mpt.common.worker.WorkerOptions;
-import net.orpiske.mpt.common.worker.WorkerSnapshot;
-import net.orpiske.mpt.common.writers.LatencyWriter;
-import net.orpiske.mpt.common.writers.RateWriter;
-import org.apache.commons.lang3.SerializationUtils;
+import org.HdrHistogram.Histogram;
+import org.HdrHistogram.SingleWriterRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
-import java.util.concurrent.BlockingQueue;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicLong;
 
 public class JMSReceiverWorker implements MaestroReceiverWorker {
     private static final Logger logger = LoggerFactory.getLogger(JMSReceiverWorker.class);
 
-    private BlockingQueue<WorkerSnapshot> queue;
     private TestDuration duration;
-    private WorkerSnapshot snapshot;
-
     private String url;
     private boolean running = false;
+    private final AtomicLong messageCount = new AtomicLong(0);
+    private volatile long startedEpochMillis = Long.MIN_VALUE;
+    //TODO it could be injected by outside because the precision could be improved using ad-hoc clock timers
+    private final SingleWriterRecorder latencyRecorder = new SingleWriterRecorder(TimeUnit.HOURS.toMillis(1), 3);
 
-    public RateWriter getRateWriter() {
-        return null;
+    @Override
+    public long messageCount() {
+        return messageCount.get();
     }
 
-    public void setRateWriter(RateWriter rateWriter) {
-
-    }
-
-    public void setLatencyWriter(LatencyWriter latencyWriter) {
-
-    }
-
-    public LatencyWriter getLatencyWriter() {
-        return null;
+    @Override
+    public long startedEpochMillis() {
+        return startedEpochMillis;
     }
 
     private void setFCL(String fcl) {
@@ -74,8 +67,6 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         }
     }
 
-
-
     @Override
     public void setWorkerOptions(WorkerOptions workerOptions) {
         setBroker(workerOptions.getBrokerURL());
@@ -83,6 +74,8 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     }
 
     public void start() {
+        running = true;
+        startedEpochMillis = System.currentTimeMillis();
         logger.info("Starting the test");
 
         try {
@@ -90,36 +83,32 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
             client.setUrl(url);
 
-            running = true;
             client.start();
-
-            Instant startTime = Instant.now();
 
             long count = 0;
 
-            snapshot = new WorkerSnapshot();
-            snapshot.setId(Thread.currentThread().getId());
-            snapshot.setStartTime(startTime);
-
-            while (duration.canContinue(snapshot) && isRunning()) {
-                snapshot.setCount(count);
-
-                Instant now = Instant.now();
-                snapshot.setNow(now);
-
+            while (duration.canContinue(this) && isRunning()) {
+                final MessageInfo info = client.receiveMessages();
+                //TODO would be better to use a general purpose Clock API
+                final long now = System.currentTimeMillis();
+                final long elapsedMillis = now - info.getCreationTime().toEpochMilli();
+                //we can perform fnc check here to fail the test
+                //TODO use Histogram:recordValueWithExpectedInterval if the rate is known
+                latencyRecorder.recordValue(elapsedMillis);
                 count++;
-                MessageInfo info = client.receiveMessages();
-
-                logger.trace("Received: {}", info);
-                queue.add(SerializationUtils.clone(snapshot));
+                messageCount.lazySet(count);
             }
         } catch (Exception e) {
             logger.error("Unable to start the worker: {}", e.getMessage(), e);
-        }
-        finally {
+        } finally {
             running = false;
         }
 
+    }
+
+    @Override
+    public Histogram takeLatenciesSnapshot(Histogram intervalHistogram) {
+        return latencyRecorder.getIntervalHistogram(intervalHistogram);
     }
 
     @Override
@@ -135,16 +124,6 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     @Override
     public void halt() {
         stop();
-    }
-
-    @Override
-    public WorkerSnapshot stats() {
-        return snapshot;
-    }
-
-    @Override
-    public void setQueue(BlockingQueue<WorkerSnapshot> queue) {
-        this.queue = queue;
     }
 
     @Override
