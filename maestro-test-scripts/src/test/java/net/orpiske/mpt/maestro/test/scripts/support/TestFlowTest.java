@@ -46,7 +46,7 @@ public class TestFlowTest extends EndToEndTest {
 
     @BeforeClass
     public static void setUp() throws Exception {
-        LogConfigurator.verbose();
+        LogConfigurator.debug();
 
         if (miniReceivingPeer == null) {
             miniReceivingPeer = new MiniReceivingPeer();
@@ -82,7 +82,7 @@ public class TestFlowTest extends EndToEndTest {
         System.out.println("Running a short-lived test");
 
         maestro.setParallelCount(1);
-        maestro.setDuration("100");
+        maestro.setDuration("5");
         maestro.setMessageSize(100);
         maestro.setFCL(1000);
         maestro.setRate(100);
