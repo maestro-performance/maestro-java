@@ -23,6 +23,7 @@ import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.notes.*;
 
 import java.io.IOException;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -450,6 +451,38 @@ public final class Maestro implements MaestroRequester {
 
             if (hasReplies(replies)) {
                 break;
+            }
+
+            try {
+                Thread.sleep(wait);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            retries--;
+        } while (retries > 0);
+
+        return replies;
+    }
+
+    /**
+     * Collect replies up to a certain limit of retries/timeout
+     * @param wait how much time between each retry
+     * @param retries number of retries
+     * @param expect The number of replies to expect.
+     * @return A list of serialized maestro replies or null if none. May return less that expected.
+     */
+    public List<MaestroNote> collect(long wait, int retries, int expect) {
+        List<MaestroNote> replies = new LinkedList<>();
+
+        do {
+            List<MaestroNote> collected = collectorExecutor.collect();
+
+            if (collected != null) {
+                replies.addAll(collected);
+
+                if (hasReplies(replies) && replies.size() >= expect) {
+                    break;
+                }
             }
 
             try {
