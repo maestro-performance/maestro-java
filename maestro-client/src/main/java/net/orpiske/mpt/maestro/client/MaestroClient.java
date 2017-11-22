@@ -70,7 +70,9 @@ public class MaestroClient {
         connOpts.setCleanSession(true);
 
         try {
-            mqttClient.connect();
+            if (!mqttClient.isConnected()) {
+                mqttClient.connect();
+            }
         }
         catch (MqttException e) {
             throw new MaestroConnectionException("Unable to establish a connection to Maestro: " + e.getMessage(), e);
