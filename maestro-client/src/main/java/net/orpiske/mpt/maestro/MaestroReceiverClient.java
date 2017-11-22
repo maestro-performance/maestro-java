@@ -88,7 +88,7 @@ public class MaestroReceiverClient extends MaestroClient implements MaestroRecei
         notification.setMessage(message);
 
         try {
-            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification);
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, true);
         } catch (Exception e) {
             logger.error("Unable to publish the success notification: {}", e.getMessage(), e);
         }
@@ -105,7 +105,7 @@ public class MaestroReceiverClient extends MaestroClient implements MaestroRecei
         notification.setMessage(message);
 
         try {
-            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification);
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, true);
         } catch (Exception e) {
             logger.error("Unable to publish the failure notification: {}", e.getMessage(), e);
         }

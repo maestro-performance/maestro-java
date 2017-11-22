@@ -93,14 +93,17 @@ public class MaestroClient {
 
 
     /**
-     * Publishes a message in the broker
+     * Publishes a message in the broker. This is normally used for publishing notifications,
+     * because some of them are set as retained in the broker
      *
      * @param topic the topic to publish the message
      * @param note  the maestro note to publish
      * @throws MaestroConnectionException if failed to publish the message
      * @throws MalformedNoteException     in case of other I/O errors
      */
-    public void publish(final String topic, final MaestroNote note) throws MalformedNoteException, MaestroConnectionException {
+    protected void publish(final String topic, final MaestroNote note, int qos, boolean retained) throws
+            MalformedNoteException, MaestroConnectionException
+    {
         final byte[] bytes;
         try {
             bytes = note.serialize();
@@ -109,9 +112,23 @@ public class MaestroClient {
         }
 
         try {
-            mqttClient.publish(topic, bytes, 0, false);
+            mqttClient.publish(topic, bytes, qos, retained);
         } catch (MqttException e) {
             throw new MaestroConnectionException("Unable to publish message: " + e.getMessage(), e);
         }
     }
+
+    /**
+     * Publishes a message in the broker
+     *
+     * @param topic the topic to publish the message
+     * @param note  the maestro note to publish
+     * @throws MaestroConnectionException if failed to publish the message
+     * @throws MalformedNoteException     in case of other I/O errors
+     */
+    public void publish(final String topic, final MaestroNote note) throws MalformedNoteException, MaestroConnectionException {
+        publish(topic, note, 0, false);
+    }
+
+
 }
