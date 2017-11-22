@@ -1,9 +1,7 @@
 package net.orpiske.mpt.maestro.worker.main;
 
-import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.client.AbstractMaestroExecutor;
-import net.orpiske.mpt.maestro.client.MaestroTopics;
 import net.orpiske.mpt.common.worker.MaestroWorker;
 import net.orpiske.mpt.maestro.worker.base.MaestroWorkerManager;
 import org.slf4j.Logger;
