@@ -40,29 +40,25 @@ public final class WorkerStateInfo {
 
 
     /**
-     * Sets the running state for the worker
-     * @param running true if running or false otherwise
+     * Sets the state for the worker
+     *
+     * @param running true if the worker is in a running state
+     * @param exitStatus the exit status for the worker {@link WorkerExitStatus}
+     * @param exception Any exception raised in case of errors
      */
-    public void setRunning(boolean running) {
+    public void setState(boolean running, WorkerExitStatus exitStatus, Exception exception) {
         this.running = running;
+        this.exitStatus = exitStatus;
+        this.exception = exception;
     }
 
 
     /**
      * Gets the exit status for the worker
-     * @return The exit status {@link WorkerExitStatus}
+     * @return The exit status or null if running
      */
     public WorkerExitStatus getExitStatus() {
         return exitStatus;
-    }
-
-
-    /**
-     * Sets the exit status for the worker
-     * @param exitStatus the worker status {@link WorkerExitStatus} (returns STOPPED if uninitialized)
-     */
-    public void setExitStatus(WorkerExitStatus exitStatus) {
-        this.exitStatus = exitStatus;
     }
 
 
@@ -72,14 +68,5 @@ public final class WorkerStateInfo {
      */
     public Exception getException() {
         return exception;
-    }
-
-
-    /**
-     * Sets the exception raised by the worker
-     * @param exception the exception raised by the worker
-     */
-    public void setException(Exception exception) {
-        this.exception = exception;
     }
 }
