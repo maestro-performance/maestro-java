@@ -20,6 +20,7 @@ import net.orpiske.mpt.common.ConsoleHijacker;
 import net.orpiske.mpt.common.worker.MaestroSenderWorker;
 import net.orpiske.mpt.common.worker.WorkerOptions;
 import net.orpiske.mpt.common.worker.WorkerSnapshot;
+import net.orpiske.mpt.common.worker.WorkerStateInfo;
 import net.orpiske.mpt.common.writers.RateWriter;
 import net.ssorj.quiver.QuiverArrowJms;
 import org.apache.commons.lang3.StringUtils;
@@ -38,12 +39,19 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
     private String duration;
     private String messageSize;
 
-    private boolean running = false;
+    private WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
+    @Override
+    public WorkerStateInfo getWorkerState() {
+        return workerStateInfo;
+    }
+
+    @Override
     public RateWriter getRateWriter() {
         return rateWriter;
     }
 
+    @Override
     public void setRateWriter(RateWriter rateWriter) {
         this.rateWriter = rateWriter;
     }
@@ -103,7 +111,7 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
 
             ConsoleHijacker ch = ConsoleHijacker.getInstance();
 
-            running = true;
+            workerStateInfo.setRunning(true);
             ch.start();
 
             QuiverArrowJms.doMain(args);
@@ -119,23 +127,30 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
             }
 
             rateWriter.close();
-
+            workerStateInfo.setException(null);
+            workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS);
         } catch (Exception e) {
-            logger.error("Unable to start the worker: {}", e.getMessage(), e);
+            logger.error("Unable to start the sender worker: {}", e.getMessage(), e);
+
+            workerStateInfo.setRunning(false);
+            workerStateInfo.setException(e);
+            workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE);
         }
         finally {
-            running = false;
+            workerStateInfo.setRunning(false);
         }
     }
 
     @Override
     public boolean isRunning() {
-        return running;
+        return workerStateInfo.isRunning();
     }
 
     @Override
     public void stop() {
-        running = false;
+        workerStateInfo.setRunning(false);
+        workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED);
+
         Thread.currentThread().stop();
     }
 

@@ -32,6 +32,7 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
      */
     boolean isRunning();
 
+
     /**
      * Sets the options for this worker
      *
@@ -39,11 +40,13 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
      */
     void setWorkerOptions(WorkerOptions workerOptions);
 
+
     /**
-     * Sets an endpoint that workers can use to send notifications
-     * @param endpoint
+     * Gets the current state of the worker
+     * @return
      */
-    void setMaestroEndpoint(MaestroReceiver endpoint);
+    WorkerStateInfo getWorkerState();
+
 
     /**
      * Starts the test

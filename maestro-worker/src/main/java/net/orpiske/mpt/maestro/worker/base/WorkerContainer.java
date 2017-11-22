@@ -1,5 +1,6 @@
 package net.orpiske.mpt.maestro.worker.base;
 
+import net.orpiske.mpt.common.client.MaestroReceiver;
 import net.orpiske.mpt.common.worker.MaestroWorker;
 import net.orpiske.mpt.common.worker.WorkerOptions;
 
@@ -17,24 +18,27 @@ public final class WorkerContainer {
     private WorkerOptions workerOptions;
     private List<WorkerRuntimeInfo> workerRuntimeInfos = new ArrayList<>();
 
-    private static class WorkerRuntimeInfo {
-        public Thread thread;
-        public MaestroWorker worker;
-    }
+    private WorkerWatchdog workerWatchdog;
+    private Thread watchDogThread;
+    private MaestroReceiver endpoint;
 
-    private WorkerContainer() {}
+    private WorkerContainer(MaestroReceiver endpoint) {
+        this.endpoint = endpoint;
+    }
 
     /**
      * Gets and instance of the container
      * @return
      */
-    public synchronized static final WorkerContainer getInstance() {
+    public synchronized static final WorkerContainer getInstance(MaestroReceiver endpoint) {
         if (instance == null) {
-            instance = new WorkerContainer();
+            instance = new WorkerContainer(endpoint);
         }
 
         return instance;
     }
+
+
 
 
     /**
@@ -46,10 +50,9 @@ public final class WorkerContainer {
     }
 
     /**
-     * Start the execution of the workerRuntimeInfos for a predefined class
-     *
-     * @param clazz   The class associated with the workerRuntimeInfos
-     * @param workers The workerRuntimeInfos to be monitored to provide performance counters data
+     * Start the execution of the workers for a predefined class
+     * @param clazz The class associated with the workers
+     * @param snapshots The performance snapshot queue containing the performance test data
      * @throws IllegalAccessException if unable to access the worker constructor
      * @throws InstantiationException if unable to instantiate the worker
      */
@@ -70,7 +73,7 @@ public final class WorkerContainer {
         workers.addAll(this.workerRuntimeInfos.stream().map(info -> info.worker).collect(Collectors.toList()));
     }
 
-    private static void createAndStartWorkers(final Class<MaestroWorker> clazz, WorkerOptions workerOptions, int workers, Collection<WorkerRuntimeInfo> workerRuntimeInfos) throws IllegalAccessException, InstantiationException {
+    private void createAndStartWorkers(final Class<MaestroWorker> clazz, WorkerOptions workerOptions, int workers, Collection<WorkerRuntimeInfo> workerRuntimeInfos) throws IllegalAccessException, InstantiationException {
         for (int i = 0; i < workers; i++) {
             final WorkerRuntimeInfo ri = new WorkerRuntimeInfo();
             ri.worker = clazz.newInstance();
@@ -79,11 +82,22 @@ public final class WorkerContainer {
             ri.thread.start();
             workerRuntimeInfos.add(ri);
         }
+
+        workerWatchdog = new WorkerWatchdog(workerRuntimeInfos, endpoint);
+
+        watchDogThread = new Thread(workerWatchdog);
+        watchDogThread.start();
     }
 
     public void stop() {
         for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
             ri.worker.stop();
         }
+
+        if (workerWatchdog != null) {
+            workerWatchdog.setRunning(false);
+        }
+
+        // workers.clear();
     }
 }

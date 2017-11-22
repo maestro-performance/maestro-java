@@ -22,7 +22,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
 
     private MaestroReceiverClient client;
-    private WorkerContainer container = WorkerContainer.getInstance();
+    private WorkerContainer container;
     private String host;
     private Class<MaestroWorker> workerClass;
 
@@ -33,19 +33,25 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
     private boolean running = true;
 
-
     public MaestroWorkerManager(final String maestroURL, final String role, final String host, final File logDir,
                                 final Class<MaestroWorker> workerClass) throws MaestroException {
         super(maestroURL, role, MaestroDeserializer::deserializeEvent);
 
         client = new MaestroReceiverClient(maestroURL, clientName, host, id);
-        client.connect();
 
         this.workerClass = workerClass;
         this.host = host;
         this.logDir = logDir;
+        this.container = WorkerContainer.getInstance(client);
 
         workerOptions = new WorkerOptions();
+    }
+
+    @Override
+    public void connect() throws MaestroConnectionException {
+        super.connect();
+
+        client.connect();
     }
 
     @Override

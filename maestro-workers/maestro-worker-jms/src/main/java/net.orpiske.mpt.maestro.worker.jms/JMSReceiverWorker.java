@@ -23,6 +23,7 @@ import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
 import net.orpiske.mpt.common.worker.MessageInfo;
 import net.orpiske.mpt.common.worker.WorkerOptions;
+import net.orpiske.mpt.common.worker.WorkerStateInfo;
 import org.HdrHistogram.Histogram;
 import org.HdrHistogram.SingleWriterRecorder;
 import org.slf4j.Logger;
@@ -41,8 +42,9 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     private final SingleWriterRecorder latencyRecorder = new SingleWriterRecorder(TimeUnit.HOURS.toMillis(1), 3);
     private MaestroReceiver receiverEndpoint;
 
+    private WorkerStateInfo workerStateInfo = new WorkerStateInfo();
+
     private String url;
-    private boolean running = false;
 
 
     @Override
@@ -51,8 +53,8 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     }
 
     @Override
-    public void setMaestroEndpoint(MaestroReceiver endpoint) {
-        this.receiverEndpoint = endpoint;
+    public WorkerStateInfo getWorkerState() {
+        return workerStateInfo;
     }
 
 
@@ -84,7 +86,6 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     }
 
     public void start() {
-        running = true;
         startedEpochMillis = System.currentTimeMillis();
         logger.info("Starting the test");
 
@@ -93,6 +94,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
             client.setUrl(url);
 
+            workerStateInfo.setRunning(true);
             client.start();
 
             long count = 0;
@@ -108,10 +110,19 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
                 count++;
                 messageCount.lazySet(count);
             }
+
+            logger.info("Test completed successfully");
+            workerStateInfo.setException(null);
+            workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS);
         } catch (Exception e) {
-            logger.error("Unable to start the worker: {}", e.getMessage(), e);
-        } finally {
-            running = false;
+            logger.error("Unable to start the receiver worker: {}", e.getMessage(), e);
+
+            workerStateInfo.setRunning(false);
+            workerStateInfo.setException(e);
+            workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE);
+        }
+        finally {
+            workerStateInfo.setRunning(false);
         }
 
     }
@@ -123,12 +134,13 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
     @Override
     public boolean isRunning() {
-        return running;
+        return workerStateInfo.isRunning();
     }
 
     @Override
     public void stop() {
-        running = false;
+        workerStateInfo.setRunning(false);
+        workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED);
     }
 
     @Override

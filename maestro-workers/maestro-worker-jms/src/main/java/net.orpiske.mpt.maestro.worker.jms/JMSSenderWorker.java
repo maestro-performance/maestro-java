@@ -24,6 +24,7 @@ import net.orpiske.mpt.common.duration.TestDurationBuilder;
 import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.common.worker.MaestroSenderWorker;
 import net.orpiske.mpt.common.worker.WorkerOptions;
+import net.orpiske.mpt.common.worker.WorkerStateInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,7 +44,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     private String url;
     private long rate = 0;
 
-    private boolean running = false;
+    private WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     @Override
     public long startedEpochMillis() {
@@ -51,8 +52,8 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
     @Override
-    public void setMaestroEndpoint(MaestroReceiver endpoint) {
-        this.receiverEndpoint = endpoint;
+    public WorkerStateInfo getWorkerState() {
+        return workerStateInfo;
     }
 
 
@@ -105,7 +106,6 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
     public void start() {
-        running = true;
         startedEpochMillis = System.currentTimeMillis();
         logger.info("Starting the test");
 
@@ -116,6 +116,8 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
             client.setUrl(url);
             client.setContentStrategy(contentStrategy);
+
+            workerStateInfo.setRunning(true);
             client.start();
 
             final long startedTimeInNanos = System.nanoTime();
@@ -137,21 +139,31 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             }
         } catch (InterruptedException e) {
             logger.error("JMS Sender [" + Thread.currentThread().getId() + "] interrupted while sending messages: {}", e.getMessage());
+
+            logger.info("Test completed successfully");
+            workerStateInfo.setException(null);
+            workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS);
         } catch (Exception e) {
-            logger.error("Unable to start the worker: {}", e.getMessage(), e);
-        } finally {
-            running = false;
+            logger.error("Unable to start the sender worker: {}", e.getMessage(), e);
+
+            workerStateInfo.setRunning(false);
+            workerStateInfo.setException(e);
+            workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE);
+        }
+        finally {
+            workerStateInfo.setRunning(false);
         }
     }
 
     @Override
     public boolean isRunning() {
-        return running;
+        return workerStateInfo.isRunning();
     }
 
     @Override
     public void stop() {
-        running = false;
+        workerStateInfo.setRunning(false);
+        workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED);
     }
 
     @Override
