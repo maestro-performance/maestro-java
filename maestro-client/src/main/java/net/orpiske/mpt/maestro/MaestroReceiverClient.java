@@ -54,7 +54,7 @@ public class MaestroReceiverClient extends MaestroClient implements MaestroRecei
         try {
             super.publish(MaestroTopics.MAESTRO_TOPIC, errResponse);
         } catch (Exception e) {
-            logger.error("Unable to publish the OK response {}", e.getMessage(), e);
+            logger.error("Unable to publish the OK response: {}", e.getMessage(), e);
         }
     }
 
@@ -90,7 +90,7 @@ public class MaestroReceiverClient extends MaestroClient implements MaestroRecei
         try {
             super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification);
         } catch (Exception e) {
-            logger.error("Unable to publish the OK response {}", e.getMessage(), e);
+            logger.error("Unable to publish the success notification: {}", e.getMessage(), e);
         }
     }
 
@@ -107,7 +107,7 @@ public class MaestroReceiverClient extends MaestroClient implements MaestroRecei
         try {
             super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification);
         } catch (Exception e) {
-            logger.error("Unable to publish the OK response {}", e.getMessage(), e);
+            logger.error("Unable to publish the failure notification: {}", e.getMessage(), e);
         }
     }
 
