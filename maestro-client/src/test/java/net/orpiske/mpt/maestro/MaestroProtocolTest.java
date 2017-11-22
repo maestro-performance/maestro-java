@@ -63,4 +63,37 @@ public class MaestroProtocolTest {
                 parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
         assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_OK);
     }
+
+
+    @Test
+    public void serializeTestSuccessfulNotification() throws Exception {
+        TestSuccessfulNotification tsn = new TestSuccessfulNotification();
+
+        tsn.setId("asfas45");
+        tsn.setName("unittest@localhost");
+        tsn.setMessage("Test completed successfully");
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(tsn));
+
+        assertTrue(parsed instanceof TestSuccessfulNotification);
+        assertTrue("Parsed object is not a Test Successful Notification",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_NOTIFY_SUCCESS);
+    }
+
+    @Test
+    public void serializeTestFailedNotification() throws Exception {
+        TestFailedNotification tsn = new TestFailedNotification();
+
+        tsn.setId("asfas45");
+        tsn.setName("unittest@localhost");
+        tsn.setMessage("Test failed");
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(tsn));
+
+        assertTrue(parsed instanceof TestFailedNotification);
+        assertTrue("Parsed object is not a Test failed Notification",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_NOTIFY_FAIL);
+    }
 }

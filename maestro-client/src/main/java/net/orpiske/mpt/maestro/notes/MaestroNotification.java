@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.maestro.notes;
 
+import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
@@ -49,6 +50,16 @@ public abstract class MaestroNotification extends MaestroEvent {
 
     public void setName(String name) {
         this.name = name;
+    }
+
+    @Override
+    protected MessageBufferPacker pack() throws IOException {
+        MessageBufferPacker packer = super.pack();
+
+        packer.packString(this.id);
+        packer.packString(this.name);
+
+        return packer;
     }
 
     @Override

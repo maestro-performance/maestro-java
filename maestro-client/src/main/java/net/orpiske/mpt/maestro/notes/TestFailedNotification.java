@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.maestro.notes;
 
+import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
@@ -44,6 +45,15 @@ public class TestFailedNotification extends MaestroNotification {
     @Override
     public void notify(MaestroEventListener visitor) {
         visitor.handle(this);
+    }
+
+    @Override
+    protected MessageBufferPacker pack() throws IOException {
+        MessageBufferPacker packer = super.pack();
+
+        packer.packString(message);
+
+        return packer;
     }
 
     @Override
