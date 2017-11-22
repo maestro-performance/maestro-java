@@ -13,7 +13,7 @@
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-package net.orpiske.mpt.maestro.test.scripts.support;
+package net.orpiske.mpt.maestro.tests.support.runner;
 
 import net.orpiske.jms.provider.ProviderConfiguration;
 import net.orpiske.jms.provider.activemq.ActiveMqProvider;

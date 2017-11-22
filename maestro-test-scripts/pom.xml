@@ -80,21 +80,6 @@
         <!-- Tests dependencies -->
         <dependency>
             <groupId>net.orpiske</groupId>
-            <artifactId>jms-test-util</artifactId>
-            <version>1.1.0</version>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>net.orpiske</groupId>
-            <artifactId>jms-test-util</artifactId>
-            <version>1.1.0</version>
-            <type>test-jar</type>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>net.orpiske</groupId>
             <artifactId>jms-test-provider-activemq</artifactId>
             <version>1.1.0</version>
             <type>test-jar</type>
@@ -107,12 +92,22 @@
             <version>1.1.0</version>
             <scope>test</scope>
         </dependency>
+
 
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>maestro-worker</artifactId>
             <version>1.2.0-SNAPSHOT</version>
             <scope>test</scope>
+        </dependency>
+
+
+        <dependency>
+            <groupId>net.orpiske</groupId>
+            <artifactId>maestro-worker</artifactId>
+            <version>1.2.0-SNAPSHOT</version>
+            <scope>test</scope>
+            <type>test-jar</type>
         </dependency>
 
         <dependency>
@@ -122,12 +117,7 @@
             <scope>test</scope>
         </dependency>
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.12</version>
-            <scope>test</scope>
-        </dependency>
+
     </dependencies>
 
     <pluginRepositories>

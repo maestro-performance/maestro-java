@@ -14,17 +14,16 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.maestro.test.scripts.support;
+package net.orpiske.mpt.maestro.tests.support.common;
 
-import net.orpiske.mpt.common.LogConfigurator;
-import net.orpiske.mpt.maestro.Maestro;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-
-public class EndToEndTest {
+/**
+ * Base class for JMS-based, end-to-end tests.
+ */
+public abstract class EndToEndTest {
 
     public EndToEndTest() {
-        System.setProperty("java.naming.factory.initial", "org.apache.qpid.jms.jndi.JmsInitialContextFactory");
+        System.setProperty("java.naming.factory.initial",
+                "org.apache.qpid.jms.jndi.JmsInitialContextFactory");
     }
 
 }

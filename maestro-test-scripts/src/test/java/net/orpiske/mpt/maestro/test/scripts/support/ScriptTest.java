@@ -23,14 +23,15 @@ import net.orpiske.mpt.maestro.notes.MaestroCommand;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
 import net.orpiske.mpt.maestro.notes.MaestroNoteType;
 
-import net.orpiske.jms.test.runner.JmsTestRunner;
 import net.orpiske.jms.provider.activemq.ActiveMqProvider;
-import net.orpiske.jms.provider.configuration.ActiveMqConfiguration;
 
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import net.orpiske.mpt.maestro.tests.support.annotations.ReceivingPeer;
+import net.orpiske.mpt.maestro.tests.support.annotations.SendingPeer;
+import net.orpiske.mpt.maestro.tests.support.common.EndToEndTest;
+import net.orpiske.mpt.maestro.tests.support.runner.MiniBrokerConfiguration;
+import net.orpiske.mpt.maestro.tests.support.runner.MiniPeer;
+import net.orpiske.mpt.maestro.tests.support.runner.WorkerTestRunner;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.List;
@@ -39,29 +40,25 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 
-@RunWith(JmsTestRunner.class)
+@RunWith(WorkerTestRunner.class)
 @Provider(
         value = ActiveMqProvider.class,
         configuration = MiniBrokerConfiguration.class)
 public class ScriptTest extends EndToEndTest {
-    protected static MiniReceivingPeer miniReceivingPeer;
-    protected static MiniSendingPeer miniSendingPeer;
+
+    @ReceivingPeer
+    protected MiniPeer miniReceivingPeer;
+
+    @SendingPeer
+    protected MiniPeer miniSendingPeer;
+
     protected static Maestro maestro;
 
-    @BeforeClass
-    public static void setUp() throws Exception {
+    @Before
+    public void setUp() throws Exception {
         LogConfigurator.silent();
 
-        if (miniReceivingPeer == null) {
-            miniReceivingPeer = new MiniReceivingPeer();
-        }
-
         miniReceivingPeer.start();
-
-        if (miniSendingPeer == null) {
-            miniSendingPeer = new MiniSendingPeer();
-        }
-
         miniSendingPeer.start();
 
         if (maestro == null) {
@@ -69,8 +66,8 @@ public class ScriptTest extends EndToEndTest {
         }
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         miniReceivingPeer.stop();
         miniSendingPeer.stop();
     }

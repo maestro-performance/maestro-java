@@ -18,16 +18,18 @@ package net.orpiske.mpt.maestro.test.scripts.support;
 
 import net.orpiske.jms.provider.activemq.ActiveMqProvider;
 import net.orpiske.jms.test.annotations.Provider;
-import net.orpiske.jms.test.runner.JmsTestRunner;
 import net.orpiske.mpt.common.LogConfigurator;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.maestro.notes.MaestroCommand;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
 import net.orpiske.mpt.maestro.notes.MaestroNoteType;
-import org.junit.AfterClass;
-import org.junit.BeforeClass;
-import org.junit.Ignore;
-import org.junit.Test;
+import net.orpiske.mpt.maestro.tests.support.annotations.ReceivingPeer;
+import net.orpiske.mpt.maestro.tests.support.annotations.SendingPeer;
+import net.orpiske.mpt.maestro.tests.support.common.EndToEndTest;
+import net.orpiske.mpt.maestro.tests.support.runner.MiniBrokerConfiguration;
+import net.orpiske.mpt.maestro.tests.support.runner.MiniPeer;
+import net.orpiske.mpt.maestro.tests.support.runner.WorkerTestRunner;
+import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.List;
@@ -35,29 +37,25 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@RunWith(JmsTestRunner.class)
+@RunWith(WorkerTestRunner.class)
 @Provider(
         value = ActiveMqProvider.class,
         configuration = MiniBrokerConfiguration.class)
 public class TestFlowTest extends EndToEndTest {
-    protected static MiniReceivingPeer miniReceivingPeer;
-    protected static MiniSendingPeer miniSendingPeer;
+
+    @ReceivingPeer
+    protected MiniPeer miniReceivingPeer;
+
+    @SendingPeer
+    protected static MiniPeer miniSendingPeer;
+
     protected static Maestro maestro;
 
-    @BeforeClass
-    public static void setUp() throws Exception {
-        LogConfigurator.debug();
-
-        if (miniReceivingPeer == null) {
-            miniReceivingPeer = new MiniReceivingPeer();
-        }
+    @Before
+    public void setUp() throws Exception {
+        LogConfigurator.silent();
 
         miniReceivingPeer.start();
-
-        if (miniSendingPeer == null) {
-            miniSendingPeer = new MiniSendingPeer();
-        }
-
         miniSendingPeer.start();
 
         if (maestro == null) {
@@ -65,8 +63,8 @@ public class TestFlowTest extends EndToEndTest {
         }
     }
 
-    @AfterClass
-    public static void tearDown() throws Exception {
+    @After
+    public void tearDown() throws Exception {
         miniReceivingPeer.stop();
         miniSendingPeer.stop();
     }
@@ -76,7 +74,6 @@ public class TestFlowTest extends EndToEndTest {
     success/failure notifications
     */
 
-    @Ignore
     @Test
     public void testSimpleTest() throws Exception {
         System.out.println("Running a short-lived test");
@@ -98,7 +95,7 @@ public class TestFlowTest extends EndToEndTest {
         maestro.startReceiver();
 
         // Get the OK replies
-        replies = maestro.collect(1000, 10);
+        replies = maestro.collect(1000, 10, 2);
 
         Thread.sleep(2000);
 
