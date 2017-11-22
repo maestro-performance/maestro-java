@@ -44,19 +44,23 @@ public class LogConfigurator {
     }
 
     private static void configureTrace(Properties properties) {
-        properties.setProperty("log4j.rootLogger", "TRACE, stdout");
+        properties.setProperty("log4j.rootLogger", "DEBUG, stdout");
+        properties.setProperty("log4j.logger.net.orpiske", "TRACE, stdout");
     }
 
     private static void configureDebug(Properties properties) {
-        properties.setProperty("log4j.rootLogger", "DEBUG, stdout");
+        properties.setProperty("log4j.rootLogger", "INFO, stdout");
+        properties.setProperty("log4j.logger.net.orpiske", "DEBUG, stdout");
     }
 
     private static void configureVerbose(Properties properties) {
-        properties.setProperty("log4j.rootLogger", "INFO, stdout");
+        properties.setProperty("log4j.rootLogger", "WARN, stdout");
+        properties.setProperty("log4j.logger.net.orpiske", "INFO, stdout");
     }
 
     private static void configureSilent(Properties properties) {
         properties.setProperty("log4j.rootLogger", "WARN, stdout");
+        properties.setProperty("log4j.logger.net.orpiske", "WARN, stdout");
     }
 
 
