@@ -44,7 +44,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     private String url;
     private long rate = 0;
 
-    private WorkerStateInfo workerStateInfo = new WorkerStateInfo();
+    private volatile WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     @Override
     public long startedEpochMillis() {
@@ -117,7 +117,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             client.setUrl(url);
             client.setContentStrategy(contentStrategy);
 
-            workerStateInfo.setRunning(true);
+            workerStateInfo.setState(true, null, null);
             client.start();
 
             final long startedTimeInNanos = System.nanoTime();
@@ -137,21 +137,18 @@ public class JMSSenderWorker implements MaestroSenderWorker {
                 //update message sent count
                 this.messageCount.lazySet(count);
             }
-        } catch (InterruptedException e) {
-            logger.error("JMS Sender [" + Thread.currentThread().getId() + "] interrupted while sending messages: {}", e.getMessage());
 
             logger.info("Test completed successfully");
-            workerStateInfo.setException(null);
-            workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS);
+            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS,null);
+        } catch (InterruptedException e) {
+            logger.error("JMS Sender [" + Thread.currentThread().getId() + "] interrupted while sending messages: {}",
+                    e.getMessage());
+
+            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
         } catch (Exception e) {
             logger.error("Unable to start the sender worker: {}", e.getMessage(), e);
 
-            workerStateInfo.setRunning(false);
-            workerStateInfo.setException(e);
-            workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE);
-        }
-        finally {
-            workerStateInfo.setRunning(false);
+            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
         }
     }
 
@@ -162,8 +159,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     @Override
     public void stop() {
-        workerStateInfo.setRunning(false);
-        workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED);
+        workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED, null);
     }
 
     @Override

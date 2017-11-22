@@ -42,7 +42,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     private final SingleWriterRecorder latencyRecorder = new SingleWriterRecorder(TimeUnit.HOURS.toMillis(1), 3);
     private MaestroReceiver receiverEndpoint;
 
-    private WorkerStateInfo workerStateInfo = new WorkerStateInfo();
+    private volatile WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     private String url;
 
@@ -94,7 +94,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
             client.setUrl(url);
 
-            workerStateInfo.setRunning(true);
+            workerStateInfo.setState(true, null, null);
             client.start();
 
             long count = 0;
@@ -112,19 +112,12 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
             }
 
             logger.info("Test completed successfully");
-            workerStateInfo.setException(null);
-            workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS);
+            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS,null);
         } catch (Exception e) {
             logger.error("Unable to start the receiver worker: {}", e.getMessage(), e);
 
-            workerStateInfo.setRunning(false);
-            workerStateInfo.setException(e);
-            workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE);
+            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
         }
-        finally {
-            workerStateInfo.setRunning(false);
-        }
-
     }
 
     @Override
@@ -139,8 +132,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
     @Override
     public void stop() {
-        workerStateInfo.setRunning(false);
-        workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED);
+        workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED, null);
     }
 
     @Override
