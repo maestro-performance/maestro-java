@@ -112,6 +112,11 @@ public class MaestroClient {
         }
 
         try {
+            if (!mqttClient.isConnected()) {
+                logger.warn("The client is disconnected ... reconnecting");
+                mqttClient.reconnect();
+            }
+
             mqttClient.publish(topic, bytes, qos, retained);
         } catch (MqttException e) {
             throw new MaestroConnectionException("Unable to publish message: " + e.getMessage(), e);
