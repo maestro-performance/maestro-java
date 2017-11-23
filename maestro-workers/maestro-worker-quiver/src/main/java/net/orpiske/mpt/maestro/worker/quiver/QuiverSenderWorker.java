@@ -19,21 +19,19 @@ package net.orpiske.mpt.maestro.worker.quiver;
 import net.orpiske.mpt.common.ConsoleHijacker;
 import net.orpiske.mpt.common.worker.MaestroSenderWorker;
 import net.orpiske.mpt.common.worker.WorkerOptions;
-import net.orpiske.mpt.common.worker.WorkerSnapshot;
 import net.orpiske.mpt.common.worker.WorkerStateInfo;
-import net.orpiske.mpt.common.writers.RateWriter;
 import net.ssorj.quiver.QuiverArrowJms;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.BlockingQueue;
+
 
 
 public class QuiverSenderWorker implements MaestroSenderWorker {
     private static final Logger logger = LoggerFactory.getLogger(QuiverSenderWorker.class);
 
-    private RateWriter rateWriter;
+    private volatile long startedEpochMillis = Long.MIN_VALUE;
 
     private String brokerUrl;
     private String duration;
@@ -42,18 +40,20 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
     private WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     @Override
+    public long startedEpochMillis() {
+        return startedEpochMillis;
+    }
+
+
+    @Override
+    public long messageCount() {
+        return 0;
+    }
+
+
+    @Override
     public WorkerStateInfo getWorkerState() {
         return workerStateInfo;
-    }
-
-    @Override
-    public RateWriter getRateWriter() {
-        return rateWriter;
-    }
-
-    @Override
-    public void setRateWriter(RateWriter rateWriter) {
-        this.rateWriter = rateWriter;
     }
 
     private String getEta(String line) {
@@ -105,39 +105,34 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
     @Override
     public void start() {
         logger.info("Starting the sender worker");
+        startedEpochMillis = System.currentTimeMillis();
 
         try {
             String[] args = QuiverArgumentBuilder.buildArguments("send", brokerUrl, duration, messageSize);
 
             ConsoleHijacker ch = ConsoleHijacker.getInstance();
 
-            workerStateInfo.setRunning(true);
+            workerStateInfo.setState(true, null, null);
             ch.start();
 
             QuiverArrowJms.doMain(args);
 
             String data = ch.stop();
 
-            rateWriter.setConverter(new QuiverRateConverter());
+            //rateWriter.setConverter(new QuiverRateConverter());
 
             String[] lines = StringUtils.split(data,"\n");
 
-            for (String line : lines) {
-                rateWriter.writeLine(getEta(line), getAta(line));
-            }
+            //for (String line : lines) {
+                //rateWriter.writeLine(getEta(line), getAta(line));
+            //}
 
-            rateWriter.close();
-            workerStateInfo.setException(null);
-            workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS);
+            //rateWriter.close();
+            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS, null);
         } catch (Exception e) {
             logger.error("Unable to start the sender worker: {}", e.getMessage(), e);
 
-            workerStateInfo.setRunning(false);
-            workerStateInfo.setException(e);
-            workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE);
-        }
-        finally {
-            workerStateInfo.setRunning(false);
+            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
         }
     }
 
@@ -148,8 +143,7 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
 
     @Override
     public void stop() {
-        workerStateInfo.setRunning(false);
-        workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED);
+        workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED, null);
 
         Thread.currentThread().stop();
     }
@@ -157,16 +151,6 @@ public class QuiverSenderWorker implements MaestroSenderWorker {
     @Override
     public void halt() {
         stop();
-    }
-
-    @Override
-    public WorkerSnapshot stats() {
-        return null;
-    }
-
-    @Override
-    public void setQueue(BlockingQueue<WorkerSnapshot> queue) {
-        // NO-OP ... unnecessary for this worker type
     }
 
     @Override

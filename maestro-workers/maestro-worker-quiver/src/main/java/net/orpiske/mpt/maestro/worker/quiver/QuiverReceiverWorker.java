@@ -19,22 +19,15 @@ package net.orpiske.mpt.maestro.worker.quiver;
 import net.orpiske.mpt.common.ConsoleHijacker;
 import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
 import net.orpiske.mpt.common.worker.WorkerOptions;
-import net.orpiske.mpt.common.worker.WorkerSnapshot;
 import net.orpiske.mpt.common.worker.WorkerStateInfo;
-import net.orpiske.mpt.common.writers.LatencyWriter;
-import net.orpiske.mpt.common.writers.RateWriter;
 import net.ssorj.quiver.QuiverArrowJms;
-import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.BlockingQueue;
 
 public class QuiverReceiverWorker implements MaestroReceiverWorker {
     private static final Logger logger = LoggerFactory.getLogger(QuiverReceiverWorker.class);
 
-    private RateWriter rateWriter;
-    private LatencyWriter latencyWriter;
+    private volatile long startedEpochMillis = Long.MIN_VALUE;
 
     private String brokerUrl;
     private String duration;
@@ -48,23 +41,13 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
     }
 
     @Override
-    public RateWriter getRateWriter() {
-        return rateWriter;
+    public long startedEpochMillis() {
+        return startedEpochMillis;
     }
 
     @Override
-    public void setRateWriter(RateWriter rateWriter) {
-        this.rateWriter = rateWriter;
-    }
-
-    @Override
-    public void setLatencyWriter(LatencyWriter latencyWriter) {
-        this.latencyWriter = latencyWriter;
-    }
-
-    @Override
-    public LatencyWriter getLatencyWriter() {
-        return latencyWriter;
+    public long messageCount() {
+        return 0;
     }
 
     private String getCreationTime(String line) {
@@ -113,46 +96,46 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
     public void start() {
         logger.info("Starting the receiver worker");
 
+        startedEpochMillis = System.currentTimeMillis();
+
         try {
             String[] args = QuiverArgumentBuilder.buildArguments("receive", brokerUrl, duration, messageSize);
 
             ConsoleHijacker ch = ConsoleHijacker.getInstance();
 
-            workerStateInfo.setRunning(true);
+            workerStateInfo.setState(true, null, null);
             ch.start();
 
             QuiverArrowJms.doMain(args);
 
             String data = ch.stop();
 
-            rateWriter.setConverter(new QuiverRateConverter());
+                /*
+                 TODO: the code below needs to be re-integrated once the writer
+                 changes for JMS are complete
+                 */
+//            rateWriter.setConverter(new QuiverRateConverter());
+//
+//            String[] lines = StringUtils.split(data,"\n");
+//
+//            for (String line : lines) {
+//                String createdTime = getCreationTime(line);
+//                String arrivedTime = getArrivalTime(line);
+//
+//                long latency = Long.parseLong(arrivedTime) - Long.parseLong(createdTime);
+//
+//                latencyWriter.writeLine(latency);
+//                rateWriter.writeLine(createdTime, arrivedTime);
+//            }
+//
+//            rateWriter.close();
+//            latencyWriter.close();
 
-            String[] lines = StringUtils.split(data,"\n");
-
-            for (String line : lines) {
-                String createdTime = getCreationTime(line);
-                String arrivedTime = getArrivalTime(line);
-
-                long latency = Long.parseLong(arrivedTime) - Long.parseLong(createdTime);
-
-                latencyWriter.writeLine(latency);
-                rateWriter.writeLine(createdTime, arrivedTime);
-            }
-
-            rateWriter.close();
-            latencyWriter.close();
-
-            workerStateInfo.setException(null);
-            workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS);
+            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS, null);
         } catch (Exception e) {
             logger.error("Unable to start the receiver worker: {}", e.getMessage(), e);
 
-            workerStateInfo.setRunning(false);
-            workerStateInfo.setException(e);
-            workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE);
-        }
-        finally {
-            workerStateInfo.setRunning(false);
+            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
         }
     }
 
@@ -163,8 +146,7 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
 
     @Override
     public void stop() {
-        workerStateInfo.setRunning(false);
-        workerStateInfo.setExitStatus(WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED);
+        workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED, null);
 
         Thread.currentThread().stop();
     }
@@ -172,16 +154,6 @@ public class QuiverReceiverWorker implements MaestroReceiverWorker {
     @Override
     public void halt() {
         stop();
-    }
-
-    @Override
-    public WorkerSnapshot stats() {
-        return null;
-    }
-
-    @Override
-    public void setQueue(BlockingQueue<WorkerSnapshot> queue) {
-        // NO-OP ... unnecessary for this worker type
     }
 
     @Override
