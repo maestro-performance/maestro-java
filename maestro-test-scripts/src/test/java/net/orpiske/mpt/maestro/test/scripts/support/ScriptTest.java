@@ -25,6 +25,7 @@ import net.orpiske.mpt.maestro.notes.MaestroNoteType;
 
 import net.orpiske.jms.provider.activemq.ActiveMqProvider;
 
+import net.orpiske.mpt.maestro.tests.support.annotations.MaestroPeer;
 import net.orpiske.mpt.maestro.tests.support.annotations.ReceivingPeer;
 import net.orpiske.mpt.maestro.tests.support.annotations.SendingPeer;
 import net.orpiske.mpt.maestro.tests.support.common.EndToEndTest;
@@ -52,15 +53,12 @@ public class ScriptTest extends EndToEndTest {
     @SendingPeer
     protected MiniPeer miniSendingPeer;
 
-    protected static Maestro maestro;
+    @MaestroPeer
+    protected Maestro maestro;
 
     @Before
     public void setUp() throws Exception {
         LogConfigurator.silent();
-
-        if (maestro == null) {
-            maestro = new Maestro("mqtt://localhost:1883");
-        }
     }
 
     @Test

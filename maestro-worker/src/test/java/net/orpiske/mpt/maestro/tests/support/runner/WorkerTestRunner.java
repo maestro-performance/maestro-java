@@ -1,6 +1,8 @@
 package net.orpiske.mpt.maestro.tests.support.runner;
 
 import net.orpiske.jms.test.runner.JmsTestRunner;
+import net.orpiske.mpt.maestro.Maestro;
+import net.orpiske.mpt.maestro.tests.support.annotations.MaestroPeer;
 import net.orpiske.mpt.maestro.tests.support.annotations.ReceivingPeer;
 import net.orpiske.mpt.maestro.tests.support.annotations.SendingPeer;
 import org.junit.runner.notification.RunNotifier;
@@ -19,6 +21,7 @@ public class WorkerTestRunner extends JmsTestRunner {
     private static final Logger logger = LoggerFactory.getLogger(WorkerTestRunner.class);
 
     private List<MiniPeer> peers = new LinkedList<MiniPeer>();
+    private List<Maestro> maestroClientPeers = new LinkedList<Maestro>();
 
 
 
@@ -26,16 +29,29 @@ public class WorkerTestRunner extends JmsTestRunner {
         super(klass);
     }
 
-    @Override
-    protected Object createTest() throws Exception {
-        Object o = super.createTest();
-
+    private void resetMiniPeers() {
         for (MiniPeer miniPeer : peers) {
             miniPeer.stop();
         }
 
         peers.clear();
+    }
 
+    private void resetMaestroClientPeers() {
+        for (Maestro maestro : maestroClientPeers) {
+           maestro.stop();
+        }
+
+        maestroClientPeers.clear();
+    }
+
+    @Override
+    protected Object createTest() throws Exception {
+        Object o = super.createTest();
+
+        resetMiniPeers();
+
+        // TODO: improve this
         for (Field f : o.getClass().getDeclaredFields()) {
             SendingPeer sendingPeer = f.getAnnotation(SendingPeer.class);
 
@@ -47,14 +63,21 @@ public class WorkerTestRunner extends JmsTestRunner {
                 if (receivingPeer != null) {
                     injectReceivingPeer(o, f, receivingPeer);
                 }
+                else {
+                    MaestroPeer maestroPeer = f.getAnnotation(MaestroPeer.class);
+
+                    if (maestroPeer != null) {
+                        injectMaestroPeer(o, f, maestroPeer);
+                    }
+                }
             }
         }
-
 
         return o;
     }
 
 
+    // TODO: safer type checking for the inject* methods
     private void injectSendingPeer(Object o, Field f, SendingPeer peer) throws Exception {
         logger.info("Injecting a sending peer into the test object");
 
@@ -82,6 +105,17 @@ public class WorkerTestRunner extends JmsTestRunner {
         f.setAccessible(false);
     }
 
+    private void injectMaestroPeer(Object o, Field f, MaestroPeer peer) throws Exception {
+        logger.info("Injecting a receiving peer into the test object");
+
+        Maestro maestro = new Maestro(peer.maestroUrl());
+
+        maestroClientPeers.add(maestro);
+
+        f.setAccessible(true);
+        f.set(o, maestro);
+        f.setAccessible(false);
+    }
 
 
     @Override
