@@ -71,6 +71,13 @@
 
         <dependency>
             <groupId>net.orpiske</groupId>
+            <artifactId>maestro-workers</artifactId>
+            <version>1.2.0-SNAPSHOT</version>
+            <type>pom</type>
+        </dependency>
+
+        <dependency>
+            <groupId>net.orpiske</groupId>
             <artifactId>jms-test-util</artifactId>
             <version>${jms.test.util.version}</version>
             <scope>test</scope>
@@ -146,39 +153,4 @@
             </plugin>
         </plugins>
     </build>
-
-    <profiles>
-        <profile>
-            <id>Quiver</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-
-            <dependencies>
-                <dependency>
-                    <groupId>net.orpiske</groupId>
-                    <artifactId>maestro-worker-quiver</artifactId>
-                    <version>1.2.0-SNAPSHOT</version>
-                </dependency>
-
-            </dependencies>
-        </profile>
-
-        <profile>
-            <id>JMS</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-
-            <dependencies>
-                <dependency>
-                    <groupId>net.orpiske</groupId>
-                    <artifactId>maestro-worker-jms</artifactId>
-                    <version>1.2.0-SNAPSHOT</version>
-                </dependency>
-
-            </dependencies>
-        </profile>
-    </profiles>
-
 </project>

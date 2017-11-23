@@ -64,8 +64,9 @@
         <module>maestro-cli</module>
         <module>maestro-tests</module>
         <module>maestro-exporter</module>
-        <module>maestro-worker</module>
         <module>maestro-workers</module>
+        <module>maestro-worker</module>
+
     </modules>
 
     <profiles>
