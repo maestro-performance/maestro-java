@@ -70,4 +70,13 @@ public interface TestDuration {
      * @return true if the test can continue or false otherwise
      */
     boolean canContinue(TestProgress progress);
+
+    /**
+     * Gets the type name for the duration (ie.: "time", "count", etc). This
+     * is a helper method for the front-ends parsing properties files and
+     * having to identify the proper duration time specified
+     *
+     * @return The duration type name
+     */
+    String durationTypeName();
 }

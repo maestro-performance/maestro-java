@@ -57,7 +57,7 @@ public class VariableSizeContent implements ContentStrategy {
      */
     @Override
     public void setSize(String sizeSpec) {
-        setSize(Integer.parseInt(sizeSpec.replace("~", "")));
+        setSize(MessageSize.toSizeFromSpec(sizeSpec));
     }
 
     /*

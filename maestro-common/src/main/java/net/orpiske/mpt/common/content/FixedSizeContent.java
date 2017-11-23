@@ -42,7 +42,7 @@ public class FixedSizeContent implements ContentStrategy {
      */
     @Override
     public void setSize(String sizeSpec) {
-        setSize(Integer.parseInt(sizeSpec));
+        setSize(MessageSize.toSizeFromSpec(sizeSpec));
     }
 
     /*

@@ -24,6 +24,8 @@ import java.util.concurrent.TimeUnit;
  * Time-based test duration object
  */
 public class DurationTime implements TestDuration {
+    private static final String DURATION_TYPE_NAME = "time";
+
     private final long expectedDuration;
     private final TimeUnit outputTimeUnit;
     private final String timeSpec;
@@ -45,5 +47,10 @@ public class DurationTime implements TestDuration {
 
     public String toString() {
         return timeSpec;
+    }
+
+    @Override
+    public String durationTypeName() {
+        return DURATION_TYPE_NAME;
     }
 }

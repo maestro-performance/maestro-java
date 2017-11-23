@@ -1,7 +1,9 @@
 package net.orpiske.mpt.maestro.worker.base;
 
+import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
+import net.orpiske.mpt.common.test.TestProperties;
 import net.orpiske.mpt.common.worker.*;
 import net.orpiske.mpt.maestro.MaestroReceiverClient;
 import net.orpiske.mpt.maestro.client.AbstractMaestroPeer;
@@ -136,7 +138,39 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         client.replyOk();
     }
 
+    private void writeTestProperties(File testLogDir) throws IOException {
+        TestProperties testProperties = new TestProperties();
+
+        testProperties.setBrokerUri(workerOptions.getBrokerURL());
+        try {
+            testProperties.setDuration(workerOptions.getDuration());
+        } catch (DurationParseException e) {
+            logger.warn("Failed to parse duration while saving the test properties: {}", e.getMessage(), e);
+        }
+        testProperties.setParallelCount(workerOptions.getParallelCount());
+
+        // Note: it already sets the variable size flag for variable message sizes
+        testProperties.setMessageSize(workerOptions.getMessageSize());
+
+        testProperties.setRate(workerOptions.getRate());
+        testProperties.setFcl(workerOptions.getFcl());
+
+        // TODO: collect this
+        testProperties.setApiName(workerClass.getName());
+        testProperties.setApiVersion("undefined");
+
+        testProperties.write(new File(testLogDir, "test.properties"));
+    }
+
     private void doWorkerStart() {
+        File testLogDir = findTestLogDir();
+
+        try {
+            writeTestProperties(testLogDir);
+        } catch (IOException e) {
+            logger.warn("Unable to write test properties: {}", e.getMessage(), e);
+        }
+
         try {
             final List<MaestroWorker> workers = new ArrayList<>();
             logger.debug("Starting the worker {}", workerClass);
@@ -157,6 +191,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         }
     }
 
+
+
     @Override
     public void handle(StartInspector note) {
         logger.debug("Start inspector request received");
@@ -173,33 +209,6 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
             doWorkerStart();
         }
-
-//        if (worker instanceof MaestroReceiverWorker) {
-//            MaestroReceiverWorker mrw = (MaestroReceiverWorker) worker;
-//
-//            try {
-//                File testLogDir = findTestLogDir();
-//
-//                mrw.setRateWriter(new RateWriter(new File(testLogDir,"receiver-rate.gz")));
-//                mrw.setLatencyWriter(new LatencyWriter(new File(testLogDir,"receiver-latency.hdr")));
-//                mrw.setQueue(queue);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//
-//            if (mrw instanceof Runnable) {
-//                logger.debug("Thread-capable receiver detected. Launching threads");
-//                Thread t1 = new Thread((Runnable) mrw,"receiver-worker-1");
-//
-//                t1.start();
-//            }
-//            else {
-//                logger.debug("Single-thread sender detected.");
-//                worker.start();
-//            }
-//        }
-//        replyOk();
     }
 
     @Override
@@ -209,33 +218,6 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
             doWorkerStart();
         }
-
-
-//        if (worker instanceof MaestroSenderWorker) {
-//            MaestroSenderWorker msw = (MaestroSenderWorker) worker;
-//
-//            try {
-//                File testLogDir = findTestLogDir();
-//
-//                msw.setRateWriter(new RateWriter(new File(testLogDir, "sender-rate.gz")));
-//                msw.setQueue(queue);
-//            } catch (IOException e) {
-//                e.printStackTrace();
-//            }
-//
-//
-//            if (msw instanceof Runnable) {
-//                logger.debug("Thread-capable sender detected. Launching threads");
-//                Thread t1 = new Thread((Runnable) msw,"sender-worker-1");
-//
-//                t1.start();
-//            }
-//            else {
-//                logger.debug("Single-thread sender detected.");
-//                msw.start();
-//            }
-//        }
-//        replyOk();
     }
 
     @Override

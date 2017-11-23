@@ -32,7 +32,6 @@ public interface ContentStrategy {
      */
     void setSize(String sizeSpec);
 
-
     /**
      * Gets the message content to send
      * @return the message content to send

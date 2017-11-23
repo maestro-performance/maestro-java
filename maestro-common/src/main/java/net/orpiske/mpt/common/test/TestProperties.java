@@ -1,5 +1,12 @@
 package net.orpiske.mpt.common.test;
 
+import net.orpiske.mpt.common.content.ContentStrategy;
+import net.orpiske.mpt.common.content.ContentStrategyFactory;
+import net.orpiske.mpt.common.content.MessageSize;
+import net.orpiske.mpt.common.duration.DurationTime;
+import net.orpiske.mpt.common.duration.TestDuration;
+import net.orpiske.mpt.common.duration.TestDurationBuilder;
+import net.orpiske.mpt.common.exceptions.DurationParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -101,16 +108,39 @@ public class TestProperties implements MaestroTestProperties {
         this.duration = duration;
     }
 
+    public void setDuration(String durationSpec) throws DurationParseException {
+        TestDuration td = TestDurationBuilder.build(durationSpec);
+
+        this.duration = td.getNumericDuration();
+        this.durationType = td.durationTypeName();
+    }
+
     public void setParallelCount(int parallelCount) {
         this.parallelCount = parallelCount;
+    }
+
+    public void setParallelCount(String parallelCount) {
+        this.parallelCount = Integer.parseInt(parallelCount);
     }
 
     public void setMessageSize(long messageSize) {
         this.messageSize = messageSize;
     }
 
+    public void setMessageSize(String messageSize) {
+        if (MessageSize.isVariable(messageSize)) {
+            setVariableSize(true);
+        }
+
+        this.messageSize = MessageSize.toSizeFromSpec(messageSize);
+    }
+
     public void setRate(int rate) {
         this.rate = rate;
+    }
+
+    public void setRate(String rate) {
+        this.rate = Integer.parseInt(rate);
     }
 
     public String getApiName() {
@@ -161,6 +191,8 @@ public class TestProperties implements MaestroTestProperties {
         this.fcl = fcl;
     }
 
-
+    public void setFcl(String fcl) {
+        this.fcl = Integer.parseInt(fcl);
+    }
 
 }

@@ -42,4 +42,25 @@ public class MessageSize {
     public static String fixed(long value) {
         return Long.toString(value);
     }
+
+    public static boolean isVariable(final String sizeSpec) {
+        if (sizeSpec.startsWith("~")) {
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * Given a content/message size specification string, return it's base size
+     * @param sizeSpec A message size specification string
+     * @return The content size
+     */
+    public static int toSizeFromSpec(final String sizeSpec) {
+        if (isVariable(sizeSpec)) {
+            return Integer.parseInt(sizeSpec.replace("~", ""));
+        }
+
+        return Integer.parseInt(sizeSpec);
+    }
 }

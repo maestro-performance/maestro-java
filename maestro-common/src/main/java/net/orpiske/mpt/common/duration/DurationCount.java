@@ -23,6 +23,8 @@ import org.HdrHistogram.Histogram;
  * Count-based test duration object
  */
 public class DurationCount implements TestDuration {
+    private static final String DURATION_TYPE_NAME = "count";
+
     private long count;
 
     public DurationCount(final String durationSpec) {
@@ -43,5 +45,10 @@ public class DurationCount implements TestDuration {
 
     public String toString() {
         return Long.toString(count);
+    }
+
+    @Override
+    public String durationTypeName() {
+        return DURATION_TYPE_NAME;
     }
 }
