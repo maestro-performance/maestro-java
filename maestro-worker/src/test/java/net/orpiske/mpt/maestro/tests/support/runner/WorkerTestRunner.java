@@ -30,6 +30,12 @@ public class WorkerTestRunner extends JmsTestRunner {
     protected Object createTest() throws Exception {
         Object o = super.createTest();
 
+        for (MiniPeer miniPeer : peers) {
+            miniPeer.stop();
+        }
+
+        peers.clear();
+
         for (Field f : o.getClass().getDeclaredFields()) {
             SendingPeer sendingPeer = f.getAnnotation(SendingPeer.class);
 
@@ -49,11 +55,12 @@ public class WorkerTestRunner extends JmsTestRunner {
     }
 
 
-    private void injectSendingPeer(Object o, Field f, SendingPeer peer) throws IllegalAccessException, ClassNotFoundException {
+    private void injectSendingPeer(Object o, Field f, SendingPeer peer) throws Exception {
         logger.info("Injecting a sending peer into the test object");
 
         MiniPeer miniPeer = new MiniPeer(peer.worker(), peer.maestroUrl(), peer.role(), peer.host());
 
+        miniPeer.start();
         peers.add(miniPeer);
 
         f.setAccessible(true);
@@ -61,11 +68,13 @@ public class WorkerTestRunner extends JmsTestRunner {
         f.setAccessible(false);
     }
 
-    private void injectReceivingPeer(Object o, Field f, ReceivingPeer peer) throws IllegalAccessException, ClassNotFoundException {
+    private void injectReceivingPeer(Object o, Field f, ReceivingPeer peer) throws Exception {
         logger.info("Injecting a receiving peer into the test object");
 
         MiniPeer miniPeer = new MiniPeer(peer.worker(), peer.maestroUrl(), peer.role(), peer.host());
 
+        miniPeer.start();
+
         peers.add(miniPeer);
 
         f.setAccessible(true);
@@ -73,8 +82,12 @@ public class WorkerTestRunner extends JmsTestRunner {
         f.setAccessible(false);
     }
 
+
+
     @Override
     public void run(RunNotifier notifier) {
+        logger.info("Starting the JMS provider");
+
         super.run(notifier);
 
         for (MiniPeer miniPeer : peers) {

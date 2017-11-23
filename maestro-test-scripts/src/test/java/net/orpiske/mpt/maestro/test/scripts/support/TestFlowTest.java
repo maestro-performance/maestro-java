@@ -47,7 +47,7 @@ public class TestFlowTest extends EndToEndTest {
     protected MiniPeer miniReceivingPeer;
 
     @SendingPeer
-    protected static MiniPeer miniSendingPeer;
+    protected MiniPeer miniSendingPeer;
 
     protected static Maestro maestro;
 
@@ -55,25 +55,16 @@ public class TestFlowTest extends EndToEndTest {
     public void setUp() throws Exception {
         LogConfigurator.silent();
 
-        miniReceivingPeer.start();
-        miniSendingPeer.start();
-
         if (maestro == null) {
             maestro = new Maestro("mqtt://localhost:1883");
         }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        miniReceivingPeer.stop();
-        miniSendingPeer.stop();
     }
 
     /*
     TODO: this test is ignored because the workers are not yet sending the
     success/failure notifications
     */
-
+    @Ignore
     @Test
     public void testSimpleTest() throws Exception {
         System.out.println("Running a short-lived test");

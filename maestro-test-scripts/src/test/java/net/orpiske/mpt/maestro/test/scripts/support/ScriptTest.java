@@ -58,18 +58,9 @@ public class ScriptTest extends EndToEndTest {
     public void setUp() throws Exception {
         LogConfigurator.silent();
 
-        miniReceivingPeer.start();
-        miniSendingPeer.start();
-
         if (maestro == null) {
             maestro = new Maestro("mqtt://localhost:1883");
         }
-    }
-
-    @After
-    public void tearDown() throws Exception {
-        miniReceivingPeer.stop();
-        miniSendingPeer.stop();
     }
 
     @Test
@@ -77,7 +68,7 @@ public class ScriptTest extends EndToEndTest {
         System.out.println("Sending the ping request");
         maestro.pingRequest();
 
-        List<MaestroNote> replies = maestro.collect(1000, 10);
+        List<MaestroNote> replies = maestro.collect(1000, 10, 2);
 
         assertTrue(replies.size() == 2);
 
@@ -91,7 +82,7 @@ public class ScriptTest extends EndToEndTest {
         System.out.println("Sending the set fixed message size request");
         maestro.setMessageSize(100);
 
-        List<MaestroNote> replies = maestro.collect(1000, 10);
+        List<MaestroNote> replies = maestro.collect(1000, 10, 2);
 
         assertTrue(replies.size() == 2);
 
@@ -105,7 +96,7 @@ public class ScriptTest extends EndToEndTest {
         System.out.println("Sending the set variable message size request");
         maestro.setMessageSize("~100");
 
-        List<MaestroNote> replies = maestro.collect(1000, 10);
+        List<MaestroNote> replies = maestro.collect(1000, 10, 2);
 
         assertTrue(replies.size() == 2);
 
@@ -119,7 +110,7 @@ public class ScriptTest extends EndToEndTest {
         System.out.println("Sending the set broker request");
         maestro.setBroker("amqp://localhost/unit.test.queue");
 
-        List<MaestroNote> replies = maestro.collect(1000, 10);
+        List<MaestroNote> replies = maestro.collect(1000, 10, 2);
 
         assertTrue(replies.size() == 2);
 
@@ -133,7 +124,7 @@ public class ScriptTest extends EndToEndTest {
         System.out.println("Sending the set parallel count request");
         maestro.setParallelCount(100);
 
-        List<MaestroNote> replies = maestro.collect(1000, 10);
+        List<MaestroNote> replies = maestro.collect(1000, 10, 2);
 
         assertTrue(replies.size() == 2);
 
@@ -147,7 +138,7 @@ public class ScriptTest extends EndToEndTest {
         System.out.println("Sending the set fail condition request");
         maestro.setFCL(100);
 
-        List<MaestroNote> replies = maestro.collect(1000, 10);
+        List<MaestroNote> replies = maestro.collect(1000, 10, 2);
 
         assertTrue(replies.size() == 2);
 
@@ -165,7 +156,7 @@ public class ScriptTest extends EndToEndTest {
         System.out.println("Sending the stats request");
         maestro.statsRequest();
 
-        List<MaestroNote> replies = maestro.collect(1000, 10);
+        List<MaestroNote> replies = maestro.collect(1000, 10, 2);
 
         assertTrue(replies.size() == 2);
 
