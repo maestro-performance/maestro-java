@@ -86,38 +86,6 @@
                 <activeByDefault>false</activeByDefault>
             </activation>
 
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>maven-assembly-plugin</artifactId>
-                        <configuration>
-                            <descriptors>
-                                <descriptor>
-                                    src/main/assembly/mpd-assembly.xml
-                                </descriptor>
-                            </descriptors>
-                            <appendAssemblyId>true</appendAssemblyId>
-                        </configuration>
-
-                        <executions>
-                            <execution>
-                                <id>dist-assembly</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>single</goal>
-                                </goals>
-                            </execution>
-                        </executions>
-                    </plugin>
-
-                    <plugin>
-                        <groupId>org.apache.maven.plugins</groupId>
-                        <artifactId>maven-release-plugin</artifactId>
-                        <version>2.5.3</version>
-                    </plugin>
-                </plugins>
-            </build>
-
             <distributionManagement>
                 <repository>
                     <id>bintray-orpiske-libs-release</id>
@@ -126,7 +94,6 @@
                 </repository>
             </distributionManagement>
         </profile>
-
 
 
         <profile>
