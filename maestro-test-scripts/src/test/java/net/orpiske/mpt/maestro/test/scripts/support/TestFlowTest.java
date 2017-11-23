@@ -62,7 +62,7 @@ public class TestFlowTest extends EndToEndTest {
     TODO: this test is ignored because the workers are not yet sending the
     success/failure notifications
     */
-    // @Ignore
+    @Ignore
     @Test
     public void testSimpleTest() throws Exception {
         System.out.println("Running a short-lived test");
