@@ -16,10 +16,16 @@
 
 package net.orpiske.mpt.reports;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import java.io.File;
+import java.io.IOException;
 import java.util.*;
 
 public class ReportContextBuilder {
+    private static final Logger logger = LoggerFactory.getLogger(ReportContextBuilder.class);
+
     private ReportContextBuilder() {}
 
     public static Map<String, Object> toContext(List<ReportFile> reportFiles, File baseDir) {
@@ -39,14 +45,19 @@ public class ReportContextBuilder {
             nodeTypes.add(nodeType);
             tests.add(reportFile.getTestNum());
 
-            ReportDirInfo reportDirInfo =
-                    new ReportDirInfo(baseDir.getPath(), reportFile.getReportDir(), nodeType);
 
+            try {
+                ReportDirInfo reportDirInfo =
+                        new ReportDirInfo(baseDir.getPath(), reportFile.getReportDir(), nodeType);
 
-            reportDirs.add(reportDirInfo);
+                reportDirs.add(reportDirInfo);
+            }
+            catch (IOException e) {
+                logger.error("Unable to add the directory information for {}: {}", baseDir.getPath(),
+                        e.getMessage());
+                logger.error("Error: ", e);
+            }
         }
-
-
 
         context.put("nodes", nodes);
         context.put("nodeTypes", nodeTypes);

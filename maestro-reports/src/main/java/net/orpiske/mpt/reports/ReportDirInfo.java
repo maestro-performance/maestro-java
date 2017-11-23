@@ -19,10 +19,9 @@ package net.orpiske.mpt.reports;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
-import java.util.Properties;
+
+import net.orpiske.mpt.common.test.TestProperties;
 
 public class ReportDirInfo {
     private String reportDir;
@@ -32,14 +31,9 @@ public class ReportDirInfo {
     private int testNum;
     private boolean testSuccessful = false;
 
-    private long duration;
-    private long messageSize;
-    private int rate;
-    private int parallelCount;
-    private boolean variableSize;
-    private int fcl;
+    private TestProperties testProperties;
 
-    public ReportDirInfo(String baseDir, String reportDir, String nodeType) {
+    public ReportDirInfo(String baseDir, String reportDir, String nodeType) throws IOException {
         this.reportDir = reportDir;
         this.nodeType = nodeType;
 
@@ -55,41 +49,49 @@ public class ReportDirInfo {
             testSuccessful = true;
         }
 
-        loadProperties(new File(baseDir + File.separator + reportDir, "test.properties"));
+        testProperties = new TestProperties();
+
+        testProperties.load(new File(baseDir + File.separator + reportDir, "test.properties"));
     }
 
-    private void loadProperties(File testProperties) {
-        if (testProperties.exists()) {
-            Properties prop = new Properties();
+    public String getBrokerUri() {
+        return testProperties.getBrokerUri();
+    }
 
-            try (FileInputStream in = new FileInputStream(testProperties)) {
-                prop.load(in);
+    public String getDurationType() {
+        return testProperties.getDurationType();
+    }
 
-                duration = Long.parseLong(prop.getProperty("duration"));
-                messageSize = Long.parseLong(prop.getProperty("messageSize"));
-                rate = Integer.parseInt(prop.getProperty("rate"));
-                parallelCount = Integer.parseInt(prop.getProperty("parallelCount"));
+    public String getApiName() {
+        return testProperties.getApiName();
+    }
 
-                // Optional stuff
-                String varSizeStr = prop.getProperty("variableSize");
+    public String getApiVersion() {
+        return testProperties.getApiVersion();
+    }
 
-                if (varSizeStr != null && varSizeStr.equals("1")) {
-                    variableSize = true;
-                }
+    public long getDuration() {
+        return testProperties.getDuration();
+    }
 
-                // Optional stuff
-                String fclStr = prop.getProperty("fcl");
+    public long getMessageSize() {
+        return testProperties.getMessageSize();
+    }
 
-                if (fclStr != null) {
-                    fcl = Integer.parseInt(fclStr);
-                }
+    public int getRate() {
+        return testProperties.getRate();
+    }
 
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
+    public int getParallelCount() {
+        return testProperties.getParallelCount();
+    }
+
+    public boolean isVariableSize() {
+        return testProperties.isVariableSize();
+    }
+
+    public int getFcl() {
+        return testProperties.getFcl();
     }
 
     public String getReportDir() {
@@ -130,38 +132,6 @@ public class ReportDirInfo {
 
     public void setTestSuccessful(boolean testSuccessful) {
         this.testSuccessful = testSuccessful;
-    }
-
-    public long getDuration() {
-        return duration;
-    }
-
-    public long getMessageSize() {
-        return messageSize;
-    }
-
-    public int getRate() {
-        return rate;
-    }
-
-    public int getParallelCount() {
-        return parallelCount;
-    }
-
-    public boolean isVariableSize() {
-        return variableSize;
-    }
-
-    public void setVariableSize(boolean variableSize) {
-        this.variableSize = variableSize;
-    }
-
-    public int getFcl() {
-        return fcl;
-    }
-
-    public void setFcl(int fcl) {
-        this.fcl = fcl;
     }
 
     @Override
