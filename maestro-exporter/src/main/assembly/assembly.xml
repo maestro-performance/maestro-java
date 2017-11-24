@@ -67,13 +67,14 @@
 			<includes>
 				<include>**/*.*</include>
 				<include>**/maestro-exporter</include>
+				<include>**/maestro-exporter-service</include>
 			</includes>
 			<fileMode>0755</fileMode>
 		</fileSet>
 
 		<fileSet>
-			<directory>${project.basedir}/src/main/config</directory>
-			<outputDirectory>/conf</outputDirectory>
+			<directory>${project.basedir}/src/main/resources/config</directory>
+			<outputDirectory>/config</outputDirectory>
 			<includes>
 				<include>**/*.*</include>
 			</includes>
