@@ -31,6 +31,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
     private WorkerOptions workerOptions;
     private Thread latencyWriterThread;
     private Thread rateWriterThread;
+    private boolean workerStarted = false;
 
     private boolean running = true;
 
@@ -163,8 +164,12 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         testProperties.write(new File(testLogDir, "test.properties"));
     }
 
-    private void doWorkerStart() {
-        File testLogDir = findTestLogDir();
+    private boolean doWorkerStart() {
+        if (this.workerStarted) {
+            return false;
+        }
+        this.workerStarted = true;
+        final File testLogDir = findTestLogDir();
 
         try {
             writeTestProperties(testLogDir);
@@ -178,24 +183,30 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
             container.start(workerClass, workers);
 
             logger.debug("Creating the writer threads");
-            WorkerLatencyWriter latencyWriter = new WorkerLatencyWriter(logDir, workers);
+            WorkerLatencyWriter latencyWriter = new WorkerLatencyWriter(testLogDir, workers);
+            final Thread latencyThread = new Thread(latencyWriter);
+            this.latencyWriterThread = latencyThread;
+            WorkerChannelWriter rateWriter = new WorkerChannelWriter(testLogDir, workers);
+            final Thread rateThread = new Thread(rateWriter);
+            this.rateWriterThread = rateThread;
+            logger.debug("Starting the writers threads");
 
-            latencyWriterThread = new Thread(latencyWriter);
+            this.latencyWriterThread.start();
+            this.rateWriterThread.start();
 
-            WorkerChannelWriter rateWriter = new WorkerChannelWriter(logDir, workers);
+            //TODO handle shutdown gently
+            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                latencyThread.interrupt();
+                rateThread.interrupt();
+            }));
 
-            rateWriterThread = new Thread(rateWriter);
-            logger.debug("Starting the writer threads");
-
-            latencyWriterThread.start();
-
-            rateWriterThread.start();
 
             client.replyOk();
         } catch (Exception e) {
             logger.error("Unable to start workers from the container: {}", e.getMessage(), e);
             client.replyInternalError();
         }
+        return true;
     }
 
 
@@ -204,7 +215,9 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         logger.debug("Start inspector request received");
 
         if (MaestroInspectorWorker.class.isAssignableFrom(workerClass)) {
-            doWorkerStart();
+            if (!doWorkerStart()) {
+                logger.warn("::handle {} can't start worker", note);
+            }
         }
     }
 
@@ -213,7 +226,9 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         logger.debug("Start receiver request received");
 
         if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
-            doWorkerStart();
+            if (!doWorkerStart()) {
+                logger.warn("::handle {} can't start worker", note);
+            }
         }
     }
 
@@ -222,7 +237,9 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         logger.debug("Start sender request received");
 
         if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
-            doWorkerStart();
+            if (!doWorkerStart()) {
+                logger.warn("::handle {} can't start worker", note);
+            }
         }
     }
 

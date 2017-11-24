@@ -59,6 +59,8 @@ public final class OneToOneWorkerChannel {
     private final Sample currentSample;
 
     public OneToOneWorkerChannel(int capacity) {
+        //agrona doesn't allow too small ring buffers
+        capacity = Math.max(8, capacity);
         this.missedSamples = new AtomicLong(0);
         final int contentLength = Long.BYTES * 2;
         this.sampleBuffer = new UnsafeBuffer(ByteBuffer.allocateDirect(contentLength));
@@ -91,6 +93,14 @@ public final class OneToOneWorkerChannel {
         if (!written) {
             this.missedSamples.lazySet(this.missedSamples.get() + 1);
         }
+    }
+
+    public int footprintInBytes() {
+        return this.writeBuffer.buffer().capacity();
+    }
+
+    public int sizeInBytes() {
+        return this.writeBuffer.size();
     }
 
     /**

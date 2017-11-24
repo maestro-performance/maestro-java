@@ -54,13 +54,13 @@ public final class WorkerChannelWriter implements Runnable {
         }
     }
 
-    private final List<MaestroWorker> workers;
+    private final List<? extends MaestroWorker> workers;
     private final File reportFolder;
     private final boolean compressed;
 
-    public WorkerChannelWriter(File reportFolder, List<MaestroWorker> workers) {
+    public WorkerChannelWriter(File reportFolder, List<? extends MaestroWorker> workers) {
         this.reportFolder = reportFolder;
-        this.workers = workers;
+        this.workers = new ArrayList<>(workers);
         this.compressed = true;
     }
 
@@ -74,7 +74,7 @@ public final class WorkerChannelWriter implements Runnable {
                 final MaestroWorker worker = workers.get(workerId);
                 final boolean sender = worker instanceof MaestroSenderWorker;
                 final boolean receiver = worker instanceof MaestroReceiverWorker;
-                assert sender == true && receiver == true;
+                assert !(sender == true && receiver == true);
                 RateWriter rateWriter = null;
                 if (sender) {
                     rateWriter = senderRateWriter;
@@ -109,6 +109,12 @@ public final class WorkerChannelWriter implements Runnable {
             }
         } catch (IOException ex) {
             ex.printStackTrace();
+        } finally {
+            //TODO improve this warn
+            final long totalMissed = workers.stream().map(MaestroWorker::workerChannel).mapToLong(OneToOneWorkerChannel::missedSamples).sum();
+            if (totalMissed > 0) {
+                System.err.println("TOTAL MISSED RATE SAMPLES= " + totalMissed);
+            }
         }
     }
 }

@@ -7,7 +7,7 @@ import org.HdrHistogram.Histogram;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.Collection;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -72,16 +72,16 @@ public final class WorkerLatencyWriter implements Runnable {
         }
     }
 
-    private final Collection<MaestroWorker> workers;
+    private final List<? extends MaestroWorker> workers;
     private final File reportFolder;
     //TODO make it configurable
     private final long reportingIntervalMs = TimeUnit.SECONDS.toMillis(10);
     private final boolean reportIntervalLatencies = false;
 
 
-    public WorkerLatencyWriter(File reportFolder, Collection<MaestroWorker> workers) {
+    public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers) {
         this.reportFolder = reportFolder;
-        this.workers = workers;
+        this.workers = new ArrayList<>(workers);
     }
 
     private static long getCurrentTimeMsecWithDelay(final long nextReportingTime) throws InterruptedException {
