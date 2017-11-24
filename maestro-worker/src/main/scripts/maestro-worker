@@ -47,4 +47,4 @@ fi
 
 mainclass=net.orpiske.mpt.maestro.worker.main.Main
 
-nohup java -classpath "$installdir"/bin/*maestro-worker-*.jar -Dnet.orpiske.mpt.exporter.home="$installdir" -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory "$mainclass" $@ > /dev/null 2> /dev/null &
+nohup java -classpath "$installdir"/lib/ext/*:"$installdir"/bin/*maestro-worker-*.jar -Dnet.orpiske.mpt.exporter.home="$installdir" -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory "$mainclass" $@ > /dev/null 2> /dev/null &

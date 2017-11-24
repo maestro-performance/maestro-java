@@ -83,6 +83,13 @@
 			<directory>${project.build.directory}/site</directory>
 			<outputDirectory>docs</outputDirectory>
 		</fileSet>
+		<fileSet>
+			<directory>.</directory>
+			<outputDirectory>lib/ext</outputDirectory>
+			<excludes>
+				<exclude>*/**</exclude>
+			</excludes>
+		</fileSet>
 	</fileSets>
 
 	<includeBaseDirectory>true</includeBaseDirectory>
