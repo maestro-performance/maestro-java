@@ -25,6 +25,7 @@ import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.common.worker.MaestroSenderWorker;
 import net.orpiske.mpt.common.worker.WorkerOptions;
 import net.orpiske.mpt.common.worker.WorkerStateInfo;
+import net.orpiske.mpt.common.writers.OneToOneWorkerChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,6 +37,8 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     private static final Logger logger = LoggerFactory.getLogger(JMSSenderWorker.class);
     private ContentStrategy contentStrategy;
     private TestDuration duration;
+    //TODO the size need to be configured
+    private final OneToOneWorkerChannel workerChannel = new OneToOneWorkerChannel(128 * 1024);
     private final AtomicLong messageCount = new AtomicLong(0);
     private volatile long startedEpochMillis = Long.MIN_VALUE;
 
@@ -119,27 +122,31 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
             workerStateInfo.setState(true, null, null);
             client.start();
-
-            final long startedTimeInNanos = System.nanoTime();
             long count = 0;
             final long intervalInNanos = this.rate > 0 ? 1_000_000_000L / rate : 0;
+            final long intervalInMillis = TimeUnit.NANOSECONDS.toMillis(intervalInNanos);
             if (logger.isDebugEnabled()) {
                 logger.debug("JMS Sender [" + Thread.currentThread().getId() + "] - has started firing events with interval= " + intervalInNanos + " ns [" + rate + " msg/sec]");
             }
+            final long startedTimeEpochMillis = System.currentTimeMillis();
+            final long startedTimeInNanos = System.nanoTime();
             while (duration.canContinue(this) && isRunning()) {
                 if (intervalInNanos > 0) {
                     //TODO the expected start time could be used to be sent instead of the real one to measure
                     //without coordinated omission
                     waitUsingRate(startedTimeInNanos, count, intervalInNanos);
                 }
+                final long sendTimeEpochMillis = System.currentTimeMillis();
+                final long expectedSendTimeEpochMillis = intervalInMillis > 0 ? startedTimeInNanos + (count * intervalInNanos) : sendTimeEpochMillis;
                 client.sendMessages();
+                workerChannel.emitRate(expectedSendTimeEpochMillis, sendTimeEpochMillis);
                 count++;
                 //update message sent count
                 this.messageCount.lazySet(count);
             }
 
             logger.info("Test completed successfully");
-            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS,null);
+            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS, null);
         } catch (InterruptedException e) {
             logger.error("JMS Sender [" + Thread.currentThread().getId() + "] interrupted while sending messages: {}",
                     e.getMessage());

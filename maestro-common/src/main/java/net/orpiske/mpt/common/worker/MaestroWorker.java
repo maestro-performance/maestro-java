@@ -17,8 +17,8 @@
 package net.orpiske.mpt.common.worker;
 
 import net.orpiske.mpt.common.duration.TestDuration;
+import net.orpiske.mpt.common.writers.OneToOneWorkerChannel;
 import org.HdrHistogram.Histogram;
-import net.orpiske.mpt.common.client.MaestroReceiver;
 
 /**
  * A common interface for any type of Maestro worker.
@@ -43,6 +43,7 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
 
     /**
      * Gets the current state of the worker
+     *
      * @return
      */
     WorkerStateInfo getWorkerState();
@@ -62,6 +63,15 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
      * Halt the daemons
      */
     void halt();
+
+    /**
+     * It is the single consumer channel that emit event of the worker.
+     * <p>
+     * It can be {@code null} if not emission is supported.
+     */
+    default OneToOneWorkerChannel workerChannel() {
+        return null;
+    }
 
     /**
      * It is able to take a snapshot of the current recorder latencies.

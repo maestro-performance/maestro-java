@@ -1,87 +1,47 @@
 package net.orpiske.mpt.common.writers;
 
+import org.HdrHistogram.EncodableHistogram;
+import org.HdrHistogram.HistogramLogWriter;
+
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.time.Instant;
-
-import org.HdrHistogram.*;
 
 /**
  * Writes the latency data in the HdrHistogram data format.
  *
  * @see <a href="https://github.com/HdrHistogram/HdrHistogram/">HdrHistogram</a> documentation
  */
-public class LatencyWriter {
-    private OutputStream fileStream = null;
+public final class LatencyWriter implements AutoCloseable {
 
-    private static Histogram histogram = new Histogram(3600000000000L, 3);
-    private HistogramLogWriter logWriter;
-
-    private LatencyDataConverter converter = new StringLatencyConverter();
-    private Instant start;
-    private Instant end;
+    private final HistogramLogWriter logWriter;
 
     /**
      * Constructor
+     *
      * @param path file path
      * @throws IOException
      */
     public LatencyWriter(final File path) throws IOException {
-        fileStream = new FileOutputStream(path);
-        logWriter = new HistogramLogWriter(fileStream);
-
-        histogram.reset();
-
-        start = Instant.now();
+        logWriter = new HistogramLogWriter(new FileOutputStream(path));
     }
 
-    /**
-     * Gets the latency data converter
-     * @return
-     */
-    public LatencyDataConverter getConverter() {
-        return converter;
+    public void outputLegend(long startedEpochMillis) {
+        logWriter.outputComment("[mpt]");
+        logWriter.outputLogFormatVersion();
+        logWriter.outputStartTime(startedEpochMillis);
+        logWriter.outputLegend();
     }
 
-
-    /**
-     * Sets a latency data converter. The converter can be used to adjust
-     * worker-specific data (ie.: some benchmark tools may use milliseconds instead of microseconds)
-     * @param converter
-     */
-    public void setConverter(LatencyDataConverter converter) {
-        this.converter = converter;
+    public void outputIntervalHistogram(EncodableHistogram histogram) {
+        logWriter.outputIntervalHistogram(histogram);
     }
-
-
-    public void writeLine(long latency) {
-        histogram.recordValue(latency);
-    }
-
-    /**
-     * Write a line in the performance data report
-     * @param latency to record/write
-     * @throws IOException
-     */
-    public void writeLine(final String latency) throws IOException {
-        writeLine(converter.convert(latency));
-    }
-
 
     /**
      * Closes the writer
      */
+    @Override
     public void close() {
-        try {
-            end = Instant.now();
-
-            logWriter.outputIntervalHistogram(start.getEpochSecond(), end.getEpochSecond(), histogram);
-
-            fileStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        this.logWriter.close();
     }
 }

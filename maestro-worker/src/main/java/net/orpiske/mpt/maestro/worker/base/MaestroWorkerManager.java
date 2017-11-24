@@ -29,7 +29,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
     private File logDir;
 
     private WorkerOptions workerOptions;
-    private Thread writerThread;
+    private Thread latencyWriterThread;
+    private Thread rateWriterThread;
 
     private boolean running = true;
 
@@ -173,16 +174,22 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
         try {
             final List<MaestroWorker> workers = new ArrayList<>();
-            logger.debug("Starting the worker {}", workerClass);
+            logger.debug("Starting the workers {}", workerClass);
             container.start(workerClass, workers);
 
-            logger.debug("Creating the writer thread");
-            WorkerDataWriter wdw = new WorkerDataWriter(workers);
+            logger.debug("Creating the writer threads");
+            WorkerLatencyWriter latencyWriter = new WorkerLatencyWriter(logDir, workers);
 
-            writerThread = new Thread(wdw);
+            latencyWriterThread = new Thread(latencyWriter);
 
-            logger.debug("Starting the writer thread");
-            writerThread.start();
+            WorkerChannelWriter rateWriter = new WorkerChannelWriter(logDir, workers);
+
+            rateWriterThread = new Thread(rateWriter);
+            logger.debug("Starting the writer threads");
+
+            latencyWriterThread.start();
+
+            rateWriterThread.start();
 
             client.replyOk();
         } catch (Exception e) {
@@ -190,7 +197,6 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
             client.replyInternalError();
         }
     }
-
 
 
     @Override

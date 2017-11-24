@@ -4,80 +4,88 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.text.DateFormat;
+import java.text.FieldPosition;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.zip.GZIPOutputStream;
 
 /**
  * A writer class for performance rate data. This data is saved to a compressed file in the format
  * {role}-rate.gz
  */
-public class RateWriter {
-    private OutputStream fileStream = null;
-    private OutputStream gzipStream = null;
+public final class RateWriter implements AutoCloseable {
+    //If was needed us it could be used: yyyy-MM-dd HH:mm:ss.SSS000
+    private static final String DATE_FORMAT_PATTERN = "\"yyyy-MM-dd HH:mm:ss.SSS000\"";
+    private static final char SEPARATOR = ',';
+    private static final int ESTIMATED_LINE_LENGTH = (DATE_FORMAT_PATTERN + SEPARATOR + DATE_FORMAT_PATTERN + '\n').length();
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
+    private final OutputStream outputStream;
+    private final Date date = new Date();
+    private final StringBuffer lineBuilder = new StringBuffer(ESTIMATED_LINE_LENGTH);
+    private final byte[] writeBuffer = new byte[ESTIMATED_LINE_LENGTH];
+    private final FieldPosition fullFieldPosition = new FieldPosition(DateFormat.FULL);
 
-    private RateDataConverter converter;
-
-    /**
-     * Constructor
-     * @param path file path
-     * @throws IOException
-     */
-    public RateWriter(final File path) throws IOException {
-
-        fileStream = new FileOutputStream(path);
-        gzipStream = new GZIPOutputStream(fileStream);
-
-        gzipStream.write(new String("eta;ata\n").getBytes());
+    public RateWriter(final File reportFolder, boolean sender, boolean compressed) throws IOException {
+        final String role = sender ? "sender" : "receiver";
+        final String fileName = role + (compressed ? "d-rate.csv.gz" : "d-rate,csv");
+        final File reportFile = new File(reportFolder, fileName);
+        final FileOutputStream fileStream = new FileOutputStream(reportFile);
+        if (compressed) {
+            outputStream = new GZIPOutputStream(fileStream);
+        } else {
+            outputStream = fileStream;
+        }
+        //header depend on being sender/receiver
+        final String firstTimeColumn;
+        final String secondTimeColumn;
+        if (sender) {
+            firstTimeColumn = "etd";
+            secondTimeColumn = "atd";
+        } else {
+            firstTimeColumn = "eta";
+            secondTimeColumn = "ata";
+        }
+        final int encodedSize = encodeAscii(lineBuilder.append(firstTimeColumn).append(SEPARATOR).append(secondTimeColumn).append('\n'), writeBuffer);
+        outputStream.write(writeBuffer, 0, encodedSize);
     }
 
-    /**
-     * Gets the rate data converter
-     * @return
-     */
-    public RateDataConverter getConverter() {
-        return converter;
+    public void write(long startTimeStampEpochMillis, long endTimeStampEpochMillis) {
+        final int encodedSize = encodeAscii(appendOnStringBuffer(startTimeStampEpochMillis, endTimeStampEpochMillis).append('\n'), writeBuffer);
+        try {
+            outputStream.write(writeBuffer, 0, encodedSize);
+        } catch (IOException e) {
+            throw new RuntimeException(e);
+        }
     }
 
+    private StringBuffer appendOnStringBuffer(long startTimeStampEpochMillis, long endTimeStampEpochMillis) {
+        lineBuilder.setLength(0);
+        date.setTime(startTimeStampEpochMillis);
 
-    /**
-     * Sets a rate data converter. The converter can be used to adjust
-     * worker-specific data (ie.: some benchmark tools may use milliseconds instead of microseconds)
-     * @param converter
-     */
-    public void setConverter(RateDataConverter converter) {
-        this.converter = converter;
+        dateFormat.format(date, lineBuilder, fullFieldPosition)
+                .append(SEPARATOR);
+        date.setTime(endTimeStampEpochMillis);
+        return dateFormat.format(date, lineBuilder, fullFieldPosition);
     }
 
-
-    private void doWriteLine(final String eta, final String ata) throws IOException {
-        String line = eta + ";" + ata + "\n";
-
-        gzipStream.write(line.getBytes());
-    }
-
-
-    /**
-     * Write a line in the performance data report
-     * @param eta Estimated time of arrival (may be ignored in some driver implementations)
-     * @param ata Actual time of arrival
-     * @throws IOException
-     */
-    public void writeLine(final String eta, final String ata) throws IOException  {
-        String actualEta = converter != null ? converter.convertEta(eta) : ata;
-        String actualAta = converter != null ? converter.convertAta(ata) : ata;
-
-        doWriteLine(actualEta, actualAta);
+    private static int encodeAscii(StringBuffer buffer, byte[] encodedBuffer) {
+        final int bufferLength = buffer.length();
+        for (int i = 0; i < bufferLength; i++) {
+            final char c = buffer.charAt(i);
+            byte b = (byte) c;
+            if (b < 0) {
+                b = '?';
+            }
+            encodedBuffer[i] = b;
+        }
+        return bufferLength;
     }
 
     public void close() {
         try {
-            gzipStream.flush();
-            gzipStream.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-
-        try {
-            fileStream.close();
+            outputStream.flush();
+            outputStream.close();
         } catch (IOException e) {
             e.printStackTrace();
         }
