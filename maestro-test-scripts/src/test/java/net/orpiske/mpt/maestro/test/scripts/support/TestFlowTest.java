@@ -62,7 +62,6 @@ public class TestFlowTest extends EndToEndTest {
     TODO: this test is ignored because the workers are not yet sending the
     success/failure notifications
     */
-    @Ignore
     @Test
     public void testSimpleTest() throws Exception {
         System.out.println("Running a short-lived test");
@@ -89,7 +88,7 @@ public class TestFlowTest extends EndToEndTest {
         Thread.sleep(2000);
 
         // Get the test result notification
-        replies = maestro.collect(1000, 10);
+        replies = maestro.collect(1000, 10, 2);
         assertTrue( "Replies don't match: " + replies.size(), replies.size() == 2);
 
         MaestroNote firstNote = replies.get(0);
