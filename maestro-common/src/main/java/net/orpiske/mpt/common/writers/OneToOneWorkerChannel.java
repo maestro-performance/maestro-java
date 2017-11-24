@@ -20,14 +20,14 @@ package net.orpiske.mpt.common.writers;
 import org.agrona.BitUtil;
 import org.agrona.DirectBuffer;
 import org.agrona.MutableDirectBuffer;
-import org.agrona.concurrent.MessageHandler;
+import org.agrona.concurrent.AtomicBuffer;
 import org.agrona.concurrent.UnsafeBuffer;
-import org.agrona.concurrent.ringbuffer.OneToOneRingBuffer;
+import org.agrona.concurrent.broadcast.BroadcastBufferDescriptor;
+import org.agrona.concurrent.broadcast.BroadcastReceiver;
+import org.agrona.concurrent.broadcast.BroadcastTransmitter;
 import org.agrona.concurrent.ringbuffer.RecordDescriptor;
-import org.agrona.concurrent.ringbuffer.RingBufferDescriptor;
 
 import java.nio.ByteBuffer;
-import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Consumer;
 
 public final class OneToOneWorkerChannel {
@@ -51,35 +51,29 @@ public final class OneToOneWorkerChannel {
 
     }
 
-    private final AtomicLong missedSamples;
-    private final OneToOneRingBuffer writeBuffer;
+    private final BroadcastTransmitter writeBuffer;
+    private final BroadcastReceiver receiver;
     private final UnsafeBuffer sampleBuffer;
-    private final MessageHandler onRate;
-    private Consumer<Sample> currentOnSample;
     private final Sample currentSample;
+    private final int footprintInBytes;
 
     public OneToOneWorkerChannel(int capacity) {
         //agrona doesn't allow too small ring buffers
         capacity = Math.max(8, capacity);
-        this.missedSamples = new AtomicLong(0);
         final int contentLength = Long.BYTES * 2;
         this.sampleBuffer = new UnsafeBuffer(ByteBuffer.allocateDirect(contentLength));
         final int requiredRingBufferCapacity =
                 BitUtil.findNextPositivePowerOfTwo(
                         BitUtil.findNextPositivePowerOfTwo(capacity) *
                                 (BitUtil.align(contentLength + RecordDescriptor.HEADER_LENGTH, RecordDescriptor.ALIGNMENT)))
-                        + RingBufferDescriptor.TRAILER_LENGTH;
-        this.writeBuffer = new OneToOneRingBuffer(new UnsafeBuffer(ByteBuffer.allocateDirect(requiredRingBufferCapacity)));
-        this.onRate = this::onMessage;
+                        + BroadcastBufferDescriptor.TRAILER_LENGTH;
+        final AtomicBuffer buffer = new UnsafeBuffer(ByteBuffer.allocateDirect(requiredRingBufferCapacity));
+        this.writeBuffer = new BroadcastTransmitter(buffer);
         this.currentSample = new Sample();
-        this.currentOnSample = null;
-    }
-
-    private void onMessage(int msgTypeId, MutableDirectBuffer buffer, int index, int length) {
-        assert msgTypeId == 1;
-        currentSample.buffer = buffer;
-        currentSample.offset = index;
-        this.currentOnSample.accept(currentSample);
+        this.receiver = new BroadcastReceiver(buffer);
+        this.footprintInBytes = buffer.capacity();
+        this.currentSample.buffer = this.sampleBuffer;
+        this.currentSample.offset = 0;
     }
 
     /**
@@ -88,38 +82,38 @@ public final class OneToOneWorkerChannel {
     public void emitRate(long startTimestampEpochMillis, long endTimestampEpochMillis) {
         sampleBuffer.putLong(0, startTimestampEpochMillis);
         sampleBuffer.putLong(Long.BYTES, endTimestampEpochMillis);
-        boolean written = this.writeBuffer.write(1, sampleBuffer, 0, sampleBuffer.capacity());
-        //it could fail due to the padding too: retry just one time
-        if (!written) {
-            this.missedSamples.lazySet(this.missedSamples.get() + 1);
-        }
+        this.writeBuffer.transmit(1, sampleBuffer, 0, sampleBuffer.capacity());
     }
 
     public int footprintInBytes() {
-        return this.writeBuffer.buffer().capacity();
-    }
-
-    public int sizeInBytes() {
-        return this.writeBuffer.size();
+        return this.footprintInBytes;
     }
 
     /**
      * Safe to be used by just one thread
      */
     public int readRate(Consumer<Sample> onRate, int limit) {
-        this.currentOnSample = onRate;
-        try {
-            return this.writeBuffer.read(this.onRate, limit);
-        } finally {
-            this.currentOnSample = null;
+        for (int i = 0; i < limit; i++) {
+            boolean valid;
+            do {
+                final boolean receiveNext = this.receiver.receiveNext();
+                if (!receiveNext) {
+                    return i;
+                }
+                final MutableDirectBuffer buffer = this.receiver.buffer();
+                this.sampleBuffer.putBytes(0, this.receiver.buffer(), this.receiver.offset(), this.receiver.length());
+                valid = this.receiver.validate();
+            } while (!valid);
+            onRate.accept(currentSample);
         }
+        return limit;
     }
 
     /**
      * Safe to be called concurrently
      */
     public long missedSamples() {
-        return missedSamples.get();
+        return receiver.lappedCount();
     }
 
 }

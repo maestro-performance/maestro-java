@@ -19,6 +19,7 @@ package net.orpiske.mpt.maestro.worker.base;
 
 import net.orpiske.mpt.common.worker.*;
 import net.orpiske.mpt.common.writers.OneToOneWorkerChannel;
+import net.orpiske.mpt.common.writers.RateWriter;
 import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
@@ -36,7 +37,7 @@ import java.util.stream.Stream;
 
 public class WorkerChannelWriterSanityTest {
 
-    private static abstract class DummyWorker implements MaestroWorker {
+    static abstract class DummyWorker implements MaestroWorker {
 
         private final OneToOneWorkerChannel workerChannel;
         long startedEpochMillis = Long.MIN_VALUE;
@@ -96,14 +97,14 @@ public class WorkerChannelWriterSanityTest {
         }
     }
 
-    private static final class DummySenderWorker extends DummyWorker implements MaestroSenderWorker {
+    static final class DummySenderWorker extends DummyWorker implements MaestroSenderWorker {
 
         DummySenderWorker(int channelCapacity) {
             super(channelCapacity);
         }
     }
 
-    private static final class DummyReceiverWorker extends DummyWorker implements MaestroReceiverWorker {
+    static final class DummyReceiverWorker extends DummyWorker implements MaestroReceiverWorker {
 
         DummyReceiverWorker(int channelCapacity) {
             super(channelCapacity);
@@ -115,6 +116,15 @@ public class WorkerChannelWriterSanityTest {
 
     @Test(timeout = 120_000L)
     public void shouldWriteRatesWithoutMissingSamplesIfNotFull() throws IOException, InterruptedException {
+        final File testReportFolder = tempTestFolder.newFolder("test_report");
+        final long elapsedNanosToWrite;
+        try (RateWriter rateWriter = new RateWriter(testReportFolder, true, true)) {
+            final long startWrite = System.nanoTime();
+            rateWriter.write(System.currentTimeMillis(), System.currentTimeMillis());
+            elapsedNanosToWrite = System.nanoTime() - startWrite;
+        }
+        //estimation that takes into account a double writes (sender and writer) + not optimized code while writing
+        final long intervalEmitNanos = elapsedNanosToWrite * 4;
         final AtomicBoolean forceStopWorker = new AtomicBoolean(false);
         final int events = 10;
         final long testTimeoutMillis = TimeUnit.MINUTES.toMillis(1);
@@ -141,12 +151,10 @@ public class WorkerChannelWriterSanityTest {
                 for (int e = 0; e < events; e++) {
                     final long now = System.currentTimeMillis();
                     workerChannel.emitRate(now, now);
-                    while (workerChannel.sizeInBytes() > 0) {
-                        if (forceStopWorker.get()) {
-                            return;
-                        } else {
-                            LockSupport.parkNanos(TimeUnit.SECONDS.toNanos(1));
-                        }
+                    //wait 1 second before considering the event processed
+                    LockSupport.parkNanos(intervalEmitNanos);
+                    if (forceStopWorker.get()) {
+                        return;
                     }
                     eventsProcessed.countDown();
                 }

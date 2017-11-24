@@ -93,37 +93,42 @@ public final class WorkerLatencyWriter implements Runnable {
 
     @Override
     public void run() {
-        try (LatencyWriter latencyWriter = new LatencyWriter(new File(reportFolder, "receiverd-latency.hdr"))) {
-            latencyWriter.outputLegend(System.currentTimeMillis());
-            //TODO collect only receiver worker latencies: make it configurable or available on the MaestroWorker API
-            final List<WorkerIntervalReport> workerReports = this.workers.stream()
-                    .filter(w -> w instanceof MaestroReceiverWorker).map(w -> new WorkerIntervalReport(latencyWriter, w, reportIntervalLatencies))
-                    .collect(Collectors.toList());
-            final Thread currentThread = Thread.currentThread();
-            long startTime = System.currentTimeMillis();
-            long nextReportingTime = startTime + reportingIntervalMs;
-            try {
-                while (!currentThread.isInterrupted()) {
-                    final long now = getCurrentTimeMsecWithDelay(nextReportingTime);
-                    //the overall update + output process could take more than the reportingIntervalMs
-                    //sample
-                    workerReports.forEach(WorkerIntervalReport::updateReport);
-                    //output sample
-                    workerReports.forEach(WorkerIntervalReport::outputReport);
-                    //move the new reporting time n reportingIntervalMs > now
-                    while (now >= nextReportingTime) {
-                        nextReportingTime += reportingIntervalMs;
+        final long anyWorkers = this.workers.stream()
+                .filter(w -> w instanceof MaestroReceiverWorker).count();
+        //avoid creating any file if there aren't  any MaestroReceiverWorker
+        if (anyWorkers > 0) {
+            try (LatencyWriter latencyWriter = new LatencyWriter(new File(reportFolder, "receiverd-latency.hdr"))) {
+                latencyWriter.outputLegend(System.currentTimeMillis());
+                //TODO collect only receiver worker latencies: make it configurable or available on the MaestroWorker API
+                final List<WorkerIntervalReport> workerReports = this.workers.stream()
+                        .filter(w -> w instanceof MaestroReceiverWorker).map(w -> new WorkerIntervalReport(latencyWriter, w, reportIntervalLatencies))
+                        .collect(Collectors.toList());
+                final Thread currentThread = Thread.currentThread();
+                long startTime = System.currentTimeMillis();
+                long nextReportingTime = startTime + reportingIntervalMs;
+                try {
+                    while (!currentThread.isInterrupted()) {
+                        final long now = getCurrentTimeMsecWithDelay(nextReportingTime);
+                        //the overall update + output process could take more than the reportingIntervalMs
+                        //sample
+                        workerReports.forEach(WorkerIntervalReport::updateReport);
+                        //output sample
+                        workerReports.forEach(WorkerIntervalReport::outputReport);
+                        //move the new reporting time n reportingIntervalMs > now
+                        while (now >= nextReportingTime) {
+                            nextReportingTime += reportingIntervalMs;
+                        }
                     }
+                } catch (InterruptedException i) {
+                    //it is legal
+                } finally {
+                    //force a final snapshot of the latencies
+                    workerReports.forEach(r -> r.updateReport(true));
+                    workerReports.forEach(WorkerIntervalReport::outputReport);
                 }
-            } catch (InterruptedException i) {
-                //it is legal
-            } finally {
-                //force a final snapshot of the latencies
-                workerReports.forEach(r -> r.updateReport(true));
-                workerReports.forEach(WorkerIntervalReport::outputReport);
+            } catch (IOException ex) {
+                ex.printStackTrace();
             }
-        } catch (IOException ex) {
-            ex.printStackTrace();
         }
     }
 }

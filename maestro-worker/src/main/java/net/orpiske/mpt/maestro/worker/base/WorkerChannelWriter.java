@@ -49,8 +49,8 @@ public final class WorkerChannelWriter implements Runnable {
             this.rateWriter.write(rate.timestampEpochMillis(), rate.value());
         }
 
-        public int updateReport() {
-            return this.worker.workerChannel().readRate(this.onRate, Integer.MAX_VALUE);
+        public int updateReport(int drainLimit) {
+            return this.worker.workerChannel().readRate(this.onRate, drainLimit);
         }
     }
 
@@ -64,10 +64,16 @@ public final class WorkerChannelWriter implements Runnable {
         this.compressed = true;
     }
 
+    private RateWriter createRateWriter(boolean sender) throws IOException {
+        return new RateWriter(reportFolder, sender, compressed);
+    }
+
     @Override
     public void run() {
-        try (RateWriter senderRateWriter = new RateWriter(reportFolder, true, compressed);
-             RateWriter receiverRateWriter = new RateWriter(reportFolder, false, compressed)) {
+        final int drainLimit = 128;
+        RateWriter senderRateWriter = null;
+        RateWriter receiverRateWriter = null;
+        try {
             final int workersCount = workers.size();
             final List<WorkerRateReport> rateReports = new ArrayList<>(workersCount);
             for (int workerId = 0; workerId < workersCount; workerId++) {
@@ -77,8 +83,10 @@ public final class WorkerChannelWriter implements Runnable {
                 assert !(sender == true && receiver == true);
                 RateWriter rateWriter = null;
                 if (sender) {
+                    senderRateWriter = senderRateWriter == null ? createRateWriter(true) : senderRateWriter;
                     rateWriter = senderRateWriter;
                 } else if (receiver) {
+                    receiverRateWriter = receiverRateWriter == null ? createRateWriter(false) : receiverRateWriter;
                     rateWriter = receiverRateWriter;
                 }
                 if (rateWriter != null) {
@@ -86,34 +94,50 @@ public final class WorkerChannelWriter implements Runnable {
                 }
             }
             final int rateReportsCount = rateReports.size();
-            final Thread currentThread = Thread.currentThread();
-            final IdleStrategy idleStrategy = new SleepingIdleStrategy(1000L);
-            while (!currentThread.isInterrupted()) {
-                int events = 0;
-                for (int i = 0; i < rateReportsCount; i++) {
-                    final WorkerRateReport report = rateReports.get(i);
-                    events += report.updateReport();
+            //doesn't need to continue if there aren't any reports to be populated
+            if (rateReportsCount > 0) {
+                final Thread currentThread = Thread.currentThread();
+                final IdleStrategy idleStrategy = new SleepingIdleStrategy(1000L);
+                while (!currentThread.isInterrupted()) {
+                    int events = 0;
+                    for (int i = 0; i < rateReportsCount; i++) {
+                        final WorkerRateReport report = rateReports.get(i);
+                        events += report.updateReport(drainLimit);
+                    }
+                    idleStrategy.idle(events);
                 }
-                idleStrategy.idle(events);
-            }
-            //lets finish to drain the remaining samples left (if any)
-            boolean allDrained = false;
-            while (!allDrained) {
-                allDrained = true;
-                for (int i = 0; i < rateReportsCount; i++) {
-                    final WorkerRateReport report = rateReports.get(i);
-                    if (report.updateReport() > 0) {
-                        allDrained = false;
+                //lets finish to drain the remaining samples left (if any)
+                boolean allDrained = false;
+                while (!allDrained) {
+                    allDrained = true;
+                    for (int i = 0; i < rateReportsCount; i++) {
+                        final WorkerRateReport report = rateReports.get(i);
+                        if (report.updateReport(drainLimit) > 0) {
+                            allDrained = false;
+                        }
                     }
                 }
             }
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
-            //TODO improve this warn
-            final long totalMissed = workers.stream().map(MaestroWorker::workerChannel).mapToLong(OneToOneWorkerChannel::missedSamples).sum();
-            if (totalMissed > 0) {
-                System.err.println("TOTAL MISSED RATE SAMPLES= " + totalMissed);
+            //close the report writers
+            try {
+                if (senderRateWriter != null) {
+                    senderRateWriter.close();
+                }
+            } finally {
+                try {
+                    if (receiverRateWriter != null) {
+                        receiverRateWriter.close();
+                    }
+                } finally {
+                    //TODO improve this warn
+                    final long totalMissed = workers.stream().filter(w -> w.workerChannel() != null).map(MaestroWorker::workerChannel).mapToLong(OneToOneWorkerChannel::missedSamples).sum();
+                    if (totalMissed > 0) {
+                        System.err.println("TOTAL MISSED RATE SAMPLES= " + totalMissed);
+                    }
+                }
             }
         }
     }

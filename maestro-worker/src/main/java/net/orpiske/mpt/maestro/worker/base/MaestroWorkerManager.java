@@ -196,8 +196,18 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
             //TODO handle shutdown gently
             Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                latencyThread.interrupt();
                 rateThread.interrupt();
+                latencyThread.interrupt();
+                try {
+                    rateThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                try {
+                    latencyThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }));
 
 
