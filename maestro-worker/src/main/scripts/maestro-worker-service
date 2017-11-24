@@ -34,13 +34,14 @@ function start() {
     fi
 
     nohup "$installdir"/bin/maestro-worker -m "$MAESTRO_BROKER" -w "$MAESTRO_WORKER" -l "$MAESTRO_LOG_DIR" -r "$MAESTRO_WORKER_ROLE" -H "$MAESTRO_LOCAL_HOSTNAME" $@ > /dev/null 2> /dev/null &
-    for pid in $(ps -ef | grep -i maestro-worker | grep -v service | grep java | grep -i "$MAESTRO_WORKER_ROLE" | awk ' { print $2 } ') ; do
+    sleep 2s
+    for pid in $(ps -ef | grep -i maestro-worker | grep java | grep -v worker-service | grep -i "$MAESTRO_WORKER_ROLE"  | grep -v grep | awk ' { print $2 } ') ; do
         echo "Maestro worker started $pid"
     done
 }
 
 function stop() {
-    for pid in $(ps -ef | grep -i maestro-worker | grep -v service | grep -i "$MAESTRO_WORKER_ROLE" | awk ' { print $2 } ') ; do
+    for pid in $(ps -ef | grep -i maestro-worker | grep -v service | grep -i "$MAESTRO_WORKER_ROLE" | grep -v grep | awk ' { print $2 } ') ; do
         echo "Killing maestro-worker $pid"
         kill -TERM $pid
     done
