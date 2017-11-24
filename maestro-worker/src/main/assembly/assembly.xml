@@ -59,6 +59,7 @@
             <excludes>
                 <exclude>*sources*</exclude>
                 <exclude>*javadoc*</exclude>
+				<exclude>*maestro*tests.jar</exclude>
             </excludes>
 		</fileSet>
 		<fileSet>
