@@ -87,7 +87,7 @@
 
     <profiles>
         <profile>
-            <id>Delivery</id>
+            <id>Package</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
