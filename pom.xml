@@ -122,7 +122,7 @@
             <distributionManagement>
                 <site>
                     <id>orpiske.net</id>
-                    <name>SDM</name>
+                    <name>maestro-java</name>
                     <url>${orpiske.site}/files/javadoc/maestro-java-${api.version.site}/</url>
                 </site>
             </distributionManagement>
