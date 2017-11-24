@@ -139,7 +139,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>../lib</classpathPrefix>
-                            <mainClass>Main</mainClass>
+                            <mainClass>net.orpiske.mpt.maestro.worker.main.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
