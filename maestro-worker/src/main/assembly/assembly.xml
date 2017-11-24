@@ -68,13 +68,14 @@
 			<includes>
 				<include>**/*.*</include>
 				<include>**/maestro-worker</include>
+				<include>**/maestro-worker-service</include>
 			</includes>
 			<fileMode>0755</fileMode>
 		</fileSet>
 
 		<fileSet>
 			<directory>${project.basedir}/src/main/config</directory>
-			<outputDirectory>/conf</outputDirectory>
+			<outputDirectory>/config</outputDirectory>
 			<includes>
 				<include>**/*.*</include>
 			</includes>
@@ -86,6 +87,13 @@
 		<fileSet>
 			<directory>.</directory>
 			<outputDirectory>lib/ext</outputDirectory>
+			<excludes>
+				<exclude>*/**</exclude>
+			</excludes>
+		</fileSet>
+		<fileSet>
+			<directory>.</directory>
+			<outputDirectory>tmp</outputDirectory>
 			<excludes>
 				<exclude>*/**</exclude>
 			</excludes>

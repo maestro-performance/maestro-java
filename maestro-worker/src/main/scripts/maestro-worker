@@ -1,5 +1,5 @@
 #!/bin/bash
-#   Copyright 2012 Otavio Rodolfo Piske
+#   Copyright 2017 Otavio Rodolfo Piske
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
 #   you may not use this file except in compliance with the License.
@@ -46,5 +46,6 @@ if [ "$installdir" = "." ] ; then
 fi
 
 mainclass=net.orpiske.mpt.maestro.worker.main.Main
+pid_file="$installdir"/tmp/maestro-worker.pid
 
-nohup java -classpath "$installdir"/lib/ext/*:"$installdir"/bin/*maestro-worker-*.jar -Dnet.orpiske.mpt.exporter.home="$installdir" -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory "$mainclass" $@ > /dev/null 2> /dev/null &
+java -classpath "$installdir"/bin/*maestro-worker-*.jar -Dnet.orpiske.mpt.exporter.home="$installdir" -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory "$mainclass" $@
