@@ -69,15 +69,17 @@ class WorkerWatchdog implements Runnable {
                 }
             }
 
-            //TODO check if notifyFailure should happen before or after waiting the workers to stop
-            for (WorkerRuntimeInfo ri : workers) {
-                WorkerStateInfo wsi = ri.worker.getWorkerState();
+            synchronized (this) {
+                //TODO check if notifyFailure should happen before or after waiting the workers to stop
+                for (WorkerRuntimeInfo ri : workers) {
+                    WorkerStateInfo wsi = ri.worker.getWorkerState();
 
-                if (!wsi.isRunning()) {
-                    if (wsi.getExitStatus() != WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS) {
-                        endpoint.notifyFailure(wsi.getException().getMessage());
+                    if (!wsi.isRunning()) {
+                        if (wsi.getExitStatus() != WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS) {
+                            endpoint.notifyFailure(wsi.getException().getMessage());
 
-                        return;
+                            return;
+                        }
                     }
                 }
             }
@@ -87,5 +89,9 @@ class WorkerWatchdog implements Runnable {
 
         endpoint.notifySuccess("Test completed successfully");
         logger.info("Running the worker watchdog");
+    }
+
+    public boolean isRunning() {
+        return running;
     }
 }

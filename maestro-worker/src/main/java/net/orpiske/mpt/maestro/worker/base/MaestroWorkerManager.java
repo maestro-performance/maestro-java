@@ -32,7 +32,6 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
     private WorkerOptions workerOptions;
     private Thread latencyWriterThread;
     private Thread rateWriterThread;
-    private boolean workerStarted = false;
 
     private boolean running = true;
 
@@ -168,10 +167,12 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
     }
 
     private boolean doWorkerStart() {
-        if (this.workerStarted) {
+        if (container.isTestInProgress()) {
+            logger.warn("Trying to start a new test, but a test execution is already in progress");
+            client.notifyFailure("Test already in progress");
             return false;
         }
-        this.workerStarted = true;
+
         final File testLogDir = findTestLogDir();
 
         try {
