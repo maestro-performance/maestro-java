@@ -33,6 +33,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 
 public class JMSReceiverWorker implements MaestroReceiverWorker {
+
     private static final Logger logger = LoggerFactory.getLogger(JMSReceiverWorker.class);
 
     private TestDuration duration;
@@ -107,15 +108,17 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
             while (duration.canContinue(this) && isRunning()) {
                 final long sendTimeEpochMillis = client.receiveMessages();
-                //TODO would be better to use a general purpose Clock API
-                final long now = System.currentTimeMillis();
-                final long elapsedMillis = now - sendTimeEpochMillis;
-                //we can perform fnc check here to fail the test
-                //TODO use Histogram:recordValueWithExpectedInterval if the rate is known
-                latencyRecorder.recordValue(elapsedMillis);
-                workerChannel.emitRate(sendTimeEpochMillis, now);
-                count++;
-                messageCount.lazySet(count);
+                if (sendTimeEpochMillis != JMSReceiverClient.noMessagePayload()) {
+                    //TODO would be better to use a general purpose Clock API
+                    final long now = System.currentTimeMillis();
+                    final long elapsedMillis = now - sendTimeEpochMillis;
+                    //we can perform fnc check here to fail the test
+                    //TODO use Histogram:recordValueWithExpectedInterval if the rate is known
+                    latencyRecorder.recordValue(elapsedMillis);
+                    workerChannel.emitRate(sendTimeEpochMillis, now);
+                    count++;
+                    messageCount.lazySet(count);
+                }
             }
 
             logger.info("Test completed successfully");

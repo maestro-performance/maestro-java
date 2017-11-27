@@ -22,6 +22,7 @@ import javax.jms.MessageConsumer;
 import javax.jms.Session;
 
 final class JMSReceiverClient extends Client {
+    private static final long RECEIVE_TIMEOUT_MILLIS = 1000L;
     private Session session;
     private MessageConsumer consumer;
 
@@ -33,14 +34,18 @@ final class JMSReceiverClient extends Client {
         consumer = session.createConsumer(queue);
     }
 
+    public static long noMessagePayload(){
+        return Long.MIN_VALUE;
+    }
+
     /**
-     * Returns the epoch millis.
+     * Returns the epoch millis of the current received message or {@link #noMessagePayload()} if there isn't received any message.
      */
     public long receiveMessages() throws JMSException {
-        final Message message = consumer.receive();
+        final Message message = consumer.receive(RECEIVE_TIMEOUT_MILLIS);
 
         if (message == null) {
-            throw new RuntimeException("Null receive");
+            return noMessagePayload();
         }
 
         final long sendTime = message.getLongProperty("SendTime");

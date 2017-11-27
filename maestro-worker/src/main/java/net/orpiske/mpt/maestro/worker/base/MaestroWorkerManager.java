@@ -19,6 +19,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> implements MaestroEventListener {
+    private static final long TIMEOUT_STOP_WORKER_MILLIS = 1_000;
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
 
     private MaestroReceiverClient client;
@@ -180,35 +181,39 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         try {
             final List<MaestroWorker> workers = new ArrayList<>();
             logger.debug("Starting the workers {}", workerClass);
-            container.start(workerClass, workers);
+            container.start(workerClass, workers, this::onStoppedWorkers);
 
-            logger.debug("Creating the writer threads");
-            WorkerLatencyWriter latencyWriter = new WorkerLatencyWriter(testLogDir, workers);
-            final Thread latencyThread = new Thread(latencyWriter);
-            this.latencyWriterThread = latencyThread;
-            WorkerChannelWriter rateWriter = new WorkerChannelWriter(testLogDir, workers);
-            final Thread rateThread = new Thread(rateWriter);
-            this.rateWriterThread = rateThread;
-            logger.debug("Starting the writers threads");
+            if (workers.isEmpty()) {
+                logger.warn("No workers has been started!");
+            } else {
+                logger.debug("Creating the writer threads");
+                WorkerLatencyWriter latencyWriter = new WorkerLatencyWriter(testLogDir, workers);
+                final Thread latencyThread = new Thread(latencyWriter);
+                this.latencyWriterThread = latencyThread;
+                WorkerChannelWriter rateWriter = new WorkerChannelWriter(testLogDir, workers);
+                final Thread rateThread = new Thread(rateWriter);
+                this.rateWriterThread = rateThread;
+                logger.debug("Starting the writers threads");
 
-            this.latencyWriterThread.start();
-            this.rateWriterThread.start();
+                this.latencyWriterThread.start();
+                this.rateWriterThread.start();
 
-            //TODO handle shutdown gently
-            Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                rateThread.interrupt();
-                latencyThread.interrupt();
-                try {
-                    rateThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                try {
-                    latencyThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }));
+                //TODO handle shutdown gently
+                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
+                    rateThread.interrupt();
+                    latencyThread.interrupt();
+                    try {
+                        rateThread.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                    try {
+                        latencyThread.join();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }));
+            }
 
 
             client.replyOk();
@@ -217,6 +222,56 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
             client.replyInternalError();
         }
         return true;
+    }
+
+    private void onStoppedWorkers(List<WorkerRuntimeInfo> workers){
+        if (this.rateWriterThread != null || this.latencyWriterThread != null) {
+            final long startWaitingWorkers = System.currentTimeMillis();
+            final long deadLine = startWaitingWorkers + (workers.size() * TIMEOUT_STOP_WORKER_MILLIS * 2);
+            //workers are being stopped, just need to check if they have finished their jobs
+            boolean allFinished = false;
+            while (!allFinished && System.currentTimeMillis() < deadLine) {
+                allFinished = true;
+                for (int i = 0, size = workers.size(); i < size; i++) {
+                    final WorkerRuntimeInfo workerRuntimeInfo = workers.get(i);
+                    try {
+                        workerRuntimeInfo.thread.join(TIMEOUT_STOP_WORKER_MILLIS);
+                    } catch (InterruptedException e) {
+                        //no op, just retry
+                    } finally {
+                        allFinished = !workerRuntimeInfo.thread.isAlive();
+                        if (!allFinished) {
+                            break;
+                        }
+                    }
+                }
+            }
+            if (!allFinished) {
+                logger.warn("The writer will be forced to stop with alive workers");
+            }
+            if (this.rateWriterThread != null) {
+                this.rateWriterThread.interrupt();
+            }
+            if (this.latencyWriterThread != null) {
+                this.latencyWriterThread.interrupt();
+            }
+            if (this.rateWriterThread != null) {
+                try {
+                    this.rateWriterThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            if (this.latencyWriterThread != null) {
+                try {
+                    this.latencyWriterThread.join();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+            final long elapsedMillis = System.currentTimeMillis() - startWaitingWorkers;
+            logger.info("Awaiting workers and Shutting down writers and  tooks {} ms", elapsedMillis);
+        }
     }
 
 

@@ -16,7 +16,7 @@ class WorkerWatchdog implements Runnable {
 
     private Collection<WorkerRuntimeInfo> workers;
     private MaestroReceiver endpoint;
-    private boolean running = false;
+    private volatile boolean running = false;
 
 
     /**

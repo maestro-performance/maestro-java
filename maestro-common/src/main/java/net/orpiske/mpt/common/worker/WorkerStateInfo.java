@@ -25,10 +25,9 @@ public final class WorkerStateInfo {
         WORKER_EXIT_STOPPED
     };
 
-    private boolean running = false;
-
+    private volatile boolean running = false;
     private WorkerExitStatus exitStatus = WorkerExitStatus.WORKER_EXIT_STOPPED;
-    private Exception exception;
+    private Exception exception = null;
 
     /**
      * Whether the worker is running
@@ -47,9 +46,10 @@ public final class WorkerStateInfo {
      * @param exception Any exception raised in case of errors
      */
     public void setState(boolean running, WorkerExitStatus exitStatus, Exception exception) {
-        this.running = running;
         this.exitStatus = exitStatus;
         this.exception = exception;
+        //uses the this.running store to write release this.exitStatus and this.exception
+        this.running = running;
     }
 
 
@@ -58,6 +58,10 @@ public final class WorkerStateInfo {
      * @return The exit status or null if running
      */
     public WorkerExitStatus getExitStatus() {
+        //uses the this.running load to read acquire this.exitStatus
+        if (this.running) {
+            return null;
+        }
         return exitStatus;
     }
 
@@ -67,6 +71,10 @@ public final class WorkerStateInfo {
      * @return An exception object or null if none
      */
     public Exception getException() {
+        //uses the this.running load to read acquire this.exception
+        if (this.running) {
+            return null;
+        }
         return exception;
     }
 }

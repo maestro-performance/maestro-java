@@ -7,6 +7,7 @@ import net.orpiske.mpt.common.worker.WorkerOptions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 /**
@@ -21,6 +22,7 @@ public final class WorkerContainer {
     private WorkerWatchdog workerWatchdog;
     private Thread watchDogThread;
     private MaestroReceiver endpoint;
+    private Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped;
 
     private WorkerContainer(MaestroReceiver endpoint) {
         this.endpoint = endpoint;
@@ -52,11 +54,11 @@ public final class WorkerContainer {
     /**
      * Start the execution of the workers for a predefined class
      * @param clazz The class associated with the workers
-     * @param snapshots The performance snapshot queue containing the performance test data
+     * @param onWorkersStopped callback that will be called when the workers will stop
      * @throws IllegalAccessException if unable to access the worker constructor
      * @throws InstantiationException if unable to instantiate the worker
      */
-    public void start(final Class<MaestroWorker> clazz, Collection<? super MaestroWorker> workers)
+    public void start(final Class<MaestroWorker> clazz, Collection<? super MaestroWorker> workers, Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped)
             throws IllegalAccessException, InstantiationException {
         final int parallelCount = Integer.parseInt(workerOptions.getParallelCount());
         this.workerRuntimeInfos.clear();
@@ -71,6 +73,8 @@ public final class WorkerContainer {
         }
         //the workers are started
         workers.addAll(this.workerRuntimeInfos.stream().map(info -> info.worker).collect(Collectors.toList()));
+
+        this.onWorkersStopped = onWorkersStopped;
     }
 
     private void createAndStartWorkers(final Class<MaestroWorker> clazz, WorkerOptions workerOptions, int workers, Collection<WorkerRuntimeInfo> workerRuntimeInfos) throws IllegalAccessException, InstantiationException {
@@ -98,6 +102,8 @@ public final class WorkerContainer {
             workerWatchdog.setRunning(false);
         }
 
-        // workers.clear();
+        if (onWorkersStopped != null) {
+            onWorkersStopped.accept(workerRuntimeInfos);
+        }
     }
 }
