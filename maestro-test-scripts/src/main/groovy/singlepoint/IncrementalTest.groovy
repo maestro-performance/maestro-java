@@ -58,6 +58,9 @@ testProfile.setInitialRate(500);
 testProfile.setDuration(TestDurationBuilder.build("90s"));
 testProfile.setMessageSize(MessageSize.variable(256));
 testProfile.setMaximumLatency(200)
+testProfile.setCeilingRate(600)
+testProfile.setParallelCountIncrement(1)
+testProfile.setCeilingParallelCount(1)
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
 
