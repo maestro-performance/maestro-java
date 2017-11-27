@@ -22,7 +22,6 @@ public final class WorkerContainer {
     private WorkerWatchdog workerWatchdog;
     private Thread watchDogThread;
     private MaestroReceiver endpoint;
-    private Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped;
 
     private WorkerContainer(MaestroReceiver endpoint) {
         this.endpoint = endpoint;
@@ -63,7 +62,7 @@ public final class WorkerContainer {
         final int parallelCount = Integer.parseInt(workerOptions.getParallelCount());
         this.workerRuntimeInfos.clear();
         try {
-            createAndStartWorkers(clazz, workerOptions, parallelCount, this.workerRuntimeInfos);
+            createAndStartWorkers(clazz, workerOptions, parallelCount, this.workerRuntimeInfos, onWorkersStopped);
         } catch (Throwable t) {
             //interrupt any workers
             this.workerRuntimeInfos.forEach(info -> info.thread.interrupt());
@@ -73,11 +72,9 @@ public final class WorkerContainer {
         }
         //the workers are started
         workers.addAll(this.workerRuntimeInfos.stream().map(info -> info.worker).collect(Collectors.toList()));
-
-        this.onWorkersStopped = onWorkersStopped;
     }
 
-    private void createAndStartWorkers(final Class<MaestroWorker> clazz, WorkerOptions workerOptions, int workers, Collection<WorkerRuntimeInfo> workerRuntimeInfos) throws IllegalAccessException, InstantiationException {
+    private void createAndStartWorkers(final Class<MaestroWorker> clazz, WorkerOptions workerOptions, int workers, List<WorkerRuntimeInfo> workerRuntimeInfos,final Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped) throws IllegalAccessException, InstantiationException {
         for (int i = 0; i < workers; i++) {
             final WorkerRuntimeInfo ri = new WorkerRuntimeInfo();
             ri.worker = clazz.newInstance();
@@ -87,7 +84,7 @@ public final class WorkerContainer {
             workerRuntimeInfos.add(ri);
         }
 
-        workerWatchdog = new WorkerWatchdog(workerRuntimeInfos, endpoint);
+        workerWatchdog = new WorkerWatchdog(workerRuntimeInfos, endpoint, onWorkersStopped);
 
         watchDogThread = new Thread(workerWatchdog);
         watchDogThread.start();
@@ -100,10 +97,6 @@ public final class WorkerContainer {
 
         if (workerWatchdog != null) {
             workerWatchdog.setRunning(false);
-        }
-
-        if (onWorkersStopped != null) {
-            onWorkersStopped.accept(workerRuntimeInfos);
         }
     }
 }

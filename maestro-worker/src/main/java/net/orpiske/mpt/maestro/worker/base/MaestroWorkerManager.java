@@ -202,18 +202,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
                 //TODO handle shutdown gently
                 Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    rateThread.interrupt();
-                    latencyThread.interrupt();
-                    try {
-                        rateThread.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
-                    try {
-                        latencyThread.join();
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-                    }
+                    shutdownAndWaitWriters();
                 }));
             }
 
@@ -226,53 +215,67 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         return true;
     }
 
-    private void onStoppedWorkers(List<WorkerRuntimeInfo> workers){
-        if (this.rateWriterThread != null || this.latencyWriterThread != null) {
-            final long startWaitingWorkers = System.currentTimeMillis();
-            final long deadLine = startWaitingWorkers + (workers.size() * TIMEOUT_STOP_WORKER_MILLIS * 2);
-            //workers are being stopped, just need to check if they have finished their jobs
-            boolean allFinished = false;
-            while (!allFinished && System.currentTimeMillis() < deadLine) {
-                allFinished = true;
-                for (int i = 0, size = workers.size(); i < size; i++) {
-                    final WorkerRuntimeInfo workerRuntimeInfo = workers.get(i);
-                    try {
-                        workerRuntimeInfo.thread.join(TIMEOUT_STOP_WORKER_MILLIS);
-                    } catch (InterruptedException e) {
-                        //no op, just retry
-                    } finally {
-                        allFinished = !workerRuntimeInfo.thread.isAlive();
-                        if (!allFinished) {
-                            break;
-                        }
+    private void shutdownAndWaitWriters(){
+        if (this.rateWriterThread != null) {
+            this.rateWriterThread.interrupt();
+        }
+        if (this.latencyWriterThread != null) {
+            this.latencyWriterThread.interrupt();
+        }
+        if (this.rateWriterThread != null) {
+            try {
+                this.rateWriterThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+        if (this.latencyWriterThread != null) {
+            try {
+                this.latencyWriterThread.join();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
+    }
+
+    private static boolean awaitWorkers(long startWaitingWorkersEpochMillis, final List<WorkerRuntimeInfo> workers) {
+        final long deadLine = startWaitingWorkersEpochMillis + (workers.size() * TIMEOUT_STOP_WORKER_MILLIS * 2);
+        //workers are being stopped, just need to check if they have finished their jobs
+        boolean allFinished = false;
+        while (!allFinished && System.currentTimeMillis() < deadLine) {
+            allFinished = true;
+            for (int i = 0, size = workers.size(); i < size; i++) {
+                final WorkerRuntimeInfo workerRuntimeInfo = workers.get(i);
+                try {
+                    workerRuntimeInfo.thread.join(TIMEOUT_STOP_WORKER_MILLIS);
+                } catch (InterruptedException e) {
+                    //no op, just retry
+                } finally {
+                    allFinished = !workerRuntimeInfo.thread.isAlive();
+                    if (!allFinished) {
+                        break;
                     }
                 }
             }
-            if (!allFinished) {
-                logger.warn("The writer will be forced to stop with alive workers");
-            }
-            if (this.rateWriterThread != null) {
-                this.rateWriterThread.interrupt();
-            }
-            if (this.latencyWriterThread != null) {
-                this.latencyWriterThread.interrupt();
-            }
-            if (this.rateWriterThread != null) {
-                try {
-                    this.rateWriterThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
+        }
+        return allFinished;
+    }
+
+    /**
+     * It should be called by a different thread/concurrently too (eg WatchDog) so it can't modify any this.* members or workers too.
+     */
+    private void onStoppedWorkers(List<WorkerRuntimeInfo> workers) {
+        if (this.rateWriterThread != null || this.latencyWriterThread != null) {
+            final long startWaitingWorkers = System.currentTimeMillis();
+            if (!workers.isEmpty()) {
+                final boolean allFinished = awaitWorkers(startWaitingWorkers, workers);
+                if (!allFinished) {
+                    logger.warn("The writer will be forced to stop with alive workers");
                 }
             }
-            if (this.latencyWriterThread != null) {
-                try {
-                    this.latencyWriterThread.join();
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-            }
+            shutdownAndWaitWriters();
             final long elapsedMillis = System.currentTimeMillis() - startWaitingWorkers;
-            logger.info("Awaiting workers and Shutting down writers and  tooks {} ms", elapsedMillis);
+            logger.info("Awaiting workers and Shutting down writers took {} ms", elapsedMillis);
         }
     }
 

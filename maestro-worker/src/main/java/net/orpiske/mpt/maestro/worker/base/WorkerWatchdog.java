@@ -5,7 +5,9 @@ import net.orpiske.mpt.common.worker.WorkerStateInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collection;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.function.Consumer;
 
 /**
  * The watchdog inspects the active workers to check whether they are still active, completed their job
@@ -14,9 +16,10 @@ import java.util.Collection;
 class WorkerWatchdog implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(WorkerWatchdog.class);
 
-    private Collection<WorkerRuntimeInfo> workers;
+    private List<WorkerRuntimeInfo> workers;
     private MaestroReceiver endpoint;
     private volatile boolean running = false;
+    private final Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped;
 
 
     /**
@@ -24,8 +27,9 @@ class WorkerWatchdog implements Runnable {
      * @param workers A list of workers to inspect
      * @param endpoint The maestro endpoint that is to be notified of the worker status
      */
-    public WorkerWatchdog(Collection<WorkerRuntimeInfo> workers, MaestroReceiver endpoint) {
-        this.workers = workers;
+    public WorkerWatchdog(List<WorkerRuntimeInfo> workers, MaestroReceiver endpoint, Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped) {
+        this.workers = new ArrayList<>(workers);
+        this.onWorkersStopped = onWorkersStopped;
         this.endpoint = endpoint;
     }
 
@@ -39,7 +43,8 @@ class WorkerWatchdog implements Runnable {
     }
 
     private boolean workersRunning() {
-        for (WorkerRuntimeInfo ri : workers) {
+        for (int i = 0, size = workers.size(); i < size; i++) {
+            WorkerRuntimeInfo ri = workers.get(i);
             if (!ri.thread.isAlive()) {
                 return false;
             }
@@ -53,27 +58,31 @@ class WorkerWatchdog implements Runnable {
         logger.info("Running the worker watchdog");
         running = true;
 
-        while (running && workersRunning()) {
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+        try {
+            while (running && workersRunning()) {
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
 
-                break;
-            }
-        }
-
-
-        for (WorkerRuntimeInfo ri : workers) {
-            WorkerStateInfo wsi = ri.worker.getWorkerState();
-
-            if (!wsi.isRunning()) {
-                if (wsi.getExitStatus() != WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS) {
-                    endpoint.notifyFailure(wsi.getException().getMessage());
-
-                    return;
+                    break;
                 }
             }
+
+            //TODO check if notifyFailure should happen before or after waiting the workers to stop
+            for (WorkerRuntimeInfo ri : workers) {
+                WorkerStateInfo wsi = ri.worker.getWorkerState();
+
+                if (!wsi.isRunning()) {
+                    if (wsi.getExitStatus() != WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS) {
+                        endpoint.notifyFailure(wsi.getException().getMessage());
+
+                        return;
+                    }
+                }
+            }
+        } finally {
+            this.onWorkersStopped.accept(workers);
         }
 
         endpoint.notifySuccess("Test completed successfully");
