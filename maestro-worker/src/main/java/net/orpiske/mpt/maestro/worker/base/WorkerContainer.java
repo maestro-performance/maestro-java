@@ -105,8 +105,15 @@ public final class WorkerContainer {
             return false;
         }
 
-        // TODO: maybe we should also check the state of the workers? Verify ...
-        if (workerWatchdog.isRunning() && workerRuntimeInfos.size() > 0) {
+
+        if (workerWatchdog.isRunning()) {
+            for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
+                // A worker should only be in "not running" state if it is being
+                // shutdown
+                if (!ri.worker.isRunning()) {
+                    return false;
+                }
+            }
             return true;
         }
 
