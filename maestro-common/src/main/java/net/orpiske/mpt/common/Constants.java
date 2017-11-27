@@ -15,6 +15,8 @@
  */
 package net.orpiske.mpt.common;
 
+import java.io.File;
+
 /**
  * Application constants
  *
@@ -24,6 +26,18 @@ public final class Constants {
 	public static final String VERSION = "1.0.0";
 
 	public static final String BIN_NAME = "maestro-java";
+
+	public static final String HOME_PROPERTY = "net.orpiske.mpt.maestro.home";
+
+	public static final String HOME_DIR;
+
+	public static final String MAESTRO_CONFIG_DIR;
+
+	static {
+		HOME_DIR = System.getProperty(HOME_PROPERTY);
+
+		MAESTRO_CONFIG_DIR = System.getProperty(HOME_PROPERTY) + File.separator + "config";
+	}
 
 
 	/**

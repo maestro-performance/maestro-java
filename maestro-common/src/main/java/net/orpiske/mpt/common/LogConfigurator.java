@@ -17,6 +17,7 @@ package net.orpiske.mpt.common;
 
 import org.apache.log4j.PropertyConfigurator;
 
+import java.io.File;
 import java.util.Properties;
 
 /**
@@ -63,6 +64,13 @@ public class LogConfigurator {
         properties.setProperty("log4j.logger.net.orpiske", "WARN, stdout");
     }
 
+    /**
+     * Default log configuration for the deamon
+     */
+    public static void defaultForDaemons() {
+        PropertyConfigurator.configure(Constants.MAESTRO_CONFIG_DIR
+                + File.separator + "log4j.properties");
+    }
 
     /**
      * Configure the output to be at trace level

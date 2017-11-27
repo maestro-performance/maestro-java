@@ -120,7 +120,7 @@ public class Main {
     public static void main(String[] args) {
         processCommand(args);
 
-        LogConfigurator.debug();
+        LogConfigurator.defaultForDaemons();
 
         try {
             Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
