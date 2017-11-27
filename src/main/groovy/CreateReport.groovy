@@ -1,5 +1,3 @@
-import net.orpiske.mpt.reports.ReportGenerator
-
 /*
  *  Copyright 2017 Otavio R. Piske <angusyoung@gmail.com>
  *
@@ -18,8 +16,11 @@ import net.orpiske.mpt.reports.ReportGenerator
 
 @GrabConfig(systemClassLoader=true)
 
+@Grab(group='net.orpiske', module='maestro-java', version='1.1.1')
+
 import net.orpiske.mpt.reports.ReportGenerator
 import net.orpiske.mpt.utils.LogConfigurator
 
-LogConfigurator.verbose()
+LogConfigurator.debug()
+println "Creating report for directory: " + args[0]
 ReportGenerator.generate(args[0])
