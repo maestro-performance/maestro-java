@@ -55,7 +55,7 @@ IncrementalTestProfile testProfile = new SimpleTestProfile();
 
 testProfile.setBrokerURL(brokerURL)
 testProfile.setInitialRate(500);
-testProfile.setDuration(TestDurationBuilder.build("30s"));
+testProfile.setDuration(TestDurationBuilder.build("90s"));
 testProfile.setMessageSize(MessageSize.variable(256));
 testProfile.setMaximumLatency(200)
 
