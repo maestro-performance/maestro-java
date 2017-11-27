@@ -10,13 +10,19 @@ import net.orpiske.mpt.maestro.client.AbstractMaestroPeer;
 import net.orpiske.mpt.maestro.client.MaestroDeserializer;
 import net.orpiske.mpt.maestro.exceptions.MalformedNoteException;
 import net.orpiske.mpt.maestro.notes.*;
+import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
+
+import static net.orpiske.mpt.maestro.worker.base.WorkerStateInfoUtil.isCleanExit;
 
 public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> implements MaestroEventListener {
     private static final long TIMEOUT_STOP_WORKER_MILLIS = 1_000;
@@ -61,13 +67,29 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         return running;
     }
 
+    private File findLastLogDir() {
+        File currentLogDir = new File(logDir, "0");
+        File lastLogDir = currentLogDir;
+        int count = 0;
+
+        while (currentLogDir.exists()) {
+            lastLogDir = currentLogDir;
+
+            count++;
+            currentLogDir = new File(logDir, Integer.toString(count));
+        }
+
+        return lastLogDir;
+    }
+
     private File findTestLogDir() {
         File testLogDir = new File(logDir, "0");
         int count = 0;
 
         while (testLogDir.exists()) {
-            testLogDir = new File(logDir, Integer.toString(count));
             count++;
+            testLogDir = new File(logDir, Integer.toString(count));
+
         }
 
         testLogDir.mkdirs();
@@ -274,9 +296,57 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
                     logger.warn("The writer will be forced to stop with alive workers");
                 }
             }
+
             shutdownAndWaitWriters();
             final long elapsedMillis = System.currentTimeMillis() - startWaitingWorkers;
             logger.info("Awaiting workers and Shutting down writers took {} ms", elapsedMillis);
+        }
+
+        boolean failed = false;
+        for (WorkerRuntimeInfo ri : workers) {
+            WorkerStateInfo wsi = ri.worker.getWorkerState();
+
+            if (!isCleanExit(wsi)) {
+                failed = true;
+                break;
+            }
+        }
+
+        createSymlinks(failed);
+    }
+
+    private void createSymlinks(boolean failed) {
+        File lastLogDir = findLastLogDir();
+        Path target = Paths.get(lastLogDir.getAbsolutePath());
+
+        Path lastLink = Paths.get(lastLogDir.getParent() + File.separator + "last");
+        try {
+            FileUtils.deleteQuietly(lastLink.toFile());
+
+            Files.createSymbolicLink(lastLink, target);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        if (failed) {
+            Path lastFailedLink = Paths.get(lastLogDir.getParent() + File.separator + "lastFailed");
+            FileUtils.deleteQuietly(lastFailedLink.toFile());
+
+            try {
+                Files.createSymbolicLink(lastFailedLink, target);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            Path lastSuccessfulLink = Paths.get(lastLogDir.getParent() + File.separator + "lastSuccessful");
+            FileUtils.deleteQuietly(lastSuccessfulLink.toFile());
+
+            try {
+                Files.createSymbolicLink(lastSuccessfulLink, target);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
 

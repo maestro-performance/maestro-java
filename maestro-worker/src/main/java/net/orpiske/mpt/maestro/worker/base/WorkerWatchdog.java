@@ -9,6 +9,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Consumer;
 
+import static net.orpiske.mpt.maestro.worker.base.WorkerStateInfoUtil.isCleanExit;
+
 /**
  * The watchdog inspects the active workers to check whether they are still active, completed their job
  * or failed
@@ -51,19 +53,6 @@ class WorkerWatchdog implements Runnable {
         }
 
         return true;
-    }
-
-    private boolean isCleanExit(WorkerStateInfo wsi) {
-        if (wsi.getExitStatus() == WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS) {
-            return true;
-        }
-
-        if (wsi.getExitStatus() == WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED) {
-            return true;
-        }
-
-        return false;
-
     }
 
     @Override
