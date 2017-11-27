@@ -21,7 +21,6 @@ import net.orpiske.mpt.common.duration.TestDuration;
 import net.orpiske.mpt.common.duration.TestDurationBuilder;
 import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
-import net.orpiske.mpt.common.worker.MessageInfo;
 import net.orpiske.mpt.common.worker.WorkerOptions;
 import net.orpiske.mpt.common.worker.WorkerStateInfo;
 import net.orpiske.mpt.common.writers.OneToOneWorkerChannel;
@@ -107,15 +106,14 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
             long count = 0;
 
             while (duration.canContinue(this) && isRunning()) {
-                final MessageInfo info = client.receiveMessages();
+                final long sendTimeEpochMillis = client.receiveMessages();
                 //TODO would be better to use a general purpose Clock API
                 final long now = System.currentTimeMillis();
-                final long creationTime = info.getCreationTime().toEpochMilli();
-                final long elapsedMillis = now - creationTime;
+                final long elapsedMillis = now - sendTimeEpochMillis;
                 //we can perform fnc check here to fail the test
                 //TODO use Histogram:recordValueWithExpectedInterval if the rate is known
                 latencyRecorder.recordValue(elapsedMillis);
-                workerChannel.emitRate(creationTime, now);
+                workerChannel.emitRate(sendTimeEpochMillis, now);
                 count++;
                 messageCount.lazySet(count);
             }

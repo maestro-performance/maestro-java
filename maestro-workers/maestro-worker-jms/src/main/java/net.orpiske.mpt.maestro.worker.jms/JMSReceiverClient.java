@@ -16,12 +16,12 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
-import net.orpiske.mpt.common.worker.MessageInfo;
+import javax.jms.JMSException;
+import javax.jms.Message;
+import javax.jms.MessageConsumer;
+import javax.jms.Session;
 
-import javax.jms.*;
-import java.time.Instant;
-
-public class JMSReceiverClient extends Client {
+final class JMSReceiverClient extends Client {
     private Session session;
     private MessageConsumer consumer;
 
@@ -33,18 +33,17 @@ public class JMSReceiverClient extends Client {
         consumer = session.createConsumer(queue);
     }
 
-    MessageInfo receiveMessages() throws JMSException {
-        TextMessage message = (TextMessage) consumer.receive();
+    /**
+     * Returns the epoch millis.
+     */
+    public long receiveMessages() throws JMSException {
+        final Message message = consumer.receive();
 
         if (message == null) {
             throw new RuntimeException("Null receive");
         }
 
-        MessageInfo ret = new MessageInfo();
-
-        long ctime = message.getLongProperty("SendTime");
-        ret.setCreationTime(Instant.ofEpochMilli(ctime));
-
-        return ret;
+        final long sendTime = message.getLongProperty("SendTime");
+        return sendTime;
     }
 }

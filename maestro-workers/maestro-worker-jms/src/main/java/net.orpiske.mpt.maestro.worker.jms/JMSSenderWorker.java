@@ -142,7 +142,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
                     waitUsingRate(startedTimeInNanos, count, intervalInNanos);
                 }
                 final long sendTimeEpochMillis = System.currentTimeMillis();
-                final long expectedSendTimeEpochMillis = intervalInMillis > 0 ? startedTimeInNanos + (count * intervalInNanos) : sendTimeEpochMillis;
+                final long expectedSendTimeEpochMillis = intervalInMillis > 0 ? startedTimeEpochMillis + (count * intervalInNanos) : sendTimeEpochMillis;
                 client.sendMessages();
                 workerChannel.emitRate(expectedSendTimeEpochMillis, sendTimeEpochMillis);
                 count++;
