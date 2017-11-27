@@ -22,7 +22,7 @@ public final class WorkerLatencyWriter implements Runnable {
         private boolean reportIntervalLatencies;
         private final long startReportingTime;
 
-        public WorkerIntervalReport(LatencyWriter latencyWriter, MaestroWorker worker, boolean reportIntervalLatencies) {
+        public WorkerIntervalReport(LatencyWriter latencyWriter, MaestroWorker worker, boolean reportIntervalLatencies, long globalStartReportingTime) {
             this.latencyWriter = latencyWriter;
             this.worker = worker;
             if (!reportIntervalLatencies) {
@@ -32,7 +32,8 @@ public final class WorkerLatencyWriter implements Runnable {
             }
             //We can't be sure the worker is already up & running
             final long startedWorkerTime = worker.startedEpochMillis();
-            this.lastReportTime = startedWorkerTime < 0 ? System.currentTimeMillis() : startedWorkerTime;
+            //to avoid having a global start time > of the start time of a writer's interval latencies
+            this.lastReportTime = Math.max(globalStartReportingTime, startedWorkerTime < 0 ? System.currentTimeMillis() : startedWorkerTime);
             this.startReportingTime = this.lastReportTime;
             this.reportIntervalLatencies = false;
         }
@@ -98,10 +99,11 @@ public final class WorkerLatencyWriter implements Runnable {
         //avoid creating any file if there aren't  any MaestroReceiverWorker
         if (anyWorkers > 0) {
             try (LatencyWriter latencyWriter = new LatencyWriter(new File(reportFolder, "receiverd-latency.hdr"))) {
-                latencyWriter.outputLegend(System.currentTimeMillis());
+                final long globalStartReportingTime = System.currentTimeMillis();
+                latencyWriter.outputLegend(globalStartReportingTime);
                 //TODO collect only receiver worker latencies: make it configurable or available on the MaestroWorker API
                 final List<WorkerIntervalReport> workerReports = this.workers.stream()
-                        .filter(w -> w instanceof MaestroReceiverWorker).map(w -> new WorkerIntervalReport(latencyWriter, w, reportIntervalLatencies))
+                        .filter(w -> w instanceof MaestroReceiverWorker).map(w -> new WorkerIntervalReport(latencyWriter, w, reportIntervalLatencies, globalStartReportingTime))
                         .collect(Collectors.toList());
                 final Thread currentThread = Thread.currentThread();
                 long startTime = System.currentTimeMillis();
