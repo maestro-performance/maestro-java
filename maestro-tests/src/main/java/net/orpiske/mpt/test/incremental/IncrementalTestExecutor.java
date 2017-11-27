@@ -29,7 +29,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
     private IncrementalTestProfile testProfile;
 
     private long repeat = 10000;
-    private long coolDownPeriod;
+    private long coolDownPeriod = 10000;
     private IncrementalTestProcessor testProcessor;
 
     public IncrementalTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
