@@ -112,9 +112,18 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
                     //TODO would be better to use a general purpose Clock API
                     final long now = System.currentTimeMillis();
                     final long elapsedMillis = now - sendTimeEpochMillis;
-                    //we can perform fnc check here to fail the test
-                    //TODO use Histogram:recordValueWithExpectedInterval if the rate is known
-                    latencyRecorder.recordValue(elapsedMillis);
+                    boolean validLatency = true;
+                    if (elapsedMillis < 0) {
+                        logger.error("SendTime > ReceivedTime");
+                        validLatency = false;
+                    } else if (elapsedMillis == 0) {
+                        logger.warn("Registered Latency of 0: please consider to improve timestamp precision");
+                    }
+                    if (validLatency) {
+                        //we can perform fnc check here to fail the test
+                        //TODO use Histogram:recordValueWithExpectedInterval if the rate is known
+                        latencyRecorder.recordValue(elapsedMillis);
+                    }
                     workerChannel.emitRate(sendTimeEpochMillis, now);
                     count++;
                     messageCount.lazySet(count);

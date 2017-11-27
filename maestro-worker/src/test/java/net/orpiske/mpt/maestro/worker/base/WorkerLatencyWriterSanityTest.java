@@ -21,7 +21,9 @@ import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
 import net.orpiske.mpt.common.worker.MaestroWorker;
 import net.orpiske.mpt.common.worker.WorkerOptions;
 import net.orpiske.mpt.common.worker.WorkerStateInfo;
+import org.HdrHistogram.EncodableHistogram;
 import org.HdrHistogram.Histogram;
+import org.HdrHistogram.HistogramLogReader;
 import org.HdrHistogram.SingleWriterRecorder;
 import org.junit.Assert;
 import org.junit.Rule;
@@ -101,7 +103,7 @@ public class WorkerLatencyWriterSanityTest {
 
 
     @Test(timeout = 120_000L)
-    public void shouldWriteLatenciesLeavingTheReportNotEmpty() throws IOException, InterruptedException {
+    public void shouldWriteLatencies() throws IOException, InterruptedException {
         final int receivers = 10;
         final int events = 10;
         //there are 1 producer + 1 consumer each one emitting events
@@ -138,5 +140,20 @@ public class WorkerLatencyWriterSanityTest {
         Assert.assertArrayEquals(new String[]{latencyFileName}, reports);
         final File reportFile = new File(reportFolder, reports[0]);
         Assert.assertTrue(reportFile.length() > 0);
+        final HistogramLogReader histogramLogReader = new HistogramLogReader(reportFile);
+        int totalReports = 0;
+        while (histogramLogReader.hasNext()) {
+            final EncodableHistogram encodableHistogram = histogramLogReader.nextIntervalHistogram();
+            if (encodableHistogram instanceof Histogram) {
+                final Histogram histogram = (Histogram) encodableHistogram;
+                final long totalCount = histogram.getTotalCount();
+                Assert.assertEquals("Each histogram must contain the same number of recorded events of each receiver", events, totalCount);
+                Assert.assertEquals("Min recorded value must be " + fixedLatency, fixedLatency, histogram.getMinValue());
+                Assert.assertEquals("Max recorded value must be " + fixedLatency, fixedLatency, histogram.getMaxValue());
+                Assert.assertEquals("Mean recorded value must be " + fixedLatency, (double) fixedLatency, histogram.getMean(), 0d);
+            }
+            totalReports++;
+        }
+        Assert.assertEquals("The histogram number must be the same of the receivers", receivers, totalReports);
     }
 }

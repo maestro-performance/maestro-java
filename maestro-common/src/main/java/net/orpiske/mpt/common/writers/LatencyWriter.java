@@ -6,6 +6,7 @@ import org.HdrHistogram.HistogramLogWriter;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStream;
 
 /**
  * Writes the latency data in the HdrHistogram data format.
@@ -15,6 +16,7 @@ import java.io.IOException;
 public final class LatencyWriter implements AutoCloseable {
 
     private final HistogramLogWriter logWriter;
+    private final OutputStream out;
 
     /**
      * Constructor
@@ -23,7 +25,8 @@ public final class LatencyWriter implements AutoCloseable {
      * @throws IOException
      */
     public LatencyWriter(final File path) throws IOException {
-        logWriter = new HistogramLogWriter(new FileOutputStream(path));
+        out = new FileOutputStream(path);
+        logWriter = new HistogramLogWriter(this.out);
     }
 
     public void outputLegend(long startedEpochMillis) {
@@ -42,6 +45,13 @@ public final class LatencyWriter implements AutoCloseable {
      */
     @Override
     public void close() {
-        this.logWriter.close();
+        try {
+            //to be sure everything has been correctly written (not necessary)
+            this.out.flush();
+        } catch (Throwable e) {
+            e.printStackTrace();
+        } finally {
+            this.logWriter.close();
+        }
     }
 }
