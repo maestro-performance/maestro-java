@@ -96,6 +96,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
     public void handle(Halt note) {
         logger.debug("Halt request received");
 
+        container.stop();
+
         running = false;
     }
 
