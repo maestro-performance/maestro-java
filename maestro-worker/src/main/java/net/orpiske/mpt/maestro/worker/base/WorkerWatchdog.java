@@ -53,6 +53,19 @@ class WorkerWatchdog implements Runnable {
         return true;
     }
 
+    private boolean isCleanExit(WorkerStateInfo wsi) {
+        if (wsi.getExitStatus() == WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS) {
+            return true;
+        }
+
+        if (wsi.getExitStatus() == WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED) {
+            return true;
+        }
+
+        return false;
+
+    }
+
     @Override
     public void run() {
         logger.info("Running the worker watchdog");
@@ -75,7 +88,7 @@ class WorkerWatchdog implements Runnable {
                     WorkerStateInfo wsi = ri.worker.getWorkerState();
 
                     if (!wsi.isRunning()) {
-                        if (wsi.getExitStatus() != WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS) {
+                        if (!isCleanExit(wsi)) {
                             endpoint.notifyFailure(wsi.getException().getMessage());
 
                             return;
