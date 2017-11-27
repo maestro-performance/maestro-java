@@ -17,11 +17,13 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
-public interface Client {
+public interface ReceiverClient extends Client {
+    static long noMessagePayload() {
+        return Long.MIN_VALUE;
+    }
 
-    void start() throws Exception;
-
-    void stop();
-
-    void setUrl(String url);
+    /**
+     * Returns the epoch millis of the current received message or {@link #noMessagePayload()} if there isn't received any message.
+     */
+    long receiveMessages() throws Exception;
 }

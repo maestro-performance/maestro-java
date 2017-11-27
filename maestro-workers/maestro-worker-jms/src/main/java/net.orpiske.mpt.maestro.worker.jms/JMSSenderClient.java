@@ -22,7 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 
-final class JMSSenderClient extends Client {
+final class JMSSenderClient extends JMSClient implements SenderClient{
     private static final Logger logger = LoggerFactory.getLogger(JMSSenderClient.class);
 
     private ContentStrategy contentStrategy;
@@ -31,7 +31,7 @@ final class JMSSenderClient extends Client {
     private MessageProducer producer;
 
     @Override
-    void start() throws Exception {
+    public void start() throws Exception {
         super.start();
 
         session = super.getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
@@ -47,7 +47,7 @@ final class JMSSenderClient extends Client {
         producer.setDisableMessageTimestamp(true);
     }
 
-
+    @Override
     public void sendMessages() throws JMSException {
         TextMessage message = session.createTextMessage();
 
@@ -60,10 +60,7 @@ final class JMSSenderClient extends Client {
         producer.send(message);
     }
 
-    public ContentStrategy getContentStrategy() {
-        return contentStrategy;
-    }
-
+    @Override
     public void setContentStrategy(ContentStrategy contentStrategy) {
         this.contentStrategy = contentStrategy;
     }

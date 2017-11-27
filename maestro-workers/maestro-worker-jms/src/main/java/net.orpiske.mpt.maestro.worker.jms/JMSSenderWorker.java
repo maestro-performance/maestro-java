@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 
 
 public class JMSSenderWorker implements MaestroSenderWorker {
@@ -46,6 +47,16 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     private String url;
     private long rate = 0;
+
+    private final Supplier<? extends SenderClient> clientFactory;
+
+    public JMSSenderWorker(){
+        this(JMSSenderClient::new);
+    }
+
+    public JMSSenderWorker(Supplier<? extends SenderClient> clientFactory){
+        this.clientFactory = clientFactory;
+    }
 
     @Override
     public OneToOneWorkerChannel workerChannel() {
@@ -118,10 +129,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         logger.info("Starting the test");
 
         try {
-            JMSSenderClient client;
-
-            client = new JMSSenderClient();
-
+            final SenderClient client = this.clientFactory.get();
             client.setUrl(url);
             client.setContentStrategy(contentStrategy);
 

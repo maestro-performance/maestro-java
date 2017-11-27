@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.function.Supplier;
 
 public class JMSReceiverWorker implements MaestroReceiverWorker {
 
@@ -48,6 +49,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     private volatile WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     private String url;
+    private final Supplier<? extends ReceiverClient> clientFactory;
 
     @Override
     public OneToOneWorkerChannel workerChannel() {
@@ -86,6 +88,14 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         }
     }
 
+    public JMSReceiverWorker() {
+        this(JMSReceiverClient::new);
+    }
+
+    public JMSReceiverWorker(Supplier<? extends ReceiverClient> clientFactory) {
+        this.clientFactory = clientFactory;
+    }
+
     @Override
     public void setWorkerOptions(WorkerOptions workerOptions) {
         setBroker(workerOptions.getBrokerURL());
@@ -97,7 +107,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         logger.info("Starting the test");
 
         try {
-            JMSReceiverClient client = new JMSReceiverClient();
+            final ReceiverClient client = clientFactory.get();
 
             client.setUrl(url);
 
@@ -108,7 +118,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
             while (duration.canContinue(this) && isRunning()) {
                 final long sendTimeEpochMillis = client.receiveMessages();
-                if (sendTimeEpochMillis != JMSReceiverClient.noMessagePayload()) {
+                if (sendTimeEpochMillis != ReceiverClient.noMessagePayload()) {
                     //TODO would be better to use a general purpose Clock API
                     final long now = System.currentTimeMillis();
                     final long elapsedMillis = now - sendTimeEpochMillis;

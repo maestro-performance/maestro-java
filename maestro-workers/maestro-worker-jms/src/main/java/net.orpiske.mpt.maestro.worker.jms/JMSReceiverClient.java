@@ -16,36 +16,30 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
-import javax.jms.JMSException;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
 
-final class JMSReceiverClient extends Client {
+final class JMSReceiverClient extends JMSClient implements ReceiverClient {
     private static final long RECEIVE_TIMEOUT_MILLIS = 1000L;
     private Session session;
     private MessageConsumer consumer;
 
     @Override
-    void start() throws Exception {
+    public void start() throws Exception {
         super.start();
 
         session = super.getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
         consumer = session.createConsumer(queue);
     }
 
-    public static long noMessagePayload(){
-        return Long.MIN_VALUE;
-    }
 
-    /**
-     * Returns the epoch millis of the current received message or {@link #noMessagePayload()} if there isn't received any message.
-     */
-    public long receiveMessages() throws JMSException {
+    @Override
+    public long receiveMessages() throws Exception {
         final Message message = consumer.receive(RECEIVE_TIMEOUT_MILLIS);
 
         if (message == null) {
-            return noMessagePayload();
+            return ReceiverClient.noMessagePayload();
         }
 
         final long sendTime = message.getLongProperty("SendTime");

@@ -17,11 +17,10 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
-public interface Client {
+import net.orpiske.mpt.common.content.ContentStrategy;
 
-    void start() throws Exception;
+public interface SenderClient extends Client {
+    void sendMessages() throws Exception;
 
-    void stop();
-
-    void setUrl(String url);
+    void setContentStrategy(ContentStrategy contentStrategy);
 }
