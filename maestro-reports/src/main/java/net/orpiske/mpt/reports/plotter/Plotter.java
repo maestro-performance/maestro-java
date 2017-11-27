@@ -40,6 +40,20 @@ public interface Plotter {
         Properties prop = new Properties();
 
         prop.setProperty("error", "true");
-        prop.setProperty("message", t.getMessage());
+
+
+        if (t != null) {
+            String message = t.getMessage();
+
+            if (message != null) {
+                prop.setProperty("message", message);
+            }
+            else {
+                prop.setProperty("message", "Undefined error: " + t.getClass());
+            }
+        }
+        else {
+            prop.setProperty("message", "Undefined error");
+        }
     }
 }
