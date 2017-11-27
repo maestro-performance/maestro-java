@@ -47,6 +47,11 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     private String url;
     private long rate = 0;
 
+    @Override
+    public OneToOneWorkerChannel workerChannel() {
+        return workerChannel;
+    }
+
     private volatile WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     @Override

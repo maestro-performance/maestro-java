@@ -49,6 +49,10 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
     private String url;
 
+    @Override
+    public OneToOneWorkerChannel workerChannel() {
+        return workerChannel;
+    }
 
     @Override
     public long messageCount() {

@@ -78,19 +78,21 @@ public final class WorkerChannelWriter implements Runnable {
             final List<WorkerRateReport> rateReports = new ArrayList<>(workersCount);
             for (int workerId = 0; workerId < workersCount; workerId++) {
                 final MaestroWorker worker = workers.get(workerId);
-                final boolean sender = worker instanceof MaestroSenderWorker;
-                final boolean receiver = worker instanceof MaestroReceiverWorker;
-                assert !(sender == true && receiver == true);
-                RateWriter rateWriter = null;
-                if (sender) {
-                    senderRateWriter = senderRateWriter == null ? createRateWriter(true) : senderRateWriter;
-                    rateWriter = senderRateWriter;
-                } else if (receiver) {
-                    receiverRateWriter = receiverRateWriter == null ? createRateWriter(false) : receiverRateWriter;
-                    rateWriter = receiverRateWriter;
-                }
-                if (rateWriter != null) {
-                    rateReports.add(new WorkerRateReport(worker, rateWriter));
+                if (worker.workerChannel() != null) {
+                    final boolean sender = worker instanceof MaestroSenderWorker;
+                    final boolean receiver = worker instanceof MaestroReceiverWorker;
+                    assert !(sender == true && receiver == true);
+                    RateWriter rateWriter = null;
+                    if (sender) {
+                        senderRateWriter = senderRateWriter == null ? createRateWriter(true) : senderRateWriter;
+                        rateWriter = senderRateWriter;
+                    } else if (receiver) {
+                        receiverRateWriter = receiverRateWriter == null ? createRateWriter(false) : receiverRateWriter;
+                        rateWriter = receiverRateWriter;
+                    }
+                    if (rateWriter != null) {
+                        rateReports.add(new WorkerRateReport(worker, rateWriter));
+                    }
                 }
             }
             final int rateReportsCount = rateReports.size();

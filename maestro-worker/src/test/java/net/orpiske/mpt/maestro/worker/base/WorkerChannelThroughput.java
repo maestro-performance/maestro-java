@@ -31,7 +31,7 @@ public class WorkerChannelThroughput {
         final int capacity = 128 * 1024;
         final File reportFolder = new File("./");
         final int workers = 2;
-        final long rate = 0;
+        final long rate = 100;
         final long intervalNanos = rate > 0 ? (1_000_000_000L / rate) : 0;
         final Thread[] workerThreads = new Thread[workers];
         final MaestroWorker[] maestroWorkers = new MaestroWorker[workers];
@@ -79,6 +79,8 @@ public class WorkerChannelThroughput {
                 writerThread.join();
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } finally {
+                System.out.println("FINISHED WRITES");
             }
         }));
         final Thread reporterThread = new Thread(() -> {
