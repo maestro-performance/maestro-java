@@ -1,5 +1,3 @@
-import net.orpiske.mpt.reports.ReportGenerator
-
 /*
  *  Copyright 2017 Otavio R. Piske <angusyoung@gmail.com>
  *
