@@ -32,7 +32,7 @@ public class DurationCount implements TestDuration {
     }
 
     public boolean canContinue(TestProgress progress) {
-        if (progress.messageCount() <= count) {
+        if (progress.messageCount() < count) {
             return true;
         }
 
