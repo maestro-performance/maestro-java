@@ -17,74 +17,99 @@
 
 package net.orpiske.mpt.maestro.worker.base;
 
-import net.orpiske.mpt.common.content.ContentStrategy;
-import net.orpiske.mpt.common.worker.MaestroSenderWorker;
 import net.orpiske.mpt.common.worker.MaestroWorker;
 import net.orpiske.mpt.common.worker.WorkerOptions;
-import net.orpiske.mpt.maestro.worker.jms.JMSSenderWorker;
-import net.orpiske.mpt.maestro.worker.jms.SenderClient;
+import net.orpiske.mpt.maestro.worker.jms.JMSReceiverWorker;
+import net.orpiske.mpt.maestro.worker.jms.ReceiverClient;
+import org.HdrHistogram.EncodableHistogram;
+import org.HdrHistogram.Histogram;
+import org.HdrHistogram.HistogramLogReader;
 
 import java.io.File;
+import java.io.FileNotFoundException;
 import java.util.Arrays;
+import java.util.concurrent.locks.LockSupport;
 import java.util.stream.Stream;
 
-public class WorkerChannelThroughput {
+public class WorkerLatencyThroughput {
 
-    private enum DummySenderClient implements SenderClient {
-        Instance;
+    private static final class DummyReceiverClient implements ReceiverClient {
 
-        @Override
-        public void sendMessages() throws Exception {
+        private final long intervalNanos;
+        private long nextFireTime;
+        private final long latencyMillis;
 
+        DummyReceiverClient(long rate, long latencyMillis) {
+            this.intervalNanos = rate > 0 ? 1000_000_000L / rate : 0;
+            this.latencyMillis = latencyMillis;
+        }
+
+
+        private void waitUntilFireTime() {
+            if (intervalNanos > 0) {
+                long now;
+                final long expectedTriggerTime = nextFireTime;
+                do {
+                    now = System.nanoTime();
+                    final long waitNanos = expectedTriggerTime - now;
+                    if (waitNanos > 0) {
+                        LockSupport.parkNanos(waitNanos);
+                    }
+                } while (now - nextFireTime < 0);
+                nextFireTime = expectedTriggerTime + intervalNanos;
+            }
         }
 
         @Override
-        public void setContentStrategy(ContentStrategy contentStrategy) {
+        public long receiveMessages() throws Exception {
+            waitUntilFireTime();
+            return System.currentTimeMillis() - latencyMillis;
 
         }
 
         @Override
         public void start() throws Exception {
-
+            if (intervalNanos > 0) {
+                nextFireTime = System.nanoTime() + intervalNanos;
+            }
         }
 
         @Override
         public void stop() {
-
+            //NO OP
         }
 
         @Override
         public void setUrl(String s) {
-
+            //NO OP
         }
     }
 
     public static void main(String[] args) throws InterruptedException {
-        final int capacity = 128 * 1024;
+        final boolean parseData = false;
+        final long reportingIntervalMillis = 1000;
+        final long latencyMillis = 100;
         final File reportFolder = new File("./");
-        final int workers = 2;
+        final int workers = 1;
         final long rate = 100;
         final Thread[] workerThreads = new Thread[workers];
         final MaestroWorker[] maestroWorkers = new MaestroWorker[workers];
         final WorkerOptions workerOptions = new WorkerOptions();
         workerOptions.setDuration(Long.toString(Long.MAX_VALUE));
-        workerOptions.setMessageSize("0");
-        workerOptions.setRate(Long.toString(rate));
         for (int i = 0; i < workers; i++) {
             final int workerIndex = i;
-            final MaestroSenderWorker worker = new JMSSenderWorker(() -> DummySenderClient.Instance, capacity);
+            final JMSReceiverWorker worker = new JMSReceiverWorker(() -> new DummyReceiverClient(rate, latencyMillis));
             worker.setWorkerOptions(workerOptions);
             maestroWorkers[workerIndex] = worker;
             workerThreads[i] = new Thread(worker);
             workerThreads[i].setDaemon(true);
             workerThreads[i].setName("worker-" + workerIndex);
         }
-        System.out.println("Estimated footprint of buffering is: " + (Stream.of(maestroWorkers).mapToLong(w -> w.workerChannel().footprintInBytes()).sum() / 1024) + " KB");
-        final WorkerChannelWriter channelWriter = new WorkerChannelWriter(reportFolder, Arrays.asList(maestroWorkers));
+        final WorkerLatencyWriter channelWriter = reportingIntervalMillis > 0 ? new WorkerLatencyWriter(reportFolder, Arrays.asList(maestroWorkers), reportingIntervalMillis) : new WorkerLatencyWriter(reportFolder, Arrays.asList(maestroWorkers));
         final Thread writerThread = new Thread(channelWriter);
         writerThread.start();
         Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-            Stream.of(maestroWorkers).forEach(w -> w.stop());
+            Stream.of(maestroWorkers).forEach(MaestroWorker::stop);
             Stream.of(workerThreads).forEach(workerThread -> {
                 try {
                     workerThread.join();
@@ -100,12 +125,33 @@ public class WorkerChannelThroughput {
             } finally {
                 System.out.println("FINISHED WRITES");
             }
+            if (parseData) {
+                try {
+                    final HistogramLogReader logReader = new HistogramLogReader(new File(reportFolder, "receiverd-latency.hdr"));
+                    int i = 0;
+                    while (logReader.hasNext()) {
+                        final EncodableHistogram encodableHistogram = logReader.nextIntervalHistogram();
+                        if (encodableHistogram instanceof Histogram) {
+                            final Histogram histogram = (Histogram) encodableHistogram;
+                            System.out.println("******************************************");
+                            System.out.println("HISTOGRAM " + (i + 1));
+                            System.out.println("******************************************");
+                            histogram.outputPercentileDistribution(System.out, 1d);
+                            i++;
+                        }
+                    }
+                } catch (FileNotFoundException e) {
+                    e.printStackTrace();
+                }
+            }
         }));
         final Thread reporterThread = new Thread(() -> {
             final StringBuilder report = new StringBuilder();
             final long[] lastMessageCount = new long[workers];
             long lastCheck = System.currentTimeMillis();
-            final long[] lastMissedCount = new long[workers];
+            for (int i = 0; i < workers; i++) {
+                lastMessageCount[i] = maestroWorkers[i].messageCount();
+            }
             //print reports
             while (!Thread.currentThread().isInterrupted()) {
                 try {
@@ -119,12 +165,9 @@ public class WorkerChannelThroughput {
                 report.append(" - ").append(intervalLength).append(" ms");
                 for (int i = 0; i < workers; i++) {
                     final long transmitted = maestroWorkers[i].messageCount();
-                    final long missed = maestroWorkers[i].workerChannel().missedSamples();
                     final long transmissedInterval = transmitted - lastMessageCount[i];
-                    final long missedInInterval = missed - lastMissedCount[i];
-                    report.append(" - [").append(i).append("]\t").append(transmissedInterval).append(" missed= ").append(missedInInterval);
+                    report.append(" - [").append(i).append("]\t").append(transmissedInterval);
                     lastMessageCount[i] = transmitted;
-                    lastMissedCount[i] = missed;
                 }
                 System.out.println(report);
                 lastCheck = now;

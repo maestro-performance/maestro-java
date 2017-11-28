@@ -80,6 +80,7 @@ public final class OneToOneWorkerChannel {
      * Safe to be used by just one thread
      */
     public void emitRate(long startTimestampEpochMillis, long endTimestampEpochMillis) {
+        assert startTimestampEpochMillis - endTimestampEpochMillis <= 0 : "startTimestampEpochMillis <= endTimestampEpochMillis";
         sampleBuffer.putLong(0, startTimestampEpochMillis);
         sampleBuffer.putLong(Long.BYTES, endTimestampEpochMillis);
         this.writeBuffer.transmit(1, sampleBuffer, 0, sampleBuffer.capacity());

@@ -29,8 +29,8 @@ import net.orpiske.mpt.common.writers.OneToOneWorkerChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
+import java.util.concurrent.locks.LockSupport;
 import java.util.function.Supplier;
 
 
@@ -39,7 +39,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     private ContentStrategy contentStrategy;
     private TestDuration duration;
     //TODO the size need to be configured
-    private final OneToOneWorkerChannel workerChannel = new OneToOneWorkerChannel(128 * 1024);
+    private final OneToOneWorkerChannel workerChannel;
     private final AtomicLong messageCount = new AtomicLong(0);
     private volatile long startedEpochMillis = Long.MIN_VALUE;
 
@@ -50,12 +50,13 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     private final Supplier<? extends SenderClient> clientFactory;
 
-    public JMSSenderWorker(){
-        this(JMSSenderClient::new);
+    public JMSSenderWorker() {
+        this(JMSSenderClient::new, 128 * 1024);
     }
 
-    public JMSSenderWorker(Supplier<? extends SenderClient> clientFactory){
+    public JMSSenderWorker(Supplier<? extends SenderClient> clientFactory, int channelCapacity) {
         this.clientFactory = clientFactory;
+        this.workerChannel = new OneToOneWorkerChannel(channelCapacity);
     }
 
     @Override
@@ -109,19 +110,16 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         setMessageSize(workerOptions.getMessageSize());
     }
 
-    /**
-     * @return the expected start time of this operation
-     */
-    private static long waitUsingRate(final long startedTimeInNanos, final long count, final long intervalInNanos) throws InterruptedException {
-        final long now = System.nanoTime();
-        final long expectedTriggerTime = startedTimeInNanos + (count * intervalInNanos);
-        final long waitNanos = expectedTriggerTime - now;
-        if (waitNanos > 0) {
-            //TODO warns if waitNanos is below the precision offered by the OS
-            TimeUnit.NANOSECONDS.sleep(waitNanos);
-        }
-        //oops: too late!
-        return expectedTriggerTime;
+    private static long waitNanoInterval(final long expectedFireTime, final long intervalInNanos) {
+        assert intervalInNanos > 0;
+        long now;
+        do {
+            now = System.nanoTime();
+            if (now - expectedFireTime < 0) {
+                LockSupport.parkNanos(expectedFireTime - now);
+            }
+        } while (now - expectedFireTime < 0);
+        return now;
     }
 
     public void start() {
@@ -136,21 +134,30 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             workerStateInfo.setState(true, null, null);
             client.start();
             long count = 0;
-            final long intervalInNanos = this.rate > 0 ? 1_000_000_000L / rate : 0;
-            final long intervalInMillis = TimeUnit.NANOSECONDS.toMillis(intervalInNanos);
-            if (logger.isDebugEnabled()) {
-                logger.debug("JMS Sender [" + Thread.currentThread().getId() + "] - has started firing events with interval= " + intervalInNanos + " ns [" + rate + " msg/sec]");
+            final long intervalInNanos = this.rate > 0 ? (1_000_000_000L / rate) : 0;
+            if (intervalInNanos > 0) {
+                logger.info("JMS Sender [" + Thread.currentThread().getId() + "] - has started firing events with interval= " + intervalInNanos + " ns [ " + rate + " msg/sec ]");
             }
-            final long startedTimeEpochMillis = System.currentTimeMillis();
-            final long startedTimeInNanos = System.nanoTime();
+            //it couldn't uses the Epoch in nanos because it could overflow pretty soon (less than 1 day)
+            final long startFireEpochMillis = System.currentTimeMillis();
+            //to avoid accumulated approx errors on the expectedSendTimeEpochMillis calculations
+            long elapsedIntervalsNanos = 0;
+            long nextFireTime = System.nanoTime() + intervalInNanos;
             while (duration.canContinue(this) && isRunning()) {
                 if (intervalInNanos > 0) {
-                    //TODO the expected start time could be used to be sent instead of the real one to measure
-                    //without coordinated omission
-                    waitUsingRate(startedTimeInNanos, count, intervalInNanos);
+                    final long now = waitNanoInterval(nextFireTime, intervalInNanos);
+                    assert (now - nextFireTime) >= 0 : "can't wait less than the configured interval in nanos";
+                    nextFireTime += intervalInNanos;
+                    elapsedIntervalsNanos += intervalInNanos;
                 }
                 final long sendTimeEpochMillis = System.currentTimeMillis();
-                final long expectedSendTimeEpochMillis = intervalInMillis > 0 ? startedTimeEpochMillis + (count * intervalInNanos) : sendTimeEpochMillis;
+                final long expectedSendTimeEpochMillis;
+                if (intervalInNanos > 0) {
+                    final long elapsedIntervalsMillis = (elapsedIntervalsNanos / 1_000_000L);
+                    expectedSendTimeEpochMillis = startFireEpochMillis + elapsedIntervalsMillis;
+                } else {
+                    expectedSendTimeEpochMillis = sendTimeEpochMillis;
+                }
                 client.sendMessages();
                 workerChannel.emitRate(expectedSendTimeEpochMillis, sendTimeEpochMillis);
                 count++;

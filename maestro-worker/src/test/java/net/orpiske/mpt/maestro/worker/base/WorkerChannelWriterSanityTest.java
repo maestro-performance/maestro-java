@@ -37,7 +37,7 @@ import java.util.stream.Stream;
 
 public class WorkerChannelWriterSanityTest {
 
-    static abstract class DummyWorker implements MaestroWorker {
+    private static abstract class DummyWorker implements MaestroWorker {
 
         private final OneToOneWorkerChannel workerChannel;
         long startedEpochMillis = Long.MIN_VALUE;
@@ -97,14 +97,14 @@ public class WorkerChannelWriterSanityTest {
         }
     }
 
-    static final class DummySenderWorker extends DummyWorker implements MaestroSenderWorker {
+    private static final class DummySenderWorker extends DummyWorker implements MaestroSenderWorker {
 
         DummySenderWorker(int channelCapacity) {
             super(channelCapacity);
         }
     }
 
-    static final class DummyReceiverWorker extends DummyWorker implements MaestroReceiverWorker {
+    private static final class DummyReceiverWorker extends DummyWorker implements MaestroReceiverWorker {
 
         DummyReceiverWorker(int channelCapacity) {
             super(channelCapacity);

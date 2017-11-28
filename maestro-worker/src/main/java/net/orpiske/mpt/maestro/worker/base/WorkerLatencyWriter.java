@@ -25,17 +25,13 @@ public final class WorkerLatencyWriter implements Runnable {
         public WorkerIntervalReport(LatencyWriter latencyWriter, MaestroWorker worker, boolean reportIntervalLatencies, long globalStartReportingTime) {
             this.latencyWriter = latencyWriter;
             this.worker = worker;
-            if (!reportIntervalLatencies) {
-                this.intervalHistogram = null;
-            } else {
-                this.intervalHistogram = new Histogram(TimeUnit.HOURS.toMillis(1), 3);
-            }
+            this.intervalHistogram = null;
             //We can't be sure the worker is already up & running
             final long startedWorkerTime = worker.startedEpochMillis();
             //to avoid having a global start time > of the start time of a writer's interval latencies
             this.lastReportTime = Math.max(globalStartReportingTime, startedWorkerTime < 0 ? System.currentTimeMillis() : startedWorkerTime);
             this.startReportingTime = this.lastReportTime;
-            this.reportIntervalLatencies = false;
+            this.reportIntervalLatencies = reportIntervalLatencies;
         }
 
         public void updateReport() {
@@ -76,13 +72,23 @@ public final class WorkerLatencyWriter implements Runnable {
     private final List<? extends MaestroWorker> workers;
     private final File reportFolder;
     //TODO make it configurable
-    private final long reportingIntervalMs = TimeUnit.SECONDS.toMillis(10);
-    private final boolean reportIntervalLatencies = false;
+    private final long reportingIntervalMs;
+    private final boolean reportIntervalLatencies;
 
 
     public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers) {
         this.reportFolder = reportFolder;
         this.workers = new ArrayList<>(workers);
+        //the first sleep will be a very long one :)
+        this.reportingIntervalMs = TimeUnit.DAYS.toMillis(365);
+        this.reportIntervalLatencies = false;
+    }
+
+    public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers, long reportingIntervalMs) {
+        this.reportFolder = reportFolder;
+        this.workers = new ArrayList<>(workers);
+        this.reportingIntervalMs = reportingIntervalMs;
+        this.reportIntervalLatencies = true;
     }
 
     private static long getCurrentTimeMsecWithDelay(final long nextReportingTime) throws InterruptedException {
@@ -111,14 +117,16 @@ public final class WorkerLatencyWriter implements Runnable {
                 try {
                     while (!currentThread.isInterrupted()) {
                         final long now = getCurrentTimeMsecWithDelay(nextReportingTime);
-                        //the overall update + output process could take more than the reportingIntervalMs
-                        //sample
-                        workerReports.forEach(WorkerIntervalReport::updateReport);
-                        //output sample
-                        workerReports.forEach(WorkerIntervalReport::outputReport);
-                        //move the new reporting time n reportingIntervalMs > now
-                        while (now >= nextReportingTime) {
-                            nextReportingTime += reportingIntervalMs;
+                        if (now >= nextReportingTime) {
+                            //the overall update + output process could take more than the reportingIntervalMs
+                            //sample
+                            workerReports.forEach(WorkerIntervalReport::updateReport);
+                            //output sample
+                            workerReports.forEach(WorkerIntervalReport::outputReport);
+                            //move the new reporting time n reportingIntervalMs > now
+                            while (now >= nextReportingTime) {
+                                nextReportingTime += reportingIntervalMs;
+                            }
                         }
                     }
                 } catch (InterruptedException i) {
