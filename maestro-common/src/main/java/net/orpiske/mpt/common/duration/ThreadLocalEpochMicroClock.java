@@ -15,12 +15,20 @@
  * limitations under the License.
  */
 
-package net.orpiske.mpt.maestro.worker.jms;
+package net.orpiske.mpt.common.duration;
 
-import net.orpiske.mpt.common.content.ContentStrategy;
+import java.util.function.Supplier;
 
-public interface SenderClient extends Client {
-    void sendMessages() throws Exception;
+public final class ThreadLocalEpochMicroClock implements EpochMicroClock {
 
-    void setContentStrategy(ContentStrategy contentStrategy);
+    private final ThreadLocal<? extends EpochMicroClock> threadLocalClock;
+
+    ThreadLocalEpochMicroClock(Supplier<? extends EpochMicroClock> clockFactory) {
+        threadLocalClock = ThreadLocal.withInitial(clockFactory);
+    }
+
+    @Override
+    public long microTime() {
+        return threadLocalClock.get().microTime();
+    }
 }

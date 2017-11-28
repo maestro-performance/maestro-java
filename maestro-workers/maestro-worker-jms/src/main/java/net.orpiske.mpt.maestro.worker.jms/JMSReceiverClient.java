@@ -16,6 +16,8 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
+import net.orpiske.mpt.common.jms.ReceiverClient;
+
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;

@@ -17,6 +17,8 @@
 
 package net.orpiske.mpt.maestro.worker.base;
 
+import net.orpiske.mpt.common.duration.EpochClocks;
+import net.orpiske.mpt.common.duration.EpochMicroClock;
 import net.orpiske.mpt.common.worker.*;
 import net.orpiske.mpt.common.writers.OneToOneWorkerChannel;
 import net.orpiske.mpt.common.writers.RateWriter;
@@ -116,11 +118,12 @@ public class WorkerChannelWriterSanityTest {
 
     @Test(timeout = 120_000L)
     public void shouldWriteRatesWithoutMissingSamplesIfNotFull() throws IOException, InterruptedException {
+        final EpochMicroClock epochMicroClock = EpochClocks.exclusiveMicro();
         final File testReportFolder = tempTestFolder.newFolder("test_report");
         final long elapsedNanosToWrite;
         try (RateWriter rateWriter = new RateWriter(testReportFolder, true, true)) {
             final long startWrite = System.nanoTime();
-            rateWriter.write(System.currentTimeMillis(), System.currentTimeMillis());
+            rateWriter.write(epochMicroClock.microTime(), epochMicroClock.microTime());
             elapsedNanosToWrite = System.nanoTime() - startWrite;
         }
         //estimation that takes into account a double writes (sender and writer) + not optimized code while writing
@@ -146,10 +149,11 @@ public class WorkerChannelWriterSanityTest {
         for (int i = 0; i < producers.length; i++) {
             final DummyWorker dummyWorker = dummyWorkers.get(i);
             producers[i] = new Thread(() -> {
+                final EpochMicroClock microClock = EpochClocks.exclusiveMicro();
                 final OneToOneWorkerChannel workerChannel = dummyWorker.workerChannel;
                 dummyWorker.startedEpochMillis = System.currentTimeMillis();
                 for (int e = 0; e < events; e++) {
-                    final long now = System.currentTimeMillis();
+                    final long now = microClock.microTime();
                     workerChannel.emitRate(now, now);
                     //wait 1 second before considering the event processed
                     LockSupport.parkNanos(intervalEmitNanos);

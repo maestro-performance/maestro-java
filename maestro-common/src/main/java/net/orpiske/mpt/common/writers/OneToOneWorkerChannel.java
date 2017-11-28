@@ -41,7 +41,7 @@ public final class OneToOneWorkerChannel {
         private DirectBuffer buffer;
         private int offset;
 
-        public long timestampEpochMillis() {
+        public long timestampEpochMicros() {
             return buffer.getLong(offset);
         }
 
@@ -79,10 +79,10 @@ public final class OneToOneWorkerChannel {
     /**
      * Safe to be used by just one thread
      */
-    public void emitRate(long startTimestampEpochMillis, long endTimestampEpochMillis) {
-        assert startTimestampEpochMillis - endTimestampEpochMillis <= 0 : "startTimestampEpochMillis <= endTimestampEpochMillis";
-        sampleBuffer.putLong(0, startTimestampEpochMillis);
-        sampleBuffer.putLong(Long.BYTES, endTimestampEpochMillis);
+    public void emitRate(long startTimestampEpochMicros, long endTimestampEpochMicros) {
+        assert startTimestampEpochMicros - endTimestampEpochMicros <= 0 : "startTimestampEpochMicros <= endTimestampEpochMicros";
+        sampleBuffer.putLong(0, startTimestampEpochMicros);
+        sampleBuffer.putLong(Long.BYTES, endTimestampEpochMicros);
         this.writeBuffer.transmit(1, sampleBuffer, 0, sampleBuffer.capacity());
     }
 

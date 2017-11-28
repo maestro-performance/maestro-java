@@ -16,9 +16,6 @@
 
 package net.orpiske.mpt.common.duration;
 
-import net.orpiske.mpt.common.worker.WorkerSnapshot;
-import org.HdrHistogram.Histogram;
-
 /**
  * Count-based test duration object
  */

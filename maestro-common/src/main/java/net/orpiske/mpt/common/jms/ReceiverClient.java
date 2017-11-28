@@ -15,7 +15,7 @@
  * limitations under the License.
  */
 
-package net.orpiske.mpt.maestro.worker.jms;
+package net.orpiske.mpt.common.jms;
 
 public interface ReceiverClient extends Client {
     static long noMessagePayload() {
@@ -23,7 +23,7 @@ public interface ReceiverClient extends Client {
     }
 
     /**
-     * Returns the epoch millis of the current received message or {@link #noMessagePayload()} if there isn't received any message.
+     * Returns the epoch micros of the current received message or {@link #noMessagePayload()} if isn't received any message.
      */
     long receiveMessages() throws Exception;
 }

@@ -46,7 +46,7 @@ public final class WorkerChannelWriter implements Runnable {
         }
 
         private void onRate(OneToOneWorkerChannel.Sample rate) {
-            this.rateWriter.write(rate.timestampEpochMillis(), rate.value());
+            this.rateWriter.write(rate.timestampEpochMicros(), rate.value());
         }
 
         public int updateReport(int drainLimit) {

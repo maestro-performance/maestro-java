@@ -71,7 +71,6 @@ public final class WorkerLatencyWriter implements Runnable {
 
     private final List<? extends MaestroWorker> workers;
     private final File reportFolder;
-    //TODO make it configurable
     private final long reportingIntervalMs;
     private final boolean reportIntervalLatencies;
 

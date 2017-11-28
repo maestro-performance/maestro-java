@@ -17,12 +17,13 @@
 package net.orpiske.mpt.maestro.worker.jms;
 
 import net.orpiske.mpt.common.content.ContentStrategy;
+import net.orpiske.mpt.common.jms.SenderClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 
-final class JMSSenderClient extends JMSClient implements SenderClient{
+final class JMSSenderClient extends JMSClient implements SenderClient {
     private static final Logger logger = LoggerFactory.getLogger(JMSSenderClient.class);
 
     private ContentStrategy contentStrategy;
@@ -48,15 +49,11 @@ final class JMSSenderClient extends JMSClient implements SenderClient{
     }
 
     @Override
-    public void sendMessages() throws JMSException {
+    public void sendMessages(long epochInMicros) throws JMSException {
         TextMessage message = session.createTextMessage();
-
         final String content = contentStrategy.getContent();
-        final long now = System.currentTimeMillis();
-
         message.setText(content);
-        message.setLongProperty("SendTime", now);
-
+        message.setLongProperty("SendTime", epochInMicros);
         producer.send(message);
     }
 

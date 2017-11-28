@@ -1,23 +1,22 @@
 package net.orpiske.mpt.maestro;
 
+import net.orpiske.mpt.common.client.MaestroReceiver;
+import net.orpiske.mpt.common.duration.EpochClocks;
+import net.orpiske.mpt.common.duration.EpochMicroClock;
 import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.client.MaestroClient;
-import net.orpiske.mpt.common.client.MaestroReceiver;
 import net.orpiske.mpt.maestro.client.MaestroTopics;
 import net.orpiske.mpt.maestro.notes.InternalError;
-import net.orpiske.mpt.maestro.notes.OkResponse;
-import net.orpiske.mpt.maestro.notes.PingResponse;
-import net.orpiske.mpt.maestro.notes.TestFailedNotification;
-import net.orpiske.mpt.maestro.notes.TestSuccessfulNotification;
+import net.orpiske.mpt.maestro.notes.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
-import java.time.Instant;
+import java.util.concurrent.TimeUnit;
 
 public class MaestroReceiverClient extends MaestroClient implements MaestroReceiver {
     private static final Logger logger = LoggerFactory.getLogger(MaestroReceiverClient.class);
 
+    private final EpochMicroClock epochMicroClock;
     private String clientName;
     private String host;
     private String id;
@@ -28,6 +27,8 @@ public class MaestroReceiverClient extends MaestroClient implements MaestroRecei
         this.clientName = clientName;
         this.host = host;
         this.id = id;
+        //it is supposed to be used just by one thread
+        this.epochMicroClock = EpochClocks.exclusiveMicro();
     }
 
     public void replyOk() {
@@ -61,15 +62,14 @@ public class MaestroReceiverClient extends MaestroClient implements MaestroRecei
     public void pingResponse(long sec, long uSec) {
         logger.trace("Creation seconds.micro: {}.{}", sec, uSec);
 
-        Instant creation = Instant.ofEpochSecond(sec, uSec * 1000);
-        Instant now = Instant.now();
+        final long creationEpochMicros = TimeUnit.SECONDS.toMicros(sec) + uSec;
+        final long nowMicros = epochMicroClock.microTime();
+        final long elapsedMicros = nowMicros - creationEpochMicros;
 
-        Duration d = Duration.between(creation, now);
-
-        logger.trace("Elapsed: {}", d.getNano() / 1000000);
+        logger.trace("Elapsed: {}", elapsedMicros);
         PingResponse response = new PingResponse();
 
-        response.setElapsed(d.getNano() / 1000000);
+        response.setElapsed(TimeUnit.MICROSECONDS.toMillis(elapsedMicros));
         response.setName(clientName + "@" + host);
         response.setId(id);
 

@@ -15,10 +15,12 @@ import java.util.zip.GZIPOutputStream;
  * {role}-rate.gz
  */
 public final class RateWriter implements AutoCloseable {
-    //If was needed us it could be used: yyyy-MM-dd HH:mm:ss.SSS000
-    private static final String DATE_FORMAT_PATTERN = "\"yyyy-MM-dd HH:mm:ss.SSS000\"";
+    private static final int MICROS_PART_LENGTH = "000\"".length();
+    private static final String DATE_FORMAT_PATTERN = "\"yyyy-MM-dd HH:mm:ss.SSS";
     private static final char SEPARATOR = ',';
-    private static final int ESTIMATED_LINE_LENGTH = (DATE_FORMAT_PATTERN + SEPARATOR + DATE_FORMAT_PATTERN + '\n').length();
+    private static final int ESTIMATED_LINE_LENGTH = (DATE_FORMAT_PATTERN + SEPARATOR + DATE_FORMAT_PATTERN + '\n').length() + MICROS_PART_LENGTH * 2;
+    //a more modern approach using DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS").withZone(ZoneId.systemDefault())
+    //could be considered but in the current state produces much more garbage
     private final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
     private final OutputStream outputStream;
     private final Date date = new Date();
@@ -28,7 +30,7 @@ public final class RateWriter implements AutoCloseable {
 
     public RateWriter(final File reportFolder, boolean sender, boolean compressed) throws IOException {
         final String role = sender ? "sender" : "receiver";
-        final String fileName = role + (compressed ? "d-rate.csv.gz" : "d-rate,csv");
+        final String fileName = role + (compressed ? "d-rate.csv.gz" : "d-rate.csv");
         final File reportFile = new File(reportFolder, fileName);
         final FileOutputStream fileStream = new FileOutputStream(reportFile);
         if (compressed) {
@@ -50,8 +52,8 @@ public final class RateWriter implements AutoCloseable {
         outputStream.write(writeBuffer, 0, encodedSize);
     }
 
-    public void write(long startTimeStampEpochMillis, long endTimeStampEpochMillis) {
-        final int encodedSize = encodeAscii(appendOnStringBuffer(startTimeStampEpochMillis, endTimeStampEpochMillis).append('\n'), writeBuffer);
+    public void write(long startTimeStampEpochMicros, long endTimeStampEpochMicros) {
+        final int encodedSize = encodeAscii(appendOn(startTimeStampEpochMicros, endTimeStampEpochMicros).append('\n'), writeBuffer);
         try {
             outputStream.write(writeBuffer, 0, encodedSize);
         } catch (IOException e) {
@@ -59,14 +61,52 @@ public final class RateWriter implements AutoCloseable {
         }
     }
 
-    private StringBuffer appendOnStringBuffer(long startTimeStampEpochMillis, long endTimeStampEpochMillis) {
-        lineBuilder.setLength(0);
-        date.setTime(startTimeStampEpochMillis);
+    private static int digitOf(long microseconds) {
+        final int digits;
+        if (microseconds < 10) {
+            digits = 1;
+        } else if (microseconds < 100) {
+            digits = 2;
+        } else {
+            assert microseconds < 1000;
+            digits = 3;
+        }
+        return digits;
+    }
 
-        dateFormat.format(date, lineBuilder, fullFieldPosition)
-                .append(SEPARATOR);
-        date.setTime(endTimeStampEpochMillis);
-        return dateFormat.format(date, lineBuilder, fullFieldPosition);
+    private static StringBuffer appendDateMicros(long micros, StringBuffer buffer) {
+        assert micros >= 0;
+        if (micros == 0) {
+            buffer.append("000");
+            return buffer;
+        }
+        final int digits = digitOf(micros);
+        final int zerosPrefix = 3 - digits;
+        switch (zerosPrefix) {
+            case 1:
+                buffer.append("0");
+                break;
+            case 2:
+                buffer.append("00");
+                break;
+        }
+        buffer.append(micros);
+        return buffer;
+    }
+
+    private StringBuffer appendOn(long startTimeStampEpochMicros, long endTimeStampEpochMicros) {
+        final long startMillis = startTimeStampEpochMicros / 1000L;
+        final long startRemainingMicros = startTimeStampEpochMicros % 1000L;
+        final long endMillis = endTimeStampEpochMicros / 1000L;
+        final long endRemainingMicros = endTimeStampEpochMicros % 1000L;
+        lineBuilder.setLength(0);
+        date.setTime(startMillis);
+        dateFormat.format(date, lineBuilder, fullFieldPosition);
+        appendDateMicros(startRemainingMicros, lineBuilder).append('"').append(SEPARATOR);
+        date.setTime(endMillis);
+        dateFormat.format(date, lineBuilder, fullFieldPosition);
+        appendDateMicros(endRemainingMicros, lineBuilder).append('"');
+        return lineBuilder;
     }
 
     private static int encodeAscii(StringBuffer buffer, byte[] encodedBuffer) {

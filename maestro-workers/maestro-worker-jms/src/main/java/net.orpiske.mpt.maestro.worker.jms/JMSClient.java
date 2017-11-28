@@ -26,13 +26,15 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
+import net.orpiske.mpt.common.jms.Client;
+
 import javax.jms.*;
 import javax.naming.Context;
 import javax.naming.InitialContext;
 import java.net.URI;
 import java.util.Hashtable;
 
-class JMSClient implements Client{
+class JMSClient implements Client {
     private Hashtable<Object, Object> env = new Hashtable<Object, Object>();
 
     private String url;

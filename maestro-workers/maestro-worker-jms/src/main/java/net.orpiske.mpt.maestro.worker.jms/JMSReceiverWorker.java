@@ -16,9 +16,12 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
+import net.orpiske.mpt.common.duration.EpochClocks;
+import net.orpiske.mpt.common.duration.EpochMicroClock;
 import net.orpiske.mpt.common.duration.TestDuration;
 import net.orpiske.mpt.common.duration.TestDurationBuilder;
 import net.orpiske.mpt.common.exceptions.DurationParseException;
+import net.orpiske.mpt.common.jms.ReceiverClient;
 import net.orpiske.mpt.common.worker.MaestroReceiverWorker;
 import net.orpiske.mpt.common.worker.WorkerOptions;
 import net.orpiske.mpt.common.worker.WorkerStateInfo;
@@ -40,7 +43,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     private final AtomicLong messageCount = new AtomicLong(0);
     private volatile long startedEpochMillis = Long.MIN_VALUE;
     //TODO it could be injected by outside because the precision could be improved using ad-hoc clock timers
-    private final SingleWriterRecorder latencyRecorder = new SingleWriterRecorder(TimeUnit.HOURS.toMillis(1), 3);
+    private final SingleWriterRecorder latencyRecorder = new SingleWriterRecorder(TimeUnit.HOURS.toMicros(1), 3);
     //TODO the size need to be configured
     private final OneToOneWorkerChannel workerChannel = new OneToOneWorkerChannel(128 * 1024);
 
@@ -105,6 +108,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         logger.info("Starting the test");
 
         try {
+            final EpochMicroClock epochMicroClock = EpochClocks.exclusiveMicro();
             final ReceiverClient client = clientFactory.get();
 
             client.setUrl(url);
@@ -115,24 +119,23 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
             long count = 0;
 
             while (duration.canContinue(this) && isRunning()) {
-                final long sendTimeEpochMillis = client.receiveMessages();
-                if (sendTimeEpochMillis != ReceiverClient.noMessagePayload()) {
-                    //TODO would be better to use a general purpose Clock API
-                    final long now = System.currentTimeMillis();
-                    final long elapsedMillis = now - sendTimeEpochMillis;
+                final long sendTimeEpochMicros = client.receiveMessages();
+                if (sendTimeEpochMicros != ReceiverClient.noMessagePayload()) {
+                    final long nowInMicros = epochMicroClock.microTime();
+                    final long elapsedMicros = nowInMicros - sendTimeEpochMicros;
                     boolean validLatency = true;
-                    if (elapsedMillis < 0) {
+                    if (elapsedMicros < 0) {
                         logger.error("SendTime > ReceivedTime");
                         validLatency = false;
-                    } else if (elapsedMillis == 0) {
+                    } else if (elapsedMicros == 0) {
                         logger.warn("Registered Latency of 0: please consider to improve timestamp precision");
                     }
                     if (validLatency) {
                         //we can perform fnc check here to fail the test
                         //TODO use Histogram:recordValueWithExpectedInterval if the rate is known
-                        latencyRecorder.recordValue(elapsedMillis);
+                        latencyRecorder.recordValue(elapsedMicros);
                     }
-                    workerChannel.emitRate(sendTimeEpochMillis, now);
+                    workerChannel.emitRate(sendTimeEpochMicros, nowInMicros);
                     count++;
                     messageCount.lazySet(count);
                 }

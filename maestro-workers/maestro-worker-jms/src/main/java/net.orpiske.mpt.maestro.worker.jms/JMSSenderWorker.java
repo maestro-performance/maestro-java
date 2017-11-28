@@ -18,9 +18,12 @@ package net.orpiske.mpt.maestro.worker.jms;
 
 import net.orpiske.mpt.common.content.ContentStrategy;
 import net.orpiske.mpt.common.content.ContentStrategyFactory;
+import net.orpiske.mpt.common.duration.EpochClocks;
+import net.orpiske.mpt.common.duration.EpochMicroClock;
 import net.orpiske.mpt.common.duration.TestDuration;
 import net.orpiske.mpt.common.duration.TestDurationBuilder;
 import net.orpiske.mpt.common.exceptions.DurationParseException;
+import net.orpiske.mpt.common.jms.SenderClient;
 import net.orpiske.mpt.common.worker.MaestroSenderWorker;
 import net.orpiske.mpt.common.worker.WorkerOptions;
 import net.orpiske.mpt.common.worker.WorkerStateInfo;
@@ -37,7 +40,6 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     private static final Logger logger = LoggerFactory.getLogger(JMSSenderWorker.class);
     private ContentStrategy contentStrategy;
     private TestDuration duration;
-    //TODO the size need to be configured
     private final OneToOneWorkerChannel workerChannel;
     private final AtomicLong messageCount = new AtomicLong(0);
     private volatile long startedEpochMillis = Long.MIN_VALUE;
@@ -124,6 +126,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         logger.info("Starting the test");
 
         try {
+            final EpochMicroClock epochMicroClock = EpochClocks.exclusiveMicro();
             final SenderClient client = this.clientFactory.get();
             client.setUrl(url);
             client.setContentStrategy(contentStrategy);
@@ -136,7 +139,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
                 logger.info("JMS Sender [" + Thread.currentThread().getId() + "] - has started firing events with interval= " + intervalInNanos + " ns [ " + rate + " msg/sec ]");
             }
             //it couldn't uses the Epoch in nanos because it could overflow pretty soon (less than 1 day)
-            final long startFireEpochMillis = System.currentTimeMillis();
+            final long startFireEpochMicros = epochMicroClock.microTime();
             //to avoid accumulated approx errors on the expectedSendTimeEpochMillis calculations
             long elapsedIntervalsNanos = 0;
             long nextFireTime = System.nanoTime() + intervalInNanos;
@@ -147,16 +150,16 @@ public class JMSSenderWorker implements MaestroSenderWorker {
                     nextFireTime += intervalInNanos;
                     elapsedIntervalsNanos += intervalInNanos;
                 }
-                final long sendTimeEpochMillis = System.currentTimeMillis();
-                final long expectedSendTimeEpochMillis;
+                final long sendTimeEpochMicros = epochMicroClock.microTime();
+                final long expectedSendTimeEpochMicros;
                 if (intervalInNanos > 0) {
-                    final long elapsedIntervalsMillis = (elapsedIntervalsNanos / 1_000_000L);
-                    expectedSendTimeEpochMillis = startFireEpochMillis + elapsedIntervalsMillis;
+                    final long elapsedIntervalsMicros = (elapsedIntervalsNanos / 1_000L);
+                    expectedSendTimeEpochMicros = startFireEpochMicros + elapsedIntervalsMicros;
                 } else {
-                    expectedSendTimeEpochMillis = sendTimeEpochMillis;
+                    expectedSendTimeEpochMicros = sendTimeEpochMicros;
                 }
-                client.sendMessages();
-                workerChannel.emitRate(expectedSendTimeEpochMillis, sendTimeEpochMillis);
+                client.sendMessages(sendTimeEpochMicros);
+                workerChannel.emitRate(expectedSendTimeEpochMicros, sendTimeEpochMicros);
                 count++;
                 //update message sent count
                 this.messageCount.lazySet(count);
