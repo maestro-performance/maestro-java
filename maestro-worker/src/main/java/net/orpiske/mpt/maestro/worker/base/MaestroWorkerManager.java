@@ -320,12 +320,12 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         Path target = Paths.get(lastLogDir.getAbsolutePath());
 
         Path lastLink = Paths.get(lastLogDir.getParent() + File.separator + "last");
-        try {
-            FileUtils.deleteQuietly(lastLink.toFile());
+        FileUtils.deleteQuietly(lastLink.toFile());
 
+        try {
             Files.createSymbolicLink(lastLink, target);
         } catch (IOException e) {
-            e.printStackTrace();
+            logger.trace("Symbolic link creation error: " + e.getMessage(), e);
         }
 
         if (failed) {
@@ -335,7 +335,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
             try {
                 Files.createSymbolicLink(lastFailedLink, target);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.trace("Symbolic link creation error: " + e.getMessage(), e);
             }
         }
         else {
@@ -345,7 +345,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
             try {
                 Files.createSymbolicLink(lastSuccessfulLink, target);
             } catch (IOException e) {
-                e.printStackTrace();
+                logger.trace("Symbolic link creation error: " + e.getMessage(), e);
             }
         }
     }
