@@ -49,7 +49,7 @@ public class AbstractMaestroExecutor implements Runnable {
     public final void run() {
         while (maestroPeer.isRunning()) {
             try {
-                logger.debug("Waiting for data ...");
+                logger.trace("Waiting for data ...");
 
                 if (!maestroPeer.isConnected()) {
                     logger.error("Disconnected from the broker: reconnecting");

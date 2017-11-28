@@ -59,14 +59,14 @@ public class MaestroReceiverClient extends MaestroClient implements MaestroRecei
     }
 
     public void pingResponse(long sec, long uSec) {
-        logger.debug("Creation seconds.micro: {}.{}", sec, uSec);
+        logger.trace("Creation seconds.micro: {}.{}", sec, uSec);
 
         Instant creation = Instant.ofEpochSecond(sec, uSec * 1000);
         Instant now = Instant.now();
 
         Duration d = Duration.between(creation, now);
 
-        logger.debug("Elapsed: {}", d.getNano() / 1000000);
+        logger.trace("Elapsed: {}", d.getNano() / 1000000);
         PingResponse response = new PingResponse();
 
         response.setElapsed(d.getNano() / 1000000);
