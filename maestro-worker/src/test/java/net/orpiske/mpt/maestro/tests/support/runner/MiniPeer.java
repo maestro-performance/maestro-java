@@ -54,14 +54,15 @@ public class MiniPeer {
 
         URL url = this.getClass().getResource("/");
 
-
+        String logPath;
         File logDir;
         if (url == null) {
-           logDir = FileUtils.getTempDirectory();
+            logPath = FileUtils.getTempDirectoryPath() + File.separator + role;
         }
         else {
-            logDir = new File(url.getPath());
+            logPath = url.getPath() + File.separator + role;
         }
+        logDir = new File(logPath);
 
 
         executor = new MaestroWorkerExecutor(maestroUrl, role, host, logDir, clazz);
