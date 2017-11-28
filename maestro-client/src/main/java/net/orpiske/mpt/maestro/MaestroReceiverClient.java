@@ -66,10 +66,10 @@ public class MaestroReceiverClient extends MaestroClient implements MaestroRecei
 
         Duration d = Duration.between(creation, now);
 
-        logger.debug("Elapsed: {}", d.getNano() / 1000);
+        logger.debug("Elapsed: {}", d.getNano() / 1000000);
         PingResponse response = new PingResponse();
 
-        response.setElapsed(d.getNano() / 1000);
+        response.setElapsed(d.getNano() / 1000000);
         response.setName(clientName + "@" + host);
         response.setId(id);
 
