@@ -16,7 +16,6 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
-import net.orpiske.mpt.common.client.MaestroReceiver;
 import net.orpiske.mpt.common.duration.TestDuration;
 import net.orpiske.mpt.common.duration.TestDurationBuilder;
 import net.orpiske.mpt.common.exceptions.DurationParseException;
@@ -44,7 +43,6 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     private final SingleWriterRecorder latencyRecorder = new SingleWriterRecorder(TimeUnit.HOURS.toMillis(1), 3);
     //TODO the size need to be configured
     private final OneToOneWorkerChannel workerChannel = new OneToOneWorkerChannel(128 * 1024);
-    private MaestroReceiver receiverEndpoint;
 
     private volatile WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 

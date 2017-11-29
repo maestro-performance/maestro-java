@@ -16,7 +16,6 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
-import net.orpiske.mpt.common.client.MaestroReceiver;
 import net.orpiske.mpt.common.content.ContentStrategy;
 import net.orpiske.mpt.common.content.ContentStrategyFactory;
 import net.orpiske.mpt.common.duration.TestDuration;
@@ -42,8 +41,6 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     private final OneToOneWorkerChannel workerChannel;
     private final AtomicLong messageCount = new AtomicLong(0);
     private volatile long startedEpochMillis = Long.MIN_VALUE;
-
-    private MaestroReceiver receiverEndpoint;
 
     private String url;
     private long rate = 0;
