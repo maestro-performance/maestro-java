@@ -16,25 +16,25 @@
 
 package net.orpiske.mpt.common.content;
 
+import java.nio.ByteBuffer;
+
 /**
- * A fixed-sized string message content
+ * A fixed-sized bytes message content
  */
-public class FixedSizeContent implements ContentStrategy {
-    private static String content;
-    private StringBuffer buffer;
+final class FixedSizeContent implements ContentStrategy {
+    private int size = 0;
+    private ByteBuffer buffer = null;
 
     /*
      * @see ContentStrategy#setSize(int)
      */
     @Override
     public void setSize(int size) {
-        buffer = new StringBuffer();
-
-        buffer = new StringBuffer(size);
-
-        ContentFiller.randomFill(buffer, size);
-
-        content = buffer.toString();
+        this.size = size;
+        this.buffer = ByteBuffer.allocate(size).order(CONTENT_ENDIANNESS);
+        for (int i = 0; i < size; i++) {
+            this.buffer.put(i, (byte) i);
+        }
     }
 
     /*
@@ -46,10 +46,16 @@ public class FixedSizeContent implements ContentStrategy {
     }
 
     /*
-     * @see ContentStrategy#getContent()
+     * @see ContentStrategy#prepareContent()
      */
     @Override
-    public String getContent() {
-        return content;
+    public ByteBuffer prepareContent() {
+        if (buffer == null) {
+            assert size == 0;
+            return buffer;
+        }
+        buffer.clear();
+        buffer.limit(this.size);
+        return buffer;
     }
 }

@@ -16,25 +16,42 @@
 
 package net.orpiske.mpt.common.content;
 
+import java.nio.ByteBuffer;
+import java.nio.ByteOrder;
+
 /**
  * The message content strategy for sending data
  */
 public interface ContentStrategy {
+
+    /**
+     * The endianness of any {@link #prepareContent()}'s {@link ByteBuffer}.
+     */
+    ByteOrder CONTENT_ENDIANNESS = ByteOrder.LITTLE_ENDIAN;
+
     /**
      * Set the message size
+     *
      * @param size the message size
      */
     void setSize(int size);
 
     /**
      * Sets the size based on a size specification string
+     *
      * @param sizeSpec the size specification string as formatted by ({@link MessageSize})
      */
     void setSize(String sizeSpec);
 
     /**
-     * Gets the message content to send
+     * Gets the message content to send.
+     * <p>
+     * The returned {@link ByteBuffer} has {@link ByteBuffer#hasArray()} {@code true} and
+     * {@link ByteBuffer#order()} equals to {@link #CONTENT_ENDIANNESS}.<br>
+     * The {@link ByteBuffer#position()} and {@link ByteBuffer#limit()} delimit the content available to be sent.<br>
+     * Its content can be changed but cannot be used less then the provided {@link ByteBuffer#remaining()} size.
+     *
      * @return the message content to send
      */
-    String getContent();
+    ByteBuffer prepareContent();
 }

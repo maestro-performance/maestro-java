@@ -16,40 +16,52 @@
 
 package net.orpiske.mpt.common.content;
 
-import java.util.Random;
+import java.nio.ByteBuffer;
+import java.util.concurrent.ThreadLocalRandom;
 
 /**
- * A variable-size string message content
+ * A variable-size bytes message content
  */
-public class VariableSizeContent implements ContentStrategy {
-    private Random random = new Random();
-    private StringBuffer buffer;
-    private int limit = 0;
+final class VariableSizeContent implements ContentStrategy {
+    private int lowerLimitInclusive = 0;
+    private int upperLimitExclusive = 1;
+    private ByteBuffer buffer = null;
+
+    public int minSize() {
+        return this.lowerLimitInclusive;
+    }
+
+    public int maxSize() {
+        return this.upperLimitExclusive - 1;
+    }
 
     /*
      * @see ContentStrategy#setSize(int)
      */
     @Override
     public void setSize(int size) {
-        int lowerBound;
-        int upperBound;
+        final int lowerBoundInclusive;
+        final int upperBoundExclusive;
 
         if (size >= 100) {
-            int bound = ((size / 100) * 5);
-
-            lowerBound = size - bound;
-            upperBound = size + bound;
-
-            limit = upperBound - lowerBound;
+            final int bound = ((size / 100) * 5);
+            lowerBoundInclusive = size - bound + 1;
+            upperBoundExclusive = size + bound + 1;
         } else {
-            lowerBound = size - 1;
-            upperBound = size + 1;
-            limit = upperBound - lowerBound;
+            lowerBoundInclusive = size;
+            upperBoundExclusive = size + 2;
         }
-
-        buffer = new StringBuffer(upperBound);
-
-        ContentFiller.randomFill(buffer, upperBound);
+        //TODO document the minimum expected size of the content
+        if (lowerBoundInclusive < Long.BYTES) {
+            throw new IllegalStateException("The size is too small: please configure an bigger one");
+        }
+        this.lowerLimitInclusive = lowerBoundInclusive;
+        this.upperLimitExclusive = upperBoundExclusive;
+        final int requiredCapacity = upperBoundExclusive - 1;
+        this.buffer = ByteBuffer.allocate(requiredCapacity).order(CONTENT_ENDIANNESS);
+        for (int i = 0; i < requiredCapacity; i++) {
+            this.buffer.put(i, (byte) i);
+        }
     }
 
     /*
@@ -61,10 +73,17 @@ public class VariableSizeContent implements ContentStrategy {
     }
 
     /*
-     * @see ContentStrategy#getContent()
+     * @see ContentStrategy#prepareContent()
      */
     @Override
-    public String getContent() {
-        return buffer.substring(random.nextInt(limit));
+    public ByteBuffer prepareContent() {
+        if (buffer == null) {
+            assert this.lowerLimitInclusive == 0 && this.upperLimitExclusive == 1;
+            return null;
+        }
+        final int currentLimit = ThreadLocalRandom.current().nextInt(this.lowerLimitInclusive, this.upperLimitExclusive);
+        buffer.clear();
+        buffer.limit(currentLimit);
+        return buffer;
     }
 }

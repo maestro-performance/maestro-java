@@ -16,16 +16,21 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
+import net.orpiske.mpt.common.content.ContentStrategy;
 import net.orpiske.mpt.common.jms.ReceiverClient;
 
+import javax.jms.BytesMessage;
 import javax.jms.Message;
 import javax.jms.MessageConsumer;
 import javax.jms.Session;
+import java.nio.ByteBuffer;
 
 final class JMSReceiverClient extends JMSClient implements ReceiverClient {
     private static final long RECEIVE_TIMEOUT_MILLIS = 1000L;
+    private static final int PAYLOAD_SIZE = Long.BYTES;
     private Session session;
     private MessageConsumer consumer;
+    private ByteBuffer payloadBytes;
 
     @Override
     public void start() throws Exception {
@@ -33,6 +38,7 @@ final class JMSReceiverClient extends JMSClient implements ReceiverClient {
 
         session = super.getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
         consumer = session.createConsumer(queue);
+        payloadBytes = ByteBuffer.allocate(PAYLOAD_SIZE).order(ContentStrategy.CONTENT_ENDIANNESS);
     }
 
 
@@ -43,8 +49,14 @@ final class JMSReceiverClient extends JMSClient implements ReceiverClient {
         if (message == null) {
             return ReceiverClient.noMessagePayload();
         }
-
-        final long sendTime = message.getLongProperty("SendTime");
-        return sendTime;
+        final BytesMessage bytesMessage = (BytesMessage) message;
+        //just read the benchmark minimum payload
+        final int readBytes = bytesMessage.readBytes(payloadBytes.array(), PAYLOAD_SIZE);
+        if (readBytes == PAYLOAD_SIZE || readBytes == -1) {
+            //can read the timestamp using the default endianness of the content strategy
+            final long sendTime = payloadBytes.getLong(0);
+            return sendTime;
+        }
+        throw new IllegalStateException("the received message hasn't any benchmark payload");
     }
 }

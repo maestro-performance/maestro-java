@@ -20,7 +20,7 @@ package net.orpiske.mpt.common.jms;
 import net.orpiske.mpt.common.content.ContentStrategy;
 
 public interface SenderClient extends Client {
-    void sendMessages(long epochInMicros) throws Exception;
+    void sendMessages(long sendTimeEpochInMicros) throws Exception;
 
     void setContentStrategy(ContentStrategy contentStrategy);
 }

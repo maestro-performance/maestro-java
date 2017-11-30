@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
+import java.nio.ByteBuffer;
 
 final class JMSSenderClient extends JMSClient implements SenderClient {
     private static final Logger logger = LoggerFactory.getLogger(JMSSenderClient.class);
@@ -49,11 +50,18 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
     }
 
     @Override
-    public void sendMessages(long epochInMicros) throws JMSException {
-        TextMessage message = session.createTextMessage();
-        final String content = contentStrategy.getContent();
-        message.setText(content);
-        message.setLongProperty("SendTime", epochInMicros);
+    public void sendMessages(long sendTimeEpochInMicros) throws JMSException {
+        //prepare the message content
+        final ByteBuffer content = contentStrategy.prepareContent();
+        final byte[] bytes = content.array();
+        final int position = content.position();
+        final int offset = content.arrayOffset() + position;
+        final int length = content.remaining();
+        //the timestamp is part of the message content
+        content.putLong(position, sendTimeEpochInMicros);
+        final BytesMessage message = session.createBytesMessage();
+        //copy the whole message content (including the benchmark payload ie timestamp)
+        message.writeBytes(bytes, offset, length);
         producer.send(message);
     }
 
