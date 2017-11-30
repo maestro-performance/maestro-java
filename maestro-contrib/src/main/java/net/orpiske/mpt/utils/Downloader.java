@@ -137,10 +137,11 @@ public class Downloader {
 	 * @throws ResourceExchangeException if unable to download the file
 	 */
 	public static void download(final String url, final String destDir, boolean overwrite) throws ResourceExchangeException {
+		File outputFile = null;
 		try {
 			URI uri = new URI(url);
 
-			File outputFile = setupOutputFile(url, destDir, overwrite);
+			outputFile = setupOutputFile(url, destDir, overwrite);
 
 			ResourceExchange resourceExchange = new HttpResourceExchange();
 			ResourceInfo resourceInfo = resourceExchange.info(uri);
@@ -167,8 +168,16 @@ public class Downloader {
 				resourceExchange.release();
 			}
 		} catch (URISyntaxException e) {
+			if (outputFile != null) {
+				outputFile.delete();
+			}
 			throw new ResourceExchangeException("Invalid URI: " + url, e);
-		} catch (IOException e) {
+		} catch (Exception e) {
+			System.err.println("Removing file " + outputFile.getPath());
+			if (outputFile != null) {
+				outputFile.delete();
+			}
+
 			throw new ResourceExchangeException("I/O error: " + e.getMessage(), e);
 		}
 	}

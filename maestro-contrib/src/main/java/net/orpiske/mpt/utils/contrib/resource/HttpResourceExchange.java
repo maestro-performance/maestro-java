@@ -178,20 +178,20 @@ public class HttpResourceExchange implements ResourceExchange {
 			else {
 				switch (statusCode) {
 				case HttpStatus.SC_NOT_FOUND: 
-					throw new ResourceExchangeException("Remote file not found: " + uri.toString());
+					throw new ResourceExchangeException("Remote file not found: " + uri.toString(), HttpStatus.SC_NOT_FOUND);
 				case HttpStatus.SC_BAD_REQUEST: 
 					throw new ResourceExchangeException(
-							"The client sent a bad request");
+							"The client sent a bad request", HttpStatus.SC_NOT_FOUND);
 				case HttpStatus.SC_FORBIDDEN: 
 					throw new ResourceExchangeException(
-							"Accessing the resource is forbidden");
+							"Accessing the resource is forbidden", HttpStatus.SC_NOT_FOUND);
 				case HttpStatus.SC_UNAUTHORIZED: 
-					throw new ResourceExchangeException("Unauthorized");
+					throw new ResourceExchangeException("Unauthorized", HttpStatus.SC_NOT_FOUND);
 				case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-					throw new ResourceExchangeException("Internal server error");
+					throw new ResourceExchangeException("Internal server error", HttpStatus.SC_NOT_FOUND);
 				default:
 					throw new ResourceExchangeException(
-							"Unable to download file: http status code " + statusCode);
+							"Unable to download file: http status code " + statusCode, HttpStatus.SC_NOT_FOUND);
 				}
 			}
 		} catch (ClientProtocolException e) {
@@ -239,17 +239,17 @@ public class HttpResourceExchange implements ResourceExchange {
 			else {
 				switch (statusCode) {
 				case HttpStatus.SC_NOT_FOUND: 
-					throw new ResourceExchangeException("Remote file not found");
+					throw new ResourceExchangeException("Remote file not found", HttpStatus.SC_NOT_FOUND);
 				case HttpStatus.SC_BAD_REQUEST: 
 					throw new ResourceExchangeException(
-							"The client sent a bad request");
+							"The client sent a bad request", HttpStatus.SC_BAD_REQUEST);
 				case HttpStatus.SC_FORBIDDEN: 
 					throw new ResourceExchangeException(
-							"Accessing the resource is forbidden");
+							"Accessing the resource is forbidden", HttpStatus.SC_FORBIDDEN);
 				case HttpStatus.SC_UNAUTHORIZED: 
-					throw new ResourceExchangeException("Unauthorized");
+					throw new ResourceExchangeException("Unauthorized", HttpStatus.SC_UNAUTHORIZED);
 				case HttpStatus.SC_INTERNAL_SERVER_ERROR:
-					throw new ResourceExchangeException("Internal server error");
+					throw new ResourceExchangeException("Internal server error", HttpStatus.SC_INTERNAL_SERVER_ERROR);
 				default:
 					throw new ResourceExchangeException(
 							"Unable to download file: http status code " + statusCode);

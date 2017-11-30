@@ -18,10 +18,14 @@ package net.orpiske.mpt.reports;
 
 import net.orpiske.mpt.reports.node.NodeType;
 import org.apache.commons.io.FilenameUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
 public class ReportFile {
+    private static final Logger logger = LoggerFactory.getLogger(ReportFile.class);
+
     private File file;
     private boolean reportSuccessful = true;
     private Throwable reportFailure;
@@ -39,7 +43,13 @@ public class ReportFile {
         nodeHost = FilenameUtils.getBaseName(hostDir.getName());
 
         File testNumDir = hostDir.getParentFile();
-        testNum = Integer.parseInt(FilenameUtils.getBaseName(testNumDir.getName()));
+        try {
+            testNum = Integer.parseInt(FilenameUtils.getBaseName(testNumDir.getName()));
+        }
+        catch (RuntimeException e) {
+            logger.error("Incorrect report directory layout for: {}", file.getPath(), e);
+            throw e;
+        }
 
         File resultType = testNumDir.getParentFile();
         if (resultType.getName().contains("success")) {

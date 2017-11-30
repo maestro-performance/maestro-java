@@ -18,6 +18,7 @@ package net.orpiske.mpt.reports;
 
 import net.orpiske.mpt.utils.Downloader;
 import net.orpiske.mpt.utils.contrib.resource.exceptions.ResourceExchangeException;
+import org.apache.http.HttpStatus;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +65,6 @@ public class ReportsDownloader {
         String name = "senderd-rate.csv.gz";
 
         downloadReport(host, reportSource, name);
-
 
         downloadReport(host, reportSource, "test.properties");
     }
@@ -119,6 +119,44 @@ public class ReportsDownloader {
 
             if (type.equals("inspector")) {
                 downloadInspectorReports(host, LAST_FAILED_DIR);
+            }
+        }
+        catch (Exception e) {
+            logger.error("Error: {}", e.getMessage(), e);
+        }
+    }
+
+
+    public void downloadAny(final String host, String resource) {
+        try {
+            try {
+                downloadSenderReports(host, resource);
+            }
+            catch (ResourceExchangeException e) {
+                if (e.getCode() != HttpStatus.SC_NOT_FOUND) {
+                    logger.warn("Resource {} not found at {} ", resource, host );
+                    throw e;
+                }
+            }
+
+            try {
+                downloadReceiverReports(host, resource);
+            }
+            catch (ResourceExchangeException e) {
+                if (e.getCode() != HttpStatus.SC_NOT_FOUND) {
+                    logger.warn("Resource {} not found at {} ", resource, host );
+                    throw e;
+                }
+            }
+
+            try {
+                downloadInspectorReports(host, resource);
+            }
+            catch (ResourceExchangeException e) {
+                if (e.getCode() != HttpStatus.SC_NOT_FOUND) {
+                    logger.warn("Resource {} not found at {} ", resource, host );
+                    throw e;
+                }
             }
         }
         catch (Exception e) {

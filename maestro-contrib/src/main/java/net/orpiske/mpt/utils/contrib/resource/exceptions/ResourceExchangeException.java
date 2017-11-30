@@ -15,6 +15,8 @@
  */
 package net.orpiske.mpt.utils.contrib.resource.exceptions;
 
+import org.apache.http.HttpStatus;
+
 /**
  * Network exchanges exception
  *
@@ -22,6 +24,7 @@ package net.orpiske.mpt.utils.contrib.resource.exceptions;
  */
 @SuppressWarnings("serial")
 public class ResourceExchangeException extends Exception {
+	private int code;
 
 	/**
 	 * Constructor
@@ -36,8 +39,22 @@ public class ResourceExchangeException extends Exception {
 	 * Constructor
 	 * @param message error message
 	 */
-	public ResourceExchangeException(String message) {
+	public ResourceExchangeException(final String message, final int code) {
+		super(message);
+
+		this.code = code;
+	}
+
+
+	/**
+	 * Constructor
+	 * @param message error message
+	 */
+	public ResourceExchangeException(final String message) {
 		super(message);
 	}
 
+	public int getCode() {
+		return code;
+	}
 }

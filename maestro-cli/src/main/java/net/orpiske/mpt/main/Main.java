@@ -17,6 +17,7 @@
 package net.orpiske.mpt.main;
 
 import net.orpiske.mpt.main.actions.Action;
+import net.orpiske.mpt.main.actions.DownloadAction;
 import net.orpiske.mpt.main.actions.ReportAction;
 import net.orpiske.mpt.main.actions.MaestroAction;
 import org.apache.commons.cli.*;
@@ -70,6 +71,10 @@ public class Main {
             }
             case "maestro": {
                 action = new MaestroAction(newArgs);
+                break;
+            }
+            case "download": {
+                action = new DownloadAction(newArgs);
                 break;
             }
             default: {
