@@ -53,7 +53,7 @@ LogConfigurator.verbose()
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new ReportsDownloader("/tmp/maestro");
+ReportsDownloader reportsDownloader = new ReportsDownloader(args[0]);
 
 IncrementalTestProfile testProfile = new SimpleTestProfile()
 
@@ -77,12 +77,12 @@ IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, repo
 if (!testExecutor.run()) {
     maestro.stop()
 
-    ReportGenerator.generate("/tmp/maestro")
+    ReportGenerator.generate(args[0])
     return 1
 }
 
 maestro.stop()
-ReportGenerator.generate("/tmp/maestro")
+ReportGenerator.generate(args[0])
 return 0
 
 

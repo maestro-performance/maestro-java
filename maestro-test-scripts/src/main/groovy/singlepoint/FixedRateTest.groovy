@@ -51,7 +51,7 @@ LogConfigurator.verbose()
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new ReportsDownloader("/tmp/maestro");
+ReportsDownloader reportsDownloader = new ReportsDownloader(args[0]);
 
 FixedRateTestProfile testProfile = new FixedRateTestProfile();
 
@@ -67,12 +67,12 @@ FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, reportsD
 if (!testExecutor.run()) {
     maestro.stop()
 
-    ReportGenerator.generate("/tmp/maestro")
+    ReportGenerator.generate(args[0])
     return 1
 }
 
 maestro.stop()
-ReportGenerator.generate("/tmp/maestro")
+ReportGenerator.generate(args[0])
 return 0
 
 
