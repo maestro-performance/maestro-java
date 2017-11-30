@@ -39,6 +39,16 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
         logger.info("Elapsed time from {}: {} ms", note.getName(), note.getElapsed());
     }
 
+    // Give some time for the backends to flush their data to disk
+    // before downloading
+    private void waitForFlush() {
+        try {
+            Thread.sleep(2000);
+        } catch (InterruptedException e) {
+
+        }
+    }
+
     @Override
     protected void processNotifySuccess(TestSuccessfulNotification note) {
         logger.info("Test successful on {} after {} executions", note.getName(),
@@ -47,6 +57,8 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
 
         String type = NodeUtils.getTypeFromName(note.getName());
         String host = NodeUtils.getHostFromName(note.getName());
+
+        waitForFlush();
 
         reportsDownloader.setReportTypeDir("success");
         reportsDownloader.downloadLastSuccessful(type, host, note.getName());
@@ -62,6 +74,8 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
 
         String type = NodeUtils.getTypeFromName(note.getName());
         String host = NodeUtils.getHostFromName(note.getName());
+
+        waitForFlush();
 
         reportsDownloader.setReportTypeDir("failed");
         reportsDownloader.downloadLastFailed(type, host, note.getName());
