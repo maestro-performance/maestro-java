@@ -17,8 +17,19 @@ import java.util.zip.GZIPOutputStream;
 public final class RateWriter implements AutoCloseable {
     private static final int MICROS_PART_LENGTH = "000\"".length();
     private static final String DATE_FORMAT_PATTERN = "\"yyyy-MM-dd HH:mm:ss.SSS";
-    private static final char SEPARATOR = ',';
-    private static final int ESTIMATED_LINE_LENGTH = (DATE_FORMAT_PATTERN + SEPARATOR + DATE_FORMAT_PATTERN + '\n').length() + MICROS_PART_LENGTH * 2;
+    /**
+     * The timestamp formats
+     */
+    public static final String TIMESTAMP_FORMAT = "\"yyyy-MM-dd HH:mm:ss.SSSSSS\"";
+    public static final char SEPARATOR = ',';
+    /**
+     * It doesn't include any {@code '\n'}.
+     */
+    public static final int HEADER_LENGTH = ("etd" + SEPARATOR + "atd").length();
+    /**
+     * It include the {@code "} around the timestamps and {@code '\n'}.
+     */
+    public static final int ESTIMATED_LINE_LENGTH = ('\n' + DATE_FORMAT_PATTERN + SEPARATOR + DATE_FORMAT_PATTERN).length() + MICROS_PART_LENGTH * 2;
     //a more modern approach using DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss.SSSSSS").withZone(ZoneId.systemDefault())
     //could be considered but in the current state produces much more garbage
     private final SimpleDateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_PATTERN);
@@ -27,11 +38,12 @@ public final class RateWriter implements AutoCloseable {
     private final StringBuffer lineBuilder = new StringBuffer(ESTIMATED_LINE_LENGTH);
     private final byte[] writeBuffer = new byte[ESTIMATED_LINE_LENGTH];
     private final FieldPosition fullFieldPosition = new FieldPosition(DateFormat.FULL);
+    private final File reportFile;
 
     public RateWriter(final File reportFolder, boolean sender, boolean compressed) throws IOException {
         final String role = sender ? "sender" : "receiver";
         final String fileName = role + (compressed ? "d-rate.csv.gz" : "d-rate.csv");
-        final File reportFile = new File(reportFolder, fileName);
+        this.reportFile = new File(reportFolder, fileName);
         final FileOutputStream fileStream = new FileOutputStream(reportFile);
         if (compressed) {
             outputStream = new GZIPOutputStream(fileStream);
@@ -48,12 +60,16 @@ public final class RateWriter implements AutoCloseable {
             firstTimeColumn = "eta";
             secondTimeColumn = "ata";
         }
-        final int encodedSize = encodeAscii(lineBuilder.append(firstTimeColumn).append(SEPARATOR).append(secondTimeColumn).append('\n'), writeBuffer);
+        final int encodedSize = encodeAscii(lineBuilder.append(firstTimeColumn).append(SEPARATOR).append(secondTimeColumn), writeBuffer);
         outputStream.write(writeBuffer, 0, encodedSize);
     }
 
+    public File reportFile() {
+        return reportFile;
+    }
+
     public void write(long startTimeStampEpochMicros, long endTimeStampEpochMicros) {
-        final int encodedSize = encodeAscii(appendOn(startTimeStampEpochMicros, endTimeStampEpochMicros).append('\n'), writeBuffer);
+        final int encodedSize = encodeAscii(appendOn(startTimeStampEpochMicros, endTimeStampEpochMicros), writeBuffer);
         try {
             outputStream.write(writeBuffer, 0, encodedSize);
         } catch (IOException e) {
@@ -100,6 +116,7 @@ public final class RateWriter implements AutoCloseable {
         final long endMillis = endTimeStampEpochMicros / 1000L;
         final long endRemainingMicros = endTimeStampEpochMicros % 1000L;
         lineBuilder.setLength(0);
+        lineBuilder.append('\n');
         date.setTime(startMillis);
         dateFormat.format(date, lineBuilder, fullFieldPosition);
         appendDateMicros(startRemainingMicros, lineBuilder).append('"').append(SEPARATOR);
