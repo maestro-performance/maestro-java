@@ -85,6 +85,7 @@ class JMSClient implements Client {
     }
 
 
+
     public int getBodySize() {
         return bodySize;
     }
@@ -96,6 +97,11 @@ class JMSClient implements Client {
     protected Connection getConnection() {
         return conn;
     }
+
+    protected String getUrl() {
+        return url;
+    }
+
 
     @Override
     public void setUrl(String url) {

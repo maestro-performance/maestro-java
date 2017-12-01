@@ -16,12 +16,14 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
+import net.orpiske.mpt.common.URLQuery;
 import net.orpiske.mpt.common.content.ContentStrategy;
 import net.orpiske.mpt.common.jms.SenderClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
+import java.net.URI;
 import java.nio.ByteBuffer;
 
 final class JMSSenderClient extends JMSClient implements SenderClient {
@@ -40,10 +42,25 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
 
         producer = session.createProducer(queue);
 
-        if (durable) {
+        String url = super.getUrl();
+        URLQuery urlQuery = new URLQuery(new URI(url));
+
+        if (urlQuery.getBoolean("durable", false)) {
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-        } else {
+        }
+        else {
             producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+        }
+
+        Integer priority = urlQuery.getInteger("priority", null);
+        if (priority != null) {
+            producer.setPriority(priority);
+        }
+
+
+        Long ttl = urlQuery.getLong("ttl", null);
+        if (ttl != null) {
+            producer.setTimeToLive(ttl);
         }
 
         producer.setDisableMessageTimestamp(true);
