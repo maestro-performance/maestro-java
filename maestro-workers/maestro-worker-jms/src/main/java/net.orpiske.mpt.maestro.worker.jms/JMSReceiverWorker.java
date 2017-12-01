@@ -43,7 +43,8 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     private final AtomicLong messageCount = new AtomicLong(0);
     private volatile long startedEpochMillis = Long.MIN_VALUE;
     //TODO it could be injected by outside because the precision could be improved using ad-hoc clock timers
-    private final SingleWriterRecorder latencyRecorder = new SingleWriterRecorder(TimeUnit.HOURS.toMicros(1), 3);
+    private static final long HIGHEST_TRACKABLE_VALUE = TimeUnit.HOURS.toMicros(1);
+    private final SingleWriterRecorder latencyRecorder = new SingleWriterRecorder(HIGHEST_TRACKABLE_VALUE, 3);
     //TODO the size need to be configured
     private final OneToOneWorkerChannel workerChannel = new OneToOneWorkerChannel(128 * 1024);
 
@@ -103,6 +104,14 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         setDuration(workerOptions.getDuration());
     }
 
+    private static void handleNegativeSampleError(final long sendTimeEpochMicros, final long nowInMicros) {
+        logger.error("Dropped sample: [SendTimeEpochMicros=" + sendTimeEpochMicros + "] > [ReceivedTimeEpochMicros=" + nowInMicros + "]");
+    }
+
+    private static void handleHugeSampleError(final long sendTimeEpochMicros, final long nowInMicros) {
+        logger.error("Normalized sample: [ReceivedTimeEpochMicros=" + nowInMicros + "] - [SendTimeEpochMicros=" + sendTimeEpochMicros + "] > " + HIGHEST_TRACKABLE_VALUE);
+    }
+
     public void start() {
         startedEpochMillis = System.currentTimeMillis();
         logger.info("Starting the test");
@@ -122,19 +131,24 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
                 final long sendTimeEpochMicros = client.receiveMessages();
                 if (sendTimeEpochMicros != ReceiverClient.noMessagePayload()) {
                     final long nowInMicros = epochMicroClock.microTime();
-                    final long elapsedMicros = nowInMicros - sendTimeEpochMicros;
+                    long elapsedMicros = nowInMicros - sendTimeEpochMicros;
                     boolean validLatency = true;
                     if (elapsedMicros < 0) {
-                        logger.error("SendTime > ReceivedTime");
+                        handleNegativeSampleError(sendTimeEpochMicros, nowInMicros);
                         validLatency = false;
                     } else if (elapsedMicros == 0) {
                         logger.warn("Registered Latency of 0: please consider to improve timestamp precision");
+                    } else if (elapsedMicros > HIGHEST_TRACKABLE_VALUE) {
+                        handleNegativeSampleError(sendTimeEpochMicros, nowInMicros);
+                        //record it but avoid histogram to throw any error
+                        elapsedMicros = HIGHEST_TRACKABLE_VALUE;
                     }
                     if (validLatency) {
                         //we can perform fnc check here to fail the test
                         //TODO use Histogram:recordValueWithExpectedInterval if the rate is known
                         latencyRecorder.recordValue(elapsedMicros);
                     }
+                    //record everything
                     workerChannel.emitRate(sendTimeEpochMicros, nowInMicros);
                     count++;
                     messageCount.lazySet(count);
