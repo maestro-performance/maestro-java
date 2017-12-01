@@ -40,6 +40,10 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_NOTIFY_SUCCESS: {
                 return new TestSuccessfulNotification(unpacker);
             }
+            case MAESTRO_NOTE_ABNORMAL_DISCONNECT: {
+                logger.warn("Received an abnormal disconnect notification but this client is too old to handle it properly");
+                return new MaestroNotification(MaestroCommand.MAESTRO_NOTE_ABNORMAL_DISCONNECT);
+            }
             default: {
                 throw new MalformedNoteException("Invalid notification command: " + tmpCommand);
             }
