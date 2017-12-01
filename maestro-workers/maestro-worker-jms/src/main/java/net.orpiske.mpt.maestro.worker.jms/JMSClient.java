@@ -47,12 +47,28 @@ class JMSClient implements Client {
 
     JMSClient() {}
 
+    // JMS urls cannot have the query part
+    private String filterURL() {
+        String filteredUrl;
+        
+        int queryStartIndex = url.indexOf("?");
+        if (queryStartIndex != -1)
+        {
+            filteredUrl = url.substring(0, queryStartIndex);
+        }
+        else {
+            filteredUrl = url;
+        }
+
+        return filteredUrl;
+    }
+
     @Override
     public void start() throws Exception {
-        env.put("connectionFactory.ConnectionFactory", url);
-
         URI uri = new URI(url);
         String path = uri.getPath().substring(1);
+
+        env.put("connectionFactory.ConnectionFactory", filterURL());
 
         env.put("queue.queueLookup", path);
 
