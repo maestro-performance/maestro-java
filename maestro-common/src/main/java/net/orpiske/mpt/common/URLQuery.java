@@ -87,4 +87,20 @@ public class URLQuery {
 
         return Integer.parseInt(value);
     }
+
+    /**
+     * Get a parameter value as a Long
+     * @param name the parameter name
+     * @param defaultValue the default value if not given
+     * @return the parameter value or defaultValue if not given
+     */
+    public Long getLong(final String name, final Long defaultValue) {
+        String value = getString(name, null);
+
+        if (value == null) {
+            return defaultValue;
+        }
+
+        return Long.parseLong(value);
+    }
 }
