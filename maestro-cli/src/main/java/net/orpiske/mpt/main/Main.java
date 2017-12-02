@@ -35,10 +35,11 @@ public class Main {
         System.out.println("Usage: maestro-cli <action>\n");
 
         System.out.println("Actions:");
+        System.out.println("   download");
+        System.out.println("   report");
         System.out.println("   data");
         System.out.println("   download");
         System.out.println("   maestro");
-        System.out.println("   report");
         System.out.println("----------");
         System.out.println("   help");
         System.out.println("   --version");
