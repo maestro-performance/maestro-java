@@ -15,15 +15,12 @@
  * limitations under the License.
  */
 
-package net.orpiske.mpt.reports;
+package net.orpiske.mpt.data.rate;
 
 import net.orpiske.mpt.common.writers.RateWriter;
 import org.HdrHistogram.Histogram;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
 import java.time.LocalDateTime;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -31,30 +28,29 @@ import java.time.temporal.ChronoUnit;
 import java.util.zip.GZIPInputStream;
 
 public class RateToHistogram {
-
-    public static void main(String[] args) throws IOException {
-        if (args.length != 1) {
-            throw new IllegalArgumentException("Must specify the file to be opened");
-        }
-        final String fileName = args[0];
+    public static void convert(final String fileName, PrintStream printStream) throws IOException {
         final Histogram histogram = new Histogram(3);
+
         appendLatenciesTo(fileName, histogram);
         System.out.println("Latencies reported in MILLISECONDS");
-        histogram.outputPercentileDistribution(System.out, 1000d);
+        histogram.outputPercentileDistribution(printStream, 1000d);
     }
 
-    public static long appendLatenciesTo(String fileName, Histogram histogram) throws IOException {
+    private static long appendLatenciesTo(String fileName, Histogram histogram) throws IOException {
         final boolean compressed = fileName.endsWith(".gz");
         final File file = new File(fileName);
         final InputStream inputStream;
+
         if (compressed) {
             inputStream = new GZIPInputStream(new FileInputStream(file));
         } else {
             inputStream = new FileInputStream(file);
         }
+
         final byte[] readLineBuffer = new byte[RateWriter.ESTIMATED_LINE_LENGTH];
         final DateTimeFormatter dateTimeFormatter = DateTimeFormatter.ofPattern(RateWriter.TIMESTAMP_FORMAT).withZone(ZoneId.systemDefault());
         long lines = 0;
+
         try (InputStream stream = inputStream) {
             //TODO handle the first return value
             stream.skip(RateWriter.HEADER_LENGTH);
