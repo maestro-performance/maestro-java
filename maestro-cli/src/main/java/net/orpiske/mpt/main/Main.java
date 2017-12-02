@@ -38,6 +38,7 @@ public class Main {
         System.out.println("Usage: maestro-cli <action>\n");
 
         System.out.println("Actions:");
+        System.out.println("   download");
         System.out.println("   report");
         System.out.println("   maestro");
         System.out.println("----------");
