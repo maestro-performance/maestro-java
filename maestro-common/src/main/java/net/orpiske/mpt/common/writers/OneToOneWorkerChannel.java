@@ -101,7 +101,6 @@ public final class OneToOneWorkerChannel {
                 if (!receiveNext) {
                     return i;
                 }
-                final MutableDirectBuffer buffer = this.receiver.buffer();
                 this.sampleBuffer.putBytes(0, this.receiver.buffer(), this.receiver.offset(), this.receiver.length());
                 valid = this.receiver.validate();
             } while (!valid);

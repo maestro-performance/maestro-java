@@ -20,43 +20,34 @@
 /**
  * NOTE: this a fork of Justin Ross' Quiver at:
  * https://raw.githubusercontent.com/ssorj/quiver/master/java/quiver-jms-driver/src/main/java/net/ssorj/quiver/QuiverArrowJms.java
- *
+ * <p>
  * The code was modified to integrate more tightly with maestro.
  */
 
 package net.orpiske.mpt.maestro.worker.jms;
 
+import net.orpiske.mpt.common.URLQuery;
 import net.orpiske.mpt.common.jms.Client;
 
-import javax.jms.*;
-import javax.naming.Context;
-import javax.naming.InitialContext;
+import javax.jms.Connection;
+import javax.jms.ConnectionFactory;
+import javax.jms.Destination;
 import java.net.URI;
-import java.util.Hashtable;
 
 class JMSClient implements Client {
-    private Hashtable<Object, Object> env = new Hashtable<Object, Object>();
 
-    private String url;
-    protected Destination queue;
-    protected int bodySize;
-
-    protected boolean durable = false;
-
-    protected Connection conn;
-
-    JMSClient() {}
+    protected String url = null;
+    protected Destination destination = null;
+    protected Connection connection = null;
 
     // JMS urls cannot have the query part
     private String filterURL() {
         String filteredUrl;
-        
-        int queryStartIndex = url.indexOf("?");
-        if (queryStartIndex != -1)
-        {
+
+        int queryStartIndex = url.indexOf('?');
+        if (queryStartIndex != -1) {
             filteredUrl = url.substring(0, queryStartIndex);
-        }
-        else {
+        } else {
             filteredUrl = url;
         }
 
@@ -65,64 +56,48 @@ class JMSClient implements Client {
 
     @Override
     public void start() throws Exception {
-        URI uri = new URI(url);
-        String path = uri.getPath().substring(1);
-
-        env.put("connectionFactory.ConnectionFactory", filterURL());
-
-        env.put("queue.queueLookup", path);
-
-        Context context = new InitialContext(env);
-
-        ConnectionFactory factory = (ConnectionFactory) context.lookup("ConnectionFactory");
-
-        Destination queue = (Destination) context.lookup("queueLookup");
-        setQueue(queue);
-
-        conn = factory.createConnection();
-        conn.start();
+        Destination destination;
+        Connection connection = null;
+        try {
+            final URI uri = new URI(url);
+            final String connectionUrl = filterURL();
+            final URLQuery urlQuery = new URLQuery(uri);
+            final JMSProtocol protocol = JMSProtocol.valueOf(urlQuery.getString("protocol", JMSProtocol.AMQP.name()));
+            final ConnectionFactory factory = protocol.createConnectionFactory(connectionUrl);
+            //doesn't need to use any enum yet
+            final String type = urlQuery.getString("type", "queue");
+            final String destinationName = uri.getPath().substring(1);
+            switch (type) {
+                case "queue":
+                    destination = protocol.createQueue(destinationName);
+                    break;
+                case "topic":
+                    destination = protocol.createTopic(destinationName);
+                    break;
+                default:
+                    throw new UnsupportedOperationException("not supported destination type: " + type);
+            }
+            connection = factory.createConnection();
+        } catch (Throwable t) {
+            JMSResourceUtil.capturingClose(connection);
+            throw t;
+        }
+        this.destination = destination;
+        this.connection = connection;
+        this.connection.start();
     }
 
     @Override
     public void stop() {
-        try {
-            conn.close();
-        } catch (JMSException e) {
-            e.printStackTrace();
+        final Throwable t = JMSResourceUtil.capturingClose(connection);
+        this.connection = null;
+        if (t != null) {
+            t.printStackTrace();
         }
     }
-
-    public Destination getQueue() {
-        return queue;
-    }
-
-    public void setQueue(Destination queue) {
-        this.queue = queue;
-    }
-
-
-
-    public int getBodySize() {
-        return bodySize;
-    }
-
-    public boolean isDurable() {
-        return durable;
-    }
-
-    protected Connection getConnection() {
-        return conn;
-    }
-
-    protected String getUrl() {
-        return url;
-    }
-
 
     @Override
     public void setUrl(String url) {
         this.url = url;
     }
-
-
 }

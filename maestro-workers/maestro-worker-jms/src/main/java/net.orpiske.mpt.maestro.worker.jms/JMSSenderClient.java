@@ -19,51 +19,48 @@ package net.orpiske.mpt.maestro.worker.jms;
 import net.orpiske.mpt.common.URLQuery;
 import net.orpiske.mpt.common.content.ContentStrategy;
 import net.orpiske.mpt.common.jms.SenderClient;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import java.net.URI;
 import java.nio.ByteBuffer;
 
 final class JMSSenderClient extends JMSClient implements SenderClient {
-    private static final Logger logger = LoggerFactory.getLogger(JMSSenderClient.class);
 
     private ContentStrategy contentStrategy;
-
     private Session session;
     private MessageProducer producer;
 
     @Override
     public void start() throws Exception {
         super.start();
-
-        session = super.getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
-
-        producer = session.createProducer(queue);
-
-        String url = super.getUrl();
-        URLQuery urlQuery = new URLQuery(new URI(url));
-
-        if (urlQuery.getBoolean("durable", false)) {
-            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+        try {
+            this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            this.producer = session.createProducer(destination);
+            final URLQuery urlQuery = new URLQuery(new URI(url));
+            final boolean durable = urlQuery.getBoolean("durable", false);
+            if (durable) {
+                producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+            } else {
+                producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+            }
+            final Integer priority = urlQuery.getInteger("priority", null);
+            if (priority != null) {
+                producer.setPriority(priority);
+            }
+            final Long ttl = urlQuery.getLong("ttl", null);
+            if (ttl != null) {
+                producer.setTimeToLive(ttl);
+            }
+            producer.setDisableMessageTimestamp(true);
+        } catch (Throwable t) {
+            JMSResourceUtil.capturingClose(this.producer);
+            this.producer = null;
+            JMSResourceUtil.capturingClose(this.session);
+            this.session = null;
+            JMSResourceUtil.capturingClose(this.connection);
+            this.connection = null;
+            throw t;
         }
-        else {
-            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-        }
-
-        Integer priority = urlQuery.getInteger("priority", null);
-        if (priority != null) {
-            producer.setPriority(priority);
-        }
-
-
-        Long ttl = urlQuery.getLong("ttl", null);
-        if (ttl != null) {
-            producer.setTimeToLive(ttl);
-        }
-
-        producer.setDisableMessageTimestamp(true);
     }
 
     @Override
@@ -85,5 +82,14 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
     @Override
     public void setContentStrategy(ContentStrategy contentStrategy) {
         this.contentStrategy = contentStrategy;
+    }
+
+    @Override
+    public void stop() {
+        JMSResourceUtil.capturingClose(producer);
+        this.producer = null;
+        JMSResourceUtil.capturingClose(session);
+        this.session = null;
+        super.stop();
     }
 }

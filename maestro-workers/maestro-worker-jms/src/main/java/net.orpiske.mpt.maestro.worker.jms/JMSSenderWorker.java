@@ -125,9 +125,9 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         startedEpochMillis = System.currentTimeMillis();
         logger.info("Starting the test");
 
+        final SenderClient client = this.clientFactory.get();
         try {
             final EpochMicroClock epochMicroClock = EpochClocks.exclusiveMicro();
-            final SenderClient client = this.clientFactory.get();
             client.setUrl(url);
             client.setContentStrategy(contentStrategy);
 
@@ -176,6 +176,9 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             logger.error("Unable to start the sender worker: {}", e.getMessage(), e);
 
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
+        } finally {
+            //the test could be considered already stopped here, but cleaning up JMS resources could take some time anyway
+            client.stop();
         }
     }
 

@@ -35,10 +35,18 @@ final class JMSReceiverClient extends JMSClient implements ReceiverClient {
     @Override
     public void start() throws Exception {
         super.start();
-
-        session = super.getConnection().createSession(false, Session.AUTO_ACKNOWLEDGE);
-        consumer = session.createConsumer(queue);
-        payloadBytes = ByteBuffer.allocate(PAYLOAD_SIZE).order(ContentStrategy.CONTENT_ENDIANNESS);
+        try {
+            session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            consumer = session.createConsumer(destination);
+            payloadBytes = ByteBuffer.allocate(PAYLOAD_SIZE).order(ContentStrategy.CONTENT_ENDIANNESS);
+        } catch (Throwable t) {
+            JMSResourceUtil.capturingClose(consumer);
+            this.consumer = null;
+            JMSResourceUtil.capturingClose(session);
+            this.session = null;
+            JMSResourceUtil.capturingClose(connection);
+            this.connection = null;
+        }
     }
 
 
@@ -58,5 +66,14 @@ final class JMSReceiverClient extends JMSClient implements ReceiverClient {
             return sendTime;
         }
         throw new IllegalStateException("the received message hasn't any benchmark payload");
+    }
+
+    @Override
+    public void stop() {
+        JMSResourceUtil.capturingClose(consumer);
+        this.consumer = null;
+        JMSResourceUtil.capturingClose(session);
+        this.session = null;
+        super.stop();
     }
 }
