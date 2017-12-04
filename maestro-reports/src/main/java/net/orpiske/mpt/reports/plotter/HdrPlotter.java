@@ -29,7 +29,7 @@ import java.io.IOException;
 public class HdrPlotter implements Plotter {
     private static Logger logger = LoggerFactory.getLogger(HdrPlotter.class);
 
-    private HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper();
+    private HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper("1000");
     private HdrReader reader = new HdrReader();
 
     @Override

@@ -38,13 +38,13 @@
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>hdr-histogram-plotter</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
         </dependency>
 
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>mpt-data-plotter</artifactId>
-            <version>1.0.2</version>
+            <version>1.0.3</version>
         </dependency>
 
         <dependency>
