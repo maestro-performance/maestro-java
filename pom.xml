@@ -66,20 +66,10 @@
         <module>maestro-exporter</module>
         <module>maestro-workers</module>
         <module>maestro-worker</module>
-
+        <module>maestro-test-scripts</module>
     </modules>
 
     <profiles>
-        <profile>
-            <id>Groovy</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-            <modules>
-                <module>maestro-test-scripts</module>
-            </modules>
-        </profile>
-
         <profile>
             <id>Delivery</id>
             <activation>
