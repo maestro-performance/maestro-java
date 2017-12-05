@@ -43,7 +43,7 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     // before downloading
     private void waitForFlush() {
         try {
-            Thread.sleep(2000);
+            Thread.sleep(10000);
         } catch (InterruptedException e) {
 
         }
