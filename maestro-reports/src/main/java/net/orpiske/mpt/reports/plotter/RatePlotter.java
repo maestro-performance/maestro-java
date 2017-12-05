@@ -18,6 +18,7 @@ package net.orpiske.mpt.reports.plotter;
 
 import net.orpiske.mdp.plot.RateData;
 import net.orpiske.mdp.plot.RateDataProcessor;
+import net.orpiske.mdp.plot.RatePropertyWriter;
 import net.orpiske.mdp.plot.RateReader;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -52,13 +53,15 @@ public class RatePlotter implements Plotter {
             // Plotter
             net.orpiske.mdp.plot.RatePlotter plotter = new net.orpiske.mdp.plot.RatePlotter(FilenameUtils.removeExtension(baseName));
             logger.debug("Number of records to plot: {} ", rateData.getRatePeriods().size());
-            for (Date d : rateData.getRatePeriods()) {
-                logger.debug("Adding date record for plotting: {}", d);
-            }
+//            for (Date d : rateData.getRatePeriods()) {
+//                logger.debug("Adding date record for plotting: {}", d);
+//            }
 
             plotter.setOutputWidth(1024);
             plotter.setOutputHeight(600);
             plotter.plot(rateData.getRatePeriods(), rateData.getRateValues());
+
+            RatePropertyWriter.write(rateData, file.getParentFile());
 
             return true;
         }

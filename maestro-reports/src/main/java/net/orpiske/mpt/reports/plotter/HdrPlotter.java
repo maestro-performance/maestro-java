@@ -34,6 +34,7 @@ public class HdrPlotter implements Plotter {
 
     @Override
     public boolean plot(File file) {
+        logger.debug("Plotting HDR file " + file);
         try {
             if (!file.exists()) {
                 throw new IOException("File " + file.getPath() + " does not exist");
@@ -54,7 +55,7 @@ public class HdrPlotter implements Plotter {
             return true;
         }
         catch (Throwable t) {
-            String baseName = FilenameUtils.removeExtension(file.getPath());
+            FilenameUtils.removeExtension(file.getPath());
 
             handlePlotException(file, t);
         }
