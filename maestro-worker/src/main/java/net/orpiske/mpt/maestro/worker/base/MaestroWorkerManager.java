@@ -315,12 +315,20 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         createSymlinks(failed);
     }
 
+    private void deleteLinkQuietly(File lastLink) {
+        try {
+            FileUtils.deleteDirectory(lastLink);
+        } catch (IOException e) {
+            logger.warn("Unable to delete last link: " + e.getMessage());
+        }
+    }
+
     private void createSymlinks(boolean failed) {
         File lastLogDir = findLastLogDir();
         Path target = Paths.get(lastLogDir.getAbsolutePath());
 
         Path lastLink = Paths.get(lastLogDir.getParent() + File.separator + "last");
-        FileUtils.deleteQuietly(lastLink.toFile());
+        deleteLinkQuietly(lastLink.toFile());
 
         try {
             Files.createSymbolicLink(lastLink, target);
