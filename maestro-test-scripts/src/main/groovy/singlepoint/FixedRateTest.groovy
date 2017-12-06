@@ -42,7 +42,7 @@ import net.orpiske.mpt.common.duration.TestDurationBuilder
 maestroURL = System.getenv("MAESTRO_BROKER")
 brokerURL = System.getenv("BROKER_URL")
 messageSize = System.getenv("MESSAGE_SIZE")
-duration = System.getenv("DURATION")
+duration = System.getenv("TEST_DURATION")
 rate = System.getenv("RATE")
 parallelCount = System.getenv("PARALLEL_COUNT")
 
