@@ -53,10 +53,18 @@ public abstract class AbstractRenderer {
             File currentDir = new File(Paths.get(".").toAbsolutePath().normalize().toString());
             FileLocator currentDirLocator = new FileLocator(currentDir);
 
-            File installDir = new File(Constants.HOME_DIR + File.separator + "templates");
-            FileLocator installDirLocator = new FileLocator(installDir);
+            File templateDir = new File(Constants.HOME_DIR + File.separator + "templates");
 
-            CascadingResourceLocator cr = new CascadingResourceLocator(currentDirLocator, installDirLocator);
+            CascadingResourceLocator cr;
+            if (templateDir.exists()) {
+                FileLocator installDirLocator = new FileLocator(templateDir);
+
+                cr = new CascadingResourceLocator(currentDirLocator, installDirLocator);
+            }
+            else {
+                logger.warn("A template directory was not found, therefore ignoring");
+                cr = new CascadingResourceLocator(currentDirLocator);
+            }
             jinjava.setResourceLocator(cr);
         } catch (FileNotFoundException e) {
             logger.warn("Unable to find the current working directory: " + e.getMessage(), e);
