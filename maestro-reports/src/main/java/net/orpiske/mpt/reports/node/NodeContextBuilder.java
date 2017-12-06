@@ -46,6 +46,7 @@ public class NodeContextBuilder {
 
         loadProperties(context, new File(file,"test.properties"));
         loadProperties(context, new File(file,"broker.properties"));
+        loadProperties(context, new File(file,"rate.properties"));
 
         return context;
     }

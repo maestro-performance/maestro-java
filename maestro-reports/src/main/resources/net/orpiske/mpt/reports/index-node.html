@@ -253,6 +253,38 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                     {% if rcvRateFilenameExists %}
 
                     <img src="{{rcvRateFilename}}" />
+
+                    <table>
+                        <tr>
+                            <th>Rate Metric</th>
+                            <th>Value</th>
+                        </tr>
+                        <tr>
+                            <td>Maximum Rate</td>
+                            <td>{{ rateMax }}</td>
+                        </tr>
+                        <tr>
+                            <td>Minimum Rate</td>
+                            <td>{{ rateMin }}</td>
+                        </tr>
+                        <tr>
+                            <td>Rate Samples</td>
+                            <td>{{ rateSamples }}</td>
+                        </tr>
+                        <tr>
+                            <td>Geometric Mean</td>
+                            <td>{{ rateGeometricMean }}</td>
+                        </tr>
+                        <tr>
+                            <td>Rate Samples</td>
+                            <td>{{ rateSamples }}</td>
+                        </tr>
+                        <tr>
+                            <td>Standard Deviation</td>
+                            <td>{{ rateStandardDeviation }}</td>
+                        </tr>
+                    </table>
+
                     {% else %}
 
                     <p><b>Error:</b> the plotted report file for this connection is missing. This
