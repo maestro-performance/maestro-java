@@ -36,7 +36,7 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
 
     @Override
     protected void processPingResponse(PingResponse note) {
-        logger.info("Elapsed time from {}: {} ms", note.getName(), note.getElapsed());
+        logger.debug("Elapsed time from {}: {} ms", note.getName(), note.getElapsed());
     }
 
     // Give some time for the backends to flush their data to disk
