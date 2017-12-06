@@ -254,6 +254,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 
                     <img src="{{rcvRateFilename}}" />
 
+                    <h3 id="rate-metrics">Rate Metrics</h3>
                     <table>
                         <tr>
                             <th>Rate Metric</th>
@@ -343,6 +344,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
             {% endif %}
             {% if nodeType == "receiver" or nodeType == "sender" %}
             <li><a href="#rate">Throughput Rate</a></li>
+            <li><a href="#rate-metrics">Rate Metrics</a></li>
             {% endif %}
             {% if nodeType == "inspector" %}
             <li><a href="#queue-size">Broker Queue Size</a></li>
