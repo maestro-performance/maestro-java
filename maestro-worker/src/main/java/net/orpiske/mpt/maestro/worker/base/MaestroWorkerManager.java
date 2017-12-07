@@ -316,6 +316,8 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
     }
 
     private void deleteLinkQuietly(File lastLink) {
+        logger.debug("Deleting link {} after completing the test", lastLink.getName());
+
         try {
             FileUtils.deleteDirectory(lastLink);
         } catch (IOException e) {
@@ -338,7 +340,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
         if (failed) {
             Path lastFailedLink = Paths.get(lastLogDir.getParent() + File.separator + "lastFailed");
-            FileUtils.deleteQuietly(lastFailedLink.toFile());
+            deleteLinkQuietly(lastFailedLink.toFile());
 
             try {
                 Files.createSymbolicLink(lastFailedLink, target);
@@ -348,7 +350,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         }
         else {
             Path lastSuccessfulLink = Paths.get(lastLogDir.getParent() + File.separator + "lastSuccessful");
-            FileUtils.deleteQuietly(lastSuccessfulLink.toFile());
+            deleteLinkQuietly(lastSuccessfulLink.toFile());
 
             try {
                 Files.createSymbolicLink(lastSuccessfulLink, target);
