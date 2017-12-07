@@ -23,9 +23,19 @@ import javax.jms.Topic;
 import java.util.function.Function;
 
 public enum JMSProtocol {
-    ARTEMIS(org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory::new, org.apache.activemq.artemis.jms.client.ActiveMQQueue::new, org.apache.activemq.artemis.jms.client.ActiveMQTopic::new),
-    AMQP(org.apache.qpid.jms.JmsConnectionFactory::new, org.apache.qpid.jms.JmsQueue::new, org.apache.qpid.jms.JmsTopic::new),
-    OPEN_WIRE(org.apache.activemq.ActiveMQConnectionFactory::new, org.apache.activemq.command.ActiveMQQueue::new, org.apache.activemq.command.ActiveMQTopic::new);
+    ARTEMIS(
+            org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory::new,
+            org.apache.activemq.artemis.jms.client.ActiveMQQueue::new,
+            org.apache.activemq.artemis.jms.client.ActiveMQTopic::new),
+
+    AMQP(
+            org.apache.qpid.jms.JmsConnectionFactory::new,
+            org.apache.qpid.jms.JmsQueue::new,
+            org.apache.qpid.jms.JmsTopic::new),
+    OPENWIRE(
+            org.apache.activemq.ActiveMQConnectionFactory::new,
+            org.apache.activemq.command.ActiveMQQueue::new,
+            org.apache.activemq.command.ActiveMQTopic::new);
 
     private final Function<String, ? extends ConnectionFactory> factory;
     private final Function<String, ? extends Queue> queueFactory;
