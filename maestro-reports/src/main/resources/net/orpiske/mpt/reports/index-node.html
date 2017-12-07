@@ -183,7 +183,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                         </tr>
                         <tr>
                             <td>Messaging Protocol</td>
-                            <td>AMQP</td>
+                            <td>{{ protocol | default('AMQP') }} </td>
                         </tr>
                         <tr>
                             <td>Test Duration</td>

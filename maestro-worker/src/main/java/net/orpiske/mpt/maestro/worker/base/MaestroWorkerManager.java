@@ -1,5 +1,6 @@
 package net.orpiske.mpt.maestro.worker.base;
 
+import net.orpiske.mpt.common.URLQuery;
 import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
@@ -16,6 +17,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -181,8 +184,16 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         testProperties.setRate(workerOptions.getRate());
         testProperties.setFcl(workerOptions.getFcl());
 
+        try {
+            final URLQuery urlQuery = new URLQuery(workerOptions.getBrokerURL());
+
+            testProperties.setProtocol(urlQuery.getString("protocol", "AMQP"));
+        } catch (URISyntaxException e) {
+            e.printStackTrace();
+        }
+
         // TODO: collect this
-        testProperties.setApiName(workerClass.getName());
+        testProperties.setApiName("JMS");
         testProperties.setApiVersion("undefined");
 
         testProperties.write(new File(testLogDir, "test.properties"));

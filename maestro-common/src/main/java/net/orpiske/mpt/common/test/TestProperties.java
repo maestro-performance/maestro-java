@@ -30,6 +30,7 @@ public class TestProperties implements MaestroTestProperties {
     private int fcl;
     private String apiName;
     private String apiVersion;
+    private String protocol;
 
     public void load(File testProperties) throws IOException {
         logger.trace("Reading properties from {}", testProperties.getPath());
@@ -63,6 +64,7 @@ public class TestProperties implements MaestroTestProperties {
 
             apiName = prop.getProperty("apiName");
             apiVersion = prop.getProperty("apiVersion");
+            protocol = prop.getProperty("protocol");
         }
 
     }
@@ -82,6 +84,7 @@ public class TestProperties implements MaestroTestProperties {
         prop.setProperty("fcl", Integer.toString(fcl));
         prop.setProperty("apiName", apiName);
         prop.setProperty("apiVersion", apiVersion);
+        prop.setProperty("protocol", protocol);
 
         try (FileOutputStream fos = new FileOutputStream(testProperties)) {
             prop.store(fos, "mpt");
@@ -195,4 +198,11 @@ public class TestProperties implements MaestroTestProperties {
         this.fcl = Integer.parseInt(fcl);
     }
 
+    public String getProtocol() {
+        return protocol;
+    }
+
+    public void setProtocol(String protocol) {
+        this.protocol = protocol;
+    }
 }

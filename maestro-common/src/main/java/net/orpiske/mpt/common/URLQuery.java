@@ -17,6 +17,15 @@ public class URLQuery {
 
     /**
      * Construtor
+     * @param uri a URI string
+     * @throws URISyntaxException
+     */
+    public URLQuery(final String uri) throws URISyntaxException {
+        this(new URI(uri));
+    }
+
+    /**
+     * Construtor
      * @param uri a URI object
      * @throws URISyntaxException
      */
