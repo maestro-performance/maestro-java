@@ -78,15 +78,20 @@ class JMSClient implements Client {
             final String destinationName = uri.getPath().substring(1);
             switch (type) {
                 case "queue":
+                    logger.debug("Creating a queue-based destination");
                     destination = protocol.createQueue(destinationName);
                     break;
                 case "topic":
+                    logger.debug("Creating a topic-based destination");
                     destination = protocol.createTopic(destinationName);
                     break;
                 default:
                     throw new UnsupportedOperationException("not supported destination type: " + type);
             }
+
+            logger.debug("Creating the connection");
             connection = factory.createConnection();
+            logger.debug("Connection created successfully");
         } catch (Throwable t) {
             JMSResourceUtil.capturingClose(connection);
             throw t;
