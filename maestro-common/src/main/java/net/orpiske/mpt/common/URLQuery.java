@@ -2,6 +2,8 @@ package net.orpiske.mpt.common;
 
 import org.apache.http.NameValuePair;
 import org.apache.http.client.utils.URLEncodedUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -13,10 +15,11 @@ import java.util.List;
  * "amqp://host/queue&parameter1=true&parameter2=value".
  */
 public class URLQuery {
+    private static final Logger logger = LoggerFactory.getLogger(URLQuery.class);
     private List<NameValuePair> params;
 
     /**
-     * Construtor
+     * Constructor
      * @param uri a URI string
      * @throws URISyntaxException
      */
@@ -25,7 +28,7 @@ public class URLQuery {
     }
 
     /**
-     * Construtor
+     * Constructor
      * @param uri a URI object
      * @throws URISyntaxException
      */
@@ -33,7 +36,7 @@ public class URLQuery {
          params = URLEncodedUtils.parse(uri, "UTF-8");
 
         for (NameValuePair param : params) {
-            System.out.println(param.getName() + " : " + param.getValue());
+            logger.trace("{}: {}", param.getName(), param.getValue());
         }
     }
 
