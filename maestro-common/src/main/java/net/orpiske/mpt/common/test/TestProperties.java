@@ -33,7 +33,7 @@ public class TestProperties implements MaestroTestProperties {
     private String protocol;
 
     public void load(final File testProperties) throws IOException {
-        logger.trace("Reading properties from {}", testProperties.getPath());
+        logger.debug("Reading properties from {}", testProperties.getPath());
 
         Properties prop = new Properties();
 
@@ -67,10 +67,12 @@ public class TestProperties implements MaestroTestProperties {
             protocol = prop.getProperty("protocol");
         }
 
+        logger.debug("Read properties: {}", this.toString());
     }
 
     public void write(final File testProperties) throws IOException {
-        logger.trace("Writing properties to {}", testProperties.getPath());
+        logger.debug("Writing properties to {}", testProperties.getPath());
+        logger.debug("Wrote properties: {}", this.toString());
 
         Properties prop = new Properties();
 
@@ -204,5 +206,22 @@ public class TestProperties implements MaestroTestProperties {
 
     public void setProtocol(final String protocol) {
         this.protocol = protocol;
+    }
+
+    @Override
+    public String toString() {
+        return "TestProperties{" +
+                "brokerUri='" + brokerUri + '\'' +
+                ", durationType='" + durationType + '\'' +
+                ", duration=" + duration +
+                ", parallelCount=" + parallelCount +
+                ", messageSize=" + messageSize +
+                ", variableSize=" + variableSize +
+                ", rate=" + rate +
+                ", fcl=" + fcl +
+                ", apiName='" + apiName + '\'' +
+                ", apiVersion='" + apiVersion + '\'' +
+                ", protocol='" + protocol + '\'' +
+                '}';
     }
 }
