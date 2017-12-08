@@ -105,11 +105,14 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     }
 
     private static void handleNegativeSampleError(final long sendTimeEpochMicros, final long nowInMicros) {
-        logger.error("Dropped sample: [SendTimeEpochMicros=" + sendTimeEpochMicros + "] > [ReceivedTimeEpochMicros=" + nowInMicros + "]");
+        logger.error("Dropped sample: SendTimeEpochMicros {} > ReceivedTimeEpochMicros {}",
+                sendTimeEpochMicros, nowInMicros);
     }
 
     private static void handleHugeSampleError(final long sendTimeEpochMicros, final long nowInMicros) {
-        logger.error("Normalized sample: [ReceivedTimeEpochMicros=" + nowInMicros + "] - [SendTimeEpochMicros=" + sendTimeEpochMicros + "] > " + HIGHEST_TRACKABLE_VALUE);
+        logger.error("Normalized sample: (ReceivedTimeEpochMicros {} - SendTimeEpochMicros {}) > " +
+                        HIGHEST_TRACKABLE_VALUE,
+                nowInMicros, sendTimeEpochMicros);
     }
 
     public void start() {

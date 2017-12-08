@@ -136,7 +136,12 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             long count = 0;
             final long intervalInNanos = this.rate > 0 ? (1_000_000_000L / rate) : 0;
             if (intervalInNanos > 0) {
-                logger.info("JMS Sender [" + Thread.currentThread().getId() + "] - has started firing events with interval= " + intervalInNanos + " ns [ " + rate + " msg/sec ]");
+
+                // TODO: logger complains about rate as a parameter. Check.
+                logger.info("JMS Sender Worker {} has started firing events with an interval of {} ns and rate of "
+                                + rate + " msg/sec",
+                        Thread.currentThread().getId(), intervalInNanos);
+
             }
             //it couldn't uses the Epoch in nanos because it could overflow pretty soon (less than 1 day)
             final long startFireEpochMicros = epochMicroClock.microTime();
@@ -168,7 +173,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             logger.info("Test completed successfully");
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS, null);
         } catch (InterruptedException e) {
-            logger.error("JMS Sender [" + Thread.currentThread().getId() + "] interrupted while sending messages: {}",
+            logger.error("JMS Sender Worker {} interrupted while sending messages: {}", Thread.currentThread().getId(),
                     e.getMessage());
 
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
