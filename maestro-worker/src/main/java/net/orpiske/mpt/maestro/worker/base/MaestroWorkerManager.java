@@ -134,15 +134,13 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         client.replyOk();
     }
 
-    private void writeTestProperties(File testLogDir) throws IOException {
+    private void writeTestProperties(File testLogDir) throws IOException, URISyntaxException, DurationParseException {
         TestProperties testProperties = new TestProperties();
 
         testProperties.setBrokerUri(workerOptions.getBrokerURL());
-        try {
-            testProperties.setDuration(workerOptions.getDuration());
-        } catch (DurationParseException e) {
-            logger.warn("Failed to parse duration while saving the test properties: {}", e.getMessage(), e);
-        }
+
+        testProperties.setDuration(workerOptions.getDuration());
+
         testProperties.setParallelCount(workerOptions.getParallelCount());
 
         // Note: it already sets the variable size flag for variable message sizes
@@ -151,13 +149,10 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         testProperties.setRate(workerOptions.getRate());
         testProperties.setFcl(workerOptions.getFcl());
 
-        try {
-            final URLQuery urlQuery = new URLQuery(workerOptions.getBrokerURL());
+        final URLQuery urlQuery = new URLQuery(workerOptions.getBrokerURL());
 
-            testProperties.setProtocol(urlQuery.getString("protocol", "AMQP"));
-        } catch (URISyntaxException e) {
-            e.printStackTrace();
-        }
+        testProperties.setProtocol(urlQuery.getString("protocol", "AMQP"));
+
 
         // TODO: collect this
         testProperties.setApiName("JMS");
@@ -177,11 +172,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
         try {
             writeTestProperties(testLogDir);
-        } catch (IOException e) {
-            logger.warn("Unable to write test properties: {}", e.getMessage(), e);
-        }
 
-        try {
             final List<MaestroWorker> workers = new ArrayList<>();
             logger.debug("Starting the workers {}", workerClass);
             container.start(workerClass, workers, this::onStoppedWorkers);
@@ -206,7 +197,6 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
                     shutdownAndWaitWriters();
                 }));
             }
-
 
             client.replyOk();
         } catch (Exception e) {
