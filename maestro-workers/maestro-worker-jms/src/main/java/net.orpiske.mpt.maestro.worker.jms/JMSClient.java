@@ -28,6 +28,8 @@ package net.orpiske.mpt.maestro.worker.jms;
 
 import net.orpiske.mpt.common.URLQuery;
 import net.orpiske.mpt.common.jms.Client;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
@@ -35,6 +37,7 @@ import javax.jms.Destination;
 import java.net.URI;
 
 class JMSClient implements Client {
+    private static final Logger logger = LoggerFactory.getLogger(JMSClient.class);
 
     protected String url = null;
     protected Destination destination = null;
@@ -56,13 +59,19 @@ class JMSClient implements Client {
 
     @Override
     public void start() throws Exception {
+        logger.debug("Starting the JMS client");
+
         Destination destination;
         Connection connection = null;
         try {
             final URI uri = new URI(url);
             final String connectionUrl = filterURL();
             final URLQuery urlQuery = new URLQuery(uri);
-            final JMSProtocol protocol = JMSProtocol.valueOf(urlQuery.getString("protocol", JMSProtocol.AMQP.name()));
+
+            final String protocolName = urlQuery.getString("protocol", JMSProtocol.AMQP.name());
+            final JMSProtocol protocol = JMSProtocol.valueOf(protocolName);
+            logger.debug("JMS client is running test with the protocol {}", protocolName);
+
             final ConnectionFactory factory = protocol.createConnectionFactory(connectionUrl);
             //doesn't need to use any enum yet
             final String type = urlQuery.getString("type", "queue");
@@ -89,6 +98,7 @@ class JMSClient implements Client {
 
     @Override
     public void stop() {
+        logger.debug("Stopping the JMS client");
         final Throwable t = JMSResourceUtil.capturingClose(connection);
         this.connection = null;
         if (t != null) {
