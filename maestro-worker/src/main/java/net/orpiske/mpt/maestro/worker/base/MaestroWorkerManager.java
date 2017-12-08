@@ -199,11 +199,13 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
             }
 
             client.replyOk();
+            return true;
         } catch (Exception e) {
             logger.error("Unable to start workers from the container: {}", e.getMessage(), e);
             client.replyInternalError();
         }
-        return true;
+
+        return false;
     }
 
     private void shutdownAndWaitWriters(){
