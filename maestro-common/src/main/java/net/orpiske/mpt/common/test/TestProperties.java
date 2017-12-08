@@ -32,7 +32,7 @@ public class TestProperties implements MaestroTestProperties {
     private String apiVersion;
     private String protocol;
 
-    public void load(File testProperties) throws IOException {
+    public void load(final File testProperties) throws IOException {
         logger.trace("Reading properties from {}", testProperties.getPath());
 
         Properties prop = new Properties();
@@ -69,7 +69,7 @@ public class TestProperties implements MaestroTestProperties {
 
     }
 
-    public void write(File testProperties) throws IOException {
+    public void write(final File testProperties) throws IOException {
         logger.trace("Writing properties to {}", testProperties.getPath());
 
         Properties prop = new Properties();
@@ -95,7 +95,7 @@ public class TestProperties implements MaestroTestProperties {
         return brokerUri;
     }
 
-    public void setBrokerUri(String brokerUri) {
+    public void setBrokerUri(final String brokerUri) {
         this.brokerUri = brokerUri;
     }
 
@@ -103,7 +103,7 @@ public class TestProperties implements MaestroTestProperties {
         return durationType;
     }
 
-    public void setDurationType(String durationType) {
+    public void setDurationType(final String durationType) {
         this.durationType = durationType;
     }
 
@@ -111,7 +111,7 @@ public class TestProperties implements MaestroTestProperties {
         this.duration = duration;
     }
 
-    public void setDuration(String durationSpec) throws DurationParseException {
+    public void setDuration(final String durationSpec) throws DurationParseException {
         TestDuration td = TestDurationBuilder.build(durationSpec);
 
         this.duration = td.getNumericDuration();
@@ -130,7 +130,7 @@ public class TestProperties implements MaestroTestProperties {
         this.messageSize = messageSize;
     }
 
-    public void setMessageSize(String messageSize) {
+    public void setMessageSize(final String messageSize) {
         if (MessageSize.isVariable(messageSize)) {
             setVariableSize(true);
         }
@@ -142,7 +142,7 @@ public class TestProperties implements MaestroTestProperties {
         this.rate = rate;
     }
 
-    public void setRate(String rate) {
+    public void setRate(final String rate) {
         this.rate = Integer.parseInt(rate);
     }
 
@@ -150,7 +150,7 @@ public class TestProperties implements MaestroTestProperties {
         return apiName;
     }
 
-    public void setApiName(String apiName) {
+    public void setApiName(final String apiName) {
         this.apiName = apiName;
     }
 
@@ -158,7 +158,7 @@ public class TestProperties implements MaestroTestProperties {
         return apiVersion;
     }
 
-    public void setApiVersion(String apiVersion) {
+    public void setApiVersion(final String apiVersion) {
         this.apiVersion = apiVersion;
     }
 
@@ -194,7 +194,7 @@ public class TestProperties implements MaestroTestProperties {
         this.fcl = fcl;
     }
 
-    public void setFcl(String fcl) {
+    public void setFcl(final String fcl) {
         this.fcl = Integer.parseInt(fcl);
     }
 
@@ -202,7 +202,7 @@ public class TestProperties implements MaestroTestProperties {
         return protocol;
     }
 
-    public void setProtocol(String protocol) {
+    public void setProtocol(final String protocol) {
         this.protocol = protocol;
     }
 }
