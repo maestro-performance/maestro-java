@@ -149,6 +149,21 @@
 
     <profiles>
         <profile>
+            <id>Test</id>
+            <activation>
+                <activeByDefault>false</activeByDefault>
+            </activation>
+
+            <dependencies>
+                <dependency>
+                    <groupId>net.orpiske</groupId>
+                    <artifactId>maestro-worker-jms</artifactId>
+                    <version>1.2.0-SNAPSHOT</version>
+                </dependency>
+            </dependencies>
+
+        </profile>
+        <profile>
             <id>Package</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
