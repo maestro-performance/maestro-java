@@ -52,6 +52,14 @@
             <artifactId>bmic-data-plotter</artifactId>
             <version>1.0.3</version>
         </dependency>
+
+        <!-- Junit (for tests only) -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -66,6 +74,15 @@
                     <compilerArgument>-Xlint:all</compilerArgument>
                     <showWarnings>true</showWarnings>
                     <showDeprecation>true</showDeprecation>
+                </configuration>
+            </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>2.20.1</version>
+                <configuration>
+                    <argLine>-Dnet.orpiske.mpt.maestro.home=${project.build.directory}/test-classes/</argLine>
                 </configuration>
             </plugin>
         </plugins>
