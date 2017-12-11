@@ -29,7 +29,7 @@ public class FileExists implements Filter {
     @Override
     public Object filter(Object var, JinjavaInterpreter jinjavaInterpreter, String... strings) {
         String filename = (String) var;
-        logger.warn("Processing filter argument for {} with arg len {}", filename,
+        logger.debug("Processing filter argument for {} with arg len {}", filename,
                 strings.length);
 
         if (strings.length < 2) {
@@ -38,7 +38,7 @@ public class FileExists implements Filter {
 
         File file = new File(strings[0] + File.separator + strings[1] + File.separator + filename);
 
-        logger.info("Checking whether the path {} exists", file.getPath());
+        logger.debug("Checking whether the path {} exists", file.getPath());
         return file.exists();
     }
 

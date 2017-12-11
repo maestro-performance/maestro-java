@@ -16,11 +16,10 @@
 
 package net.orpiske.mpt.reports;
 
-import net.orpiske.mpt.reports.plotter.BmicPlotter;
-import net.orpiske.mpt.reports.plotter.HdrPlotter;
-import net.orpiske.mpt.reports.plotter.RatePlotter;
+import net.orpiske.mpt.reports.files.BmicReportFile;
+import net.orpiske.mpt.reports.files.MptReportFile;
+import net.orpiske.mpt.reports.files.ReportFile;
 import org.apache.commons.io.DirectoryWalker;
-import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,29 +42,19 @@ public class ReportDirProcessor extends DirectoryWalker {
     }
 
     private void plotHdr(File file) {
-        HdrPlotter plotter = new HdrPlotter();
-
-        plotter.plot(file);
-
         String normalizedName = file.getPath().replace(initialPath, "");
-        files.add(new HdrHistogramReportFile(new File(normalizedName)));
+        files.add(new HdrHistogramReportFile(file, new File(normalizedName)));
     }
 
     private void plotRate(File file) {
-        RatePlotter plotter = new RatePlotter();
-
-        plotter.plot(file);
-
         String normalizedName = file.getPath().replace(initialPath, "");
-        files.add(new MptReportFile(new File(normalizedName)));
+        files.add(new MptReportFile(file, new File(normalizedName)));
     }
 
     private void plotInspector(File file) {
-        BmicPlotter plotter = new BmicPlotter();
-
-        plotter.plot(file);
         String normalizedName = file.getPath().replace(initialPath, "");
-        files.add(new MptReportFile(new File(normalizedName)));
+        files.add(new BmicReportFile(file, new File(normalizedName)));
+
     }
 
 

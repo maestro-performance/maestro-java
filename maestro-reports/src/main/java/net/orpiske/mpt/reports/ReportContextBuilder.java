@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.reports;
 
+import net.orpiske.mpt.reports.files.ReportFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

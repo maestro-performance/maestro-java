@@ -16,8 +16,8 @@
 
 package net.orpiske.mpt.reports.plotter;
 
-import net.orpiske.mpt.reports.MptReportFile;
-import net.orpiske.mpt.reports.ReportFile;
+import net.orpiske.mpt.reports.files.MptReportFile;
+import net.orpiske.mpt.reports.files.ReportFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +33,7 @@ public interface Plotter {
         logger.error("Unable to plot report file {}: {}", file.getPath(), t.getMessage());
         logger.trace("Exception: ", t);
 
-        ReportFile reportFile = new MptReportFile(file);
+        ReportFile reportFile = new MptReportFile(null, file);
         reportFile.setReportSuccessful(false);
         reportFile.setReportFailure(t);
 

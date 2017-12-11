@@ -16,16 +16,21 @@
 
 package net.orpiske.mpt.reports;
 
+import net.orpiske.mpt.reports.files.BmicReportFile;
+import net.orpiske.mpt.reports.files.MptReportFile;
+import net.orpiske.mpt.reports.files.ReportFile;
 import net.orpiske.mpt.reports.index.IndexRenderer;
 import net.orpiske.mpt.reports.node.NodeContextBuilder;
 import net.orpiske.mpt.reports.node.NodeReportRenderer;
+import net.orpiske.mpt.reports.plotter.BmicPlotter;
+import net.orpiske.mpt.reports.plotter.HdrPlotter;
+import net.orpiske.mpt.reports.plotter.RatePlotter;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -33,15 +38,73 @@ import java.util.Set;
 public class ReportGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ReportGenerator.class);
 
+    private static void plotMptReportFile(ReportFile reportFile) {
+        logger.debug("Will report file {} on thread {}", reportFile, Thread.currentThread().getId());
+
+        try {
+            if (reportFile instanceof MptReportFile) {
+                RatePlotter plotter = new RatePlotter();
+
+                plotter.plot(reportFile.getSourceFile());
+            } else {
+                if (reportFile instanceof BmicReportFile) {
+                    BmicPlotter plotter = new BmicPlotter();
+
+                    plotter.plot(reportFile.getSourceFile());
+                }
+                else {
+                    throw new Exception("Invalid report file for: " + reportFile.getSourceFile());
+                }
+            }
+        }
+        catch (Throwable t) {
+            logger.error("Unable to plot file {}: {}", reportFile.getSourceFile(), t.getMessage(), t);
+        }
+    }
+
+    private static void plotLatencyReportFile(ReportFile reportFile) {
+        logger.debug("Will report file {} on thread {}", reportFile, Thread.currentThread().getId());
+
+        try {
+            if (reportFile instanceof HdrHistogramReportFile) {
+                logger.info("Plotting latency from {}", reportFile);
+
+                HdrPlotter plotter = new HdrPlotter();
+
+                plotter.plot(reportFile.getSourceFile());
+            } else {
+                throw new Exception("Invalid report file for: " + reportFile.getSourceFile());
+            }
+        }
+        catch (Throwable t) {
+            logger.error("Unable to plot file {}: {}", reportFile.getSourceFile(), t.getMessage(), t);
+        }
+    }
+
     public static void generate(String path) {
         File baseDir = new File(path);
 
+        // Step 1: build the file list for processing
+        logger.info("Building the file list to be processed by the report generator");
         ReportDirProcessor processor = new ReportDirProcessor(path);
-        List<ReportFile> tmpList = processor.generate(baseDir);
+        final List<ReportFile> fileList = processor.generate(baseDir);
+        logger.info("There are {} files to be processed", fileList.size());
 
-        Map<String, Object> context = ReportContextBuilder.toContext(tmpList, baseDir);
+        fileList.parallelStream()
+                .filter(item -> item.getSourceFile().getName().endsWith("csv.gz"))
+                .forEach(ReportGenerator::plotMptReportFile);
 
-        // Generate the host report
+        // NOTE: this one is not thread-safe. This may have something to do
+        // with capturing the console and so on.
+        // TODO: find a better way to handle this
+        fileList.stream()
+                .filter(item -> item.getSourceFile().getName().endsWith("hdr"))
+                .forEach(ReportGenerator::plotLatencyReportFile);
+
+
+        // Step 2: build the report context
+        Map<String, Object> context = ReportContextBuilder.toContext(fileList, baseDir);
+
         Set<ReportDirInfo> reports = (Set<ReportDirInfo>) context.get("reportDirs");
 
         for (ReportDirInfo report : reports) {

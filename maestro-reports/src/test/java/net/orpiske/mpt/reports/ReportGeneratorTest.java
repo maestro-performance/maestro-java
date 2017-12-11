@@ -18,6 +18,7 @@ package net.orpiske.mpt.reports;
 
 import net.orpiske.mpt.common.Constants;
 import net.orpiske.mpt.common.LogConfigurator;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.io.File;
@@ -30,6 +31,11 @@ public class ReportGeneratorTest {
     private static final String HOST_01 = "fake-01.host.com";
     private static final String HOST_02 = "fake-02.host.com";
     private static final String HOST_03 = "fake-03.host.com";
+
+    @Before
+    public void setUp() throws Exception {
+        LogConfigurator.silent();
+    }
 
     private void validateReportFile(final File baseDir, final List<String> files, final List<String> ignoreList) {
         for (String reportFileName : files) {
@@ -118,7 +124,6 @@ public class ReportGeneratorTest {
     public void testGenerate() {
         String path = this.getClass().getResource("/data-ok").getPath();
 
-        System.out.println(Constants.HOME_DIR);
 
         ReportGenerator.generate(path);
 
@@ -136,8 +141,6 @@ public class ReportGeneratorTest {
     public void testGenerateMissingLatency() {
         String path = this.getClass().getResource("/data-missing-latency").getPath();
 
-        System.out.println(Constants.HOME_DIR);
-
         ReportGenerator.generate(path);
 
         File indexFile = new File(path, "index.html");
@@ -154,8 +157,6 @@ public class ReportGeneratorTest {
     @Test
     public void testGenerateEmptyRateRecords() {
         String path = this.getClass().getResource("/data-empty-sender-rate-records").getPath();
-
-        System.out.println(Constants.HOME_DIR);
 
         ReportGenerator.generate(path);
 

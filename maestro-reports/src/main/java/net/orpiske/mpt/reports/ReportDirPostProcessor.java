@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.reports;
 
+import net.orpiske.mpt.reports.files.ReportFile;
 import org.apache.commons.io.DirectoryWalker;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;

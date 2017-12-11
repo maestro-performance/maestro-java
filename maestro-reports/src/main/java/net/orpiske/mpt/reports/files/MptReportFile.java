@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.reports;
+package net.orpiske.mpt.reports.files;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -23,11 +23,11 @@ import java.io.File;
 public class MptReportFile extends ReportFile {
     private File rateImg;
 
-    public MptReportFile(File file) {
-        super(file);
+    public MptReportFile(File sourceFile, File normalizedFile) {
+        super(sourceFile, normalizedFile);
 
         // Removes the gz
-        String baseName = FilenameUtils.removeExtension(file.getPath());
+        String baseName = FilenameUtils.removeExtension(normalizedFile.getPath());
         // Removes the csv
         baseName = FilenameUtils.removeExtension(baseName);
 

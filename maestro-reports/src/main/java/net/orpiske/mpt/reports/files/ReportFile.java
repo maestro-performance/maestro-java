@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.reports;
+package net.orpiske.mpt.reports.files;
 
 import net.orpiske.mpt.reports.node.NodeType;
 import org.apache.commons.io.FilenameUtils;
@@ -26,7 +26,9 @@ import java.io.File;
 public class ReportFile {
     private static final Logger logger = LoggerFactory.getLogger(ReportFile.class);
 
-    private File file;
+    private File sourceFile;
+    private File normalizedFile;
+
     private boolean reportSuccessful = true;
     private Throwable reportFailure;
     private NodeType nodeType;
@@ -34,12 +36,13 @@ public class ReportFile {
     private int testNum;
     private boolean testSuccessful = false;
 
-    public ReportFile(File file) {
-        this.file = file;
+    public ReportFile(File sourceFile, File normalizedFile) {
+        this.sourceFile = sourceFile;
+        this.normalizedFile = normalizedFile;
 
-        nodeType = NodeType.parse(file.getName());
+        nodeType = NodeType.parse(normalizedFile.getName());
 
-        File hostDir = file.getParentFile();
+        File hostDir = normalizedFile.getParentFile();
         nodeHost = FilenameUtils.getBaseName(hostDir.getName());
 
         File testNumDir = hostDir.getParentFile();
@@ -47,7 +50,7 @@ public class ReportFile {
             testNum = Integer.parseInt(FilenameUtils.getBaseName(testNumDir.getName()));
         }
         catch (RuntimeException e) {
-            logger.error("Incorrect report directory layout for: {}", file.getPath(), e);
+            logger.error("Incorrect report directory layout for: {}", normalizedFile.getPath(), e);
             throw e;
         }
 
@@ -94,7 +97,19 @@ public class ReportFile {
     }
 
     public String getReportDir() {
-        return file.getParent();
+        return normalizedFile.getParent();
+    }
+
+    public File getNormalizedFile() {
+        return this.normalizedFile;
+    }
+
+    public File getSourceFile() {
+        return sourceFile;
+    }
+
+    public void setSourceFile(File sourceFile) {
+        this.sourceFile = sourceFile;
     }
 
     @Override
@@ -107,7 +122,7 @@ public class ReportFile {
         if (reportSuccessful != that.reportSuccessful) return false;
         if (testNum != that.testNum) return false;
         if (testSuccessful != that.testSuccessful) return false;
-        if (file != null ? !file.equals(that.file) : that.file != null) return false;
+        if (normalizedFile != null ? !normalizedFile.equals(that.normalizedFile) : that.normalizedFile != null) return false;
         if (reportFailure != null ? !reportFailure.equals(that.reportFailure) : that.reportFailure != null)
             return false;
         if (nodeType != that.nodeType) return false;
@@ -116,7 +131,7 @@ public class ReportFile {
 
     @Override
     public int hashCode() {
-        int result = file != null ? file.hashCode() : 0;
+        int result = normalizedFile != null ? normalizedFile.hashCode() : 0;
         result = 31 * result + (reportSuccessful ? 1 : 0);
         result = 31 * result + (reportFailure != null ? reportFailure.hashCode() : 0);
         result = 31 * result + (nodeType != null ? nodeType.hashCode() : 0);
@@ -124,5 +139,19 @@ public class ReportFile {
         result = 31 * result + testNum;
         result = 31 * result + (testSuccessful ? 1 : 0);
         return result;
+    }
+
+    @Override
+    public String toString() {
+        return "ReportFile{" +
+                "sourceFile=" + sourceFile +
+                ", normalizedFile=" + normalizedFile +
+                ", reportSuccessful=" + reportSuccessful +
+                ", reportFailure=" + reportFailure +
+                ", nodeType=" + nodeType +
+                ", nodeHost='" + nodeHost + '\'' +
+                ", testNum=" + testNum +
+                ", testSuccessful=" + testSuccessful +
+                '}';
     }
 }

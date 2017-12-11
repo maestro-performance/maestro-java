@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.reports;
 
+import net.orpiske.mpt.reports.files.ReportFile;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
@@ -25,10 +26,10 @@ public class HdrHistogramReportFile extends ReportFile {
     private File percentileImg90;
     private File percentileImg99;
 
-    public HdrHistogramReportFile(File file) {
-        super(file);
+    public HdrHistogramReportFile(final File sourceFile, final File normalizedFile) {
+        super(sourceFile, normalizedFile);
 
-        String basename = FilenameUtils.removeExtension(file.getPath());
+        String basename = FilenameUtils.removeExtension(normalizedFile.getPath());
 
         percentileImgAll = new File(basename + "_all.png");
         percentileImg90 = new File(basename + "_90.png");
