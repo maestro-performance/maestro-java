@@ -65,7 +65,8 @@ class JMSClient implements Client {
         Connection connection = null;
         try {
             final URI uri = new URI(url);
-            final String connectionUrl = filterURL();
+            final String path = uri.getPath();
+            final String connectionUrl = filterURL().replace(path,"");
             final URLQuery urlQuery = new URLQuery(uri);
 
             final String protocolName = urlQuery.getString("protocol", JMSProtocol.AMQP.name());
@@ -75,7 +76,7 @@ class JMSClient implements Client {
             final ConnectionFactory factory = protocol.createConnectionFactory(connectionUrl);
             //doesn't need to use any enum yet
             final String type = urlQuery.getString("type", "queue");
-            final String destinationName = uri.getPath().substring(1);
+            final String destinationName = path.substring(1);
             switch (type) {
                 case "queue":
                     logger.debug("Creating a queue-based destination");

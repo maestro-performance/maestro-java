@@ -142,7 +142,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
                     } else if (elapsedMicros == 0) {
                         logger.warn("Registered Latency of 0: please consider to improve timestamp precision");
                     } else if (elapsedMicros > HIGHEST_TRACKABLE_VALUE) {
-                        handleNegativeSampleError(sendTimeEpochMicros, nowInMicros);
+                        handleHugeSampleError(sendTimeEpochMicros, nowInMicros);
                         //record it but avoid histogram to throw any error
                         elapsedMicros = HIGHEST_TRACKABLE_VALUE;
                     }
