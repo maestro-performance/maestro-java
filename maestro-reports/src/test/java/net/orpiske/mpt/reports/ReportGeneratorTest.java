@@ -17,6 +17,7 @@
 package net.orpiske.mpt.reports;
 
 import net.orpiske.mpt.common.Constants;
+import net.orpiske.mpt.common.LogConfigurator;
 import org.junit.Test;
 
 import java.io.File;
@@ -30,60 +31,64 @@ public class ReportGeneratorTest {
     private static final String HOST_02 = "fake-02.host.com";
     private static final String HOST_03 = "fake-03.host.com";
 
-    private void validateReportFile(File baseDir, List<String> files) {
+    private void validateReportFile(final File baseDir, final List<String> files, final List<String> ignoreList) {
         for (String reportFileName : files) {
             File reportFile = new File(baseDir, reportFileName);
 
-            assertTrue("Report file " + reportFile + " does not exist", reportFile.exists());
+            if (!ignoreList.contains(reportFileName)) {
+                assertTrue("Report file " + reportFile + " does not exist", reportFile.exists());
+            }
         }
     }
 
-    private void validateReceiverReport(File baseDir) {
+    private void validateReceiverReport(File baseDir, final List<String> ignoreList) {
         validateReportFile(baseDir, Arrays.asList("favicon.png", "index.html", "rate.properties",
-                "receiverd-rate_rate.png", "test.properties"));
+                "receiverd-rate_rate.png", "receiverd-latency_90.png", "receiverd-latency_99.png",
+                "receiverd-latency_all.png", "test.properties"), ignoreList);
     }
 
-    private void validateSenderReport(File baseDir) {
+    private void validateSenderReport(File baseDir, final List<String> ignoreList) {
         validateReportFile(baseDir, Arrays.asList("favicon.png", "index.html", "rate.properties",
-                "senderd-rate_rate.png", "test.properties"));
+                "senderd-rate_rate.png", "test.properties"), ignoreList);
     }
 
-    private void validateInspectorReport(File baseDir) {
+    private void validateInspectorReport(File baseDir, final List<String> ignoreList) {
         validateReportFile(baseDir, Arrays.asList("favicon.png", "index.html", "broker-jvm-inspector_tenured_memory.png",
                 "broker-jvm-inspector_memory.png", "broker-jvm-inspector_pm_memory.png",
                 "broker-jvm-inspector_survivor_memory.png", "broker-jvm-inspector_queue_data.png",
                 "broker-jvm-inspector_eden_memory.png", "broker.properties",
-                "test.properties"));
+                "test.properties"), ignoreList);
     }
 
-    private void validateDirectoryContents(File baseDir) {
-        if (baseDir.getParentFile().getParent().equals("receiver")) {
-            validateReceiverReport(new File(baseDir, HOST_01));
-            validateReceiverReport(new File(baseDir, HOST_02));
+    private void validateDirectoryContents(File baseDir, final List<String> ignoreList) {
+        if (baseDir.getParentFile().getParentFile().getName().equals("receiver")) {
+            validateReceiverReport(new File(baseDir, HOST_01), ignoreList);
+            validateReceiverReport(new File(baseDir, HOST_02), ignoreList);
         }
         else {
-            if (baseDir.getParentFile().getParent().equals("sender")) {
-                validateSenderReport(new File(baseDir, HOST_01));
-                validateSenderReport(new File(baseDir, HOST_02));
+            if (baseDir.getParentFile().getParentFile().getName().equals("sender")) {
+                validateSenderReport(new File(baseDir, HOST_01), ignoreList);
+                validateSenderReport(new File(baseDir, HOST_02), ignoreList);
             }
             else {
-                if (baseDir.getParentFile().getParent().equals("inspector")) {
-                    validateInspectorReport(new File(baseDir, HOST_03));
+                if (baseDir.getParentFile().getParentFile().getName().equals("inspector")) {
+                    validateInspectorReport(new File(baseDir, HOST_03), ignoreList);
                 }
             }
         }
 
     }
 
-    private void validateResultSubDirectoryStructure(File baseDir, int start, int testCount) {
+    private void validateResultSubDirectoryStructure(File baseDir, int start, int testCount, final List<String> ignoreList) {
         for (int i = start; i < testCount; i++) {
             File testResultSubDir = new File(baseDir, Integer.toString(i));
 
             assertTrue("Test result sub-directory is missing: " + testResultSubDir, testResultSubDir.exists());
+            validateDirectoryContents(testResultSubDir, ignoreList);
         }
     }
 
-    private void validateResultDirectoryStructure(File baseDir) {
+    private void validateResultDirectoryStructure(File baseDir, final List<String> ignoreList) {
         File successDir = new File(baseDir, "success");
         File failedDir = new File(baseDir, "failed");
 
@@ -91,20 +96,21 @@ public class ReportGeneratorTest {
                 successDir.exists() || failedDir.exists());
 
         if (successDir.exists()) {
-            validateResultSubDirectoryStructure(successDir, 0, 4);
+            validateResultSubDirectoryStructure(successDir, 0, 4, ignoreList);
         }
 
         if (failedDir.exists()) {
-            validateResultSubDirectoryStructure(failedDir, 4, 4);
+            validateResultSubDirectoryStructure(failedDir, 4, 4, ignoreList);
         }
     }
 
-    private void validateRoleDirectoryStructure(File baseDir, final List<String> role) {
+    private void validateRoleDirectoryStructure(final File baseDir, final List<String> role,
+                                                final List<String> ignoreList) {
         for (String roleName : role) {
             File rolePathDir = new File(baseDir, roleName);
 
             assertTrue("Directory for role " + roleName + " does not exist", rolePathDir.exists());
-            validateResultDirectoryStructure(rolePathDir);
+            validateResultDirectoryStructure(rolePathDir, ignoreList);
         }
     }
 
@@ -119,6 +125,45 @@ public class ReportGeneratorTest {
         File indexFile = new File(path, "index.html");
         assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
 
-        validateRoleDirectoryStructure(new File(path), Arrays.asList("inspector", "receiver", "sender"));
+        validateRoleDirectoryStructure(new File(path),
+                Arrays.asList("inspector", "receiver", "sender"), Arrays.asList());
+    }
+
+    /**
+     * Ensures that the report is generated even if critical information is missing
+     */
+    @Test
+    public void testGenerateMissingLatency() {
+        String path = this.getClass().getResource("/data-missing-latency").getPath();
+
+        System.out.println(Constants.HOME_DIR);
+
+        ReportGenerator.generate(path);
+
+        File indexFile = new File(path, "index.html");
+        assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
+
+        validateRoleDirectoryStructure(new File(path),
+                Arrays.asList("inspector", "receiver", "sender"),
+                Arrays.asList("receiverd-latency_90.png", "receiverd-latency_99.png", "receiverd-latency_all.png"));
+    }
+
+    /**
+     * Ensures that the report is generated even if critical information is missing
+     */
+    @Test
+    public void testGenerateEmptyRateRecords() {
+        String path = this.getClass().getResource("/data-empty-sender-rate-records").getPath();
+
+        System.out.println(Constants.HOME_DIR);
+
+        ReportGenerator.generate(path);
+
+        File indexFile = new File(path, "index.html");
+        assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
+
+        validateRoleDirectoryStructure(new File(path),
+                Arrays.asList("sender"),
+                Arrays.asList("rate.properties"));
     }
 }
