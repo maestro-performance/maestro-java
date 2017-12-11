@@ -26,6 +26,13 @@
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>maestro-worker-jms</artifactId>
+
+    <properties>
+        <qpid-jms-client.version>0.27.0</qpid-jms-client.version>
+        <artemis-jms-client.version>2.4.0</artemis-jms-client.version>
+        <activemq-client.version>5.15.2</activemq-client.version>
+    </properties>
+
     <build>
         <plugins>
             <plugin>
@@ -93,11 +100,6 @@
             <version>${activemq-client.version}</version>
         </dependency>
 
-        <dependency>
-            <groupId>org.apache.geronimo.specs</groupId>
-            <artifactId>geronimo-jms_2.0_spec</artifactId>
-            <version>1.0-alpha-2</version>
-        </dependency>
     </dependencies>
 
 
