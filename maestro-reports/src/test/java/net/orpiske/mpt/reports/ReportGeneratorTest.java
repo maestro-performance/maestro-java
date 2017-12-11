@@ -26,8 +26,8 @@ import static org.junit.Assert.*;
 public class ReportGeneratorTest {
 
     @Test
-    public void testGenerateSender() {
-        String path = this.getClass().getResource("/data-ok/sender").getPath();
+    public void testGenerate() {
+        String path = this.getClass().getResource("/data-ok").getPath();
 
         System.out.println(Constants.HOME_DIR);
 
