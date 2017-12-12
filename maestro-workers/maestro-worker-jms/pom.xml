@@ -84,6 +84,14 @@
             <version>1.2.0-SNAPSHOT</version>
         </dependency>
 
+        <!-- This one is required for Artemis client -->
+        <dependency>
+            <groupId>commons-logging</groupId>
+            <artifactId>commons-logging</artifactId>
+            <version>1.2</version>
+        </dependency>
+
+        <!-- JMS clients -->
         <dependency>
             <groupId>org.apache.qpid</groupId>
             <artifactId>qpid-jms-client</artifactId>
