@@ -74,9 +74,16 @@ class JMSClient implements Client {
             logger.debug("JMS client is running test with the protocol {}", protocolName);
 
             final ConnectionFactory factory = protocol.createConnectionFactory(connectionUrl);
+            logger.debug("Connection factory created");
+
             //doesn't need to use any enum yet
             final String type = urlQuery.getString("type", "queue");
+            logger.debug("Requested destination type: {}", type);
+
             final String destinationName = path.substring(1);
+            logger.debug("Requested destination name: {}", destinationName);
+
+
             switch (type) {
                 case "queue":
                     logger.debug("Creating a queue-based destination");
@@ -94,6 +101,8 @@ class JMSClient implements Client {
             connection = factory.createConnection();
             logger.debug("Connection created successfully");
         } catch (Throwable t) {
+            logger.warn("Something wrong happened while initializing the JMS client: {}", t.getMessage(), t);
+
             JMSResourceUtil.capturingClose(connection);
             throw t;
         }

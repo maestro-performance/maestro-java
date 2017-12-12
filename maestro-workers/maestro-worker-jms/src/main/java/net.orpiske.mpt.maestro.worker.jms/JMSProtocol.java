@@ -17,12 +17,17 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import javax.jms.ConnectionFactory;
 import javax.jms.Queue;
 import javax.jms.Topic;
 import java.util.function.Function;
 
 public enum JMSProtocol {
+
+
     ARTEMIS(
             org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory::new,
             org.apache.activemq.artemis.jms.client.ActiveMQQueue::new,
@@ -37,6 +42,8 @@ public enum JMSProtocol {
             org.apache.activemq.command.ActiveMQQueue::new,
             org.apache.activemq.command.ActiveMQTopic::new);
 
+    private static final Logger logger = LoggerFactory.getLogger(JMSProtocol.class);
+
     private final Function<String, ? extends ConnectionFactory> factory;
     private final Function<String, ? extends Queue> queueFactory;
     private final Function<String, ? extends Topic> topicFactory;
@@ -50,6 +57,8 @@ public enum JMSProtocol {
     }
 
     ConnectionFactory createConnectionFactory(String uri) {
+        logger.debug("Creating an {} connection to {}", this.name(), uri);
+
         return factory.apply(uri);
     }
 
