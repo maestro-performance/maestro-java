@@ -47,4 +47,4 @@ fi
 
 mainclass=net.orpiske.mpt.main.Main
 
-java -classpath "$installdir"/bin/*maestro-cli-*.jar -Dnet.orpiske.mpt.maestro.home="$installdir" -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory "$mainclass" $@
+java -classpath "$installdir"/bin/*maestro-cli-*.jar -Dnet.orpiske.mpt.maestro.home="$installdir" -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory -Djava.awt.headless=true "$mainclass" $@
