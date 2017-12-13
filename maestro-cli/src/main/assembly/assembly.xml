@@ -72,8 +72,15 @@
 		</fileSet>
 
 		<fileSet>
-			<directory>${project.basedir}/src/main/config</directory>
+			<directory>${project.basedir}/src/main/resources/config</directory>
 			<outputDirectory>/config</outputDirectory>
+			<includes>
+				<include>**/*.*</include>
+			</includes>
+		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/src/main/resources/templates</directory>
+			<outputDirectory>/templates</outputDirectory>
 			<includes>
 				<include>**/*.*</include>
 			</includes>
