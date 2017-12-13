@@ -117,7 +117,7 @@ public class ReportGenerator {
 
         // Step 1: build the file list for processing
         logger.info("Building the file list to be processed by the report generator");
-        final ReportDirProcessor processor = new ReportDirProcessor(path);
+        final ReportDirectoryWalker processor = new ReportDirectoryWalker(path);
         final List<ReportFile> fileList = processor.generate(baseDir);
         logger.info("There are {} files to be processed", fileList.size());
 
@@ -131,6 +131,8 @@ public class ReportGenerator {
         fileList.stream()
                 .filter(item -> item.getSourceFile().getName().endsWith("hdr"))
                 .forEach(this::plotLatencyReportFile);
+
+
 
 
         // Step 2: build the report context

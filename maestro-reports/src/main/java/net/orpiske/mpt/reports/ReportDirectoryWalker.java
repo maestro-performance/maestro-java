@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.reports;
 
+import net.orpiske.mpt.common.Constants;
 import net.orpiske.mpt.reports.files.BmicReportFile;
 import net.orpiske.mpt.reports.files.MptReportFile;
 import net.orpiske.mpt.reports.files.ReportFile;
@@ -31,13 +32,18 @@ import java.util.Collection;
 import java.util.LinkedList;
 import java.util.List;
 
-public class ReportDirProcessor extends DirectoryWalker {
-    private static Logger logger = LoggerFactory.getLogger(ReportDirProcessor.class);
+/**
+ * Walks through the report directory in order to build the list of files to process
+ */
+final class ReportDirectoryWalker extends DirectoryWalker {
+    private static Logger logger = LoggerFactory.getLogger(ReportDirectoryWalker.class);
+
+
     private String initialPath;
 
     private List<ReportFile> files = new LinkedList<>();
 
-    public ReportDirProcessor(String initialPath) {
+    public ReportDirectoryWalker(String initialPath) {
         this.initialPath = initialPath;
     }
 
@@ -57,7 +63,6 @@ public class ReportDirProcessor extends DirectoryWalker {
 
     }
 
-
     @Override
     protected void handleFile(File file, int depth, Collection results)
             throws IOException
@@ -66,12 +71,12 @@ public class ReportDirProcessor extends DirectoryWalker {
         logger.debug("Processing file {}", file.getPath());
         String ext = FilenameUtils.getExtension(file.getName());
 
-        if (("hdr").equals(ext)) {
+        if (Constants.FILE_EXTENSION_HDR_HISTOGRAM.equals(ext)) {
             plotHdr(file);
         }
 
-        if (("gz").equals(ext)) {
-            if (!file.getName().contains("inspector")) {
+        if (Constants.FILE_EXTENSION_MPT_COMPRESSED.equals(ext)) {
+            if (!file.getName().contains(Constants.FILE_HINT_INSPECTOR)) {
                 plotRate(file);
             }
             else {
@@ -81,7 +86,7 @@ public class ReportDirProcessor extends DirectoryWalker {
     }
 
     @SuppressWarnings("unchecked")
-    public List<ReportFile> generate(final File reportsDir) {
+    List<ReportFile> generate(final File reportsDir) {
 
         if (logger.isDebugEnabled()) {
             logger.debug("Processing downloaded reports on {}", reportsDir.getName());

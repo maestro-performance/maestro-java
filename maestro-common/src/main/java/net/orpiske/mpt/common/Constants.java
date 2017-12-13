@@ -39,6 +39,20 @@ public final class Constants {
 		MAESTRO_CONFIG_DIR = System.getProperty(HOME_PROPERTY) + File.separator + "config";
 	}
 
+	/**
+	 * File extension for HDR histogram files
+	 */
+	public static final String FILE_EXTENSION_HDR_HISTOGRAM = "hdr";
+
+	/**
+	 * File extension for MPT and BMIC compressed rate files
+	 */
+	public static final String FILE_EXTENSION_MPT_COMPRESSED = "gz";
+
+	/**
+	 * File hint for inspector files
+	 */
+	public static final String FILE_HINT_INSPECTOR = "inspector";
 
 	/**
 	 * Restricted constructor
