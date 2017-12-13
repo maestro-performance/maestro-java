@@ -1,6 +1,5 @@
 package net.orpiske.mpt.main.actions;
 
-import net.orpiske.mpt.common.LogConfigurator;
 import net.orpiske.mpt.reports.ReportGenerator;
 import org.apache.commons.cli.*;
 
