@@ -73,7 +73,7 @@
 
 		<fileSet>
 			<directory>${project.basedir}/src/main/config</directory>
-			<outputDirectory>/conf</outputDirectory>
+			<outputDirectory>/config</outputDirectory>
 			<includes>
 				<include>**/*.*</include>
 			</includes>
