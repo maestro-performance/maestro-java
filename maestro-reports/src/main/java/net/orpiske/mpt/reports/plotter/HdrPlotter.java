@@ -33,8 +33,9 @@ public class HdrPlotter implements Plotter {
     private HdrReader reader = new HdrReader();
 
     @Override
-    public boolean plot(File file) {
-        logger.debug("Plotting HDR file " + file);
+    public boolean plot(final File file) {
+        logger.debug("Plotting HDR file {}", file.getPath());
+
         try {
             if (!file.exists()) {
                 throw new IOException("File " + file.getPath() + " does not exist");

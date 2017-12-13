@@ -25,9 +25,9 @@ import java.io.File;
 import java.util.Properties;
 
 public interface Plotter {
-    boolean plot(File file);
+    boolean plot(final File file);
 
-    default void handlePlotException(File file, Throwable t) {
+    default void handlePlotException(final File file, final Throwable t) {
         Logger logger = LoggerFactory.getLogger(Plotter.class);
 
         logger.error("Unable to plot report file {}: {}", file.getPath(), t.getMessage());

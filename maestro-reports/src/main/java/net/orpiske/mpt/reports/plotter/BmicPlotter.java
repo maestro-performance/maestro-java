@@ -31,7 +31,9 @@ public class BmicPlotter implements Plotter {
     private BmicReader bmicReader = new BmicReader();
 
     @Override
-    public boolean plot(File file) {
+    public boolean plot(final File file) {
+        logger.debug("Plotting BMIC file {}", file.getPath());
+
         // Removes the gz
         String baseName = FilenameUtils.removeExtension(file.getPath());
         // Removes the csv
