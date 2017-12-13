@@ -1,15 +1,41 @@
 package net.orpiske.mpt.main.actions;
 
 import net.orpiske.mpt.reports.ReportGenerator;
+import net.orpiske.mpt.reports.plotter.HdrPlotterWrapper;
+import net.orpiske.mpt.reports.plotter.PlotterWrapperFactory;
 import net.orpiske.mpt.reports.processors.DiskCleaner;
 import org.apache.commons.cli.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ReportAction extends Action {
+    private static final String DEFAULT_TIME_UNIT = "1000";
     private CommandLine cmdLine;
     private Options options;
 
     private String directory;
     private boolean clean;
+
+
+    private static class HdrPlotterWrapperFactory implements PlotterWrapperFactory<HdrPlotterWrapper> {
+        private static final Logger logger = LoggerFactory.getLogger(HdrPlotterWrapperFactory.class);
+        private String unitRate;
+
+        public HdrPlotterWrapperFactory(final String unitRate) {
+            this.unitRate = unitRate;
+
+            logger.info("Creating a custom HDR Plotter Factory");
+        }
+
+        @Override
+        public HdrPlotterWrapper newPlotterWrapper() {
+            HdrPlotterWrapper ret = new HdrPlotterWrapper(unitRate);
+
+            return ret;
+        }
+    }
+
+    private HdrPlotterWrapperFactory hdrPlotterWrapperFactory;
 
     public ReportAction(String[] args) {
         processCommand(args);
@@ -24,6 +50,7 @@ public class ReportAction extends Action {
         options.addOption("d", "directory", true, "the directory to generate the report");
         options.addOption("l", "log-level", true, "the log level to use [trace, debug, info, warn]");
         options.addOption("C", "clean", false, "clean the report directory after processing");
+        options.addOption("r", "unit-rate", false, "unit-rate to use [default: 1000]");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -46,6 +73,13 @@ public class ReportAction extends Action {
         configureLogLevel(logLevel);
 
         clean = cmdLine.hasOption('C');
+
+        String timeUnit = cmdLine.getOptionValue('r');
+        if (timeUnit == null) {
+            timeUnit = DEFAULT_TIME_UNIT;
+        }
+
+        hdrPlotterWrapperFactory = new HdrPlotterWrapperFactory(timeUnit);
     }
 
     public int run() {
@@ -56,6 +90,7 @@ public class ReportAction extends Action {
                 reportGenerator.getPostProcessors().add(new DiskCleaner());
             }
 
+            reportGenerator.setHdrPlotterWrapperFactory(hdrPlotterWrapperFactory);
             reportGenerator.generate();
             return 0;
         }

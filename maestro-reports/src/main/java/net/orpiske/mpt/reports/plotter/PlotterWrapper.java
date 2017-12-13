@@ -24,11 +24,11 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.Properties;
 
-public interface Plotter {
+public interface PlotterWrapper {
     boolean plot(final File file);
 
     default void handlePlotException(final File file, final Throwable t) {
-        Logger logger = LoggerFactory.getLogger(Plotter.class);
+        Logger logger = LoggerFactory.getLogger(PlotterWrapper.class);
 
         logger.error("Unable to plot report file {}: {}", file.getPath(), t.getMessage());
         logger.trace("Exception: ", t);

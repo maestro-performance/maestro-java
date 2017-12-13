@@ -22,9 +22,7 @@ import net.orpiske.mpt.reports.files.ReportFile;
 import net.orpiske.mpt.reports.index.IndexRenderer;
 import net.orpiske.mpt.reports.node.NodeContextBuilder;
 import net.orpiske.mpt.reports.node.NodeReportRenderer;
-import net.orpiske.mpt.reports.plotter.BmicPlotter;
-import net.orpiske.mpt.reports.plotter.HdrPlotter;
-import net.orpiske.mpt.reports.plotter.RatePlotter;
+import net.orpiske.mpt.reports.plotter.*;
 import net.orpiske.mpt.reports.processors.ReportFileProcessor;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
@@ -43,6 +41,13 @@ public class ReportGenerator {
     private List<ReportFileProcessor> preProcessors = new LinkedList<>();
     private List<ReportFileProcessor> postProcessors = new LinkedList<>();
 
+    // Probably this is not the best way to do what I want (to be able to create different types of
+    // plotter objects) but it gives the flexibility I need now.
+    // TODO: clean up this
+    private PlotterWrapperFactory<BmicPlotterWrapper> bmicPlotterWrapperFactory = new BmicPlotterWrapperFactory();
+    private PlotterWrapperFactory<HdrPlotterWrapper> hdrPlotterWrapperFactory = new HdrPlotterWrapperFactory();
+    private PlotterWrapperFactory<RatePlotterWrapper> ratePlotterWrapperFactory = new RatePlotterWrapperFactory();
+
     private String path;
 
     public ReportGenerator(final String path) {
@@ -54,12 +59,12 @@ public class ReportGenerator {
 
         try {
             if (reportFile instanceof MptReportFile) {
-                RatePlotter plotter = new RatePlotter();
+                RatePlotterWrapper plotter = ratePlotterWrapperFactory.newPlotterWrapper();
 
                 plotter.plot(reportFile.getSourceFile());
             } else {
                 if (reportFile instanceof BmicReportFile) {
-                    BmicPlotter plotter = new BmicPlotter();
+                    BmicPlotterWrapper plotter = bmicPlotterWrapperFactory.newPlotterWrapper();
 
                     plotter.plot(reportFile.getSourceFile());
                 }
@@ -80,7 +85,7 @@ public class ReportGenerator {
             if (reportFile instanceof HdrHistogramReportFile) {
                 logger.info("Plotting latency from {}", reportFile);
 
-                HdrPlotter plotter = new HdrPlotter();
+                HdrPlotterWrapper plotter = hdrPlotterWrapperFactory.newPlotterWrapper();
 
                 plotter.plot(reportFile.getSourceFile());
             } else {
@@ -162,6 +167,18 @@ public class ReportGenerator {
 
     public List<ReportFileProcessor> getPostProcessors() {
         return postProcessors;
+    }
+
+    public void setBmicPlotterWrapperFactory(PlotterWrapperFactory<BmicPlotterWrapper> bmicPlotterWrapperFactory) {
+        this.bmicPlotterWrapperFactory = bmicPlotterWrapperFactory;
+    }
+
+    public void setHdrPlotterWrapperFactory(PlotterWrapperFactory<HdrPlotterWrapper> hdrPlotterWrapperFactory) {
+        this.hdrPlotterWrapperFactory = hdrPlotterWrapperFactory;
+    }
+
+    public void setRatePlotterWrapperFactory(PlotterWrapperFactory<RatePlotterWrapper> ratePlotterWrapperFactory) {
+        this.ratePlotterWrapperFactory = ratePlotterWrapperFactory;
     }
 
     @Deprecated

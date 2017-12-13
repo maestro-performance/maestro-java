@@ -26,8 +26,8 @@ import java.io.File;
 import java.io.IOException;
 import java.util.Date;
 
-public class BmicPlotter implements Plotter {
-    private static final Logger logger = LoggerFactory.getLogger(BmicPlotter.class);
+public class BmicPlotterWrapper implements PlotterWrapper {
+    private static final Logger logger = LoggerFactory.getLogger(BmicPlotterWrapper.class);
     private BmicReader bmicReader = new BmicReader();
 
     @Override
@@ -46,7 +46,7 @@ public class BmicPlotter implements Plotter {
 
             BmicData bmicData = bmicReader.read(file.getPath());
 
-            // Plotter
+            // PlotterWrapper
             net.orpiske.bmic.plot.BmicPlotter plotter = new net.orpiske.bmic.plot.BmicPlotter(baseName);
             logger.debug("Number of records to plot: {} ", bmicData.getTimestamps().size());
             for (Date d : bmicData.getTimestamps()) {

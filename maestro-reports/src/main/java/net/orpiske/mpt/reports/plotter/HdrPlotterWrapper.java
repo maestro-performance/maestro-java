@@ -26,11 +26,20 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 
-public class HdrPlotter implements Plotter {
-    private static Logger logger = LoggerFactory.getLogger(HdrPlotter.class);
+public class HdrPlotterWrapper implements PlotterWrapper {
+    private static Logger logger = LoggerFactory.getLogger(HdrPlotterWrapper.class);
+    private static String DEFAULT_UNIT_RATE = "1000";
 
-    private HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper("1000");
+    private HdrLogProcessorWrapper processorWrapper;
     private HdrReader reader = new HdrReader();
+
+    public HdrPlotterWrapper() {
+        this(DEFAULT_UNIT_RATE);
+    }
+
+    public HdrPlotterWrapper(final String unitRate) {
+         processorWrapper = new HdrLogProcessorWrapper(unitRate);
+    }
 
     @Override
     public boolean plot(final File file) {
@@ -46,7 +55,7 @@ public class HdrPlotter implements Plotter {
             // CSV Reader
             HdrData hdrData = reader.read(csvFile);
 
-            // HdrPlotter
+            // HdrPlotterWrapper
             net.orpiske.hhp.plot.HdrPlotter plotter = new net.orpiske.hhp.plot.HdrPlotter(FilenameUtils.removeExtension(file.getPath()));
 
             plotter.setOutputWidth(1024);
