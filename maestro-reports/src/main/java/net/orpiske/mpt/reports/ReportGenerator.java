@@ -25,18 +25,24 @@ import net.orpiske.mpt.reports.node.NodeReportRenderer;
 import net.orpiske.mpt.reports.plotter.BmicPlotter;
 import net.orpiske.mpt.reports.plotter.HdrPlotter;
 import net.orpiske.mpt.reports.plotter.RatePlotter;
+import net.orpiske.mpt.reports.processors.ReportFileProcessor;
 import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 public class ReportGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ReportGenerator.class);
+
+    private List<ReportFileProcessor> preProcessors = new LinkedList<>();
+    private List<ReportFileProcessor> postProcessors = new LinkedList<>();
+
     private String path;
 
     public ReportGenerator(final String path) {
@@ -133,21 +139,29 @@ public class ReportGenerator {
                 .forEach(this::plotLatencyReportFile);
 
 
+        // Step 2: execute the pre-processors
+        preProcessors.stream().forEach(item -> item.process(fileList));
 
-
-        // Step 2: build the report context
+        // Step 3: build the report context
         Map<String, Object> context = ReportContextBuilder.toContext(fileList, baseDir);
         Set<ReportDirInfo> reports = (Set<ReportDirInfo>) context.get("reportDirs");
 
-        // Step 3: render the pages for each host
+        // Step 4: render the pages for each host
         reports.parallelStream().forEach(item -> renderNodePage(baseDir, item));
 
-        // Step 4: render the index page
+        // Step 5: render the index page
         renderReportIndex(baseDir, context);
 
-        // Step 5: clean the disk
-        ReportDirPostProcessor postProcessor = new ReportDirPostProcessor(path);
-        postProcessor.postProcess(baseDir);
+        // Step 6: execute the post-processors
+        postProcessors.stream().forEach(item -> item.process(fileList));
+    }
+
+    public List<ReportFileProcessor> getPreProcessors() {
+        return preProcessors;
+    }
+
+    public List<ReportFileProcessor> getPostProcessors() {
+        return postProcessors;
     }
 
     @Deprecated

@@ -1,6 +1,7 @@
 package net.orpiske.mpt.main.actions;
 
 import net.orpiske.mpt.reports.ReportGenerator;
+import net.orpiske.mpt.reports.processors.DiskCleaner;
 import org.apache.commons.cli.*;
 
 public class ReportAction extends Action {
@@ -8,6 +9,7 @@ public class ReportAction extends Action {
     private Options options;
 
     private String directory;
+    private boolean clean;
 
     public ReportAction(String[] args) {
         processCommand(args);
@@ -21,6 +23,7 @@ public class ReportAction extends Action {
         options.addOption("h", "help", false, "prints the help");
         options.addOption("d", "directory", true, "the directory to generate the report");
         options.addOption("l", "log-level", true, "the log level to use [trace, debug, info, warn]");
+        options.addOption("C", "clean", false, "clean the report directory after processing");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -41,11 +44,19 @@ public class ReportAction extends Action {
 
         String logLevel = cmdLine.getOptionValue('l');
         configureLogLevel(logLevel);
+
+        clean = cmdLine.hasOption('C');
     }
 
     public int run() {
         try {
-            ReportGenerator.generate(directory);
+            ReportGenerator reportGenerator = new ReportGenerator(directory);
+
+            if (clean) {
+                reportGenerator.getPostProcessors().add(new DiskCleaner());
+            }
+
+            reportGenerator.generate();
             return 0;
         }
         catch (Exception e) {
