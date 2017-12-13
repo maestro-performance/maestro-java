@@ -186,12 +186,20 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                             <td>{{ protocol | default('AMQP') }} </td>
                         </tr>
                         <tr>
+                            <td>API Name</td>
+                            <td>{{ apiName }} </td>
+                        </tr>
+                        <tr>
+                            <td>API Version</td>
+                            <td>{{ apiVersion }}</td>
+                        </tr>
+                        <tr>
                             <td>Test Duration</td>
                             <td>{{ duration }} seconds</td>
                         </tr>
                         <tr>
                             <td>Concurrent Connections</td>
-                            <td>{{parallelCount}}</td>
+                            <td>{{ parallelCount }}</td>
                         </tr>
                     </table>
                 </div>
