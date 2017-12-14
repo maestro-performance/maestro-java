@@ -54,15 +54,18 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
      */
     void start();
 
+
     /**
      * Stops the test execution
      */
     void stop();
 
+
     /**
      * Halt the daemons
      */
     void halt();
+
 
     /**
      * It is the single consumer channel that emit event of the worker.
@@ -72,6 +75,7 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
     default OneToOneWorkerChannel workerChannel() {
         return null;
     }
+
 
     /**
      * It is able to take a snapshot of the current recorder latencies.
@@ -84,4 +88,10 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
     }
 
 
+    /**
+     * When multiple workers are involved, set the number of the worker
+     *
+     * @param number the number of this worker
+     */
+    void setWorkerNumber(int number);
 }

@@ -46,6 +46,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     private String url;
     private long rate = 0;
+    private int number;
 
     private final Supplier<? extends SenderClient> clientFactory;
 
@@ -102,6 +103,11 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
     @Override
+    public void setWorkerNumber(int number) {
+        this.number = number;
+    }
+
+    @Override
     public void setWorkerOptions(WorkerOptions workerOptions) {
         setRate(workerOptions.getRate());
         setDuration(workerOptions.getDuration());
@@ -132,6 +138,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             client.setContentStrategy(contentStrategy);
 
             workerStateInfo.setState(true, null, null);
+            client.setNumber(number);
             client.start();
             long count = 0;
             final long intervalInNanos = this.rate > 0 ? (1_000_000_000L / rate) : 0;

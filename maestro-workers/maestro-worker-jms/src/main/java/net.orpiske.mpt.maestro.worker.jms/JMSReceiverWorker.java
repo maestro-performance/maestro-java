@@ -52,6 +52,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
     private String url;
     private final Supplier<? extends ReceiverClient> clientFactory;
+    private int number;
 
     @Override
     public OneToOneWorkerChannel workerChannel() {
@@ -99,6 +100,11 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     }
 
     @Override
+    public void setWorkerNumber(int number) {
+        this.number = number;
+    }
+
+    @Override
     public void setWorkerOptions(WorkerOptions workerOptions) {
         setBroker(workerOptions.getBrokerURL());
         setDuration(workerOptions.getDuration());
@@ -126,6 +132,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
             client.setUrl(url);
 
             workerStateInfo.setState(true, null, null);
+            client.setNumber(number);
             client.start();
 
             long count = 0;

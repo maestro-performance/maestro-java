@@ -17,11 +17,33 @@
 
 package net.orpiske.mpt.common.jms;
 
+/**
+ * A generic interface for implementing any kind of Maestro client
+ */
 public interface Client {
 
+    /**
+     * Start the client
+     * @throws Exception
+     */
     void start() throws Exception;
 
+    /**
+     * Stops the client
+     */
     void stop();
 
+
+    /**
+     * Set the target URL
+     * @param url
+     */
     void setUrl(String url);
+
+
+    /**
+     * Set the client number
+     * @param number
+     */
+    void setNumber(int number);
 }

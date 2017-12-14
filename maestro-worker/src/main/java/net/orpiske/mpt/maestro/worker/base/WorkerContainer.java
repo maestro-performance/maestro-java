@@ -79,6 +79,7 @@ public final class WorkerContainer {
             final WorkerRuntimeInfo ri = new WorkerRuntimeInfo();
             ri.worker = clazz.newInstance();
             ri.worker.setWorkerOptions(workerOptions);
+            ri.worker.setWorkerNumber(i);
             ri.thread = new Thread(ri.worker);
             ri.thread.start();
             workerRuntimeInfos.add(ri);

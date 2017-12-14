@@ -97,6 +97,11 @@ public class WorkerChannelWriterSanityTest {
         public long messageCount() {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public void setWorkerNumber(int number) {
+            // NO-OP
+        }
     }
 
     private static final class DummySenderWorker extends DummyWorker implements MaestroSenderWorker {

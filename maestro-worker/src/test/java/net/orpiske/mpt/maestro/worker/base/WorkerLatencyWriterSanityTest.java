@@ -86,6 +86,11 @@ public class WorkerLatencyWriterSanityTest {
         public long messageCount() {
             throw new UnsupportedOperationException();
         }
+
+        @Override
+        public void setWorkerNumber(int number) {
+            // NO-OP
+        }
     }
 
     private static final class DummyReceiverWorker extends DummyWorker implements MaestroReceiverWorker {

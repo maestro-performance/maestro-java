@@ -43,6 +43,8 @@ class JMSClient implements Client {
     protected Destination destination = null;
     protected Connection connection = null;
 
+    protected int number;
+
     // JMS urls cannot have the query part
     private String filterURL() {
         String filteredUrl;
@@ -55,6 +57,14 @@ class JMSClient implements Client {
         }
 
         return filteredUrl;
+    }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
     }
 
     @Override
@@ -80,9 +90,14 @@ class JMSClient implements Client {
             final String type = urlQuery.getString("type", "queue");
             logger.debug("Requested destination type: {}", type);
 
-            final String destinationName = path.substring(1);
+            String destinationName = path.substring(1);
             logger.debug("Requested destination name: {}", destinationName);
 
+            if (urlQuery.getBoolean("appendClientNumber", false)) {
+                logger.info("Client requested a client-specific destination");
+                destinationName = destinationName.concat(".").concat(Integer.toString(number));
+                logger.info("Requested destination name after appending client-specific number: {}", destinationName);
+            }
 
             switch (type) {
                 case "queue":
