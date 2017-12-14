@@ -71,11 +71,11 @@ public class URLQuery {
             return defaultValue;
         }
 
-        if (value.equals("true")) {
+        if (value.toLowerCase().equals("true")) {
             return true;
         }
         else {
-            if (value.equals("false")) {
+            if (value.toLowerCase().equals("false")) {
                 return false;
             }
         }
