@@ -59,38 +59,54 @@ class WorkerWatchdog implements Runnable {
     public void run() {
         logger.info("Running the worker watchdog");
         running = true;
+        boolean successful = true;
+        String exceptionMessage = null;
 
         try {
             while (running && workersRunning()) {
                 try {
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    logger.info("The worker thread was interrupted", e);
 
                     break;
                 }
             }
 
 
-            //TODO check if notifyFailure should happen before or after waiting the workers to stop
+            // NOTE: flushing the data and creating the symlinks must happen before
+            // the notification. Otherwise, the front-end risk collecting outdated
+            // records/logs
             for (WorkerRuntimeInfo ri : workers) {
                 WorkerStateInfo wsi = ri.worker.getWorkerState();
 
                 if (!wsi.isRunning()) {
                     if (!isCleanExit(wsi)) {
-                        endpoint.notifyFailure(wsi.getException().getMessage());
+                        successful = false;
+                        exceptionMessage = wsi.getException().getMessage();
 
-                        return;
+                        break;
                     }
                 }
             }
-
         } finally {
+            logger.debug("Waiting for flushing workers's data");
             this.onWorkersStopped.accept(workers);
+
+            if (successful) {
+                endpoint.notifySuccess("Test completed successfully");
+            }
+            else {
+                if (exceptionMessage != null) {
+                    endpoint.notifyFailure(exceptionMessage);
+                }
+                else {
+                    endpoint.notifyFailure("Unhandled worker error");
+                }
+            }
         }
 
-        endpoint.notifySuccess("Test completed successfully");
-        logger.info("Running the worker watchdog");
+        logger.info("Finished running the worker watchdog");
     }
 
     public boolean isRunning() {
