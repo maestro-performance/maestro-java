@@ -24,6 +24,7 @@ Run:
 
 ```
 
+
 Using as Library
 ----
 
@@ -67,6 +68,20 @@ If you maintain your own Maven repository, you can deploy this library using:
 ```
 mvn deploy -DaltDeploymentRepository=libs-snapshot::default::http://hostname:8081/path/to/libs-snapshot-local
 ```
+
+Usage - Runtime Parameters and Message Customization
+----
+
+The following parameters can be set for the JMS worker/client:
+
+| Parameter Name    | Default Value       | Description          |
+|-------------------|---------------------|----------------------|
+| `protocol` | `AMQP` | The underlying messaging protocol to use (one of AMQP, OPENWIRE, ARTEMIS) |
+| `type` | queue | Destination type ('queue' or 'topic') |
+| `ttl` | 5000 | Time to live. |
+| `durable` | true | Durable flag for the message |
+| `priority` | null | Message priority |
+| `appendClientNumber` | `false` | Whether to append the client number to the destination, thus creating a dedicated queue per client |
 
 Samples
 ----
