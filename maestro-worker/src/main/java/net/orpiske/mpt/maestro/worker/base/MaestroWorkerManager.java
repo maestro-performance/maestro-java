@@ -156,7 +156,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
         // TODO: collect this
         testProperties.setApiName("JMS");
-        testProperties.setApiVersion("undefined");
+        testProperties.setApiVersion("1.1");
 
         testProperties.write(new File(testLogDir, "test.properties"));
     }
