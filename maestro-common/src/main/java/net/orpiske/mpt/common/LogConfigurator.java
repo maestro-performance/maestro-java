@@ -42,6 +42,7 @@ public class LogConfigurator {
         properties.setProperty(
                 "log4j.appender.stdout.layout.ConversionPattern",
                 "%C.%M:%L [%p] %m%n");
+        properties.setProperty("log4j.additivity.net.orpiske", "false");
     }
 
     private static void configureTrace(Properties properties) {
