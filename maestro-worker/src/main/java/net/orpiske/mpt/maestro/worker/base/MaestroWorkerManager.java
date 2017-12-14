@@ -269,7 +269,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
             shutdownAndWaitWriters();
             final long elapsedMillis = System.currentTimeMillis() - startWaitingWorkers;
-            logger.info("Awaiting workers and Shutting down writers took {} ms", elapsedMillis);
+            logger.info("Awaiting workers and shutting down writers took {} ms", elapsedMillis);
         }
 
         boolean failed = false;
