@@ -43,7 +43,7 @@ class JMSClient implements Client {
     protected Destination destination = null;
     protected Connection connection = null;
 
-    protected int number;
+    protected int number = -1;
 
     // JMS urls cannot have the query part
     private String filterURL() {
@@ -93,10 +93,23 @@ class JMSClient implements Client {
             String destinationName = path.substring(1);
             logger.debug("Requested destination name: {}", destinationName);
 
-            if (urlQuery.getBoolean("appendClientNumber", false)) {
-                logger.info("Client requested a client-specific destination");
-                destinationName = destinationName.concat(".").concat(Integer.toString(number));
-                logger.info("Requested destination name after appending client-specific number: {}", destinationName);
+            final Integer configuredLimitDestinations = urlQuery.getInteger("limitDestinations", null);
+
+            if (configuredLimitDestinations != null) {
+                if (number < 0) {
+                    throw new IllegalArgumentException("JMSClient::number msut be >= 0 when limitDestinations is configured");
+                }
+                final int limitDestinations = configuredLimitDestinations;
+                if (limitDestinations <= 0) {
+                    throw new IllegalArgumentException("limitDestinations must be > 0");
+                }
+                logger.info("Client requested a client-specific limit to the number of destinations: {}", limitDestinations);
+                final int destinationId = number % limitDestinations;
+                destinationName = destinationName + '.' + destinationId;
+                logger.info("Requested destination name after using client-specific limit to the number of destinations: {}", destinationName);
+            } else {
+                //original behaviour maintained for backward compatibility
+                logger.info("Requested destination name: {}", destinationName);
             }
 
             switch (type) {
