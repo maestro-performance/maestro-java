@@ -123,8 +123,8 @@ public interface MaestroRequester {
 
     /**
      *
-     * Sends a set message size request
-     * @apiNote This one can be used for variable message sizes
+     * Sends a set message size request (This one can be used for variable and fixed message sizes)
+     *
      * @param value the value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
@@ -133,8 +133,8 @@ public interface MaestroRequester {
 
 
     /**
-     * Sends a set message size request
-     * @apiNote This one can be used for variable message sizes
+     * Sends a set message size request (this one can be used for fixed message sizes)
+     *
      * @param value the value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors

@@ -12,7 +12,7 @@ import java.util.List;
 /**
  * Utility class for parsing test target URLs. It makes it easier to parse implementation
  * specific parameters (such as 'parameter1' and 'parameter2' in
- * "amqp://host/queue&parameter1=true&parameter2=value".
+ * "amqp://host/queue{@literal ?}parameter1=true{@literal &}parameter2=value".
  */
 public class URLQuery {
     private static final Logger logger = LoggerFactory.getLogger(URLQuery.class);

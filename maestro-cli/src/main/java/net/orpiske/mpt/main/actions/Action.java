@@ -24,8 +24,6 @@ import org.apache.commons.cli.Options;
 
 /**
  * Implements app specific actions
- * @author Otavio R. Piske <angusyoung@gmail.com>
- *
  */
 public abstract class Action {
 	

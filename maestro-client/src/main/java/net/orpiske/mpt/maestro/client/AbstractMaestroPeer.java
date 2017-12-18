@@ -141,7 +141,10 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
 
     /**
      * The entry point for handling Maestro messages
-     * @param note
+     * @param note the note that arrived
+     *
+     * @throws IOException for I/O related errors
+     * @throws MaestroConnectionException for Maestro related errors
      */
     protected abstract void noteArrived(T note) throws IOException, MaestroConnectionException;
 
