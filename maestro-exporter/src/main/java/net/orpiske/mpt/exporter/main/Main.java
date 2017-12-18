@@ -24,6 +24,8 @@ import org.apache.commons.cli.*;
 
 import net.orpiske.mpt.common.LogConfigurator;
 import net.orpiske.mpt.common.Constants;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 public class Main {
@@ -88,15 +90,13 @@ public class Main {
             MaestroExporter exporter = new MaestroExporter(maestroUrl);
 
             exporter.run(port);
+            System.exit(0);
+        } catch (Exception e) {
+            Logger logger = LoggerFactory.getLogger(Main.class);
 
-        } catch (MaestroException e) {
-            System.err.println(e.getMessage());
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println(e.getMessage());
+            logger.error("Unable to start Maestro exporter: {}", e.getMessage(), e);
+
+            System.exit(1);
         }
-
-        System.exit(0);
     }
 }
