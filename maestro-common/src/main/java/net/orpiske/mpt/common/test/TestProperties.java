@@ -32,6 +32,9 @@ public class TestProperties implements MaestroTestProperties {
     private String apiVersion;
     private String protocol;
 
+    // 1 = legacy behavior
+    private int limitDestinations = 1;
+
     public void load(final File testProperties) throws IOException {
         logger.debug("Reading properties from {}", testProperties.getPath());
 
@@ -65,6 +68,11 @@ public class TestProperties implements MaestroTestProperties {
             apiName = prop.getProperty("apiName");
             apiVersion = prop.getProperty("apiVersion");
             protocol = prop.getProperty("protocol");
+
+            String limitDestinationsStr = prop.getProperty("limitDestinations");
+            if (limitDestinationsStr != null) {
+                limitDestinations = Integer.parseInt(limitDestinationsStr);
+            }
         }
 
         logger.debug("Read properties: {}", this.toString());
@@ -87,6 +95,7 @@ public class TestProperties implements MaestroTestProperties {
         prop.setProperty("apiName", apiName);
         prop.setProperty("apiVersion", apiVersion);
         prop.setProperty("protocol", protocol);
+        prop.setProperty("limitDestinations", Integer.toString(limitDestinations));
 
         try (FileOutputStream fos = new FileOutputStream(testProperties)) {
             prop.store(fos, "mpt");
@@ -208,6 +217,14 @@ public class TestProperties implements MaestroTestProperties {
         this.protocol = protocol;
     }
 
+    public int getLimitDestinations() {
+        return limitDestinations;
+    }
+
+    public void setLimitDestinations(int limitDestinations) {
+        this.limitDestinations = limitDestinations;
+    }
+
     @Override
     public String toString() {
         return "TestProperties{" +
@@ -222,6 +239,7 @@ public class TestProperties implements MaestroTestProperties {
                 ", apiName='" + apiName + '\'' +
                 ", apiVersion='" + apiVersion + '\'' +
                 ", protocol='" + protocol + '\'' +
+                ", limitDestinations=" + limitDestinations +
                 '}';
     }
 }
