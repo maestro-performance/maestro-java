@@ -25,9 +25,10 @@ import javax.jms.Queue;
 import javax.jms.Topic;
 import java.util.function.Function;
 
+/**
+ * JMS Protocol
+ */
 public enum JMSProtocol {
-
-
     ARTEMIS(
             org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory::new,
             org.apache.activemq.artemis.jms.client.ActiveMQQueue::new,

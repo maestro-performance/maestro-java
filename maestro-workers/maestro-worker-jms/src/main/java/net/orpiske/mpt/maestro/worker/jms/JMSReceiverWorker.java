@@ -35,6 +35,10 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
+
+/**
+ * A sender worker for JMS-based testing
+ */
 public class JMSReceiverWorker implements MaestroReceiverWorker {
 
     private static final Logger logger = LoggerFactory.getLogger(JMSReceiverWorker.class);

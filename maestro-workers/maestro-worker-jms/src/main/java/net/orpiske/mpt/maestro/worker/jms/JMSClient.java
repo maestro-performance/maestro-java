@@ -36,6 +36,9 @@ import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
 import java.net.URI;
 
+/**
+ * A basic JMS client
+ */
 class JMSClient implements Client {
     private static final Logger logger = LoggerFactory.getLogger(JMSClient.class);
 

@@ -35,7 +35,9 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.Supplier;
 
-
+/**
+ * A sender worker for JMS-based testing
+ */
 public class JMSSenderWorker implements MaestroSenderWorker {
     private static final Logger logger = LoggerFactory.getLogger(JMSSenderWorker.class);
     private ContentStrategy contentStrategy;
