@@ -60,25 +60,25 @@
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>maestro-common</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>maestro-contrib</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>maestro-reports</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>maestro-tests</artifactId>
-            <version>1.2.0-SNAPSHOT</version>
+            <version>${project.version}</version>
         </dependency>
 
         <!-- Tests dependencies -->
