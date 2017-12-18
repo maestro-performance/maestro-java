@@ -1,0 +1,36 @@
+#compiled python stuff
+*pyc
+# vim swap files
+*swp
+*.log
+
+# idea files
+.idea/
+*iml
+*ipr
+*iws
+
+# C/C++ object files
+*.o
+
+# C/C++ build dirs
+/Debug/
+target
+
+# CMake-generated files
+*CMakeCache*
+*CMakeFiles*
+*cmake_install*
+*nbproject*
+*CMakeTestFile*
+*.cmake
+Makefile
+*install_manifest*
+
+# Java class files
+*.class
+
+# editor files
+*~
+
+# eof

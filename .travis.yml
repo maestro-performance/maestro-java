@@ -1,0 +1,24 @@
+env:
+  global:
+   # The next declaration is the encrypted COVERITY_SCAN_TOKEN, created
+   #   via the "travis encrypt" command using the project repo's public key
+   - secure: "ruQJ38RzaUawY/g8bXguxehnxR/OJvBF9ZXT2OtcQjiZAC/tSuErtgiyI0WOe71Sz97GhPAQvJw/vhavRb+XdlxkOEcpAf5bkO8VEpsw2OMqOTlI11jKwZ4GEOTHYgJ88SaBeXjNX9N05eZp9xZHwIsBMSVkSo5bnZTK4w+S4RPGqXw1iJo0/4Dt68RyYkGufzXL/Ko6PXdrMTfGpwLdUHs4+uI08QOLaDsBgDV5RZSI1iZoF+YS+5wUaXievS4+oLVnS4c/6uqp+z4RpF4Qn8hU4S1IKYKzw6rJUBcSGuQJVhp9JRNxVwxDEvLKf1XOV2Ir8dmPyJ+MK1YkV7qtTgm3nInjylfurX1gQ5rO+uvp+fAzqIUl6KAhvNih6JdHRlAM0gHBH939lu8p8bxp7DXP/dfcDfPCnYOimE0sKK+PAw3aUKjTGJpzFYJlOCltAoQFhvcs/xgTAJqkYh+mrKDCCu/yo7he/XqOPFOAqdcdFd7CROQ3C7PcwVsSD91z/NuvXYj0JnmKFlPYlH5NJyoTSIVeQcDCNGhWKELdxrTh+7LNBK3VeYQ7jdErpKypQPyWKTrm8CZK6F9d9dYaghQrA5iBdG5fnlaHkLPZzIQH6unet1T5Z6RKuBQP5arv1KffuK3HsqUZCBUa781mh0pUP5ORQ4PgQ3I7GaJ1qTc="
+
+before_install:
+      - echo -n | openssl s_client -connect scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+
+os:
+  - linux
+language:
+  - java
+script: mvn -PJMS,Groovy test
+
+addons:
+  coverity_scan:
+    project:
+      name: "orpiske/maestro-java"
+      description: "Maestro client in Java and Groovy "
+    notification_email: angusyoung@gmail.com
+    build_command_prepend: "mvn clean"
+    build_command:   "mvn -PJMS,Groovy test"
+    branch_pattern: coverity_scan
