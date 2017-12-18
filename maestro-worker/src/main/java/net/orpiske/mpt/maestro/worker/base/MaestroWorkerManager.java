@@ -258,31 +258,36 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
      * It should be called by a different thread/concurrently too (eg WatchDog) so it can't modify any this.* members or workers too.
      */
     private void onStoppedWorkers(List<WorkerRuntimeInfo> workers) {
-        if (this.rateWriterThread != null || this.latencyWriterThread != null) {
-            final long startWaitingWorkers = System.currentTimeMillis();
-            if (!workers.isEmpty()) {
-                final boolean allFinished = awaitWorkers(startWaitingWorkers, workers);
-                if (!allFinished) {
-                    logger.warn("The writer will be forced to stop with alive workers");
+        try {
+            if (this.rateWriterThread != null || this.latencyWriterThread != null) {
+                final long startWaitingWorkers = System.currentTimeMillis();
+                if (!workers.isEmpty()) {
+                    final boolean allFinished = awaitWorkers(startWaitingWorkers, workers);
+                    if (!allFinished) {
+                        logger.warn("The writer will be forced to stop with alive workers");
+                    }
+                }
+
+                shutdownAndWaitWriters();
+                final long elapsedMillis = System.currentTimeMillis() - startWaitingWorkers;
+                logger.info("Awaiting workers and shutting down writers took {} ms", elapsedMillis);
+            }
+
+            boolean failed = false;
+            for (WorkerRuntimeInfo ri : workers) {
+                WorkerStateInfo wsi = ri.worker.getWorkerState();
+
+                if (!isCleanExit(wsi)) {
+                    failed = true;
+                    break;
                 }
             }
 
-            shutdownAndWaitWriters();
-            final long elapsedMillis = System.currentTimeMillis() - startWaitingWorkers;
-            logger.info("Awaiting workers and shutting down writers took {} ms", elapsedMillis);
+            createSymlinks(logDir, failed);
+        } finally {
+            //reset it for new incoming tests
+            this.workerOptions = new WorkerOptions();
         }
-
-        boolean failed = false;
-        for (WorkerRuntimeInfo ri : workers) {
-            WorkerStateInfo wsi = ri.worker.getWorkerState();
-
-            if (!isCleanExit(wsi)) {
-                failed = true;
-                break;
-            }
-        }
-
-        createSymlinks(logDir, failed);
     }
 
     @Override

@@ -87,7 +87,9 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
     private void setRate(String rate) {
-        this.rate = Long.parseLong(rate);
+        if (rate != null) {
+            this.rate = Long.parseLong(rate);
+        }
     }
 
     private void setBroker(String url) {
@@ -149,6 +151,8 @@ public class JMSSenderWorker implements MaestroSenderWorker {
                                 + rate + " msg/sec",
                         Thread.currentThread().getId(), intervalInNanos);
 
+            } else if (this.rate == 0) {
+                logger.info("JMS Sender worker {} has started firing events with an unbounded rate.");
             }
             //it couldn't uses the Epoch in nanos because it could overflow pretty soon (less than 1 day)
             final long startFireEpochMicros = epochMicroClock.microTime();
