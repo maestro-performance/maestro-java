@@ -78,11 +78,11 @@ if (!testExecutor.run()) {
     maestro.stop()
 
     ReportGenerator.generate(args[0])
-    return 1
+    System.exit(1)
 }
 
 maestro.stop()
 ReportGenerator.generate(args[0])
-return 0
+System.exit(0)
 
 
