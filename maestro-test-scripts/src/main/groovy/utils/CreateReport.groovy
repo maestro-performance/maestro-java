@@ -18,7 +18,7 @@
 
 @Grab(group='org.apache.commons', module='commons-lang3', version='3.6')
 
-@Grab(group='net.orpiske', module='maestro-common', version='1.2.0-SNAPSHOT')
+@Grab(group='net.orpiske', module='maestro-common', version='1.2.0')
 
 import net.orpiske.mpt.reports.ReportGenerator
 import net.orpiske.mpt.common.LogConfigurator
