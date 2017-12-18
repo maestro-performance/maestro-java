@@ -13,7 +13,6 @@
 
     <groupId>net.orpiske</groupId>
     <artifactId>maestro-worker</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
 
     <properties>
         <jms.test.util.version>1.1.0</jms.test.util.version>

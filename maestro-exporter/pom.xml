@@ -5,15 +5,14 @@
 
     <modelVersion>4.0.0</modelVersion>
 
-    <groupId>net.orpiske</groupId>
-    <artifactId>maestro-exporter</artifactId>
-    <version>1.2.0-SNAPSHOT</version>
-
     <parent>
         <groupId>net.orpiske</groupId>
         <artifactId>maestro-java</artifactId>
         <version>1.2.0-SNAPSHOT</version>
     </parent>
+
+    <groupId>net.orpiske</groupId>
+    <artifactId>maestro-exporter</artifactId>
 
     <dependencies>
         <dependency>
