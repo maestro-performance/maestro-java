@@ -78,6 +78,9 @@ public class DownloadAction extends Action {
         }
 
         String logLevel = cmdLine.getOptionValue('l');
+        if (logLevel == null) {
+            logLevel = "info";
+        }
         configureLogLevel(logLevel);
     }
 
