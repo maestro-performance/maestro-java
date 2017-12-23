@@ -1,0 +1,17 @@
+##########################################################################################
+#### Maestro client
+####
+#### 
+#### Test parameters can be set by adjusting the following variables (shown w/ defaults):
+#### MESSAGE_SIZE 256
+#### TEST_DURATION 90s
+#### RATE 0
+#### PARALLEL_COUNT 2
+####
+#### To run a sample test case: 
+#### cd /opt/maestro/maestro-test-scripts/scripts/groovy/singlepoint
+#### groovy FixedRateTest.groovy ~/tmp/report
+#### 
+#### Note: the report generation is known to be broken on 1.2.0
+#### 
+##########################################################################################
