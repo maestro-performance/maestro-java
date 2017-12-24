@@ -10,8 +10,10 @@
 ####
 #### To run a sample test case: 
 #### cd /opt/maestro/maestro-test-scripts/scripts/groovy/singlepoint
-#### groovy FixedRateTest.groovy ~/tmp/report
+#### groovy FixedRateTest.groovy /maestro/reports
 #### 
-#### Note: the report generation is known to be broken on 1.2.0
+#### Note: the execution takes a while to run on the first time because
+#### Groovy/Grape must download all the dependencies required to run the 
+#### test
 #### 
 ##########################################################################################
