@@ -34,3 +34,7 @@ RUN echo "cat /etc/motd" >> $HOME/.bashrc
 
 RUN mkdir -p /maestro
 VOLUME /maestro
+
+# CMD [ "/usr/bin/bash"]
+ADD maestro-container-wrapper.sh /usr/bin/maestro-container-wrapper
+CMD [ "sh", "-c", "/usr/bin/maestro-container-wrapper"]

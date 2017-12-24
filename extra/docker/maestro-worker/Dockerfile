@@ -2,6 +2,7 @@ FROM centos:7
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 ENV MAESTRO_WORKER_VERSION 1.2.0
 ENV MAESTRO_APP_ROOT /opt/maestro
+EXPOSE 8000
 RUN mkdir -p ${MAESTRO_APP_ROOT}
 WORKDIR ${MAESTRO_APP_ROOT}
 RUN yum install -y java-1.8.0-openjdk
