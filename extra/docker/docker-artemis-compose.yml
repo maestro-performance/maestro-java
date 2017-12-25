@@ -42,8 +42,7 @@ services:
     networks: 
       - maestro-net
     depends_on:
-      - maestro-broker
-      - maestro-sut
+      - maestro-receiver
   maestro-client:
     build: maestro-client
     volumes:
