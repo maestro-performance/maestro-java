@@ -15,18 +15,45 @@ mvn clean install
 
 
 
-Using as Command Line Tool
+Using Maestro
 ----
 
-Run:
+Maestro focuses on multi-node deployments by default and deploying it can be a bit tricky
+on the first time. However, there are a couple of alternatives to simplify the process:
 
-```
+**Multi-host deployment via Ansible**
 
-```
+There are 3 Ansible roles that can be used to deploy a Maestro test cluster: 
+* [ansible-maestro-java](https://github.com/msgqe/ansible-maestro-java): to deploy maestro workers
+* [ansible-maestro-broker](https://github.com/msgqe/ansible-maestro-broker): to deploy a Maestro broker
+* [ansible-maestro-client](https://github.com/msgqe/ansible-maestro-client): to deploy a Maestro client
+
+These can be used along with other roles to deploy the desired Software Under Test (SUT). 
+For example:
+* [ansible-amq-broker](https://github.com/msgqe/ansible-amq-broker): to deploy JBoss A-MQ 7 or Apache Artemis single host brokers
+* [ansible-broker-clusters](https://github.com/msgqe/ansible-broker-clusters): : to deploy JBoss A-MQ 7 or Apache Artemis clusterized brokers
+* [ansible-qpid-dispatch](https://github.com/rh-messaging-qe/ansible-qpid-dispatch): to deploy QPid Dispatch Router
+
+This is a much more complex deployment model, but usually desired as it can be made to 
+represent real messaging use case scenarios involving multiple hosts.
+
+**Single-host deployment via Docker Compose**
+
+This method is targeted towards development of Maestro and aims to make it simpler to 
+deploy and develop local Maestro test clusters. This deployment model is really simple and
+it is possible to get started with Maestro testing by running just 3 or 4 commands.
+
+**Note**: although it would be possible to use this model for production testing, this is 
+a new feature that needs to be matured.  
+
+This deployment method is decoumented in greater detail [here](extra/docker/)
 
 
 Using as Library
 ----
+
+**Note**: this is not important unless you are developing Maestro performance tests.
+
 
 To use this project as library on your project you have to add my personal 
 [bintray](https://bintray.com/orpiske/libs-release/) repository to the pom.xml
@@ -49,6 +76,16 @@ Then, the library can be referenced as:
     <version>1.2.0</version>
 </dependency>
 ```
+
+There are multiple components and it is possible to choose only the desired one: 
+
+* maestro-client
+* maestro-common
+* maestro-contrib
+* maestro-exporter
+* maestro-reports
+* maestro-tests
+* maestro-worker
 
 The API documentation (javadoc) is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.2/apidocs/). 
 Additional project documentation is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.2/). 
@@ -82,12 +119,3 @@ The following parameters can be set for the JMS worker/client:
 | `durable` | true | Durable flag for the message |
 | `priority` | null | Message priority |
 | `appendClientNumber` | `false` | Whether to append the client number to the destination, thus creating a dedicated queue per client |
-
-Samples
-----
-![Eden](doc/broker-jvm-inspector_eden_memory.png)
-![Physical](doc/broker-jvm-inspector_memory.png)
-![PermGen](doc/broker-jvm-inspector_pm_memory.png)
-![Queue Data](doc/broker-jvm-inspector_queue_data.png)
-![Survivor Memory](doc/broker-jvm-inspector_survivor_memory.png)
-![Tenured Memory](doc/broker-jvm-inspector_tenured_memory.png)
