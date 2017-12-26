@@ -1,3 +1,5 @@
+
+
 version: '3'
 networks:
     maestro-net:
@@ -24,6 +26,9 @@ services:
   maestro-receiver:
     build:
       context: maestro-worker/maestro-receiver
+
+      args:
+        - MAESTRO_WORKER_VERSION=1.2.0
     ports:
       - "28000:8000"
     volumes:
@@ -34,7 +39,11 @@ services:
       - maestro-broker
       - maestro-sut
   maestro-sender:
-    build: maestro-worker/maestro-sender
+    build:
+      context: maestro-worker/maestro-sender
+# This can be replaced with a released version, such as 1.2.0
+      args:
+        - MAESTRO_WORKER_VERSION=1.2.0
     ports:
       - "38000:8000"
     volumes:
@@ -44,7 +53,11 @@ services:
     depends_on:
       - maestro-receiver
   maestro-client:
-    build: maestro-client
+    build:
+      context: maestro-client
+# This can be replaced with a released version, such as 1.2.0
+      args:
+        - MAESTRO_WORKER_VERSION=1.2.0
     volumes:
       - ${HOME}/tmp/maestro:/maestro
     networks: 

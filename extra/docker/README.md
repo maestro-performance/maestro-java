@@ -93,6 +93,18 @@ variable and so on).
 
 The defaults for the FixedRateTest are printed in the MOTD. 
 
+
+Customizing The Images
+----
+
+When applicable, some arguments/options may be changes.
+
+**MAESTRO_WORKER_VERSION**
+
+This argument can be replaced with a released version, such as `1.2.0` or with `devel` to use 
+the latest version build by Travis CI. By default, it always use the latest released version.
+
+
 Other
 ----
 
