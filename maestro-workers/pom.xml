@@ -12,18 +12,8 @@
     <groupId>net.orpiske</groupId>
     <packaging>pom</packaging>
 
-    <profiles>
-        <profile>
-            <id>JMS</id>
-            <activation>
-                <activeByDefault>true</activeByDefault>
-            </activation>
-
-            <modules>
-                <module>maestro-worker-jms</module>
-            </modules>
-        </profile>
-    </profiles>
-
-
+    <modules>
+        <module>maestro-worker-jms</module>
+    </modules>
+    
 </project>

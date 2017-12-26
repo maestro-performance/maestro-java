@@ -66,6 +66,13 @@
             <version>${project.version}</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>net.orpiske</groupId>
+            <artifactId>maestro-worker-jms</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>jms-test-util</artifactId>
@@ -146,33 +153,10 @@
 
     <profiles>
         <profile>
-            <id>Test</id>
-            <activation>
-                <activeByDefault>false</activeByDefault>
-            </activation>
-
-            <dependencies>
-                <dependency>
-                    <groupId>net.orpiske</groupId>
-                    <artifactId>maestro-worker-jms</artifactId>
-                    <version>1.2.1-SNAPSHOT</version>
-                </dependency>
-            </dependencies>
-
-        </profile>
-        <profile>
             <id>Package</id>
             <activation>
                 <activeByDefault>false</activeByDefault>
             </activation>
-
-            <dependencies>
-                <dependency>
-                    <groupId>net.orpiske</groupId>
-                    <artifactId>maestro-worker-jms</artifactId>
-                    <version>1.2.1-SNAPSHOT</version>
-                </dependency>
-            </dependencies>
 
             <build>
                 <plugins>
