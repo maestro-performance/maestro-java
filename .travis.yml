@@ -14,10 +14,10 @@ language:
 script: mvn -PJMS,Groovy test
 
 after_success:
-    - "curl --ftp-create-dirs -T ./maestro-test-scripts/target/maestro-test-scripts-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-test-scripts-devel-bin.tar.gz"
-    - "curl --ftp-create-dirs -T ./maestro-worker/target/maestro-worker-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-worker-devel-bin.tar.gz"
-    - "curl --ftp-create-dirs -T ./maestro-cli/target/maestro-cli-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-cli-devel-bin.tar.gz"
-    - "curl --ftp-create-dirs -T ./maestro-exporter/target/maestro-exporter-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-exporter-devel-bin.tar.gz"
+    - sh -c "curl --ftp-create-dirs -T ./maestro-test-scripts/target/maestro-test-scripts-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-test-scripts-devel-bin.tar.gz"
+    - sh -c "curl --ftp-create-dirs -T ./maestro-worker/target/maestro-worker-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-worker-devel-bin.tar.gz"
+    - sh -c "curl --ftp-create-dirs -T ./maestro-cli/target/maestro-cli-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-cli-devel-bin.tar.gz"
+    - sh -c "curl --ftp-create-dirs -T ./maestro-exporter/target/maestro-exporter-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-exporter-devel-bin.tar.gz"
 
 addons:
   coverity_scan:
