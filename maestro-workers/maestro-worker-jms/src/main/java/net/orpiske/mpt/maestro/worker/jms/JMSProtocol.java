@@ -17,6 +17,11 @@
 
 package net.orpiske.mpt.maestro.worker.jms;
 
+import com.rabbitmq.jms.admin.RMQConnectionFactory;
+import net.orpiske.mpt.maestro.worker.jms.rabbitmq.MaestroRabbitMQConnectionFactory;
+import net.orpiske.mpt.maestro.worker.jms.rabbitmq.MaestroRabbitMQQueueFactory;
+import net.orpiske.mpt.maestro.worker.jms.rabbitmq.MaestroRabbitMQTopicFactory;
+import org.apache.activemq.ActiveMQConnectionFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -41,7 +46,11 @@ public enum JMSProtocol {
     OPENWIRE(
             org.apache.activemq.ActiveMQConnectionFactory::new,
             org.apache.activemq.command.ActiveMQQueue::new,
-            org.apache.activemq.command.ActiveMQTopic::new);
+            org.apache.activemq.command.ActiveMQTopic::new),
+    RABBITAMQP(
+            MaestroRabbitMQConnectionFactory::new,
+            MaestroRabbitMQQueueFactory::new,
+            MaestroRabbitMQTopicFactory::new);
 
     private static final Logger logger = LoggerFactory.getLogger(JMSProtocol.class);
 

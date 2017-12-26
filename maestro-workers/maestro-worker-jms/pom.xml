@@ -29,6 +29,7 @@
         <qpid-jms-client.version>0.27.0</qpid-jms-client.version>
         <artemis-jms-client.version>2.4.0</artemis-jms-client.version>
         <activemq-client.version>5.15.2</activemq-client.version>
+        <rabbitmq-jms.version>1.8.1</rabbitmq-jms.version>
     </properties>
 
     <build>
@@ -111,6 +112,12 @@
             <artifactId>activemq-client</artifactId>
             <version>${activemq-client.version}</version>
         </dependency>
+        <dependency>
+            <groupId>com.rabbitmq.jms</groupId>
+            <artifactId>rabbitmq-jms</artifactId>
+            <version>${rabbitmq-jms.version}</version>
+        </dependency>
+
 
     </dependencies>
 
