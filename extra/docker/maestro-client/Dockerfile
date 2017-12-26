@@ -1,6 +1,7 @@
 FROM centos:7
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
-ENV MAESTRO_WORKER_VERSION 1.2.0
+ARG MAESTRO_WORKER_VERSION
+ENV MAESTRO_WORKER_VERSION ${MAESTRO_WORKER_VERSION:-1.2.0}
 ENV GROOVY_VERSION 2.4.13
 
 RUN yum install -y java-1.8.0-openjdk unzip zip which
