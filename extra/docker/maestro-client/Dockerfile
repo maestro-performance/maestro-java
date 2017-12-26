@@ -17,11 +17,11 @@ RUN mkdir -p ${MAESTRO_APP_ROOT}
 WORKDIR ${MAESTRO_APP_ROOT}
 
 RUN curl http://orpiske.net/files/maestro-java/${MAESTRO_WORKER_VERSION}/maestro-cli-${MAESTRO_WORKER_VERSION}-bin.tar.gz -o maestro-cli.tar.gz
-RUN tar -xvf maestro-cli.tar.gz && ln -s ${MAESTRO_APP_ROOT}/maestro-cli-${MAESTRO_WORKER_VERSION} ${MAESTRO_APP_ROOT}/maestro-cli
+RUN mkdir maestro-cli && tar --strip-components=1 -xvf maestro-cli.tar.gz -C maestro-cli
 RUN rm -f maestro-cli.tar.gz
 
 RUN curl http://orpiske.net/files/maestro-java/${MAESTRO_WORKER_VERSION}/maestro-test-scripts-${MAESTRO_WORKER_VERSION}-bin.tar.gz -o maestro-test-scripts.tar.gz
-RUN tar -xvf maestro-test-scripts.tar.gz && ln -s ${MAESTRO_APP_ROOT}/maestro-test-scripts-${MAESTRO_WORKER_VERSION} ${MAESTRO_APP_ROOT}/maestro-test-scripts
+RUN mkdir maestro-test-scripts && tar --strip-components=1 -xvf maestro-test-scripts.tar.gz -C maestro-test-scripts
 RUN rm -f maestro-test-scripts.tar.gz
 
 ENV MAESTRO_BROKER mqtt://maestro-broker:1883
