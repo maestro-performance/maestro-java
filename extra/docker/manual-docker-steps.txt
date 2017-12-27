@@ -1,0 +1,39 @@
+# create network
+docker network create --driver bridge maestro_net
+
+# Create volume
+docker volume create maestro-storage 
+
+# Maestro broker
+docker run --network=maestro_net -d --name=maestro-broker -p 18161:8161 maestro-broker
+
+# Maestro SUT (Apache Active MQ 5.12.2)
+docker run --network=maestro_net -d --name=maestro-sut -p 48161:8161 -p 45672:5672 -p 41616:61616 maestro-sut-apache-activemq
+
+# Maestro SUT (Apache Artemis 2.4.0)
+docker run --network=maestro_net -d --name=maestro-sut -p 48161:8161 -p 45672:5672 -p 41616:61616 maestro-sut-apache-artemis
+
+# Rabbit MQ (latest)
+docker run --network=maestro_net -d --name=maestro-sut -p 48161:8161 -p 45672:5672 -p 15672:15672 rabbitmq:3-management
+
+# Generic worker
+docker run -it -h maestro-worker -v maestro-storage:/maestro --network=maestro_net --name maestro-worker maestro-worker /bin/bash
+
+# Receiver worker
+To build the container: 
+docker build --build-arg MAESTRO_WORKER_VERSION=devel -t maestro-receiver .
+
+To run the container:
+docker run -d -h maestro-receiver -v maestro-storage:/maestro --network=maestro_net --name maestro-receiver -p 28000:8000 maestro-receiver
+
+# Sender worker
+docker build --build-arg MAESTRO_WORKER_VERSION=devel -t maestro-sender .
+docker run -d -h maestro-sender -v maestro-storage:/maestro --network=maestro_net --name maestro-sender -p 38000:8000 maestro-sender
+
+# Run the client
+docker build --build-arg MAESTRO_WORKER_VERSION=devel -t maestro-client .
+
+docker run -it -h maestro-client -v maestro-storage:/maestro --network=docker_maestro-net --name maestro-client -p 8000:8000 docker_maestro-client
+
+
+docker run -d -h maestro-receiver -v maestro-storage:/maestro --network=maestro_net --name maestro-receiver -p 28000:8000 maestro-receiver; docker run -d -h maestro-sender -v maestro-storage:/maestro --network=maestro_net --name maestro-sender -p 38000:8000 maestro-sender
