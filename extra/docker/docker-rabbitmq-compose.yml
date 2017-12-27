@@ -10,16 +10,17 @@ services:
     ports:
       - "18161:8161"
       # Usually it's not needed to expose MQTT port
-      # - "18883:1883"
+      - "1883:1883"
   maestro-sut:
-    image: docker.io/rabbitmq
+    image: docker.io/rabbitmq:3-management
     networks: 
       - maestro-net
+    hostname: maestro-sut
     ports:
-      - "48161:8161"
+      - "15672:15672"
 # This is not needed, unless you want to test the
 # broker within the container
-#      - "45672:5672"
+      - "5672:5672"
 #      - "41616:61616"
   maestro-receiver:
     build:
