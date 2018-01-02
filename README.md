@@ -113,7 +113,7 @@ The following parameters can be set for the JMS worker/client:
 
 | Parameter Name    | Default Value       | Description          |
 |-------------------|---------------------|----------------------|
-| `protocol` | `AMQP` | The underlying messaging protocol to use (one of AMQP, OPENWIRE, ARTEMIS) |
+| `protocol` | `AMQP` | The underlying messaging protocol to use (one of AMQP, OPENWIRE, ARTEMIS, RABBITAMQP) |
 | `type` | queue | Destination type ('queue' or 'topic') |
 | `ttl` | 5000 | Time to live. |
 | `durable` | true | Durable flag for the message |
