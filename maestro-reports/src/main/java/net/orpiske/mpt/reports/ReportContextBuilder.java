@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.reports;
 
+import net.orpiske.mpt.reports.files.ReportDirInfo;
 import net.orpiske.mpt.reports.files.ReportFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,9 +49,7 @@ public class ReportContextBuilder {
 
 
             try {
-                ReportDirInfo reportDirInfo =
-                        new ReportDirInfo(baseDir.getPath(), reportFile.getReportDir(), nodeType);
-
+                ReportDirInfo reportDirInfo = reportFile.getReportDirInfo();
                 reportDirs.add(reportDirInfo);
             }
             catch (IOException e) {

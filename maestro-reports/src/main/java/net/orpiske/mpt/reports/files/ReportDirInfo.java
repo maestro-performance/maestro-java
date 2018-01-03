@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.reports;
+package net.orpiske.mpt.reports.files;
 
 import org.apache.commons.io.FilenameUtils;
 
@@ -24,34 +24,43 @@ import java.io.IOException;
 import net.orpiske.mpt.common.test.TestProperties;
 
 public class ReportDirInfo {
-    private String reportDir;
+    private File reportDir;
     private String nodeType;
 
     private String nodeHost;
     private int testNum;
     private boolean testSuccessful = false;
 
+    private String resultTypeString;
+
     private TestProperties testProperties;
 
-    public ReportDirInfo(String baseDir, String reportDir, String nodeType) throws IOException {
+    /**
+     * Holds information about the report directory and its structure. It is used
+     * to generate the index pages.
+     *
+     * @param reportDir The report directory (ie.: the parent directory for a ReportFile)
+     * @throws IOException
+     */
+    ReportDirInfo(final File reportDir) throws IOException {
         this.reportDir = reportDir;
-        this.nodeType = nodeType;
 
-        File file = new File(reportDir);
+        nodeHost = reportDir.getName();
 
-        nodeHost = FilenameUtils.getBaseName(file.getName());
-
-        File testNumDir = file.getParentFile();
+        File testNumDir = reportDir.getParentFile();
         testNum = Integer.parseInt(FilenameUtils.getBaseName(testNumDir.getName()));
 
         File resultType = testNumDir.getParentFile();
         if (resultType.getName().contains("success")) {
             testSuccessful = true;
         }
+        resultTypeString = FilenameUtils.getBaseName(resultType.getName());
+
+        this.nodeType = FilenameUtils.getBaseName(resultType.getParentFile().getName());
 
         testProperties = new TestProperties();
 
-        testProperties.load(new File(baseDir + File.separator + reportDir, "test.properties"));
+        testProperties.load(new File(reportDir, "test.properties"));
     }
 
     public String getBrokerUri() {
@@ -95,35 +104,23 @@ public class ReportDirInfo {
     }
 
     public String getReportDir() {
-        return reportDir;
+        return reportDir.getPath();
     }
 
-    public void setReportDir(String reportDir) {
-        this.reportDir = reportDir;
+    public String getReportDirRelative() {
+        return getNodeType() + File.separator + resultTypeString + File.separator + testNum + File.separator + nodeHost;
     }
 
     public String getNodeType() {
         return nodeType;
     }
 
-    public void setNodeType(String nodeType) {
-        this.nodeType = nodeType;
-    }
-
     public String getNodeHost() {
         return nodeHost;
     }
 
-    public void setNodeHost(String nodeHost) {
-        this.nodeHost = nodeHost;
-    }
-
     public int getTestNum() {
         return testNum;
-    }
-
-    public void setTestNum(int testNum) {
-        this.testNum = testNum;
     }
 
     public boolean isTestSuccessful() {

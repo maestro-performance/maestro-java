@@ -198,8 +198,8 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
             </tr>
             {% for reportDir in reportDirs %}
             <tr>
-                <td><a href="./{{reportDir.reportDir}}/index.html ">{{ reportDir.testNum }}</a></td>
-                <td><a href="./{{reportDir.reportDir}}/index.html ">{{ reportDir.nodeHost }}</a> </td>
+                <td><a href="./{{reportDir.reportDirRelative}}/index.html ">{{ reportDir.testNum }}</a></td>
+                <td><a href="./{{reportDir.reportDirRelative}}/index.html ">{{ reportDir.nodeHost }}</a> </td>
                 <td>{{ reportDir.nodeType }} </td>
                 <td>{{ reportDir.rate }} msg/sec </td>
                 <td>{{ reportDir.parallelCount }} </td>

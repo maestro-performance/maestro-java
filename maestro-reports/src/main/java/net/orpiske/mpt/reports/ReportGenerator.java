@@ -18,6 +18,7 @@ package net.orpiske.mpt.reports;
 
 import net.orpiske.mpt.reports.files.BmicReportFile;
 import net.orpiske.mpt.reports.files.MptReportFile;
+import net.orpiske.mpt.reports.files.ReportDirInfo;
 import net.orpiske.mpt.reports.files.ReportFile;
 import net.orpiske.mpt.reports.index.IndexRenderer;
 import net.orpiske.mpt.reports.node.NodeContextBuilder;
@@ -114,8 +115,7 @@ public class ReportGenerator {
         NodeReportRenderer reportRenderer = new NodeReportRenderer(nodeReportContext);
 
         try {
-            String outDir = path + report.getReportDir();
-            File outFile = new File(outDir, "index.html");
+            File outFile = new File(report.getReportDir(), "index.html");
             FileUtils.writeStringToFile(outFile, reportRenderer.render(), Charsets.UTF_8);
             reportRenderer.copyResources(outFile.getParentFile());
         } catch (Exception e) {

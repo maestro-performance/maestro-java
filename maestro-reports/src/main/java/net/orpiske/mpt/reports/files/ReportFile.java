@@ -22,6 +22,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 
 public class ReportFile {
     private static final Logger logger = LoggerFactory.getLogger(ReportFile.class);
@@ -153,5 +154,9 @@ public class ReportFile {
                 ", testNum=" + testNum +
                 ", testSuccessful=" + testSuccessful +
                 '}';
+    }
+
+    public ReportDirInfo getReportDirInfo() throws IOException {
+        return new ReportDirInfo(sourceFile.getParentFile());
     }
 }
