@@ -18,6 +18,7 @@ package net.orpiske.mpt.reports;
 
 import net.orpiske.mpt.common.Constants;
 import net.orpiske.mpt.reports.files.BmicReportFile;
+import net.orpiske.mpt.reports.files.HdrHistogramReportFile;
 import net.orpiske.mpt.reports.files.MptReportFile;
 import net.orpiske.mpt.reports.files.ReportFile;
 import org.apache.commons.io.DirectoryWalker;

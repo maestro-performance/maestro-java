@@ -14,9 +14,8 @@
  *  limitations under the License.
  */
 
-package net.orpiske.mpt.reports;
+package net.orpiske.mpt.reports.files;
 
-import net.orpiske.mpt.reports.files.ReportFile;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;

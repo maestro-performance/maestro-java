@@ -16,10 +16,7 @@
 
 package net.orpiske.mpt.reports;
 
-import net.orpiske.mpt.reports.files.BmicReportFile;
-import net.orpiske.mpt.reports.files.MptReportFile;
-import net.orpiske.mpt.reports.files.ReportDirInfo;
-import net.orpiske.mpt.reports.files.ReportFile;
+import net.orpiske.mpt.reports.files.*;
 import net.orpiske.mpt.reports.index.IndexRenderer;
 import net.orpiske.mpt.reports.node.NodeContextBuilder;
 import net.orpiske.mpt.reports.node.NodeReportRenderer;
