@@ -45,6 +45,33 @@ if [ "$installdir" = "." ] ; then
 	installdir=".."
 fi
 
+MAESTRO_CLASSPATH=""
+
+for jarfile in "$installdir"/bin/*.jar ; do
+    if [ -z "$MAESTRO_CLASSPATH" ] ; then
+        export MAESTRO_CLASSPATH="$jarfile"
+    else
+        export MAESTRO_CLASSPATH="$MAESTRO_CLASSPATH:$jarfile"
+    fi
+done
+
+
+for jarfile in "$installdir"/lib/*.jar ; do
+    if [ -z "$MAESTRO_CLASSPATH" ] ; then
+        export MAESTRO_CLASSPATH="$jarfile"
+    else
+        export MAESTRO_CLASSPATH="$MAESTRO_CLASSPATH:$jarfile"
+    fi
+done
+
+for jarfile in "$installdir"/lib/ext/*.jar ; do
+    if [ -z "$MAESTRO_CLASSPATH" ] ; then
+        export MAESTRO_CLASSPATH="$jarfile"
+    else
+        export MAESTRO_CLASSPATH="$MAESTRO_CLASSPATH:$jarfile"
+    fi
+done
+
 mainclass=net.orpiske.mpt.main.Main
 
-java -classpath "$installdir"/bin/*maestro-cli-*.jar -Dnet.orpiske.mpt.maestro.home="$installdir" -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory -Djava.awt.headless=true "$mainclass" $@
+java -classpath $MAESTRO_CLASSPATH -Dnet.orpiske.mpt.maestro.home="$installdir" -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory -Djava.awt.headless=true "$mainclass" $@

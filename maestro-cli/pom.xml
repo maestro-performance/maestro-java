@@ -70,8 +70,6 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <addClasspath>true</addClasspath>
-                            <classpathPrefix>../lib</classpathPrefix>
                             <mainClass>net.orpiske.mpt.main.Main</mainClass>
                         </manifest>
                     </archive>
