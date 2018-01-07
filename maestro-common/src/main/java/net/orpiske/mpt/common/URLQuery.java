@@ -7,7 +7,9 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Utility class for parsing test target URLs. It makes it easier to parse implementation
@@ -114,5 +116,20 @@ public class URLQuery {
         }
 
         return Long.parseLong(value);
+    }
+
+
+    /**
+     * Get a map of all the params in the URL
+     * @return a map with all the params in the URI
+     */
+    public Map<String, String> getParams() {
+        Map<String, String> ret = new HashMap<>();
+
+        for (NameValuePair pair : params) {
+            ret.put(pair.getName(), pair.getValue());
+        }
+
+        return ret;
     }
 }
