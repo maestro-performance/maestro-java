@@ -152,6 +152,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         final URLQuery urlQuery = new URLQuery(workerOptions.getBrokerURL());
 
         testProperties.setProtocol(urlQuery.getString("protocol", "AMQP"));
+        testProperties.setLimitDestinations(urlQuery.getInteger("limitDestinations", 1));
 
 
         // TODO: collect this
