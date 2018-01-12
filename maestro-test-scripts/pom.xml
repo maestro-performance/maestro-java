@@ -6,7 +6,7 @@
     <parent>
         <groupId>net.orpiske</groupId>
         <artifactId>maestro-java</artifactId>
-        <version>1.2.1</version>
+        <version>1.2.2-SNAPSHOT</version>
     </parent>
 
     <groupId>net.orpiske</groupId>
@@ -98,7 +98,7 @@
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>maestro-worker</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
 
@@ -106,7 +106,7 @@
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>maestro-worker</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2-SNAPSHOT</version>
             <scope>test</scope>
             <type>test-jar</type>
         </dependency>
@@ -114,7 +114,7 @@
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>maestro-worker-jms</artifactId>
-            <version>1.2.1</version>
+            <version>1.2.2-SNAPSHOT</version>
             <scope>test</scope>
         </dependency>
     </dependencies>
