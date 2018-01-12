@@ -27,14 +27,13 @@ package multipoint
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
-@Grab(group='net.orpiske', module='maestro-common', version='1.2.0')
-@Grab(group='net.orpiske', module='maestro-client', version='1.2.0')
-@Grab(group='net.orpiske', module='maestro-tests', version='1.2.0')
-@Grab(group='net.orpiske', module='maestro-reports', version='1.2.0')
+@Grab(group='net.orpiske', module='maestro-common', version='1.2.1')
+@Grab(group='net.orpiske', module='maestro-client', version='1.2.1')
+@Grab(group='net.orpiske', module='maestro-tests', version='1.2.1')
+@Grab(group='net.orpiske', module='maestro-reports', version='1.2.1')
 
 import net.orpiske.mpt.maestro.Maestro
 import net.orpiske.mpt.maestro.client.MaestroTopics
-import net.orpiske.mpt.reports.ReportGenerator
 import net.orpiske.mpt.reports.ReportsDownloader
 import net.orpiske.mpt.test.MultiPointProfile
 import net.orpiske.mpt.test.incremental.IncrementalTestExecutor
