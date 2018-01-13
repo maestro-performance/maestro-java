@@ -102,15 +102,15 @@ public class ReportsDownloader {
 
     public void downloadLastSuccessful(final String type, final String host, final String name) {
         try {
-            if (type.equals("sender")) {
+            if (type.equals(SENDER_HOST)) {
                 downloadSenderReports(host, LAST_SUCCESSFUL_DIR);
             }
 
-            if (type.equals("receiver")) {
+            if (type.equals(RECEIVER_HOST)) {
                 downloadReceiverReports(host, LAST_SUCCESSFUL_DIR);
             }
 
-            if (type.equals("inspector")) {
+            if (type.equals(INSPECTOR_HOST)) {
                 downloadInspectorReports(host, LAST_SUCCESSFUL_DIR);
             }
         }
@@ -121,15 +121,15 @@ public class ReportsDownloader {
 
     public void downloadLastFailed(final String type, final String host, final String name) {
         try {
-            if (type.equals("sender")) {
+            if (type.equals(SENDER_HOST)) {
                 downloadSenderReports(host, LAST_FAILED_DIR);
             }
 
-            if (type.equals("receiver")) {
+            if (type.equals(RECEIVER_HOST)) {
                 downloadReceiverReports(host, LAST_FAILED_DIR);
             }
 
-            if (type.equals("inspector")) {
+            if (type.equals(INSPECTOR_HOST)) {
                 downloadInspectorReports(host, LAST_FAILED_DIR);
             }
         }
