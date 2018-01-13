@@ -16,16 +16,15 @@
 
 package net.orpiske.mpt.main;
 
+import net.orpiske.mpt.common.LogConfigurator;
 import net.orpiske.mpt.main.actions.*;
-import org.apache.commons.cli.*;
 
 import static java.util.Arrays.copyOfRange;
 
 public class Main {
-    private static CommandLine cmdLine;
-    private static Options options;
-
-    private static String url;
+    static {
+        LogConfigurator.defaultForDaemons();
+    }
 
     /**
      * Prints the help for the action and exit
