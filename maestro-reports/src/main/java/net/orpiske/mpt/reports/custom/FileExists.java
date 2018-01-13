@@ -29,14 +29,14 @@ public class FileExists implements Filter {
     @Override
     public Object filter(Object var, JinjavaInterpreter jinjavaInterpreter, String... strings) {
         String filename = (String) var;
-        logger.debug("Processing filter argument for {} with arg len {}", filename,
+        logger.trace("Processing filter argument for {} with arg len {}", filename,
                 strings.length);
 
-        if (strings.length < 2) {
-            throw new RuntimeException("Not enough arguments (got " + strings.length + " expected 2)");
+        if (strings.length < 1) {
+            throw new RuntimeException("Not enough arguments (got " + strings.length + " expected 1)");
         }
 
-        File file = new File(strings[0] + File.separator + strings[1] + File.separator + filename);
+        File file = new File(strings[0] + File.separator + filename);
 
         logger.debug("Checking whether the path {} exists", file.getPath());
         return file.exists();

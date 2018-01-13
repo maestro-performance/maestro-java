@@ -214,7 +214,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
 
 
                         {% set rcvLatFilename = nodeType + "d-latency_all.png" %}
-                        {% set rcvLatFilenameExists = rcvLatFilename|fe(baseDir, reportDirInfo.reportDir) %}
+                        {% set rcvLatFilenameExists = rcvLatFilename|fe(reportDirInfo.reportDir) %}
 
                         {% if rcvLatFilenameExists %}
                         <img src="{{rcvLatFilename}}" />
@@ -229,7 +229,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                     <h2 id="90th-per">Latency: 90ᵗʰ percentile</h2>
 
                     {% set rcvLatFilename = nodeType + "d-latency_90.png" %}
-                    {% set rcvLatFilenameExists = rcvLatFilename|fe(baseDir, reportDirInfo.reportDir) %}
+                    {% set rcvLatFilenameExists = rcvLatFilename|fe(reportDirInfo.reportDir) %}
 
                     {% if rcvLatFilenameExists %}
 
@@ -244,7 +244,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                 <div>
                     <h2 id="99th-per">Latency: 99ᵗʰ percentile</h2>
                     {% set rcvLatFilename = nodeType + "d-latency_99.png" %}
-                    {% set rcvLatFilenameExists = rcvLatFilename|fe(baseDir, reportDirInfo.reportDir) %}
+                    {% set rcvLatFilenameExists = rcvLatFilename|fe(reportDirInfo.reportDir) %}
 
                     {% if rcvLatFilenameExists %}
 
@@ -260,7 +260,7 @@ Based on https://www.quackit.com/html/templates/download/view_source.cfm?templat
                 <div>
                     <h2 id="rate">Rate</h2>
                     {% set rcvRateFilename = nodeType + "d-rate_rate.png" %}
-                    {% set rcvRateFilenameExists = rcvRateFilename|fe(baseDir, reportDirInfo.reportDir) %}
+                    {% set rcvRateFilenameExists = rcvRateFilename|fe(reportDirInfo.reportDir) %}
 
                     {% if rcvRateFilenameExists %}
 
