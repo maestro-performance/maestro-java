@@ -108,7 +108,7 @@ public class ReportGenerator {
 
     private void renderNodePage(final File baseDir, final ReportDirInfo report) {
         logger.info("Processing report dir: {}", report.getReportDir());
-        Map<String, Object> nodeReportContext = NodeContextBuilder.toContext(report, baseDir);
+        Map<String, Object> nodeReportContext = NodeContextBuilder.toContext(report);
         NodeReportRenderer reportRenderer = new NodeReportRenderer(nodeReportContext);
 
         try {

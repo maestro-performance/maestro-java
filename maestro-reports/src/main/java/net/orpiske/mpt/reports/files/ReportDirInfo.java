@@ -122,6 +122,10 @@ public class ReportDirInfo {
         return testNum;
     }
 
+    public String getResultTypeString() {
+        return resultTypeString;
+    }
+
     public boolean isTestSuccessful() {
         return testSuccessful;
     }

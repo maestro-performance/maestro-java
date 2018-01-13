@@ -33,20 +33,18 @@ public class NodeContextBuilder {
 
     private NodeContextBuilder() {}
 
-    public static Map<String, Object> toContext(ReportDirInfo reportDirInfo, File baseDir) {
+    public static Map<String, Object> toContext(ReportDirInfo reportDirInfo) {
         Map<String, Object> context = new HashMap<>();
-        File file = new File(baseDir, reportDirInfo.getReportDir());
 
-        context.put("node", file.getName());
+        context.put("node", reportDirInfo.getNodeHost());
         context.put("nodeType", reportDirInfo.getNodeType());
-        context.put("testNumber", file.getParentFile().getName());
-        context.put("result", file.getParentFile().getParentFile().getName());
+        context.put("testNumber", reportDirInfo.getTestNum());
+        context.put("result", reportDirInfo.getResultTypeString());
         context.put("reportDirInfo", reportDirInfo);
-        context.put("baseDir", baseDir);
 
-        loadProperties(context, new File(file,"test.properties"));
-        loadProperties(context, new File(file,"broker.properties"));
-        loadProperties(context, new File(file,"rate.properties"));
+        loadProperties(context, new File(reportDirInfo.getReportDir(),"test.properties"));
+        loadProperties(context, new File(reportDirInfo.getReportDir(),"broker.properties"));
+        loadProperties(context, new File(reportDirInfo.getReportDir(),"rate.properties"));
 
         return context;
     }
