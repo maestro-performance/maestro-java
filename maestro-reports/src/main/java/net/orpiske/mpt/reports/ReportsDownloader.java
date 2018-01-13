@@ -46,7 +46,7 @@ public class ReportsDownloader {
         this.testNum = testNum;
     }
 
-    public void setReportTypeDir(String reportTypeDir) {
+    public void setReportResultTypeDir(String reportTypeDir) {
         this.reportTypeDir = reportTypeDir;
     }
 

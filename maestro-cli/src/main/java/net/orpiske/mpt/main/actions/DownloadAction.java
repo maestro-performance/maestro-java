@@ -87,7 +87,7 @@ public class DownloadAction extends Action {
             for (String server : servers) {
                 ReportsDownloader rd = new ReportsDownloader(directory);
 
-                rd.setReportTypeDir(result);
+                rd.setReportResultTypeDir(result);
                 int i = from;
                 do {
                     String resourcePath = Integer.toString(i);
