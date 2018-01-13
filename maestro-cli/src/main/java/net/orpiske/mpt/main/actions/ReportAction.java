@@ -96,6 +96,7 @@ public class ReportAction extends Action {
 
             reportGenerator.setHdrPlotterWrapperFactory(hdrPlotterWrapperFactory);
             reportGenerator.generate();
+            System.out.println("Report generated successfully");
             return 0;
         }
         catch (Exception e) {
