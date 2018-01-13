@@ -29,6 +29,9 @@ public class ReportsDownloader {
 
     private static final String LAST_SUCCESSFUL_DIR = "lastSuccessful";
     private static final String LAST_FAILED_DIR = "lastFailed";
+    private static final String SENDER_HOST = "sender";
+    private static final String RECEIVER_HOST = "receiver";
+    private static final String INSPECTOR_HOST = "inspector";
 
     private String baseDir;
     private String reportTypeDir;
@@ -47,45 +50,54 @@ public class ReportsDownloader {
         this.reportTypeDir = reportTypeDir;
     }
 
-    private String buildDir(String host) {
-        // "/tmp/mpt/groovy/success/1/host
-        return baseDir + File.separator + reportTypeDir + File.separator + Integer.toString(testNum) + File.separator
+
+    private String buildDir(final String host, final String hostType) {
+        // <basedir>/sender/failed/0/
+        return baseDir + File.separator + hostType + File.separator + reportTypeDir + File.separator + Integer.toString(testNum) + File.separator
                 + host;
     }
 
-    private void downloadReport(String host, String reportSource, String name) throws ResourceExchangeException {
+    private void downloadReport(final String host, final String hostType, final String reportSource, final String name) throws ResourceExchangeException {
         String baseURL = "http://" + host + ":8000/" + reportSource + "/";
         String targetURL = baseURL + name;
 
-        logger.info("Downloading file {}", targetURL);
-        Downloader.download(targetURL, buildDir(host), true);
+        final String destinationDir = buildDir(host, hostType);
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("Downloading file {} to {}", targetURL, destinationDir);
+        }
+        else {
+            logger.info("Downloading file {}", targetURL);
+        }
+
+        Downloader.download(targetURL, destinationDir, true);
     }
 
-    private void downloadSenderReports(String host, String reportSource) throws ResourceExchangeException {
+    private void downloadSenderReports(final String host, final String reportSource) throws ResourceExchangeException {
         String name = "senderd-rate.csv.gz";
 
-        downloadReport(host, reportSource, name);
+        downloadReport(host, SENDER_HOST, reportSource, name);
 
-        downloadReport(host, reportSource, "test.properties");
+        downloadReport(host, SENDER_HOST, reportSource, "test.properties");
     }
 
-    private void downloadReceiverReports(String host, String reportSource) throws ResourceExchangeException {
+    private void downloadReceiverReports(final String host, final String reportSource) throws ResourceExchangeException {
         String tpReport = "receiverd-rate.csv.gz";
 
-        downloadReport(host, reportSource, tpReport);
+        downloadReport(host, RECEIVER_HOST, reportSource, tpReport);
 
         String latReport = "receiverd-latency.hdr";
 
-        downloadReport(host, reportSource, latReport);
+        downloadReport(host, RECEIVER_HOST, reportSource, latReport);
 
 
-        downloadReport(host, reportSource, "test.properties");
+        downloadReport(host, RECEIVER_HOST, reportSource, "test.properties");
     }
 
-    private void downloadInspectorReports(String host, String reportSource) throws ResourceExchangeException {
-        downloadReport(host, reportSource, "broker-jvm-inspector.csv.gz");
-        downloadReport(host, reportSource, "test.properties");
-        downloadReport(host, reportSource, "broker.properties");
+    private void downloadInspectorReports(final String host, final String reportSource) throws ResourceExchangeException {
+        downloadReport(host, INSPECTOR_HOST, reportSource, "broker-jvm-inspector.csv.gz");
+        downloadReport(host, INSPECTOR_HOST, reportSource, "test.properties");
+        downloadReport(host, INSPECTOR_HOST, reportSource, "broker.properties");
     }
 
     public void downloadLastSuccessful(final String type, final String host, final String name) {
