@@ -21,12 +21,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Properties;
+
+import static net.orpiske.mpt.common.PropertyUtils.loadProperties;
 
 public class NodeContextBuilder {
     private static Logger logger = LoggerFactory.getLogger(NodeContextBuilder.class);
@@ -36,40 +34,21 @@ public class NodeContextBuilder {
     public static Map<String, Object> toContext(ReportDirInfo reportDirInfo) {
         Map<String, Object> context = new HashMap<>();
 
+        logger.trace("Loading context for {}", reportDirInfo);
+
         context.put("node", reportDirInfo.getNodeHost());
         context.put("nodeType", reportDirInfo.getNodeType());
         context.put("testNumber", reportDirInfo.getTestNum());
         context.put("result", reportDirInfo.getResultTypeString());
         context.put("reportDirInfo", reportDirInfo);
 
-        loadProperties(context, new File(reportDirInfo.getReportDir(),"test.properties"));
-        loadProperties(context, new File(reportDirInfo.getReportDir(),"broker.properties"));
-        loadProperties(context, new File(reportDirInfo.getReportDir(),"rate.properties"));
+        loadProperties(new File(reportDirInfo.getReportDir(),"test.properties"), context);
+        loadProperties(new File(reportDirInfo.getReportDir(),"broker.properties"), context);
+        loadProperties(new File(reportDirInfo.getReportDir(),"rate.properties"), context);
 
         return context;
     }
 
-    private static void loadProperties(Map<String, Object> context, File testProperties) {
-        if (testProperties.exists()) {
-            Properties prop = new Properties();
-
-            try (FileInputStream in = new FileInputStream(testProperties)) {
-                prop.load(in);
-
-                for (Map.Entry e : prop.entrySet()) {
-                    logger.debug("Adding entry {} with value {}", e.getKey(), e.getValue());
-                    context.put((String) e.getKey(), e.getValue());
-                }
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
-        }
-        else {
-            logger.debug("There are no properties file at {}", testProperties.getPath());
-        }
-    }
 
 
 }
