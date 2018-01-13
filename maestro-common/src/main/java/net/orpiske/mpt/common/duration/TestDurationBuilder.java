@@ -18,8 +18,6 @@ package net.orpiske.mpt.common.duration;
 
 import net.orpiske.mpt.common.exceptions.DurationParseException;
 
-import java.util.regex.Pattern;
-
 
 /**
  * Test duration builder

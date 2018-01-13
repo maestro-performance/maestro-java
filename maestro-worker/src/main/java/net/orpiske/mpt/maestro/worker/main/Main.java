@@ -19,7 +19,7 @@ package net.orpiske.mpt.maestro.worker.main;
 import net.orpiske.mpt.common.Constants;
 import net.orpiske.mpt.common.LogConfigurator;
 import net.orpiske.mpt.common.exceptions.MaestroException;
-import net.orpiske.mpt.common.worker.*;
+import net.orpiske.mpt.common.worker.MaestroWorker;
 import net.orpiske.mpt.maestro.client.MaestroTopics;
 import org.apache.commons.cli.*;
 

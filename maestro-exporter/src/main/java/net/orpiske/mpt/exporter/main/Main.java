@@ -16,14 +16,9 @@
 
 package net.orpiske.mpt.exporter.main;
 
-import java.io.IOException;
-
-import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
-import net.orpiske.mpt.common.exceptions.MaestroException;
-import org.apache.commons.cli.*;
-
-import net.orpiske.mpt.common.LogConfigurator;
 import net.orpiske.mpt.common.Constants;
+import net.orpiske.mpt.common.LogConfigurator;
+import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

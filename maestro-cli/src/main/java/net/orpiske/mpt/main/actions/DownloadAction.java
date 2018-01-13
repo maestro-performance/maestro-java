@@ -1,8 +1,6 @@
 package net.orpiske.mpt.main.actions;
 
-import net.orpiske.mpt.reports.ReportGenerator;
 import net.orpiske.mpt.reports.ReportsDownloader;
-import net.orpiske.mpt.utils.Downloader;
 import org.apache.commons.cli.*;
 
 public class DownloadAction extends Action {

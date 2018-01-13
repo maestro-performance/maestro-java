@@ -16,16 +16,16 @@
 package net.orpiske.mpt.utils;
 
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import net.orpiske.mpt.utils.contrib.net.URLUtils;
 import net.orpiske.mpt.utils.contrib.resource.HttpResourceExchange;
 import net.orpiske.mpt.utils.contrib.resource.Resource;
 import net.orpiske.mpt.utils.contrib.resource.ResourceExchange;
 import net.orpiske.mpt.utils.contrib.resource.ResourceInfo;
 import net.orpiske.mpt.utils.contrib.resource.exceptions.ResourceExchangeException;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 import java.net.MalformedURLException;

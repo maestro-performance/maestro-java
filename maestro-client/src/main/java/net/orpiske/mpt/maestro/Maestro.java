@@ -18,8 +18,10 @@ package net.orpiske.mpt.maestro;
 
 import net.orpiske.mpt.common.client.MaestroRequester;
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
-import net.orpiske.mpt.maestro.client.*;
 import net.orpiske.mpt.common.exceptions.MaestroException;
+import net.orpiske.mpt.maestro.client.MaestroClient;
+import net.orpiske.mpt.maestro.client.MaestroCollectorExecutor;
+import net.orpiske.mpt.maestro.client.MaestroTopics;
 import net.orpiske.mpt.maestro.notes.*;
 
 import java.io.IOException;

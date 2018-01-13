@@ -16,7 +16,6 @@
 
 package net.orpiske.mpt.reports;
 
-import net.orpiske.mpt.common.Constants;
 import net.orpiske.mpt.common.LogConfigurator;
 import org.junit.Before;
 import org.junit.Test;
@@ -25,7 +24,7 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertTrue;
 
 public class ReportGeneratorTest {
     private static final String HOST_01 = "fake-01.host.com";

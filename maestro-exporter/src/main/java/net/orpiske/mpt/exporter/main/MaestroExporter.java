@@ -10,7 +10,6 @@ import net.orpiske.mpt.exporter.collectors.PingInfo;
 import net.orpiske.mpt.exporter.collectors.RateCount;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.maestro.notes.*;
-import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -16,8 +16,6 @@
 
 package net.orpiske.mpt.common.worker;
 
-import org.HdrHistogram.Histogram;
-
 /**
  * An interface for implementing maestro receivers
  */

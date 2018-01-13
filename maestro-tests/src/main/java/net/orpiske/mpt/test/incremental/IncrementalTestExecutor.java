@@ -16,10 +16,10 @@
 
 package net.orpiske.mpt.test.incremental;
 
+import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.reports.ReportsDownloader;
 import net.orpiske.mpt.test.AbstractTestExecutor;
-import net.orpiske.mpt.common.exceptions.DurationParseException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -17,11 +17,7 @@
 package net.orpiske.mpt.maestro.client;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
-import net.orpiske.mpt.maestro.exceptions.MalformedNoteException;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
-import org.apache.commons.lang3.StringUtils;
-import org.eclipse.paho.client.mqttv3.*;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

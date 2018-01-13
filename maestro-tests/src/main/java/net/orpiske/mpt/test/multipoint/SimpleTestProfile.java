@@ -17,8 +17,8 @@
 package net.orpiske.mpt.test.multipoint;
 
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
-import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.common.exceptions.MaestroException;
+import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.test.MultiPointProfile;
 import net.orpiske.mpt.test.incremental.IncrementalTestProfile;
 import org.slf4j.Logger;

@@ -16,12 +16,11 @@
 
 package net.orpiske.mpt.reports.files;
 
+import net.orpiske.mpt.common.test.TestProperties;
 import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;
-
-import net.orpiske.mpt.common.test.TestProperties;
 
 public class ReportDirInfo {
     private File reportDir;

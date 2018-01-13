@@ -15,8 +15,6 @@
  */
 package net.orpiske.mpt.utils.contrib.resource.exceptions;
 
-import org.apache.http.HttpStatus;
-
 /**
  * Network exchanges exception
  *

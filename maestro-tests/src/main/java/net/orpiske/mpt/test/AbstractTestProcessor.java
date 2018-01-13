@@ -1,11 +1,11 @@
 package net.orpiske.mpt.test;
 
+import net.orpiske.mpt.common.NodeUtils;
 import net.orpiske.mpt.maestro.client.MaestroNoteProcessor;
 import net.orpiske.mpt.maestro.notes.PingResponse;
 import net.orpiske.mpt.maestro.notes.TestFailedNotification;
 import net.orpiske.mpt.maestro.notes.TestSuccessfulNotification;
 import net.orpiske.mpt.reports.ReportsDownloader;
-import net.orpiske.mpt.common.NodeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

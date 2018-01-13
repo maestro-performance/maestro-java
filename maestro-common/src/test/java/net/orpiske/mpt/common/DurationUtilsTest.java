@@ -17,9 +17,9 @@
 package net.orpiske.mpt.common;
 
 import net.orpiske.mpt.common.duration.DurationUtils;
+import net.orpiske.mpt.common.exceptions.DurationParseException;
 import org.junit.Assert;
 import org.junit.Test;
-import net.orpiske.mpt.common.exceptions.*;
 
 
 public class DurationUtilsTest {

@@ -13,13 +13,15 @@ import net.orpiske.mpt.maestro.exceptions.MalformedNoteException;
 import net.orpiske.mpt.maestro.notes.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
-import static net.orpiske.mpt.maestro.worker.base.WorkerLogUtils.*;
 
+import static net.orpiske.mpt.maestro.worker.base.WorkerLogUtils.createSymlinks;
+import static net.orpiske.mpt.maestro.worker.base.WorkerLogUtils.findTestLogDir;
 import static net.orpiske.mpt.maestro.worker.base.WorkerStateInfoUtil.isCleanExit;
 
 public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> implements MaestroEventListener {

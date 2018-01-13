@@ -1,19 +1,17 @@
 package net.orpiske.mpt.maestro.client;
 
-import java.io.IOException;
-import java.util.Arrays;
-import java.util.UUID;
-
 import net.orpiske.mpt.common.URLUtils;
-import org.apache.commons.lang3.StringUtils;
+import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
+import net.orpiske.mpt.maestro.exceptions.MalformedNoteException;
+import net.orpiske.mpt.maestro.notes.MaestroNote;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
-import net.orpiske.mpt.maestro.exceptions.MalformedNoteException;
-import net.orpiske.mpt.maestro.notes.MaestroNote;
+import java.io.IOException;
+import java.util.Arrays;
+import java.util.UUID;
 
 // TODO: configure LWT
 public abstract class AbstractMaestroPeer<T extends MaestroNote> implements MqttCallback {
