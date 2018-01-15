@@ -40,7 +40,7 @@ public class MaestroAction extends Action {
 
         options.addOption("h", "help", false, "prints the help");
         options.addOption("m", "maestro-url", true, "maestro URL to connect to");
-        options.addOption("c", "command", true, "maestro command [ping, flush, stats]");
+        options.addOption("c", "command", true, "maestro command [ping, flush, stats, stop]");
 
         try {
             cmdLine = parser.parse(options, args);
