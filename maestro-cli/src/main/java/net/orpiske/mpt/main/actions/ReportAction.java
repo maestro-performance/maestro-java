@@ -70,11 +70,9 @@ public class ReportAction extends Action {
         }
 
         String logLevel = cmdLine.getOptionValue('l');
-        if (logLevel == null) {
-            logLevel = "info";
+        if (logLevel != null) {
+            configureLogLevel(logLevel);
         }
-
-        configureLogLevel(logLevel);
 
         clean = cmdLine.hasOption('C');
 
