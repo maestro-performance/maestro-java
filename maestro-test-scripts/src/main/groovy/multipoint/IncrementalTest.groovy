@@ -27,10 +27,10 @@ package multipoint
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
-@Grab(group='net.orpiske', module='maestro-common', version='1.2.3-SNAPSHOT')
-@Grab(group='net.orpiske', module='maestro-client', version='1.2.3-SNAPSHOT')
-@Grab(group='net.orpiske', module='maestro-tests', version='1.2.3-SNAPSHOT')
-@Grab(group='net.orpiske', module='maestro-reports', version='1.2.3-SNAPSHOT')
+@Grab(group='net.orpiske', module='maestro-common', version='1.2.3')
+@Grab(group='net.orpiske', module='maestro-client', version='1.2.3')
+@Grab(group='net.orpiske', module='maestro-tests', version='1.2.3')
+@Grab(group='net.orpiske', module='maestro-reports', version='1.2.3')
 
 import net.orpiske.mpt.maestro.Maestro
 import net.orpiske.mpt.maestro.client.MaestroTopics
