@@ -111,6 +111,7 @@ public class FixedRateTestProfile extends AbstractTestProfile {
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
         maestro.setFCL(getMaximumLatency());
 
+        logger.info("Setting message size to {}", getMessageSize());
         maestro.setMessageSize(getMessageSize());
     }
 
