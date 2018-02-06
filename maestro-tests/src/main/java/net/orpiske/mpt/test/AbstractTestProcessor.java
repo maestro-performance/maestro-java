@@ -16,12 +16,16 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTestProcessor.class);
+    // Default wait time, in seconds, for the workers to flush their data
+    public static final int DEFAULT_WAIT_TIME = 5;
 
     private ReportsDownloader reportsDownloader;
     private AbstractTestProfile testProfile;
 
     private boolean failed = false;
     private int notifications = 0;
+
+    private int flushWaitSeconds = DEFAULT_WAIT_TIME;
 
     /**
      * Constructor
@@ -39,13 +43,20 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
         logger.debug("Elapsed time from {}: {} ms", note.getName(), note.getElapsed());
     }
 
+    protected int getFlushWaitSeconds() {
+        return flushWaitSeconds;
+    }
+
+    protected void setFlushWaitSeconds(int flushWaitSeconds) {
+        this.flushWaitSeconds = flushWaitSeconds;
+    }
+
     // Give some time for the backends to flush their data to disk
     // before downloading
     private void waitForFlush() {
-        final int seconds = 5;
-        logger.info("Waiting for {} seconds for the backends to flush their data", seconds);
+        logger.info("Waiting for {} seconds for the backends to flush their data", flushWaitSeconds);
         try {
-            Thread.sleep(seconds * 1000);
+            Thread.sleep(flushWaitSeconds * 1000);
         } catch (InterruptedException e) {
 
         }

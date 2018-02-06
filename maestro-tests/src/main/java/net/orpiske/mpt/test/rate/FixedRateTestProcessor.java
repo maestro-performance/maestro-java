@@ -37,13 +37,12 @@ public class FixedRateTestProcessor extends AbstractTestProcessor {
     public FixedRateTestProcessor(FixedRateTestProfile testProfile, ReportsDownloader reportsDownloader) {
         super(testProfile, reportsDownloader);
 
+        setFlushWaitSeconds(AbstractTestProcessor.DEFAULT_WAIT_TIME * testProfile.parallelCount);
         this.testProfile = testProfile;
     }
 
     public boolean isSuccessful() {
         return !super.isFailed();
     }
-
-
 }
 
