@@ -96,7 +96,7 @@ public class FixedRateTestProfile extends AbstractTestProfile {
 
     @Override
     public void apply(Maestro maestro) throws MaestroConnectionException, IOException, MaestroException {
-        logger.info("Setting broker to {}", getBrokerURL());
+        logger.info("Setting endpoint URL to {}", getBrokerURL());
         maestro.setBroker(getBrokerURL());
 
         logger.info("Setting rate to {}", getRate());
