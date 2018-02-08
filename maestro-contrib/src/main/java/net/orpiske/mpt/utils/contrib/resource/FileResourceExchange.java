@@ -37,7 +37,7 @@ public class FileResourceExchange implements ResourceExchange {
 	@Override
 	public Resource<InputStream> get(URI uri) throws ResourceExchangeException {
 		File file = new File(uri);
-		Resource<InputStream> ret = new Resource<InputStream>();
+		Resource<InputStream> ret = new Resource<>();
 		
 		try {
 			inputStream = FileUtils.openInputStream(file);
@@ -60,7 +60,7 @@ public class FileResourceExchange implements ResourceExchange {
 	}
 
 	@Override
-	public ResourceInfo info(URI uri) throws ResourceExchangeException {
+	public ResourceInfo info(URI uri) {
 		File file = new File(uri);
 		
 		ResourceInfo ret = new ResourceInfo();

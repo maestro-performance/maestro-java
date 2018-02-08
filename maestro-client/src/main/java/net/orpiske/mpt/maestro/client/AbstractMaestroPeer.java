@@ -144,7 +144,7 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
      * @throws IOException for I/O related errors
      * @throws MaestroConnectionException for Maestro related errors
      */
-    protected abstract void noteArrived(T note) throws IOException, MaestroConnectionException;
+    protected abstract void noteArrived(T note) throws MaestroConnectionException;
 
     public abstract boolean isRunning();
 

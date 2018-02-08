@@ -52,7 +52,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     }
 
     public synchronized List<MaestroNote> collect() {
-        List<MaestroNote> ret = new LinkedList<MaestroNote>(collected);
+        List<MaestroNote> ret = new LinkedList<>(collected);
 
         collected.clear();
 

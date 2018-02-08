@@ -66,7 +66,6 @@ final class ReportDirectoryWalker extends DirectoryWalker {
 
     @Override
     protected void handleFile(File file, int depth, Collection results)
-            throws IOException
 
     {
         logger.debug("Processing file {}", file.getPath());

@@ -17,14 +17,11 @@
 package net.orpiske.mpt.test.rate;
 
 import net.orpiske.mpt.common.duration.TestDuration;
-import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.test.AbstractTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 /**
  * A test profile for fixed rate tests
@@ -95,7 +92,7 @@ public class FixedRateTestProfile extends AbstractTestProfile {
     }
 
     @Override
-    public void apply(Maestro maestro) throws MaestroConnectionException, IOException, MaestroException {
+    public void apply(Maestro maestro) throws MaestroException {
         logger.info("Setting endpoint URL to {}", getBrokerURL());
         maestro.setBroker(getBrokerURL());
 

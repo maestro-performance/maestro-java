@@ -69,7 +69,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
 
     @Override
-    protected final void noteArrived(MaestroEvent note) throws IOException, MaestroConnectionException {
+    protected final void noteArrived(MaestroEvent note) throws MaestroConnectionException {
         logger.debug("Some message arrived: {}", note.toString());
         note.notify(this);
     }

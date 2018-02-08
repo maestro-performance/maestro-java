@@ -17,14 +17,11 @@
 package net.orpiske.mpt.test.incremental;
 
 import net.orpiske.mpt.common.duration.TestDuration;
-import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.test.AbstractTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 public abstract class IncrementalTestProfile extends AbstractTestProfile {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestProfile.class);
@@ -131,7 +128,7 @@ public abstract class IncrementalTestProfile extends AbstractTestProfile {
         this.parallelCountIncrement = parallelCountIncrement;
     }
 
-    abstract public void apply(Maestro maestro) throws MaestroConnectionException, IOException, MaestroException;
+    abstract public void apply(Maestro maestro) throws MaestroException;
 
     public void increment() {
         rate += rateIncrement;

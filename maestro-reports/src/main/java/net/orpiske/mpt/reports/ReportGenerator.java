@@ -142,7 +142,7 @@ public class ReportGenerator {
 
 
         // Step 2: execute the pre-processors
-        preProcessors.stream().forEach(item -> item.process(fileList));
+        preProcessors.forEach(item -> item.process(fileList));
 
         // Step 3: build the report context
         Map<String, Object> context = ReportContextBuilder.toContext(fileList, baseDir);
@@ -155,7 +155,7 @@ public class ReportGenerator {
         renderReportIndex(baseDir, context);
 
         // Step 6: execute the post-processors
-        postProcessors.stream().forEach(item -> item.process(fileList));
+        postProcessors.forEach(item -> item.process(fileList));
     }
 
     public List<ReportFileProcessor> getPreProcessors() {

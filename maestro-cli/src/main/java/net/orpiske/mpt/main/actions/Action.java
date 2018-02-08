@@ -65,7 +65,7 @@ public abstract class Action {
 	 * Process the command line arguments
 	 * @param args the command line arguments
 	 */
-	protected abstract void processCommand(String[] args) throws Exception;
+	protected abstract void processCommand(String[] args);
 	
 	/**
 	 * Runs the action

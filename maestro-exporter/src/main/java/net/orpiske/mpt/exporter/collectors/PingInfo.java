@@ -43,7 +43,7 @@ public class PingInfo extends Collector {
 
 
     public List<MetricFamilySamples> collect() {
-        List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
+        List<MetricFamilySamples> mfs = new ArrayList<>();
 
         GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_ping",
                 "Ping", Arrays.asList("peer", "type"));

@@ -23,7 +23,7 @@ public final class WorkerStateInfo {
          * Worker exited because it received stop request
          */
         WORKER_EXIT_STOPPED
-    };
+    }
 
     private volatile boolean running = false;
     private WorkerExitStatus exitStatus = WorkerExitStatus.WORKER_EXIT_STOPPED;

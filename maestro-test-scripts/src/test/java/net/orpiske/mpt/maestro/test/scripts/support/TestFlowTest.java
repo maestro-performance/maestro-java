@@ -54,7 +54,7 @@ public class TestFlowTest extends EndToEndTest {
     protected Maestro maestro;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         LogConfigurator.silent();
     }
 

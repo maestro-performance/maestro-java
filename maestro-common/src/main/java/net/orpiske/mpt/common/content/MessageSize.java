@@ -44,11 +44,8 @@ public class MessageSize {
     }
 
     public static boolean isVariable(final String sizeSpec) {
-        if (sizeSpec.startsWith("~")) {
-            return true;
-        }
+        return sizeSpec.startsWith("~");
 
-        return false;
     }
 
     /**

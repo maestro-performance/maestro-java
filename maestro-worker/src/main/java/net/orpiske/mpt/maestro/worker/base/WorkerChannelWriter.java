@@ -81,7 +81,7 @@ public final class WorkerChannelWriter implements Runnable {
                 if (worker.workerChannel() != null) {
                     final boolean sender = worker instanceof MaestroSenderWorker;
                     final boolean receiver = worker instanceof MaestroReceiverWorker;
-                    assert !(sender == true && receiver == true);
+                    assert !(sender && receiver);
                     RateWriter rateWriter = null;
                     if (sender) {
                         senderRateWriter = senderRateWriter == null ? createRateWriter(true) : senderRateWriter;

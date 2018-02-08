@@ -1,6 +1,5 @@
 package net.orpiske.mpt.test;
 
-import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.Maestro;
 
@@ -29,9 +28,8 @@ public interface TestProfile {
     /**
      * Apply a test profile using a maestro instance
      * @param maestro the maestro instance to apply the profile to
-     * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      * @throws MaestroException Incorrect or invalid parameters
      */
-    void apply(Maestro maestro) throws MaestroConnectionException, IOException, MaestroException;
+    void apply(Maestro maestro) throws MaestroException;
 }

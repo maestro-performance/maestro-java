@@ -41,7 +41,7 @@ public class ConnectionCount extends Collector {
     }
 
     public List<MetricFamilySamples> collect() {
-        List<MetricFamilySamples> mfs = new ArrayList<MetricFamilySamples>();
+        List<MetricFamilySamples> mfs = new ArrayList<>();
 
         GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_connection_count",
                 "Connection count", Arrays.asList("peer", "type"));

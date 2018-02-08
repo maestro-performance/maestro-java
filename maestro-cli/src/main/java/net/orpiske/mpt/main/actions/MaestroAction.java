@@ -19,7 +19,6 @@ import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
 import org.apache.commons.cli.*;
 
-import java.io.IOException;
 import java.util.List;
 
 public class MaestroAction extends Action {
@@ -103,9 +102,6 @@ public class MaestroAction extends Action {
         } catch (MaestroException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
-            System.err.println(e.getMessage());
         }
 
         return 1;

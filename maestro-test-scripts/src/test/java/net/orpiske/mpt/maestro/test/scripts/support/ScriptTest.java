@@ -57,12 +57,12 @@ public class ScriptTest extends EndToEndTest {
     protected Maestro maestro;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         LogConfigurator.silent();
     }
 
     @Test
-    public void testPing() throws Exception {
+    public void testPing() {
         System.out.println("Sending the ping request");
         maestro.pingRequest();
 
@@ -76,7 +76,7 @@ public class ScriptTest extends EndToEndTest {
     }
 
     @Test
-    public void testSetFixedMessageSize() throws Exception {
+    public void testSetFixedMessageSize() {
         System.out.println("Sending the set fixed message size request");
         maestro.setMessageSize(100);
 
@@ -90,7 +90,7 @@ public class ScriptTest extends EndToEndTest {
     }
 
     @Test
-    public void testSetVariableMessageSize() throws Exception {
+    public void testSetVariableMessageSize() {
         System.out.println("Sending the set variable message size request");
         maestro.setMessageSize("~100");
 
@@ -104,7 +104,7 @@ public class ScriptTest extends EndToEndTest {
     }
 
     @Test
-    public void testSetBroker() throws Exception {
+    public void testSetBroker() {
         System.out.println("Sending the set broker request");
         maestro.setBroker("amqp://localhost/unit.test.queue");
 
@@ -118,7 +118,7 @@ public class ScriptTest extends EndToEndTest {
     }
 
     @Test
-    public void testSetParallelCount() throws Exception {
+    public void testSetParallelCount() {
         System.out.println("Sending the set parallel count request");
         maestro.setParallelCount(100);
 
@@ -132,7 +132,7 @@ public class ScriptTest extends EndToEndTest {
     }
 
     @Test
-    public void testSetFCL() throws Exception {
+    public void testSetFCL() {
         System.out.println("Sending the set fail condition request");
         maestro.setFCL(100);
 
@@ -150,7 +150,7 @@ public class ScriptTest extends EndToEndTest {
      */
     @Ignore
     @Test
-    public void testStatsRequest() throws Exception {
+    public void testStatsRequest() {
         System.out.println("Sending the stats request");
         maestro.statsRequest();
 

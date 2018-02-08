@@ -63,7 +63,7 @@ class ShortTestExecutorCount implements TestExecutor {
     private String brokerURL
 
     ShortTestExecutorCount(Maestro maestro) {
-        this.maestro = maestro;
+        this.maestro = maestro
     }
 
     String getBrokerURL() {
@@ -80,7 +80,7 @@ class ShortTestExecutorCount implements TestExecutor {
      * therefore cool down period is not required/used
      */
     long getCoolDownPeriod() {
-        return 0;
+        return 0
     }
 
     void setCoolDownPeriod(long period) {
@@ -124,7 +124,7 @@ class ShortTestExecutorCount implements TestExecutor {
         maestro.setBroker(brokerURL)
 
         println "Setting rate"
-        maestro.setRate(rate);
+        maestro.setRate(rate)
 
         println "Setting parallel count"
         maestro.setParallelCount(parallelCount)
@@ -175,7 +175,7 @@ maestro = new Maestro(maestroURL)
  */
 ShortTestExecutorCount executor = new ShortTestExecutorCount(maestro)
 executor.setBrokerURL(brokerURL)
-executor.run();
+executor.run()
 maestro.stop()
 
 

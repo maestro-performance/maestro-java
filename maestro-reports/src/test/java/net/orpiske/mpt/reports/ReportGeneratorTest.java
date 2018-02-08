@@ -32,7 +32,7 @@ public class ReportGeneratorTest {
     private static final String HOST_03 = "fake-03.host.com";
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         LogConfigurator.silent();
     }
 

@@ -1,6 +1,5 @@
 package net.orpiske.mpt.test;
 
-import net.orpiske.mpt.common.exceptions.DurationParseException;
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.maestro.notes.MaestroNote;
@@ -22,9 +21,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     private ReportsDownloader reportsDownloader;
 
 
-    public AbstractTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader)
-            throws DurationParseException
-    {
+    public AbstractTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader) {
         this.maestro = maestro;
         this.reportsDownloader = reportsDownloader;
 
@@ -44,7 +41,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      * @throws MaestroConnectionException
      * @throws IOException
      */
-    protected void startServices() throws MaestroConnectionException, IOException {
+    protected void startServices() throws MaestroConnectionException {
         maestro.startReceiver();
         maestro.startInspector();
         maestro.startSender();
@@ -57,7 +54,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      * @throws IOException
      * @throws InterruptedException
      */
-    protected int getNumPeers() throws MaestroConnectionException, IOException, InterruptedException {
+    protected int getNumPeers() throws MaestroConnectionException, InterruptedException {
         int numPeers = 0;
 
         logger.debug("Collecting responses to ensure topic is clean prior to pinging nodes");

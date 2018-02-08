@@ -29,11 +29,8 @@ public class DurationCount implements TestDuration {
     }
 
     public boolean canContinue(TestProgress progress) {
-        if (progress.messageCount() < count) {
-            return true;
-        }
+        return progress.messageCount() < count;
 
-        return false;
     }
 
     public long getNumericDuration() {

@@ -34,7 +34,7 @@ public class URLQuery {
      * @param uri a URI object
      * @throws URISyntaxException
      */
-    public URLQuery(URI uri) throws URISyntaxException {
+    public URLQuery(URI uri) {
          params = URLEncodedUtils.parse(uri, "UTF-8");
 
         for (NameValuePair param : params) {

@@ -16,7 +16,6 @@
 
 package net.orpiske.mpt.test.multipoint;
 
-import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.test.MultiPointProfile;
@@ -24,7 +23,6 @@ import net.orpiske.mpt.test.incremental.IncrementalTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -42,7 +40,7 @@ public class SimpleTestProfile extends IncrementalTestProfile implements MultiPo
         return endPoints;
     }
 
-    public void apply(Maestro maestro) throws MaestroConnectionException, IOException, MaestroException {
+    public void apply(Maestro maestro) throws MaestroException {
         for (EndPoint endPoint : endPoints) {
             logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getBrokerURL());
             logger.debug(" {} end point located at {}", endPoint.getName(), endPoint.getTopic());

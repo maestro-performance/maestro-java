@@ -71,7 +71,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void flushRequest() throws MaestroConnectionException, IOException {
+    public void flushRequest() throws MaestroConnectionException {
         flushRequest(MaestroTopics.ALL_DAEMONS);
     }
 
@@ -82,7 +82,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void flushRequest(final String topic) throws MaestroConnectionException, IOException {
+    public void flushRequest(final String topic) throws MaestroConnectionException {
         FlushRequest maestroNote = new FlushRequest();
 
         maestroClient.publish(topic, maestroNote);
@@ -93,7 +93,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void pingRequest() throws MaestroConnectionException, IOException {
+    public void pingRequest() throws MaestroConnectionException {
         pingRequest(MaestroTopics.ALL_DAEMONS);
     }
 
@@ -104,7 +104,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void pingRequest(final String topic) throws MaestroConnectionException, IOException {
+    public void pingRequest(final String topic) throws MaestroConnectionException {
         PingRequest maestroNote = new PingRequest();
 
         maestroClient.publish(topic, maestroNote);
@@ -117,7 +117,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setBroker(final String value) throws MaestroConnectionException, IOException {
+    public void setBroker(final String value) throws MaestroConnectionException {
         setBroker(MaestroTopics.ALL_DAEMONS, value);
     }
 
@@ -129,7 +129,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setBroker(final String topic, final String value) throws MaestroConnectionException, IOException {
+    public void setBroker(final String topic, final String value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setBroker(value);
@@ -144,7 +144,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setDuration(final Object value) throws IOException, MaestroException {
+    public void setDuration(final Object value) throws MaestroException {
         setDuration(MaestroTopics.ALL_DAEMONS, value);
     }
 
@@ -156,7 +156,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setDuration(final String topic, final Object value) throws IOException, MaestroException {
+    public void setDuration(final String topic, final Object value) throws MaestroException {
         SetRequest maestroNote = new SetRequest();
 
         if (value instanceof String) {
@@ -182,7 +182,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setLogLevel(final String value) throws MaestroConnectionException, IOException {
+    public void setLogLevel(final String value) throws MaestroConnectionException {
         setLogLevel(MaestroTopics.ALL_DAEMONS, value);
     }
 
@@ -194,7 +194,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setLogLevel(final String topic, final String value) throws MaestroConnectionException, IOException {
+    public void setLogLevel(final String topic, final String value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setLogLevel(value);
@@ -209,7 +209,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setParallelCount(final int value) throws MaestroConnectionException, IOException {
+    public void setParallelCount(final int value) throws MaestroConnectionException {
         setParallelCount(MaestroTopics.ALL_DAEMONS, value);
     }
 
@@ -221,7 +221,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setParallelCount(final String topic, final int value) throws MaestroConnectionException, IOException {
+    public void setParallelCount(final String topic, final int value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
 
@@ -237,7 +237,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setMessageSize(final String value) throws MaestroConnectionException, IOException {
+    public void setMessageSize(final String value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setMessageSize(value);
@@ -253,7 +253,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setMessageSize(final long value) throws MaestroConnectionException, IOException {
+    public void setMessageSize(final long value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setMessageSize(Long.toString(value));
@@ -268,7 +268,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setThrottle(final int value) throws MaestroConnectionException, IOException {
+    public void setThrottle(final int value) throws MaestroConnectionException {
         setThrottle(MaestroTopics.ALL_DAEMONS, value);
     }
 
@@ -280,7 +280,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setThrottle(final String topic, final int value) throws MaestroConnectionException, IOException {
+    public void setThrottle(final String topic, final int value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setThrottle(Integer.toString(value));
@@ -295,7 +295,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setRate(final int value) throws MaestroConnectionException, IOException {
+    public void setRate(final int value) throws MaestroConnectionException {
         setRate(MaestroTopics.ALL_DAEMONS, value);
     }
 
@@ -307,7 +307,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setRate(final String topic, final int value) throws MaestroConnectionException, IOException {
+    public void setRate(final String topic, final int value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setRate(Integer.toString(value));
@@ -322,7 +322,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void setFCL(final int value) throws MaestroConnectionException, IOException {
+    public void setFCL(final int value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setFCL(Integer.toString(value));
@@ -336,7 +336,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void startInspector() throws MaestroConnectionException, IOException {
+    public void startInspector() throws MaestroConnectionException {
         StartInspector maestroNote = new StartInspector();
 
         maestroClient.publish(MaestroTopics.BROKER_INSPECTOR_DAEMONS, maestroNote);
@@ -348,7 +348,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void stopInspector() throws MaestroConnectionException, IOException {
+    public void stopInspector() throws MaestroConnectionException {
         StopInspector maestroNote = new StopInspector();
 
         maestroClient.publish(MaestroTopics.BROKER_INSPECTOR_DAEMONS, maestroNote);
@@ -360,7 +360,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void startSender() throws MaestroConnectionException, IOException {
+    public void startSender() throws MaestroConnectionException {
         StartSender maestroNote = new StartSender();
 
         maestroClient.publish(MaestroTopics.SENDER_DAEMONS, maestroNote);
@@ -372,7 +372,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void stopSender() throws MaestroConnectionException, IOException {
+    public void stopSender() throws MaestroConnectionException {
         StopSender maestroNote = new StopSender();
 
         maestroClient.publish(MaestroTopics.SENDER_DAEMONS, maestroNote);
@@ -383,7 +383,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void startReceiver() throws MaestroConnectionException, IOException {
+    public void startReceiver() throws MaestroConnectionException {
         StartReceiver maestroNote = new StartReceiver();
 
         maestroClient.publish(MaestroTopics.RECEIVER_DAEMONS, maestroNote);
@@ -395,7 +395,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void stopReceiver() throws MaestroConnectionException, IOException {
+    public void stopReceiver() throws MaestroConnectionException {
         StopReceiver maestroNote = new StopReceiver();
 
         maestroClient.publish(MaestroTopics.RECEIVER_DAEMONS, maestroNote);
@@ -407,7 +407,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void statsRequest() throws MaestroConnectionException, IOException {
+    public void statsRequest() throws MaestroConnectionException {
         StatsRequest maestroNote = new StatsRequest();
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
@@ -419,7 +419,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    public void halt() throws MaestroConnectionException, IOException {
+    public void halt() throws MaestroConnectionException {
         Halt maestroNote = new Halt();
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);

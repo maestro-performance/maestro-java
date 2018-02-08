@@ -43,7 +43,7 @@ public class RateCount extends Collector {
 
 
     public List<Collector.MetricFamilySamples> collect() {
-        List<Collector.MetricFamilySamples> mfs = new ArrayList<Collector.MetricFamilySamples>();
+        List<Collector.MetricFamilySamples> mfs = new ArrayList<>();
 
         GaugeMetricFamily labeledGauge = new GaugeMetricFamily("maestro_rate",
                 "Rate", Arrays.asList("peer", "type"));

@@ -18,7 +18,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void flushRequest() throws MaestroConnectionException, IOException;
+    void flushRequest() throws MaestroConnectionException;
 
 
     /**
@@ -27,14 +27,14 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void flushRequest(final String topic) throws MaestroConnectionException, IOException;
+    void flushRequest(final String topic) throws MaestroConnectionException;
 
     /**
      * Sends a ping request
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void pingRequest() throws MaestroConnectionException, IOException;
+    void pingRequest() throws MaestroConnectionException;
 
     /**
      * Sends a ping request
@@ -42,7 +42,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void pingRequest(final String topic) throws MaestroConnectionException, IOException;
+    void pingRequest(final String topic) throws MaestroConnectionException;
 
 
     /**
@@ -51,7 +51,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setBroker(final String value) throws MaestroConnectionException, IOException;
+    void setBroker(final String value) throws MaestroConnectionException;
 
 
     /**
@@ -61,7 +61,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setBroker(final String topic, final String value) throws MaestroConnectionException, IOException;
+    void setBroker(final String topic, final String value) throws MaestroConnectionException;
 
 
     /**
@@ -70,7 +70,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setDuration(final Object value) throws MaestroConnectionException, IOException, MaestroException;
+    void setDuration(final Object value) throws MaestroException;
 
 
     /**
@@ -80,7 +80,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setDuration(final String topic, final Object value) throws IOException, MaestroException;
+    void setDuration(final String topic, final Object value) throws MaestroException;
 
 
 
@@ -90,7 +90,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setLogLevel(final String value) throws MaestroConnectionException, IOException;
+    void setLogLevel(final String value) throws MaestroConnectionException;
 
 
     /**
@@ -100,7 +100,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setLogLevel(final String topic, final String value) throws MaestroConnectionException, IOException;
+    void setLogLevel(final String topic, final String value) throws MaestroConnectionException;
 
 
     /**
@@ -109,7 +109,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setParallelCount(final int value) throws MaestroConnectionException, IOException;
+    void setParallelCount(final int value) throws MaestroConnectionException;
 
 
     /**
@@ -119,7 +119,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setParallelCount(final String topic, final int value) throws MaestroConnectionException, IOException;
+    void setParallelCount(final String topic, final int value) throws MaestroConnectionException;
 
     /**
      *
@@ -129,7 +129,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setMessageSize(final String value) throws MaestroConnectionException, IOException;
+    void setMessageSize(final String value) throws MaestroConnectionException;
 
 
     /**
@@ -139,7 +139,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setMessageSize(final long value) throws MaestroConnectionException, IOException;
+    void setMessageSize(final long value) throws MaestroConnectionException;
 
 
     /**
@@ -148,7 +148,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setThrottle(final int value) throws MaestroConnectionException, IOException;
+    void setThrottle(final int value) throws MaestroConnectionException;
 
 
     /**
@@ -158,7 +158,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setThrottle(final String topic, final int value) throws MaestroConnectionException, IOException;
+    void setThrottle(final String topic, final int value) throws MaestroConnectionException;
 
 
     /**
@@ -167,7 +167,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setRate(final int value) throws MaestroConnectionException, IOException;
+    void setRate(final int value) throws MaestroConnectionException;
 
 
     /**
@@ -177,7 +177,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setRate(final String topic, final int value) throws MaestroConnectionException, IOException;
+    void setRate(final String topic, final int value) throws MaestroConnectionException;
 
 
     /**
@@ -186,7 +186,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void setFCL(final int value) throws MaestroConnectionException, IOException;
+    void setFCL(final int value) throws MaestroConnectionException;
 
 
     /**
@@ -194,7 +194,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void startInspector() throws MaestroConnectionException, IOException;
+    void startInspector() throws MaestroConnectionException;
 
 
     /**
@@ -202,7 +202,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void stopInspector() throws MaestroConnectionException, IOException;
+    void stopInspector() throws MaestroConnectionException;
 
 
     /**
@@ -210,7 +210,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void startSender() throws MaestroConnectionException, IOException;
+    void startSender() throws MaestroConnectionException;
 
 
     /**
@@ -218,7 +218,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void stopSender() throws MaestroConnectionException, IOException;
+    void stopSender() throws MaestroConnectionException;
 
 
     /**
@@ -226,7 +226,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void startReceiver() throws MaestroConnectionException, IOException;
+    void startReceiver() throws MaestroConnectionException;
 
 
     /**
@@ -234,7 +234,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void stopReceiver() throws MaestroConnectionException, IOException;
+    void stopReceiver() throws MaestroConnectionException;
 
 
     /**
@@ -242,7 +242,7 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void statsRequest() throws MaestroConnectionException, IOException;
+    void statsRequest() throws MaestroConnectionException;
 
 
     /**
@@ -250,5 +250,5 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @throws IOException I/O and serialization errors
      */
-    void halt() throws MaestroConnectionException, IOException;
+    void halt() throws MaestroConnectionException;
 }

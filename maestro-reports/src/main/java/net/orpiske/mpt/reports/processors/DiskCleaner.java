@@ -32,6 +32,6 @@ public class DiskCleaner implements ReportFileProcessor {
 
     @Override
     public void process(List<ReportFile> reportFiles) {
-        reportFiles.stream().forEach(this::clean);
+        reportFiles.forEach(this::clean);
     }
 }

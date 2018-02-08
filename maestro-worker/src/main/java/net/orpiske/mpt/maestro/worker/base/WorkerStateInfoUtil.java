@@ -13,11 +13,8 @@ class WorkerStateInfoUtil {
             return true;
         }
 
-        if (wsi.getExitStatus() == WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED) {
-            return true;
-        }
+        return wsi.getExitStatus() == WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED;
 
-        return false;
     }
 
 }

@@ -34,5 +34,5 @@ public enum MaestroOpt {
     /** Set rate */
     MAESTRO_NOTE_OPT_SET_RATE,
     /** Set fail condition  */
-    MAESTRO_NOTE_OPT_FCL;
+    MAESTRO_NOTE_OPT_FCL
 }

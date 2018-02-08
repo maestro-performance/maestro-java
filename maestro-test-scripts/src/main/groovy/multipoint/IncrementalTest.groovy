@@ -52,14 +52,14 @@ LogConfigurator.verbose()
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new ReportsDownloader(args[0]);
+ReportsDownloader reportsDownloader = new ReportsDownloader(args[0])
 
 IncrementalTestProfile testProfile = new SimpleTestProfile()
 
 testProfile.addEndPoint(new MultiPointProfile.EndPoint("sender", MaestroTopics.SENDER_DAEMONS, senderBrokerURL))
 testProfile.addEndPoint(new MultiPointProfile.EndPoint("receiver", MaestroTopics.RECEIVER_DAEMONS, receiveBrokerURL))
 
-testProfile.setInitialRate(500);
+testProfile.setInitialRate(500)
 testProfile.setCeilingRate(600)
 
 testProfile.setRateIncrement(100)
@@ -67,8 +67,8 @@ testProfile.setRateIncrement(100)
 testProfile.setInitialParallelCount(2)
 testProfile.setCeilingParallelCount(2)
 
-testProfile.setDuration(TestDurationBuilder.build("120s"));
-testProfile.setMessageSize(MessageSize.variable(256));
+testProfile.setDuration(TestDurationBuilder.build("120s"))
+testProfile.setMessageSize(MessageSize.variable(256))
 testProfile.setMaximumLatency(200)
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)

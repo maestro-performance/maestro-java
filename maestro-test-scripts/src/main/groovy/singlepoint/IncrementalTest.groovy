@@ -48,14 +48,14 @@ LogConfigurator.verbose()
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new ReportsDownloader(args[0]);
+ReportsDownloader reportsDownloader = new ReportsDownloader(args[0])
 
-IncrementalTestProfile testProfile = new SimpleTestProfile();
+IncrementalTestProfile testProfile = new SimpleTestProfile()
 
 testProfile.setBrokerURL(brokerURL)
-testProfile.setInitialRate(500);
-testProfile.setDuration(TestDurationBuilder.build("90s"));
-testProfile.setMessageSize(MessageSize.variable(256));
+testProfile.setInitialRate(500)
+testProfile.setDuration(TestDurationBuilder.build("90s"))
+testProfile.setMessageSize(MessageSize.variable(256))
 testProfile.setMaximumLatency(200)
 testProfile.setCeilingRate(600)
 testProfile.setParallelCountIncrement(1)

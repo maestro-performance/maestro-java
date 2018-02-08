@@ -69,7 +69,7 @@ public class Downloader {
 	 * existent file
 	 */
 	private static File setupOutputFile(String url, final String destDir, boolean overwrite)
-			throws MalformedURLException, URISyntaxException, IOException {
+			throws URISyntaxException, IOException {
 		String fileName = URLUtils.getFilename(url);
 		String fullName = destDir + File.separator + fileName;
 

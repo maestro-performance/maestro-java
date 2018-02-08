@@ -223,7 +223,7 @@ public class HttpResourceExchange implements ResourceExchange {
 					logger.debug("Reading " + entity.getContentLength() 
 							+ " bytes from the server");
 					
-					Resource<InputStream> ret = new Resource<InputStream>();
+					Resource<InputStream> ret = new Resource<>();
 					
 					ret.setPayload(entity.getContent());
 					

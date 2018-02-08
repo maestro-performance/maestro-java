@@ -116,11 +116,8 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
             return true;
         }
 
-        if (isSuccessful()) {
-            return true;
-        }
+        return isSuccessful();
 
-        return false;
     }
 
     /**

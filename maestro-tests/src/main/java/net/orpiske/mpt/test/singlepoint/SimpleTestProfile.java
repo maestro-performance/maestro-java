@@ -1,14 +1,11 @@
 package net.orpiske.mpt.test.singlepoint;
 
-import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.Maestro;
 import net.orpiske.mpt.test.SinglePointProfile;
 import net.orpiske.mpt.test.incremental.IncrementalTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.IOException;
 
 public class SimpleTestProfile extends IncrementalTestProfile implements SinglePointProfile {
     private static final Logger logger = LoggerFactory.getLogger(SimpleTestProfile.class);
@@ -23,7 +20,7 @@ public class SimpleTestProfile extends IncrementalTestProfile implements SingleP
         this.brokerURL = brokerURL;
     }
 
-    public void apply(Maestro maestro) throws MaestroConnectionException, IOException, MaestroException {
+    public void apply(Maestro maestro) throws MaestroException {
         logger.info("Setting broker to {}", getBrokerURL());
         maestro.setBroker(getBrokerURL());
 

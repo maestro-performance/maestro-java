@@ -20,8 +20,8 @@ import java.util.List;
 public class WorkerTestRunner extends JmsTestRunner {
     private static final Logger logger = LoggerFactory.getLogger(WorkerTestRunner.class);
 
-    private List<MiniPeer> peers = new LinkedList<MiniPeer>();
-    private List<Maestro> maestroClientPeers = new LinkedList<Maestro>();
+    private List<MiniPeer> peers = new LinkedList<>();
+    private List<Maestro> maestroClientPeers = new LinkedList<>();
 
 
 
