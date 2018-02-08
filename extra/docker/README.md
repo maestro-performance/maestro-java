@@ -84,6 +84,16 @@ The containers will store the test data in a volume which is located on `${HOME}
 by default.
 
 
+Attaching to the Other Containers
+----
+
+You can use ```docker exec``` command to attach to a running container. For example, to attach
+to maestro sender container: 
+
+```
+docker exec -it docker_maestro-sender_1 /bin/bash 
+```
+
 Customizing The Tests
 ----
 
