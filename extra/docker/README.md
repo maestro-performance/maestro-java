@@ -58,11 +58,12 @@ Running The Tests
 To run the tests, first start the client container:
 
 ```
-docker start -a -i maestro-client
+docker run -it -h docker_maestro-client -v maestro-storage:/maestro --network=docker_maestro-net --name maestro-client -p 8000:8000 docker_maestro-client /bin/bash
 ```
 
 Once you attach to the container, the console MOTD will display useful information about 
-how you can tweak the tests. 
+how you can tweak the tests. Please note that the name of the storage might be different or 
+simply an auto-generated ID from docker composer.  
 
 To execute the unbounded test, which tries to send as much data as possible to the broker,
 provided by default along with Maestro, run the following commands within the container:
