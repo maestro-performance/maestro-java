@@ -30,7 +30,6 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
     private MaestroReceiverClient client;
     private WorkerContainer container;
-    private String host;
     private Class<MaestroWorker> workerClass;
 
     private File logDir;
@@ -48,7 +47,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         client = new MaestroReceiverClient(maestroURL, clientName, host, id);
 
         this.workerClass = workerClass;
-        this.host = host;
+        String host1 = host;
         this.logDir = logDir;
         this.container = WorkerContainer.getInstance(client);
 

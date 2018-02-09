@@ -5,7 +5,6 @@ import org.apache.commons.cli.*;
 
 public class DownloadAction extends Action {
     private CommandLine cmdLine;
-    private Options options;
 
     private String directory;
     private String[] servers;
@@ -20,7 +19,7 @@ public class DownloadAction extends Action {
     protected void processCommand(String[] args) {
         CommandLineParser parser = new PosixParser();
 
-        options = new Options();
+        Options options = new Options();
 
         options.addOption("h", "help", false, "prints the help");
         options.addOption("d", "directory", true, "the directory to generate the report");

@@ -23,7 +23,6 @@ import java.util.List;
 
 public class MaestroAction extends Action {
     private CommandLine cmdLine;
-    private Options options;
 
     private String maestroUrl;
     private String command;
@@ -35,7 +34,7 @@ public class MaestroAction extends Action {
     protected void processCommand(String[] args) {
         CommandLineParser parser = new PosixParser();
 
-        options = new Options();
+        Options options = new Options();
 
         options.addOption("h", "help", false, "prints the help");
         options.addOption("m", "maestro-url", true, "maestro URL to connect to");

@@ -27,8 +27,6 @@ import org.slf4j.LoggerFactory;
 public class FixedRateTestProcessor extends AbstractTestProcessor {
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestProcessor.class);
 
-    private FixedRateTestProfile testProfile;
-
     /**
      * Constructor
      * @param testProfile
@@ -38,7 +36,6 @@ public class FixedRateTestProcessor extends AbstractTestProcessor {
         super(testProfile, reportsDownloader);
 
         setFlushWaitSeconds(AbstractTestProcessor.DEFAULT_WAIT_TIME * testProfile.parallelCount);
-        this.testProfile = testProfile;
     }
 
     public boolean isSuccessful() {

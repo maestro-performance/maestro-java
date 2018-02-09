@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 public class ReportAction extends Action {
     private static final String DEFAULT_TIME_UNIT = "1000";
     private CommandLine cmdLine;
-    private Options options;
 
     private String directory;
     private boolean clean;
@@ -44,7 +43,7 @@ public class ReportAction extends Action {
     protected void processCommand(String[] args) {
         CommandLineParser parser = new PosixParser();
 
-        options = new Options();
+        Options options = new Options();
 
         options.addOption("h", "help", false, "prints the help");
         options.addOption("d", "directory", true, "the directory to generate the report");

@@ -7,7 +7,6 @@ import java.io.*;
 
 public class DataAction extends Action {
     private CommandLine cmdLine;
-    private Options options;
 
     private String input;
     private String output;
@@ -20,7 +19,7 @@ public class DataAction extends Action {
     protected void processCommand(String[] args) {
         CommandLineParser parser = new PosixParser();
 
-        options = new Options();
+        Options options = new Options();
 
         options.addOption("h", "help", false, "prints the help");
         options.addOption("a", "action", true, "the action to execute [rate-to-histogram]");

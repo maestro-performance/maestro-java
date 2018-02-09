@@ -25,8 +25,6 @@ import java.io.File;
  */
 public class RuntimeUtils {
 
-	private static String USER_LOCAL_DIRECTORY = ".maestro";
-
 	private static String USER_HOME = null;
 
 	/**
@@ -42,6 +40,7 @@ public class RuntimeUtils {
 			userHome = FileUtils.getUserDirectoryPath();
 		}
 
+		String USER_LOCAL_DIRECTORY = ".maestro";
 		return userHome + File.separator + USER_LOCAL_DIRECTORY;
 	}
 

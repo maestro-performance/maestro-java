@@ -29,7 +29,6 @@ public class MaestroExporter {
     private static final Counter successes;
     private static final Counter abnormal;
 
-    private boolean running = true;
     private Maestro maestro = null;
 
     static {
@@ -111,6 +110,7 @@ public class MaestroExporter {
             server = new HTTPServer(port);
 
 
+            boolean running = true;
             while (running) {
                 logger.debug("Sending requests");
                 maestro.statsRequest();

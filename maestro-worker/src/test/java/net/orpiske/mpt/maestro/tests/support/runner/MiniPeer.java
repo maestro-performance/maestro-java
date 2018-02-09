@@ -28,7 +28,6 @@ import java.net.URL;
  * A small, but complete, maestro peer to be used for testing
  */
 public class MiniPeer {
-    private Thread thread;
     private MaestroWorkerExecutor executor;
 
     private String worker;
@@ -74,7 +73,7 @@ public class MiniPeer {
             executor.start(MaestroTopics.MAESTRO_RECEIVER_TOPICS);
         }
 
-        thread = new Thread(executor);
+        Thread thread = new Thread(executor);
         thread.start();
     }
 
