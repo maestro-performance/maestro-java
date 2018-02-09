@@ -22,12 +22,12 @@ import net.orpiske.mpt.reports.node.NodeContextBuilder;
 import net.orpiske.mpt.reports.node.NodeReportRenderer;
 import net.orpiske.mpt.reports.plotter.*;
 import net.orpiske.mpt.reports.processors.ReportFileProcessor;
-import org.apache.commons.io.Charsets;
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
@@ -99,7 +99,7 @@ public class ReportGenerator {
         IndexRenderer indexRenderer = new IndexRenderer(context);
         File outFile = new File(path, "index.html");
         try {
-            FileUtils.writeStringToFile(outFile, indexRenderer.render(), Charsets.UTF_8);
+            FileUtils.writeStringToFile(outFile, indexRenderer.render(), StandardCharsets.UTF_8);
             indexRenderer.copyResources(baseDir);
         } catch (Exception e) {
             e.printStackTrace();
@@ -113,7 +113,7 @@ public class ReportGenerator {
 
         try {
             File outFile = new File(report.getReportDir(), "index.html");
-            FileUtils.writeStringToFile(outFile, reportRenderer.render(), Charsets.UTF_8);
+            FileUtils.writeStringToFile(outFile, reportRenderer.render(), StandardCharsets.UTF_8);
             reportRenderer.copyResources(outFile.getParentFile());
         } catch (Exception e) {
             e.printStackTrace();
