@@ -53,13 +53,13 @@ function restart() {
 
 }
 
-function help() {
+function printHelp() {
     echo "Usage: $0 [start|stop|restart]"
 }
 
 
 if [[ -z "$1" ]] ; then
-    help
+    printHelp
     exit 1
 fi
 
@@ -75,6 +75,6 @@ case "$1" in
 		restart
 		;;
 	*)
-		help
+		printHelp
 		RETVAL=2
 esac
