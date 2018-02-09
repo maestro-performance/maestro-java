@@ -31,7 +31,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
 
     private final FixedRateTestProfile testProfile;
 
-    private long repeat = 10000;
+    private long repeat;
     private long coolDownPeriod = 10000;
     private final FixedRateTestProcessor testProcessor;
 

@@ -29,7 +29,7 @@ public class MaestroExporter {
     private static final Counter successes;
     private static final Counter abnormal;
 
-    private Maestro maestro = null;
+    private Maestro maestro;
 
     static {
         messageCounter = MessageCount.getInstance();

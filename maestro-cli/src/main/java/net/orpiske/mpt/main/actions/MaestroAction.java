@@ -62,7 +62,7 @@ public class MaestroAction extends Action {
     }
 
     public int run() {
-        net.orpiske.mpt.maestro.Maestro maestro = null;
+        net.orpiske.mpt.maestro.Maestro maestro;
         try {
             maestro = new net.orpiske.mpt.maestro.Maestro(maestroUrl);
 

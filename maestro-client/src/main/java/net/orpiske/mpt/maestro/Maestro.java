@@ -33,7 +33,7 @@ import java.util.List;
  * A maestro instance
  */
 public final class Maestro implements MaestroRequester {
-    private MaestroClient maestroClient = null;
+    private MaestroClient maestroClient;
     private final MaestroCollectorExecutor collectorExecutor;
     private final Thread collectorThread;
 
@@ -446,7 +446,7 @@ public final class Maestro implements MaestroRequester {
      * @return A list of serialized maestro replies or null if none
      */
     public List<MaestroNote> collect(long wait, int retries) {
-        List<MaestroNote> replies = null;
+        List<MaestroNote> replies;
 
         do {
             replies = collectorExecutor.collect();

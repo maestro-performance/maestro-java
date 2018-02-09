@@ -53,7 +53,7 @@ public class MiniBrokerConfiguration implements
          * broker. Therefore, it is cleaned whenever 'mvn clean' is run.
          */
         BrokerService brokerService = provider.getBroker();
-        String path = null;
+        String path;
         URL url = this.getClass().getResource("/");
 
         /*

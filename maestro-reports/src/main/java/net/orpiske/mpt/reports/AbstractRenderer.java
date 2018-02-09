@@ -35,7 +35,7 @@ import java.util.Map;
 public abstract class AbstractRenderer {
     private static final Logger logger = LoggerFactory.getLogger(AbstractRenderer.class);
 
-    private Map<String, Object> context = new HashMap<>();
+    private Map<String, Object> context;
 
     private Jinjava jinjava;
 
