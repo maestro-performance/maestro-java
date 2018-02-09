@@ -158,6 +158,7 @@ class ShortTestExecutorCount implements TestExecutor {
         Thread.sleep(21000)
 
         processReplies()
+        return true
     }
 }
 

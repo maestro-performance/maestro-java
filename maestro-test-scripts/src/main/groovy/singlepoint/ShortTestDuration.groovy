@@ -162,6 +162,7 @@ class ShortTestExecutorDuration implements TestExecutor {
         Thread.sleep(21000)
 
         processReplies()
+        return true
     }
 }
 
