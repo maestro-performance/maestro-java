@@ -24,7 +24,7 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
 
     public AbstractMaestroPeer(final String url, final String clientName, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
 
-        String adjustedUrl = URLUtils.sanizeURL(url);
+        String adjustedUrl = URLUtils.sanitizeURL(url);
 
         UUID uuid = UUID.randomUUID();
         String clientId = uuid.toString();

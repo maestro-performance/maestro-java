@@ -15,7 +15,7 @@ public class URLUtils {
      * @param url
      * @return
      */
-    public static String sanizeURL(final String url) {
+    public static String sanitizeURL(final String url) {
         return StringUtils.replace(url, "mqtt", "tcp");
     }
 }

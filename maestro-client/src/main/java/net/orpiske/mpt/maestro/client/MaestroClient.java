@@ -45,7 +45,7 @@ public class MaestroClient {
      * @throws MaestroException if unable to create the client
      */
     public MaestroClient(final String url) throws MaestroException {
-        String adjustedUrl = URLUtils.sanizeURL(url);
+        String adjustedUrl = URLUtils.sanitizeURL(url);
 
         UUID uuid = UUID.randomUUID();
         String clientId = uuid.toString();
