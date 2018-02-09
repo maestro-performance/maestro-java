@@ -4,6 +4,7 @@ package net.orpiske.mpt.common.client;
  * Provides an interface that can be used by peers, workers, etc to publish
  * safe maestro responses and notifications
  */
+@SuppressWarnings("unused")
 public interface MaestroReceiver {
 
     /**

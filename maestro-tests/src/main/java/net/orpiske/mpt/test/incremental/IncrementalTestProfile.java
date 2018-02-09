@@ -23,6 +23,7 @@ import net.orpiske.mpt.test.AbstractTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@SuppressWarnings("unused")
 public abstract class IncrementalTestProfile extends AbstractTestProfile {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestProfile.class);
 

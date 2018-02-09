@@ -22,6 +22,7 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 import java.io.IOException;
 
+@SuppressWarnings("unused")
 public class ReportDirInfo {
     private final File reportDir;
     private final String nodeType;

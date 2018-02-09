@@ -106,7 +106,7 @@ public class ReportGenerator {
         }
     }
 
-    private void renderNodePage(final File baseDir, final ReportDirInfo report) {
+    private void renderNodePage(final ReportDirInfo report) {
         logger.info("Processing report dir: {}", report.getReportDir());
         Map<String, Object> nodeReportContext = NodeContextBuilder.toContext(report);
         NodeReportRenderer reportRenderer = new NodeReportRenderer(nodeReportContext);
@@ -149,7 +149,7 @@ public class ReportGenerator {
         Set<ReportDirInfo> reports = (Set<ReportDirInfo>) context.get("reportDirs");
 
         // Step 4: render the pages for each host
-        reports.parallelStream().forEach(item -> renderNodePage(baseDir, item));
+        reports.parallelStream().forEach(item -> renderNodePage(item));
 
         // Step 5: render the index page
         renderReportIndex(baseDir, context);
@@ -166,6 +166,7 @@ public class ReportGenerator {
         return postProcessors;
     }
 
+    @SuppressWarnings("unused")
     public void setBmicPlotterWrapperFactory(PlotterWrapperFactory<BmicPlotterWrapper> bmicPlotterWrapperFactory) {
         this.bmicPlotterWrapperFactory = bmicPlotterWrapperFactory;
     }
@@ -174,6 +175,7 @@ public class ReportGenerator {
         this.hdrPlotterWrapperFactory = hdrPlotterWrapperFactory;
     }
 
+    @SuppressWarnings("unused")
     public void setRatePlotterWrapperFactory(PlotterWrapperFactory<RatePlotterWrapper> ratePlotterWrapperFactory) {
         this.ratePlotterWrapperFactory = ratePlotterWrapperFactory;
     }

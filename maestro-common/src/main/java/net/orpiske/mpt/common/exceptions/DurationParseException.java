@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.common.exceptions;
 
+@SuppressWarnings("unused")
 public class DurationParseException extends Exception {
     public DurationParseException() {
     }

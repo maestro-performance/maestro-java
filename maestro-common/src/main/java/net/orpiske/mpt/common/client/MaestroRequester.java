@@ -5,6 +5,7 @@ import net.orpiske.mpt.common.exceptions.MaestroException;
 
 import java.io.IOException;
 
+@SuppressWarnings("unused")
 public interface MaestroRequester {
 
     /**

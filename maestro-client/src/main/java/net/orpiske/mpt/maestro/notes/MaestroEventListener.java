@@ -20,6 +20,7 @@ package net.orpiske.mpt.maestro.notes;
 /**
  * Visitor that handles {@link MaestroEvent} instances.
  */
+@SuppressWarnings("unused")
 public interface MaestroEventListener {
 
     void handle(PingRequest note);

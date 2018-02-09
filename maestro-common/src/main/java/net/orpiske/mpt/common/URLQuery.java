@@ -123,6 +123,7 @@ public class URLQuery {
      * Get a map of all the params in the URL
      * @return a map with all the params in the URI
      */
+    @SuppressWarnings("unused")
     public Map<String, String> getParams() {
         Map<String, String> ret = new HashMap<>();
 

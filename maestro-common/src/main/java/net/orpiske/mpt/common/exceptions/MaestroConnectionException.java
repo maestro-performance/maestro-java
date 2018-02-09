@@ -1,5 +1,6 @@
 package net.orpiske.mpt.common.exceptions;
 
+@SuppressWarnings("unused")
 public class MaestroConnectionException extends MaestroException {
     public MaestroConnectionException() {
         super();

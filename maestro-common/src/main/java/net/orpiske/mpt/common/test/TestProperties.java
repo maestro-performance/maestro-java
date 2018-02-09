@@ -17,6 +17,7 @@ import java.util.Properties;
 /**
  * Test properties used/saved by maestro testing peers
  */
+@SuppressWarnings("unused")
 public class TestProperties implements MaestroTestProperties {
     private static final Logger logger = LoggerFactory.getLogger(TestProperties.class);
 

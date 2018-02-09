@@ -12,6 +12,7 @@ import java.io.IOException;
  * the test executors. For example, a test executor may use a profile to increase or
  * decrease the rate for a test.
  */
+@SuppressWarnings("unused")
 public interface TestProfile {
 
     /**

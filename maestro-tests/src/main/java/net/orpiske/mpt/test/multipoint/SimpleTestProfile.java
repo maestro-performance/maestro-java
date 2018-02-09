@@ -26,6 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.util.LinkedList;
 import java.util.List;
 
+@SuppressWarnings("unused")
 public class SimpleTestProfile extends IncrementalTestProfile implements MultiPointProfile {
     private static final Logger logger = LoggerFactory.getLogger(SimpleTestProfile.class);
     private final List<EndPoint> endPoints = new LinkedList<>();

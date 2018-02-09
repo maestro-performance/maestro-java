@@ -12,6 +12,7 @@ import java.util.Properties;
 /**
  * Test properties used/saved by inspectors
  */
+@SuppressWarnings("ALL")
 public class InspectorProperties implements MaestroTestProperties {
     private static final Logger logger = LoggerFactory.getLogger(InspectorProperties.class);
 
