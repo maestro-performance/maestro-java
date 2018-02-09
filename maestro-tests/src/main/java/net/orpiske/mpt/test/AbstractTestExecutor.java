@@ -17,8 +17,8 @@ import java.util.List;
 public abstract class AbstractTestExecutor implements TestExecutor {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTestExecutor.class);
 
-    private Maestro maestro;
-    private ReportsDownloader reportsDownloader;
+    private final Maestro maestro;
+    private final ReportsDownloader reportsDownloader;
 
 
     public AbstractTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader) {

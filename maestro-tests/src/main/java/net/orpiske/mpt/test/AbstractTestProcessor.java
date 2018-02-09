@@ -19,8 +19,8 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     // Default wait time, in seconds, for the workers to flush their data
     public static final int DEFAULT_WAIT_TIME = 5;
 
-    private ReportsDownloader reportsDownloader;
-    private AbstractTestProfile testProfile;
+    private final ReportsDownloader reportsDownloader;
+    private final AbstractTestProfile testProfile;
 
     private boolean failed = false;
     private int notifications = 0;

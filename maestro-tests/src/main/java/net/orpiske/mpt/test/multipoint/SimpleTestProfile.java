@@ -28,7 +28,7 @@ import java.util.List;
 
 public class SimpleTestProfile extends IncrementalTestProfile implements MultiPointProfile {
     private static final Logger logger = LoggerFactory.getLogger(SimpleTestProfile.class);
-    private List<EndPoint> endPoints = new LinkedList<>();
+    private final List<EndPoint> endPoints = new LinkedList<>();
 
     @Override
     public void addEndPoint(EndPoint endPoint) {

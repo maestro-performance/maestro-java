@@ -33,7 +33,7 @@ public class ReportsDownloader {
     private static final String RECEIVER_HOST = "receiver";
     private static final String INSPECTOR_HOST = "inspector";
 
-    private String baseDir;
+    private final String baseDir;
     private String reportTypeDir;
     private int testNum;
 

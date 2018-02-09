@@ -28,12 +28,12 @@ public class ReportFile {
     private static final Logger logger = LoggerFactory.getLogger(ReportFile.class);
 
     private File sourceFile;
-    private File normalizedFile;
+    private final File normalizedFile;
 
     private boolean reportSuccessful = true;
     private Throwable reportFailure;
     private NodeType nodeType;
-    private String nodeHost;
+    private final String nodeHost;
     private int testNum;
     private boolean testSuccessful = false;
 

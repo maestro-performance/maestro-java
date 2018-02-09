@@ -60,7 +60,7 @@ public class HttpResourceExchange implements ResourceExchange {
 	}
 	
 	
-	private AbstractHttpClient httpClient = new DefaultHttpClient();
+	private final AbstractHttpClient httpClient = new DefaultHttpClient();
 	
 	
 	

@@ -36,8 +36,8 @@ import java.util.Set;
 public class ReportGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ReportGenerator.class);
 
-    private List<ReportFileProcessor> preProcessors = new LinkedList<>();
-    private List<ReportFileProcessor> postProcessors = new LinkedList<>();
+    private final List<ReportFileProcessor> preProcessors = new LinkedList<>();
+    private final List<ReportFileProcessor> postProcessors = new LinkedList<>();
 
     // Probably this is not the best way to do what I want (to be able to create different types of
     // plotter objects) but it gives the flexibility I need now.
@@ -46,7 +46,7 @@ public class ReportGenerator {
     private PlotterWrapperFactory<HdrPlotterWrapper> hdrPlotterWrapperFactory = new HdrPlotterWrapperFactory();
     private PlotterWrapperFactory<RatePlotterWrapper> ratePlotterWrapperFactory = new RatePlotterWrapperFactory();
 
-    private String path;
+    private final String path;
 
     public ReportGenerator(final String path) {
         this.path = path;

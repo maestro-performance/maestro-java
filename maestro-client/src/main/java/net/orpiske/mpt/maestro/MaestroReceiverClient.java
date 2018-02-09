@@ -17,9 +17,9 @@ public class MaestroReceiverClient extends MaestroClient implements MaestroRecei
     private static final Logger logger = LoggerFactory.getLogger(MaestroReceiverClient.class);
 
     private final EpochMicroClock epochMicroClock;
-    private String clientName;
-    private String host;
-    private String id;
+    private final String clientName;
+    private final String host;
+    private final String id;
 
     public MaestroReceiverClient(String url, final String clientName, final String host, final String id) throws MaestroException {
         super(url);

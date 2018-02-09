@@ -17,11 +17,11 @@ import java.util.stream.Collectors;
 public final class WorkerContainer {
     private static WorkerContainer instance;
     private WorkerOptions workerOptions;
-    private List<WorkerRuntimeInfo> workerRuntimeInfos = new ArrayList<>();
+    private final List<WorkerRuntimeInfo> workerRuntimeInfos = new ArrayList<>();
 
     private WorkerWatchdog workerWatchdog;
     private Thread watchDogThread;
-    private MaestroReceiver endpoint;
+    private final MaestroReceiver endpoint;
 
     private WorkerContainer(MaestroReceiver endpoint) {
         this.endpoint = endpoint;

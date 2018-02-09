@@ -30,10 +30,10 @@ import java.net.URL;
 public class MiniPeer {
     private MaestroWorkerExecutor executor;
 
-    private String worker;
-    private String maestroUrl;
-    private String role;
-    private String host;
+    private final String worker;
+    private final String maestroUrl;
+    private final String role;
+    private final String host;
 
 
     public MiniPeer(String worker, String maestroUrl, String role, String host) {

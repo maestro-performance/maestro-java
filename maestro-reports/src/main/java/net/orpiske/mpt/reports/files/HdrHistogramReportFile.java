@@ -21,9 +21,9 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 
 public class HdrHistogramReportFile extends ReportFile {
-    private File percentileImgAll;
-    private File percentileImg90;
-    private File percentileImg99;
+    private final File percentileImgAll;
+    private final File percentileImg90;
+    private final File percentileImg99;
 
     public HdrHistogramReportFile(final File sourceFile, final File normalizedFile) {
         super(sourceFile, normalizedFile);

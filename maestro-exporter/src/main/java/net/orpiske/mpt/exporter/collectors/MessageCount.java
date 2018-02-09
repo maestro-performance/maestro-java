@@ -28,7 +28,7 @@ public class MessageCount extends Collector {
     private static final Logger logger = LoggerFactory.getLogger(MessageCount.class);
     private static MessageCount instance = null;
 
-    private Map<String, StatsResponse> records = new HashMap<>();
+    private final Map<String, StatsResponse> records = new HashMap<>();
 
     private MessageCount() { }
 

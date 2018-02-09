@@ -21,7 +21,7 @@ import org.apache.commons.io.FilenameUtils;
 import java.io.File;
 
 public class MptReportFile extends ReportFile {
-    private File rateImg;
+    private final File rateImg;
 
     public MptReportFile(File sourceFile, File normalizedFile) {
         super(sourceFile, normalizedFile);

@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 public class IncrementalTestProcessor extends AbstractTestProcessor {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestProcessor.class);
 
-    private IncrementalTestProfile testProfile;
+    private final IncrementalTestProfile testProfile;
 
     /**
      * Constructor

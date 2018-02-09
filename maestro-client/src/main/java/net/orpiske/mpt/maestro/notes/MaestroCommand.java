@@ -40,7 +40,7 @@ public enum MaestroCommand {
     MAESTRO_NOTE_NOTIFY_FAIL(15),
     MAESTRO_NOTE_NOTIFY_SUCCESS(16);
 
-    private long value;
+    private final long value;
 
     MaestroCommand(long value) {
         this.value = value;

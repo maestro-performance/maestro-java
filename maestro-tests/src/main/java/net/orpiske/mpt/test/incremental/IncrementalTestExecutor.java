@@ -26,11 +26,11 @@ import org.slf4j.LoggerFactory;
 public class IncrementalTestExecutor extends AbstractTestExecutor {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestExecutor.class);
 
-    private IncrementalTestProfile testProfile;
+    private final IncrementalTestProfile testProfile;
 
     private long repeat = 10000;
     private long coolDownPeriod = 10000;
-    private IncrementalTestProcessor testProcessor;
+    private final IncrementalTestProcessor testProcessor;
 
     public IncrementalTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
                                    final IncrementalTestProfile testProfile) throws DurationParseException {

@@ -104,7 +104,7 @@ public class WorkerLatencyWriterSanityTest {
     }
 
     @Rule
-    public TemporaryFolder tempTestFolder = new TemporaryFolder();
+    public final TemporaryFolder tempTestFolder = new TemporaryFolder();
 
 
     @Test(timeout = 120_000L)

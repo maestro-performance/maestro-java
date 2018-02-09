@@ -119,7 +119,7 @@ public class WorkerChannelWriterSanityTest {
     }
 
     @Rule
-    public TemporaryFolder tempTestFolder = new TemporaryFolder();
+    public final TemporaryFolder tempTestFolder = new TemporaryFolder();
 
     @Test(timeout = 120_000L)
     public void shouldWriteRatesWithoutMissingSamplesIfNotFull() throws IOException, InterruptedException {

@@ -28,11 +28,11 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
     private static final long TIMEOUT_STOP_WORKER_MILLIS = 1_000;
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
 
-    private MaestroReceiverClient client;
-    private WorkerContainer container;
-    private Class<MaestroWorker> workerClass;
+    private final MaestroReceiverClient client;
+    private final WorkerContainer container;
+    private final Class<MaestroWorker> workerClass;
 
-    private File logDir;
+    private final File logDir;
 
     private WorkerOptions workerOptions;
     private Thread latencyWriterThread;

@@ -29,11 +29,11 @@ import org.slf4j.LoggerFactory;
 public class FixedRateTestExecutor extends AbstractTestExecutor {
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestExecutor.class);
 
-    private FixedRateTestProfile testProfile;
+    private final FixedRateTestProfile testProfile;
 
     private long repeat = 10000;
     private long coolDownPeriod = 10000;
-    private FixedRateTestProcessor testProcessor;
+    private final FixedRateTestProcessor testProcessor;
 
     public FixedRateTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
                                  final FixedRateTestProfile testProfile) throws DurationParseException {

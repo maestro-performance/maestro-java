@@ -28,7 +28,7 @@ public class RateCount extends Collector {
     private static final Logger logger = LoggerFactory.getLogger(RateCount.class);
     private static RateCount instance = null;
 
-    private Map<String, StatsResponse> records = new HashMap<>();
+    private final Map<String, StatsResponse> records = new HashMap<>();
 
 
     private RateCount() {}

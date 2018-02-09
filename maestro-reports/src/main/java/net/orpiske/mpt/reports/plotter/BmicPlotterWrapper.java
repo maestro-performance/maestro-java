@@ -28,7 +28,7 @@ import java.util.Date;
 
 public class BmicPlotterWrapper implements PlotterWrapper {
     private static final Logger logger = LoggerFactory.getLogger(BmicPlotterWrapper.class);
-    private BmicReader bmicReader = new BmicReader();
+    private final BmicReader bmicReader = new BmicReader();
 
     @Override
     public boolean plot(final File file) {

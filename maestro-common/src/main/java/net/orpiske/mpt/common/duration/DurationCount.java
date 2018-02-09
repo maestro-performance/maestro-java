@@ -22,7 +22,7 @@ package net.orpiske.mpt.common.duration;
 public class DurationCount implements TestDuration {
     private static final String DURATION_TYPE_NAME = "count";
 
-    private long count;
+    private final long count;
 
     public DurationCount(final String durationSpec) {
         this.count = Long.parseLong(durationSpec);

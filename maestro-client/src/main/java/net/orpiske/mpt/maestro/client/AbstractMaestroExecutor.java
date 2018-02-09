@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 public class AbstractMaestroExecutor implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollectorExecutor.class);
 
-    private AbstractMaestroPeer maestroPeer;
+    private final AbstractMaestroPeer maestroPeer;
 
     /**
      * Constructor

@@ -30,7 +30,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollector.class);
     private boolean running = true;
 
-    private List<MaestroNote> collected = Collections.synchronizedList(new LinkedList<MaestroNote>());
+    private final List<MaestroNote> collected = Collections.synchronizedList(new LinkedList<MaestroNote>());
 
     public MaestroCollector(final String url) throws MaestroConnectionException {
         super(url, "maestro-java-collector",MaestroDeserializer::deserialize);

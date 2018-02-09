@@ -23,16 +23,16 @@ import java.io.File;
 import java.io.IOException;
 
 public class ReportDirInfo {
-    private File reportDir;
-    private String nodeType;
+    private final File reportDir;
+    private final String nodeType;
 
-    private String nodeHost;
-    private int testNum;
+    private final String nodeHost;
+    private final int testNum;
     private boolean testSuccessful = false;
 
-    private String resultTypeString;
+    private final String resultTypeString;
 
-    private TestProperties testProperties;
+    private final TestProperties testProperties;
 
     /**
      * Holds information about the report directory and its structure. It is used

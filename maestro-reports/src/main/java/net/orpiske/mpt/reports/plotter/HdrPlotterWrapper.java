@@ -27,11 +27,11 @@ import java.io.File;
 import java.io.IOException;
 
 public class HdrPlotterWrapper implements PlotterWrapper {
-    private static Logger logger = LoggerFactory.getLogger(HdrPlotterWrapper.class);
-    private static String DEFAULT_UNIT_RATE = "1000";
+    private static final Logger logger = LoggerFactory.getLogger(HdrPlotterWrapper.class);
+    private static final String DEFAULT_UNIT_RATE = "1000";
 
-    private HdrLogProcessorWrapper processorWrapper;
-    private HdrReader reader = new HdrReader();
+    private final HdrLogProcessorWrapper processorWrapper;
+    private final HdrReader reader = new HdrReader();
 
     public HdrPlotterWrapper() {
         this(DEFAULT_UNIT_RATE);

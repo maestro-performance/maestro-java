@@ -22,7 +22,7 @@ public enum NodeType {
     INSPECTOR("inspector"),
     OTHER("");
 
-    private String value;
+    private final String value;
 
     NodeType(final String value) {
         this.value = value;

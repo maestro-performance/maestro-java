@@ -18,8 +18,8 @@ import static net.orpiske.mpt.maestro.worker.base.WorkerStateInfoUtil.isCleanExi
 class WorkerWatchdog implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(WorkerWatchdog.class);
 
-    private List<WorkerRuntimeInfo> workers;
-    private MaestroReceiver endpoint;
+    private final List<WorkerRuntimeInfo> workers;
+    private final MaestroReceiver endpoint;
     private volatile boolean running = false;
     private final Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped;
 

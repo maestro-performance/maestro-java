@@ -18,7 +18,7 @@ import java.util.Map;
  */
 public class URLQuery {
     private static final Logger logger = LoggerFactory.getLogger(URLQuery.class);
-    private List<NameValuePair> params;
+    private final List<NameValuePair> params;
 
     /**
      * Constructor

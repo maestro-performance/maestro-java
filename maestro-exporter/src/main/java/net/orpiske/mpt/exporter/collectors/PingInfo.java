@@ -29,7 +29,7 @@ public class PingInfo extends Collector {
     private static final Logger logger = LoggerFactory.getLogger(PingInfo.class);
     private static PingInfo instance = null;
 
-    private Map<String, PingResponse> records = new HashMap<>();
+    private final Map<String, PingResponse> records = new HashMap<>();
 
     private PingInfo() {}
 

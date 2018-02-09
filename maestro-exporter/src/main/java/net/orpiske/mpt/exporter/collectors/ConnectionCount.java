@@ -28,7 +28,7 @@ public class ConnectionCount extends Collector {
     private static final Logger logger = LoggerFactory.getLogger(ConnectionCount.class);
     private static ConnectionCount instance = null;
 
-    private Map<String, StatsResponse> records = new HashMap<>();
+    private final Map<String, StatsResponse> records = new HashMap<>();
 
     private ConnectionCount() { }
 

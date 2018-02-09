@@ -66,7 +66,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         return workerChannel;
     }
 
-    private volatile WorkerStateInfo workerStateInfo = new WorkerStateInfo();
+    private final WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     @Override
     public long startedEpochMillis() {

@@ -19,7 +19,7 @@ public final class WorkerLatencyWriter implements Runnable {
         private final LatencyWriter latencyWriter;
         private long lastReportTime;
         private Histogram intervalHistogram;
-        private boolean reportIntervalLatencies;
+        private final boolean reportIntervalLatencies;
         private final long startReportingTime;
 
         public WorkerIntervalReport(LatencyWriter latencyWriter, MaestroWorker worker, boolean reportIntervalLatencies, long globalStartReportingTime) {

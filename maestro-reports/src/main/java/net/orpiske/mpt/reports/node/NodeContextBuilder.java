@@ -27,7 +27,7 @@ import java.util.Map;
 import static net.orpiske.mpt.common.PropertyUtils.loadProperties;
 
 public class NodeContextBuilder {
-    private static Logger logger = LoggerFactory.getLogger(NodeContextBuilder.class);
+    private static final Logger logger = LoggerFactory.getLogger(NodeContextBuilder.class);
 
     private NodeContextBuilder() {}
 

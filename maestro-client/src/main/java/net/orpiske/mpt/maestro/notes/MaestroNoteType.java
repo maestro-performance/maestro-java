@@ -21,7 +21,7 @@ public enum MaestroNoteType {
     MAESTRO_TYPE_RESPONSE((short) 1),
     MAESTRO_TYPE_NOTIFICATION((short) 2);
 
-    private short value;
+    private final short value;
 
     MaestroNoteType(short type) {
         this.value = type;

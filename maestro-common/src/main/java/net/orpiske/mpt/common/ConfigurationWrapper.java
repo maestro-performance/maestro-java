@@ -29,7 +29,7 @@ import java.io.FileNotFoundException;
  * Wraps the configuration object
  */
 public class ConfigurationWrapper {
-	private static CompositeConfiguration config = new CompositeConfiguration();
+	private static final CompositeConfiguration config = new CompositeConfiguration();
 	
 	/**
 	 * Restricted constructor

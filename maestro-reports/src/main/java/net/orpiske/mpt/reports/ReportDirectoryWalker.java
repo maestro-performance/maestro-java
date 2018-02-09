@@ -37,12 +37,12 @@ import java.util.List;
  * Walks through the report directory in order to build the list of files to process
  */
 final class ReportDirectoryWalker extends DirectoryWalker {
-    private static Logger logger = LoggerFactory.getLogger(ReportDirectoryWalker.class);
+    private static final Logger logger = LoggerFactory.getLogger(ReportDirectoryWalker.class);
 
 
-    private String initialPath;
+    private final String initialPath;
 
-    private List<ReportFile> files = new LinkedList<>();
+    private final List<ReportFile> files = new LinkedList<>();
 
     public ReportDirectoryWalker(String initialPath) {
         this.initialPath = initialPath;

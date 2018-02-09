@@ -34,8 +34,8 @@ import java.util.List;
  */
 public final class Maestro implements MaestroRequester {
     private MaestroClient maestroClient = null;
-    private MaestroCollectorExecutor collectorExecutor;
-    private Thread collectorThread;
+    private final MaestroCollectorExecutor collectorExecutor;
+    private final Thread collectorThread;
 
     /**
      * Constructor

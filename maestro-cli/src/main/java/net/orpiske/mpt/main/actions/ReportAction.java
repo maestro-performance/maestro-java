@@ -18,7 +18,7 @@ public class ReportAction extends Action {
 
     private static class HdrPlotterWrapperFactory implements PlotterWrapperFactory<HdrPlotterWrapper> {
         private static final Logger logger = LoggerFactory.getLogger(HdrPlotterWrapperFactory.class);
-        private String unitRate;
+        private final String unitRate;
 
         public HdrPlotterWrapperFactory(final String unitRate) {
             this.unitRate = unitRate;
