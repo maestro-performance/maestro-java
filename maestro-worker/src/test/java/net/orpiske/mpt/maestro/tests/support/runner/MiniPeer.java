@@ -49,6 +49,7 @@ public class MiniPeer {
      * @throws Exception
      */
     public void start() throws Exception {
+        @SuppressWarnings("unchecked")
         Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
 
         URL url = this.getClass().getResource("/");

@@ -146,6 +146,7 @@ public class ReportGenerator {
 
         // Step 3: build the report context
         Map<String, Object> context = ReportContextBuilder.toContext(fileList, baseDir);
+        @SuppressWarnings("unchecked")
         Set<ReportDirInfo> reports = (Set<ReportDirInfo>) context.get("reportDirs");
 
         // Step 4: render the pages for each host
