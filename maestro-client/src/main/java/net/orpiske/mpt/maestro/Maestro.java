@@ -24,7 +24,6 @@ import net.orpiske.mpt.maestro.client.MaestroCollectorExecutor;
 import net.orpiske.mpt.maestro.client.MaestroTopics;
 import net.orpiske.mpt.maestro.notes.*;
 
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 

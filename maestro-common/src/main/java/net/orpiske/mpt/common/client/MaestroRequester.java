@@ -3,8 +3,6 @@ package net.orpiske.mpt.common.client;
 import net.orpiske.mpt.common.exceptions.MaestroConnectionException;
 import net.orpiske.mpt.common.exceptions.MaestroException;
 
-import java.io.IOException;
-
 @SuppressWarnings("unused")
 public interface MaestroRequester {
 

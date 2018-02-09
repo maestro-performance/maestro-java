@@ -3,8 +3,6 @@ package net.orpiske.mpt.test;
 import net.orpiske.mpt.common.exceptions.MaestroException;
 import net.orpiske.mpt.maestro.Maestro;
 
-import java.io.IOException;
-
 /**
  * A base interface for implementing test profiles.
  *
