@@ -24,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
+import java.util.Objects;
 
 public class MaestroDeserializer {
     private static final Logger logger = LoggerFactory.getLogger(MaestroDeserializer.class);
@@ -32,7 +33,7 @@ public class MaestroDeserializer {
         long tmpCommand = unpacker.unpackLong();
         MaestroCommand command = MaestroCommand.from(tmpCommand);
 
-        switch (command) {
+        switch (Objects.requireNonNull(command)) {
             case MAESTRO_NOTE_NOTIFY_FAIL: {
                 return new TestFailedNotification(unpacker);
             }
@@ -52,7 +53,7 @@ public class MaestroDeserializer {
         long tmpCommand = unpacker.unpackLong();
         MaestroCommand command = MaestroCommand.from(tmpCommand);
 
-        switch (command) {
+        switch (Objects.requireNonNull(command)) {
             case MAESTRO_NOTE_OK: {
                 return new OkResponse();
             }
@@ -80,9 +81,7 @@ public class MaestroDeserializer {
                 logger.warn("Unexpected maestro command for a response: {}", tmpCommand);
             }
             default: {
-                if (command != null) {
-                    logger.error("Type unknown: " + command.getClass());
-                }
+                logger.error("Type unknown: " + command.getClass());
                 throw new MalformedNoteException("Invalid response command: " + tmpCommand);
             }
         }
@@ -93,7 +92,7 @@ public class MaestroDeserializer {
         long tmpCommand = unpacker.unpackLong();
         MaestroCommand command = MaestroCommand.from(tmpCommand);
 
-        switch (command) {
+        switch (Objects.requireNonNull(command)) {
             case MAESTRO_NOTE_PING: {
                 return new PingRequest(unpacker);
             }
@@ -138,7 +137,7 @@ public class MaestroDeserializer {
             final short tmpType = unpacker.unpackShort();
             final MaestroNoteType type = MaestroNoteType.from(tmpType);
 
-            switch (type) {
+            switch (Objects.requireNonNull(type)) {
                 case MAESTRO_TYPE_REQUEST:
                     return deserializeRequest(unpacker);
                 case MAESTRO_TYPE_NOTIFICATION:
@@ -154,7 +153,7 @@ public class MaestroDeserializer {
             final short tmpType = unpacker.unpackShort();
             final MaestroNoteType type = MaestroNoteType.from(tmpType);
 
-            switch (type) {
+            switch (Objects.requireNonNull(type)) {
                 case MAESTRO_TYPE_REQUEST:
                     return deserializeRequest(unpacker);
                 case MAESTRO_TYPE_RESPONSE:

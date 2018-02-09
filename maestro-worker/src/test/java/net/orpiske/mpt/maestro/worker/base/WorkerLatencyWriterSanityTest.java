@@ -33,6 +33,7 @@ import org.junit.rules.TemporaryFolder;
 import java.io.File;
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.Objects;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 
@@ -143,7 +144,7 @@ public class WorkerLatencyWriterSanityTest {
         final String latencyFileName = "receiverd-latency.hdr";
         final String[] reports = reportFolder.list((dir, name) -> name.equals(latencyFileName));
         Assert.assertArrayEquals(new String[]{latencyFileName}, reports);
-        final File reportFile = new File(reportFolder, reports[0]);
+        final File reportFile = new File(reportFolder, Objects.requireNonNull(reports)[0]);
         Assert.assertTrue(reportFile.length() > 0);
         final HistogramLogReader histogramLogReader = new HistogramLogReader(reportFile);
         int totalReports = 0;

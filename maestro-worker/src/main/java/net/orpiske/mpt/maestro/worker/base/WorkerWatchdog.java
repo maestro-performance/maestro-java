@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.function.Consumer;
 
 import static net.orpiske.mpt.maestro.worker.base.WorkerStateInfoUtil.isCleanExit;
@@ -83,7 +84,7 @@ class WorkerWatchdog implements Runnable {
                 if (!wsi.isRunning()) {
                     if (!isCleanExit(wsi)) {
                         successful = false;
-                        exceptionMessage = wsi.getException().getMessage();
+                        exceptionMessage = Objects.requireNonNull(wsi.getException()).getMessage();
 
                         break;
                     }

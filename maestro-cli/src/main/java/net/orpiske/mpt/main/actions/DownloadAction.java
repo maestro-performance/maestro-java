@@ -67,6 +67,7 @@ public class DownloadAction extends Action {
             help(options, 1);
         }
 
+        assert serverList != null;
         servers = serverList.split(",");
 
         result = cmdLine.getOptionValue('r');
