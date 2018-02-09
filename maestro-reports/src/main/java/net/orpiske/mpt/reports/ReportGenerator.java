@@ -150,7 +150,7 @@ public class ReportGenerator {
         Set<ReportDirInfo> reports = (Set<ReportDirInfo>) context.get("reportDirs");
 
         // Step 4: render the pages for each host
-        reports.parallelStream().forEach(item -> renderNodePage(item));
+        reports.parallelStream().forEach(this::renderNodePage);
 
         // Step 5: render the index page
         renderReportIndex(baseDir, context);

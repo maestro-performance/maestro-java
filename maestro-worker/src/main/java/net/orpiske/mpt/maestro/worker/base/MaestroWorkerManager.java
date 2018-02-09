@@ -193,9 +193,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
                 this.rateWriterThread.start();
 
                 //TODO handle shutdown gently
-                Runtime.getRuntime().addShutdownHook(new Thread(() -> {
-                    shutdownAndWaitWriters();
-                }));
+                Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownAndWaitWriters));
             }
 
             client.replyOk();
