@@ -14,7 +14,7 @@
 #   limitations under the License.
 
 localdir=`dirname $0`
-installdir=`dirname $localdir`
+installdir=`dirname ${localdir}`
 
 if [ "$installdir" = "." ] ; then
 	installdir=".."
@@ -43,7 +43,7 @@ function start() {
 function stop() {
     for pid in $(ps -ef | grep -i maestro-worker | grep -v service | grep -i "$MAESTRO_WORKER_ROLE" | grep -v grep | awk ' { print $2 } ') ; do
         echo "Killing maestro-worker $pid"
-        kill -TERM $pid
+        kill -TERM ${pid}
     done
 }
 

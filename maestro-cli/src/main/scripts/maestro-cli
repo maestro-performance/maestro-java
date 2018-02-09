@@ -33,13 +33,13 @@ case "`uname`" in
 esac
 
 # For Cygwin, ensure paths are in UNIX format before anything is touched
-if $cygwin ; then
+if ${cygwin} ; then
   [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
   [ -n "$CLASSPATH" ] && CLASSPATH=`cygpath --path --unix "$CLASSPATH"`
 fi
 
 localdir=`dirname $0`
-installdir=`dirname $localdir`
+installdir=`dirname ${localdir}`
 
 if [ "$installdir" = "." ] ; then
 	installdir=".."
@@ -74,4 +74,4 @@ done
 
 mainclass=net.orpiske.mpt.main.Main
 
-java -classpath $MAESTRO_CLASSPATH -Dnet.orpiske.mpt.maestro.home="$installdir" -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory -Djava.awt.headless=true "$mainclass" $@
+java -classpath ${MAESTRO_CLASSPATH} -Dnet.orpiske.mpt.maestro.home="$installdir" -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory -Djava.awt.headless=true "$mainclass" $@

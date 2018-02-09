@@ -33,13 +33,13 @@ case "`uname`" in
 esac
 
 # For Cygwin, ensure paths are in UNIX format before anything is touched
-if $cygwin ; then
+if ${cygwin} ; then
   [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
   [ -n "$CLASSPATH" ] && CLASSPATH=`cygpath --path --unix "$CLASSPATH"`
 fi
 
 localdir=`dirname $0`
-installdir=`dirname $localdir`
+installdir=`dirname ${localdir}`
 
 if [ "$installdir" = "." ] ; then
 	installdir=".."
