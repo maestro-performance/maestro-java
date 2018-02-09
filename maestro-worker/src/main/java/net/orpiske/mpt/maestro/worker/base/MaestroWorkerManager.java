@@ -184,11 +184,9 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
             } else {
                 logger.debug("Creating the writer threads");
                 WorkerLatencyWriter latencyWriter = new WorkerLatencyWriter(testLogDir, workers);
-                final Thread latencyThread = new Thread(latencyWriter);
-                this.latencyWriterThread = latencyThread;
+                this.latencyWriterThread = new Thread(latencyWriter);
                 WorkerChannelWriter rateWriter = new WorkerChannelWriter(testLogDir, workers);
-                final Thread rateThread = new Thread(rateWriter);
-                this.rateWriterThread = rateThread;
+                this.rateWriterThread = new Thread(rateWriter);
                 logger.debug("Starting the writers threads");
 
                 this.latencyWriterThread.start();

@@ -62,8 +62,7 @@ final class JMSReceiverClient extends JMSClient implements ReceiverClient {
         final int readBytes = bytesMessage.readBytes(payloadBytes.array(), PAYLOAD_SIZE);
         if (readBytes == PAYLOAD_SIZE || readBytes == -1) {
             //can read the timestamp using the default endianness of the content strategy
-            final long sendTime = payloadBytes.getLong(0);
-            return sendTime;
+            return payloadBytes.getLong(0);
         }
         throw new IllegalStateException("the received message hasn't any benchmark payload");
     }

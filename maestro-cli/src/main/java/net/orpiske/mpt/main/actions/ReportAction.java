@@ -28,9 +28,8 @@ public class ReportAction extends Action {
 
         @Override
         public HdrPlotterWrapper newPlotterWrapper() {
-            HdrPlotterWrapper ret = new HdrPlotterWrapper(unitRate);
 
-            return ret;
+            return new HdrPlotterWrapper(unitRate);
         }
     }
 
