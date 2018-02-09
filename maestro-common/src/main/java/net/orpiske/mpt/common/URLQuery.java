@@ -23,7 +23,7 @@ public class URLQuery {
     /**
      * Constructor
      * @param uri a URI string
-     * @throws URISyntaxException
+     * @throws URISyntaxException if the URL is invalid
      */
     public URLQuery(final String uri) throws URISyntaxException {
         this(new URI(uri));
@@ -32,7 +32,6 @@ public class URLQuery {
     /**
      * Constructor
      * @param uri a URI object
-     * @throws URISyntaxException
      */
     public URLQuery(URI uri) {
          params = URLEncodedUtils.parse(uri, "UTF-8");

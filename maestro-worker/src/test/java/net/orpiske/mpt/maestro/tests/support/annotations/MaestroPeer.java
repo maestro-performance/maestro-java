@@ -14,7 +14,7 @@ import java.lang.annotation.Target;
 public @interface MaestroPeer {
     /**
      * The maestro URL
-     * @return
+     * @return the maestro URL
      */
     String maestroUrl() default "mqtt://localhost:1883";
 }

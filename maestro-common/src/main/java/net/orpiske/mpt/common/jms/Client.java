@@ -24,7 +24,7 @@ public interface Client {
 
     /**
      * Start the client
-     * @throws Exception
+     * @throws Exception implementation specific exception
      */
     void start() throws Exception;
 
@@ -36,14 +36,14 @@ public interface Client {
 
     /**
      * Set the target URL
-     * @param url
+     * @param url the target URL
      */
     void setUrl(String url);
 
 
     /**
      * Set the client number
-     * @param number
+     * @param number the client number
      */
     void setNumber(int number);
 }

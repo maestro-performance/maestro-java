@@ -39,7 +39,6 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     /**
      * Start connected peers
      * @throws MaestroConnectionException
-     * @throws IOException
      */
     protected void startServices() throws MaestroConnectionException {
         maestro.startReceiver();
@@ -51,7 +50,6 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      * Try to guess the number of connected peers
      * @return the number of connected peers (best guess)
      * @throws MaestroConnectionException
-     * @throws IOException
      * @throws InterruptedException
      */
     protected int getNumPeers() throws MaestroConnectionException, InterruptedException {

@@ -36,7 +36,7 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
     /**
      * Sets the options for this worker
      *
-     * @param workerOptions
+     * @param workerOptions the worker options to set
      */
     void setWorkerOptions(WorkerOptions workerOptions);
 
@@ -44,7 +44,7 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
     /**
      * Gets the current state of the worker
      *
-     * @return
+     * @return the current state of the worker
      */
     WorkerStateInfo getWorkerState();
 

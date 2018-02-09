@@ -29,7 +29,6 @@ public interface TestProfile {
     /**
      * Apply a test profile using a maestro instance
      * @param maestro the maestro instance to apply the profile to
-     * @throws IOException I/O and serialization errors
      * @throws MaestroException Incorrect or invalid parameters
      */
     void apply(Maestro maestro) throws MaestroException;
