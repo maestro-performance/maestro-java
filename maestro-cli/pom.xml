@@ -38,12 +38,6 @@
 
         <dependency>
             <groupId>net.orpiske</groupId>
-            <artifactId>maestro-contrib</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.orpiske</groupId>
             <artifactId>maestro-reports</artifactId>
             <version>${project.version}</version>
         </dependency>
