@@ -12,7 +12,7 @@ public class ContentStrategyFactory {
      * @param sizeSpec The size specification string {@link ContentStrategy#setSize(String)}
      * @return A ContentStrategy instance for the size spec string
      */
-    public static final ContentStrategy parse(final String sizeSpec) {
+    public static ContentStrategy parse(final String sizeSpec) {
         ContentStrategy ret;
 
         if (sizeSpec.startsWith("~")) {

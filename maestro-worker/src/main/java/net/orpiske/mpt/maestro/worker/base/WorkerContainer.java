@@ -31,7 +31,7 @@ public final class WorkerContainer {
      * Gets and instance of the container
      * @return
      */
-    public synchronized static final WorkerContainer getInstance(MaestroReceiver endpoint) {
+    public synchronized static WorkerContainer getInstance(MaestroReceiver endpoint) {
         if (instance == null) {
             instance = new WorkerContainer(endpoint);
         }
