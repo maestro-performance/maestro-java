@@ -45,7 +45,7 @@ if [ "$installdir" = "." ] ; then
 	installdir=".."
 fi
 
-mainclass=net.orpiske.mpt.maestro.worker.main.Main
+mainclass=org.maestro.worker.main.Main
 pid_file="$installdir"/tmp/maestro-worker.pid
 
-java -classpath "$installdir"/bin/*maestro-worker-*.jar -Dnet.orpiske.mpt.maestro.home="$installdir" -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory "$mainclass" $@
+java -classpath "$installdir"/bin/*maestro-worker-*.jar -Dorg.maestro.home="$installdir" -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory "$mainclass" $@

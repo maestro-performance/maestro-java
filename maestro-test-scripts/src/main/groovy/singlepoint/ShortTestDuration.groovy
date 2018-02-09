@@ -24,17 +24,17 @@
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
-@Grab(group='net.orpiske', module='maestro-client', version='1.2.3')
-@Grab(group='net.orpiske', module='maestro-tests', version='1.2.3')
+@Grab(group='org.maestro', module='maestro-client', version='1.2.3')
+@Grab(group='org.maestro', module='maestro-tests', version='1.2.3')
 
-import net.orpiske.mpt.maestro.Maestro
-import net.orpiske.mpt.maestro.client.MaestroNoteProcessor
-import net.orpiske.mpt.maestro.notes.MaestroNote
-import net.orpiske.mpt.maestro.notes.PingResponse
-import net.orpiske.mpt.maestro.notes.TestFailedNotification
-import net.orpiske.mpt.maestro.notes.TestSuccessfulNotification
+import org.maestro.client.Maestro
+import org.maestro.client.exchange.MaestroNoteProcessor
+import org.maestro.client.notes.MaestroNote
+import org.maestro.client.notes.PingResponse
+import org.maestro.client.notes.TestFailedNotification
+import org.maestro.client.notes.TestSuccessfulNotification
 
-import net.orpiske.mpt.test.TestExecutor
+import org.maestro.tests.TestExecutor
 
 /**
  * This sample demonstrates how to create a more complex test execution with Maestro.

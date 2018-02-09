@@ -23,9 +23,9 @@
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
-@Grab(group='net.orpiske', module='maestro-client', version='1.2.3')
+@Grab(group='org.maestro', module='maestro-client', version='1.2.3')
 
-import net.orpiske.mpt.maestro.Maestro
+import org.maestro.client.Maestro
 
 /**
  * Another example: a simple use case of the higher level maestro client

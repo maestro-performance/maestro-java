@@ -45,6 +45,6 @@ if [ "$installdir" = "." ] ; then
 	installdir=".."
 fi
 
-mainclass=net.orpiske.mpt.exporter.main.Main
+mainclass=org.maestro.exporter.main.Main
 
-java -classpath "$installdir"/bin/*exporter-*.jar -Dnet.orpiske.mpt.maestro.home="$installdir" "$mainclass" $@
+java -classpath "$installdir"/bin/*exporter-*.jar -Dorg.maestro.home="$installdir" "$mainclass" $@

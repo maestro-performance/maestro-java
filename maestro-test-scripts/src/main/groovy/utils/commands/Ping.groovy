@@ -24,12 +24,12 @@
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
-@Grab(group='net.orpiske', module='maestro-client', version='1.2.3')
+@Grab(group='org.maestro', module='maestro-client', version='1.2.3')
 
-import net.orpiske.mpt.maestro.Maestro
-import net.orpiske.mpt.maestro.client.MaestroNoteProcessor
-import net.orpiske.mpt.maestro.notes.MaestroNote
-import net.orpiske.mpt.maestro.notes.PingResponse
+import org.maestro.client.Maestro
+import org.maestro.client.exchange.MaestroNoteProcessor
+import org.maestro.client.notes.MaestroNote
+import org.maestro.client.notes.PingResponse
 
 /**
  * This example demonstrates how to use a note processor to process

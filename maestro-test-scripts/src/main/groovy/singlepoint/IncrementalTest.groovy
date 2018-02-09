@@ -26,19 +26,19 @@ package singlepoint
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
-@Grab(group='net.orpiske', module='maestro-common', version='1.2.3')
-@Grab(group='net.orpiske', module='maestro-client', version='1.2.3')
-@Grab(group='net.orpiske', module='maestro-tests', version='1.2.3')
-@Grab(group='net.orpiske', module='maestro-reports', version='1.2.3')
+@Grab(group='org.maestro', module='maestro-common', version='1.2.3')
+@Grab(group='org.maestro', module='maestro-client', version='1.2.3')
+@Grab(group='org.maestro', module='maestro-tests', version='1.2.3')
+@Grab(group='org.maestro', module='maestro-reports', version='1.2.3')
 
-import net.orpiske.mpt.maestro.Maestro
-import net.orpiske.mpt.reports.ReportsDownloader
-import net.orpiske.mpt.test.incremental.IncrementalTestExecutor
-import net.orpiske.mpt.test.incremental.IncrementalTestProfile
-import net.orpiske.mpt.test.singlepoint.SimpleTestProfile
-import net.orpiske.mpt.common.LogConfigurator
-import net.orpiske.mpt.common.content.MessageSize
-import net.orpiske.mpt.common.duration.TestDurationBuilder
+import org.maestro.client.Maestro
+import org.maestro.reports.ReportsDownloader
+import org.maestro.tests.incremental.IncrementalTestExecutor
+import org.maestro.tests.incremental.IncrementalTestProfile
+import org.maestro.tests.singlepoint.SimpleTestProfile
+import org.maestro.common.LogConfigurator
+import org.maestro.common.content.MessageSize
+import org.maestro.common.duration.TestDurationBuilder
 
 maestroURL = System.getenv("MAESTRO_BROKER")
 brokerURL = System.getenv("BROKER_URL")

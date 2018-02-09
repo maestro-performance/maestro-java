@@ -1,0 +1,18 @@
+package org.maestro.worker.main;
+
+import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.worker.MaestroWorker;
+import org.maestro.client.exchange.AbstractMaestroExecutor;
+import org.maestro.worker.base.MaestroWorkerManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.File;
+
+public class MaestroWorkerExecutor extends AbstractMaestroExecutor {
+    private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerExecutor.class);
+
+    public MaestroWorkerExecutor(final String url, final String role, final String host, final File logDir, final Class<MaestroWorker> workerClass) throws MaestroException {
+        super(new MaestroWorkerManager(url, role, host, logDir, workerClass));
+    }
+}

@@ -71,7 +71,7 @@ file:
 Then, the library can be referenced as: 
 ```
 <dependency>
-    <groupId>net.orpiske</groupId>
+    <groupId>org.maestro</groupId>
     <artifactId>maestro-java</artifactId>
     <version>1.2.0</version>
 </dependency>

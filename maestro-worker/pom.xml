@@ -4,12 +4,12 @@
     <modelVersion>4.0.0</modelVersion>
 
     <parent>
-        <groupId>net.orpiske</groupId>
+        <groupId>org.maestro</groupId>
         <artifactId>maestro-java</artifactId>
         <version>1.3.0-SNAPSHOT</version>
     </parent>
 
-    <groupId>net.orpiske</groupId>
+    <groupId>org.maestro</groupId>
     <artifactId>maestro-worker</artifactId>
 
     <properties>
@@ -55,20 +55,20 @@
         </dependency>
 
         <dependency>
-            <groupId>net.orpiske</groupId>
+            <groupId>org.maestro</groupId>
             <artifactId>maestro-common</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
-            <groupId>net.orpiske</groupId>
+            <groupId>org.maestro</groupId>
             <artifactId>maestro-client</artifactId>
             <version>${project.version}</version>
         </dependency>
 
 
         <dependency>
-            <groupId>net.orpiske</groupId>
+            <groupId>org.maestro</groupId>
             <artifactId>maestro-worker-jms</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -143,7 +143,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>../lib</classpathPrefix>
-                            <mainClass>net.orpiske.mpt.maestro.worker.main.Main</mainClass>
+                            <mainClass>org.maestro.worker.main.Main</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

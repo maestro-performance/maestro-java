@@ -72,6 +72,6 @@ for jarfile in "$installdir"/lib/ext/*.jar ; do
     fi
 done
 
-mainclass=net.orpiske.mpt.main.Main
+mainclass=org.maestro.cli.main.Main
 
-java -classpath ${MAESTRO_CLASSPATH} -Dnet.orpiske.mpt.maestro.home="$installdir" -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory -Djava.awt.headless=true "$mainclass" $@
+java -classpath ${MAESTRO_CLASSPATH} -Dorg.maestro.home="$installdir" -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory -Djava.awt.headless=true "$mainclass" $@
