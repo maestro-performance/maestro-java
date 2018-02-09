@@ -113,7 +113,7 @@ class ShortTestExecutorDuration implements TestExecutor {
 
     }
 
-    private boolean processReplies() {
+    private void processReplies() {
         println "Collecting replies "
         List<MaestroNote> replies = maestro.collect(1000, 10)
 
