@@ -36,7 +36,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     private final FixedRateTestProcessor testProcessor;
 
     public FixedRateTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                 final FixedRateTestProfile testProfile) throws DurationParseException {
+                                 final FixedRateTestProfile testProfile) {
         super(maestro, reportsDownloader);
 
         this.testProfile = testProfile;

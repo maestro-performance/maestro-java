@@ -33,7 +33,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
     private final IncrementalTestProcessor testProcessor;
 
     public IncrementalTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                   final IncrementalTestProfile testProfile) throws DurationParseException {
+                                   final IncrementalTestProfile testProfile) {
         super(maestro, reportsDownloader);
 
         this.testProfile = testProfile;
