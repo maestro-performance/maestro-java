@@ -77,7 +77,7 @@ groovy FixedRateTest.groovy /maestro/reports/activemq-5.15.2
 dependencies. 
 
 After completed, the test will generate the report. The report can be accessed via the 
-brower and is available at http://localhost:8000/ (ie.: http://localhost:8000/activemq-5.15.2/
+browser and is available at http://localhost:8000/ (ie.: http://localhost:8000/activemq-5.15.2/
 in the case of the test above). 
 
 The containers will store the test data in a volume which is located on `${HOME}/tmp/maestro`

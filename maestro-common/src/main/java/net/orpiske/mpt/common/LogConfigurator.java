@@ -66,7 +66,7 @@ public class LogConfigurator {
     }
 
     /**
-     * Default log configuration for the deamon
+     * Default log configuration for the daemon
      */
     public static void defaultForDaemons() {
         PropertyConfigurator.configure(Constants.MAESTRO_CONFIG_DIR

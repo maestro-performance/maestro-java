@@ -31,7 +31,7 @@ There are 3 Ansible roles that can be used to deploy a Maestro test cluster:
 These can be used along with other roles to deploy the desired Software Under Test (SUT). 
 For example:
 * [ansible-amq-broker](https://github.com/msgqe/ansible-amq-broker): to deploy JBoss A-MQ 7 or Apache Artemis single host brokers
-* [ansible-broker-clusters](https://github.com/msgqe/ansible-broker-clusters): : to deploy JBoss A-MQ 7 or Apache Artemis clusterized brokers
+* [ansible-broker-clusters](https://github.com/msgqe/ansible-broker-clusters): : to deploy JBoss A-MQ 7 or Apache Artemis clustered brokers
 * [ansible-qpid-dispatch](https://github.com/rh-messaging-qe/ansible-qpid-dispatch): to deploy QPid Dispatch Router
 
 This is a much more complex deployment model, but usually desired as it can be made to 
@@ -46,7 +46,7 @@ it is possible to get started with Maestro testing by running just 3 or 4 comman
 **Note**: although it would be possible to use this model for production testing, this is 
 a new feature that needs to be matured.  
 
-This deployment method is decoumented in greater detail [here](extra/docker/)
+This deployment method is documented in greater detail [here](extra/docker/)
 
 
 Using as Library

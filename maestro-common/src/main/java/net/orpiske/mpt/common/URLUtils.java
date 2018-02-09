@@ -3,7 +3,7 @@ package net.orpiske.mpt.common;
 import org.apache.commons.lang3.StringUtils;
 
 /**
- * Maestro URL utilites
+ * Maestro URL utilities
  */
 public class URLUtils {
 
