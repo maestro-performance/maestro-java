@@ -33,7 +33,7 @@ public class SetRequest extends MaestroRequest {
         MAESTRO_NOTE_OPT_SET_PARALLEL_COUNT(3),
         /** Set message size */
         MAESTRO_NOTE_OPT_SET_MESSAGE_SIZE(4),
-        /** Set throtle */
+        /** Set throttle */
         MAESTRO_NOTE_OPT_SET_THROTTLE(5),
         /** Set rate */
         MAESTRO_NOTE_OPT_SET_RATE(6),

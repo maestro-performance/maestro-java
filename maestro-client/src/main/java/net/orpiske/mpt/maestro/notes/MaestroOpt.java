@@ -29,7 +29,7 @@ public enum MaestroOpt {
     MAESTRO_NOTE_OPT_SET_PARALLEL_COUNT,
     /** Set message size */
     MAESTRO_NOTE_OPT_SET_MESSAGE_SIZE,
-    /** Set throtle */
+    /** Set throttle */
     MAESTRO_NOTE_OPT_SET_THROTTLE,
     /** Set rate */
     MAESTRO_NOTE_OPT_SET_RATE,

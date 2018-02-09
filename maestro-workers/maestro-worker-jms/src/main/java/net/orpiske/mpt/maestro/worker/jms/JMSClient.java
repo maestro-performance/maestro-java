@@ -100,7 +100,7 @@ class JMSClient implements Client {
 
             if (configuredLimitDestinations != null) {
                 if (number < 0) {
-                    throw new IllegalArgumentException("JMSClient::number msut be >= 0 when limitDestinations is configured");
+                    throw new IllegalArgumentException("JMSClient::number must be >= 0 when limitDestinations is configured");
                 }
                 final int limitDestinations = configuredLimitDestinations;
                 if (limitDestinations <= 0) {

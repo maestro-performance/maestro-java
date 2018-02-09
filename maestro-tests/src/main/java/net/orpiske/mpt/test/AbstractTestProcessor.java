@@ -51,10 +51,10 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
         this.flushWaitSeconds = flushWaitSeconds;
     }
 
-    // Give some time for the backends to flush their data to disk
+    // Give some time for the backend to flush their data to disk
     // before downloading
     private void waitForFlush() {
-        logger.info("Waiting for {} seconds for the backends to flush their data", flushWaitSeconds);
+        logger.info("Waiting for {} seconds for the backend to flush their data", flushWaitSeconds);
         try {
             Thread.sleep(flushWaitSeconds * 1000);
         } catch (InterruptedException e) {
