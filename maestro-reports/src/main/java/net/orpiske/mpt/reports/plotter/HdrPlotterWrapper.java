@@ -65,8 +65,6 @@ public class HdrPlotterWrapper implements PlotterWrapper {
             return true;
         }
         catch (Throwable t) {
-            FilenameUtils.removeExtension(file.getPath());
-
             handlePlotException(file, t);
         }
 
