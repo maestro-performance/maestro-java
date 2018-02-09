@@ -43,6 +43,7 @@ public class Main {
     private static void help(final Options options, int code) {
         HelpFormatter formatter = new HelpFormatter();
 
+        System.out.println("maestro " + Constants.VERSION + "\n");
         formatter.printHelp(Constants.BIN_NAME, options);
         System.exit(code);
     }

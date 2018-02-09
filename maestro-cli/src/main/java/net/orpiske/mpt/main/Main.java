@@ -16,6 +16,7 @@
 
 package net.orpiske.mpt.main;
 
+import net.orpiske.mpt.common.Constants;
 import net.orpiske.mpt.common.LogConfigurator;
 import net.orpiske.mpt.main.actions.*;
 
@@ -31,6 +32,7 @@ public class Main {
      * @param code the exit code
      */
     private static void help(int code) {
+        System.out.println("maestro " + Constants.VERSION + "\n");
         System.out.println("Usage: maestro-cli <action>\n");
 
         System.out.println("Actions:");
