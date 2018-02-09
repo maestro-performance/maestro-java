@@ -48,7 +48,7 @@ public class Main {
     }
 
     private static void processCommand(String[] args) {
-        CommandLineParser parser = new PosixParser();
+        CommandLineParser parser = new DefaultParser();
 
         Options options = new Options();
 

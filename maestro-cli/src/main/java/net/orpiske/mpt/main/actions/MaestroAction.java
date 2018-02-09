@@ -32,7 +32,7 @@ public class MaestroAction extends Action {
     }
 
     protected void processCommand(String[] args) {
-        CommandLineParser parser = new PosixParser();
+        CommandLineParser parser = new DefaultParser();
 
         Options options = new Options();
 
