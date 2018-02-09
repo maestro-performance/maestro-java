@@ -17,11 +17,11 @@
  * under the License.
  */
 
-/**
- * NOTE: this a fork of Justin Ross' Quiver at:
- * https://raw.githubusercontent.com/ssorj/quiver/master/java/quiver-jms-driver/src/main/java/net/ssorj/quiver/QuiverArrowJms.java
- * <p>
- * The code was modified to integrate more tightly with maestro.
+/*
+  NOTE: this a fork of Justin Ross' Quiver at:
+  https://raw.githubusercontent.com/ssorj/quiver/master/java/quiver-jms-driver/src/main/java/net/ssorj/quiver/QuiverArrowJms.java
+  <p>
+  The code was modified to integrate more tightly with maestro.
  */
 
 package net.orpiske.mpt.maestro.worker.jms;

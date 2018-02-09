@@ -47,10 +47,10 @@ public class MiniBrokerConfiguration implements
         provider.setUri(CONNECTOR);
 
 
-        /**
-         * Configure the broker to use the Maven's target directory (ie.:
-         * ${basedir}/target/test-classes) as the data directory for the
-         * broker. Therefore, it is cleaned whenever 'mvn clean' is run.
+        /*
+          Configure the broker to use the Maven's target directory (ie.:
+          ${basedir}/target/test-classes) as the data directory for the
+          broker. Therefore, it is cleaned whenever 'mvn clean' is run.
          */
         BrokerService brokerService = provider.getBroker();
         String path;
