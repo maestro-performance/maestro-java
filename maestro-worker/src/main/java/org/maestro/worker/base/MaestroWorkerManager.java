@@ -73,8 +73,28 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
 
     @Override
-    public void handle(StatsRequest note) {
+    public void handle(final StatsRequest note) {
         logger.debug("Stats request received");
+        StatsResponse statsResponse = new StatsResponse();
+
+        String parallelCount = workerOptions.getParallelCount();
+
+        if (parallelCount == null) {
+            statsResponse.setChildCount(0);
+        }
+        else {
+            statsResponse.setChildCount(Integer.parseInt(parallelCount));
+        }
+
+        // Explanation: the role is the name as the role (ie: clientName@host)
+        statsResponse.setRole(getClientName());
+        statsResponse.setLatency(0);
+        statsResponse.setRate(0);
+        statsResponse.setRoleInfo("");
+        statsResponse.setTimestamp("0");
+
+        client.statsResponse(statsResponse);
+
     }
 
     @Override

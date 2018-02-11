@@ -115,4 +115,15 @@ public class MaestroReceiverClient extends MaestroClient implements MaestroRecei
     public void abnormalDisconnect() {
         // TODO: handle abnormal disconnect and the LWT message
     }
+
+    /**
+     * Publishes a stats response as a reply to a stats request
+     * @param statsResponse the stats reponse to publish
+     */
+    public void statsResponse(final StatsResponse statsResponse) {
+        statsResponse.setName(clientName + "@" + host);
+        statsResponse.setId(id);
+
+        super.publish(MaestroTopics.MAESTRO_TOPIC, statsResponse, 0, false);
+    }
 }

@@ -31,6 +31,10 @@ public class StatsResponse extends MaestroResponse {
     private double rate;
     private double latency;
 
+    public StatsResponse() {
+        super(MaestroCommand.MAESTRO_NOTE_STATS);
+    }
+
     public StatsResponse(MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_STATS, unpacker);
 
@@ -75,6 +79,38 @@ public class StatsResponse extends MaestroResponse {
 
     public short getStatsType() {
         return statsType;
+    }
+
+    public void setChildCount(int childCount) {
+        this.childCount = childCount;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public void setRoleInfo(String roleInfo) {
+        this.roleInfo = roleInfo;
+    }
+
+    public void setStatsType(short statsType) {
+        this.statsType = statsType;
+    }
+
+    public void setTimestamp(String timestamp) {
+        this.timestamp = timestamp;
+    }
+
+    public void setCount(long count) {
+        this.count = count;
+    }
+
+    public void setRate(double rate) {
+        this.rate = rate;
+    }
+
+    public void setLatency(double latency) {
+        this.latency = latency;
     }
 
     @Override
