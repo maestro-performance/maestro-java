@@ -13,7 +13,16 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.UUID;
 
-// TODO: configure LWT
+
+/**
+ * Is a base class that implements the basic operations of any peer connect to Maestro (not just senders and receivers).
+ * For example, a Collector instance that keeps reading the data from the Maestro broker is an specialization of this
+ * class as is the MaestroWorkerManager that handles the requests from the Maestro broker and manages the
+ * sender/receiver workers
+ * @param <T>
+ *
+ * TODO: configure LWT
+ */
 public abstract class AbstractMaestroPeer<T extends MaestroNote> implements MqttCallback {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroPeer.class);
 
