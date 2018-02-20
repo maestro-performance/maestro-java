@@ -37,18 +37,24 @@ public abstract class AbstractRenderer {
 
     private Map<String, Object> context = new HashMap<>();;
 
+    private Jinjava jinjava;
+
     public AbstractRenderer(Map<String, Object> context) {
         this.context = context;
-    }
 
-    protected String render(final String name) throws Exception {
         JinjavaConfig config = new JinjavaConfig();
-
-        Jinjava jinjava = null;
 
         jinjava = new Jinjava(config);
         jinjava.getGlobalContext().registerFilter(new FileExists());
 
+        setupResourceLocator();
+    }
+
+    protected Jinjava getJinjava() {
+        return jinjava;
+    }
+
+    protected void setupResourceLocator() {
         try {
             File currentDir = new File(Paths.get(".").toAbsolutePath().normalize().toString());
             FileLocator currentDirLocator = new FileLocator(currentDir);
@@ -69,7 +75,9 @@ public abstract class AbstractRenderer {
         } catch (FileNotFoundException e) {
             logger.warn("Unable to find the current working directory: " + e.getMessage(), e);
         }
+    }
 
+    protected String render(final String name) throws Exception {
         String text;
 
         text = IOUtils.toString(this.getClass().getResourceAsStream(name), Charsets.UTF_8);
