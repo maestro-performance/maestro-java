@@ -42,7 +42,7 @@
     <scm>
         <developerConnection>scm:git:git@github.com:orpiske/maestro-java.git</developerConnection>
         <url>https://github.com/orpiske/maestro-java</url>
-        <tag>HEAD</tag>
+        <tag>1.2.x</tag>
     </scm>
 
     <licenses>
