@@ -13,7 +13,9 @@
     <artifactId>maestro-worker</artifactId>
 
     <properties>
+        <!-- Only for major libraries -->
         <jms.test.util.version>1.1.0</jms.test.util.version>
+        <jetty.version>9.4.8.v20171121</jetty.version>
     </properties>
 
 
@@ -52,6 +54,12 @@
             <groupId>org.eclipse.paho</groupId>
             <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
             <version>1.1.1</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.eclipse.jetty</groupId>
+            <artifactId>jetty-server</artifactId>
+            <version>${jetty.version}</version>
         </dependency>
 
         <dependency>

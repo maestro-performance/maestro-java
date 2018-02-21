@@ -42,6 +42,7 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
                                 final Class<MaestroWorker> workerClass) throws MaestroException {
         super(maestroURL, role, MaestroDeserializer::deserializeEvent);
 
+        logger.debug("Creating the receiver client");
         client = new MaestroReceiverClient(maestroURL, clientName, host, id);
 
         this.workerClass = workerClass;

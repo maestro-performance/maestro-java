@@ -33,10 +33,14 @@ public final class Constants {
 
 	public static final String MAESTRO_CONFIG_DIR;
 
+	public static final String MAESTRO_LOG_DIR;
+
 	static {
 		HOME_DIR = System.getProperty(HOME_PROPERTY);
 
 		MAESTRO_CONFIG_DIR = System.getProperty(HOME_PROPERTY) + File.separator + "config";
+
+		MAESTRO_LOG_DIR = System.getProperty(HOME_PROPERTY) + File.separator + "logs";
 	}
 
 	/**
