@@ -40,8 +40,8 @@
     </repositories>
 
     <scm>
-        <developerConnection>scm:git:git@github.com:orpiske/maestro-java.git</developerConnection>
-        <url>https://github.com/orpiske/maestro-java</url>
+        <developerConnection>scm:git:git@github.com:maestro-performance/maestro-java.git</developerConnection>
+        <url>https://github.com/maestro-performance/maestro-java</url>
         <tag>HEAD</tag>
     </scm>
 
