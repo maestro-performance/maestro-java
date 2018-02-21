@@ -38,6 +38,7 @@ public abstract class AbstractRenderer {
 
     private Jinjava jinjava;
 
+    @Deprecated
     public AbstractRenderer(Map<String, Object> context) {
         this.context = context;
 
