@@ -16,6 +16,7 @@
 
 package org.maestro.exporter.main;
 
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.apache.commons.cli.*;
@@ -80,6 +81,13 @@ public class Main {
         processCommand(args);
 
         LogConfigurator.defaultForDaemons();
+        try {
+            ConfigurationWrapper.initConfiguration(Constants.MAESTRO_CONFIG_DIR, "maestro-exporter.properties");
+        } catch (Exception e) {
+            System.err.println("Unable to initialize configuration file: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        }
 
         try {
             MaestroExporter exporter = new MaestroExporter(maestroUrl);
