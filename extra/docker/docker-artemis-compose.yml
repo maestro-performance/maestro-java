@@ -28,7 +28,7 @@ services:
       context: maestro-worker/maestro-receiver
 
       args:
-        - MAESTRO_WORKER_VERSION=1.2.3
+        - MAESTRO_WORKER_VERSION=1.2.4
     ports:
       - "28000:8000"
     volumes:
@@ -43,7 +43,7 @@ services:
       context: maestro-worker/maestro-sender
 # This can be replaced with a released version, such as 1.2.0
       args:
-        - MAESTRO_WORKER_VERSION=1.2.3
+        - MAESTRO_WORKER_VERSION=1.2.4
     ports:
       - "38000:8000"
     volumes:
@@ -57,7 +57,7 @@ services:
       context: maestro-client
 # This can be replaced with a released version, such as 1.2.0
       args:
-        - MAESTRO_WORKER_VERSION=1.2.3
+        - MAESTRO_WORKER_VERSION=1.2.4
     volumes:
       - ${HOME}/tmp/maestro:/maestro
     networks: 

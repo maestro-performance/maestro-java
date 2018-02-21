@@ -25,7 +25,7 @@ services:
     build:
       context: maestro-worker/maestro-receiver
       args:
-        - MAESTRO_WORKER_VERSION=1.2.3
+        - MAESTRO_WORKER_VERSION=1.2.4
     ports:
       - "28000:8000"
     volumes:
@@ -39,7 +39,7 @@ services:
     build:
       context: maestro-worker/maestro-sender
       args:
-        - MAESTRO_WORKER_VERSION=1.2.3
+        - MAESTRO_WORKER_VERSION=1.2.4
     ports:
       - "38000:8000"
     volumes:
@@ -52,7 +52,7 @@ services:
     build:
       context: maestro-client
       args:
-        - MAESTRO_WORKER_VERSION=1.2.3
+        - MAESTRO_WORKER_VERSION=1.2.4
     volumes:
       - ${HOME}/tmp/maestro:/maestro
     networks: 
