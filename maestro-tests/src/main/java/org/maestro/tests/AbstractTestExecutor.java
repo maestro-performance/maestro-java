@@ -101,16 +101,9 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     }
 
 
-    protected void processReplies(final AbstractTestProcessor testProcessor, long repeat) {
-        while (true) {
-            List<MaestroNote> replies = getMaestro().collect(1000, 1);
+    protected void processReplies(final AbstractTestProcessor testProcessor, int repeat, int numPeers) {
+        List<MaestroNote> replies = getMaestro().collect(1000, repeat, numPeers);
 
-            testProcessor.process(replies);
-            repeat--;
-
-            if (repeat == 0) {
-                break;
-            }
-        }
+        testProcessor.process(replies);
     }
 }

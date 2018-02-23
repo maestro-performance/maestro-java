@@ -54,7 +54,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             int numPeers = getNumPeers();
 
             resolveDataServers();
-            processReplies(testProcessor, repeat);
+            processReplies(testProcessor, (int) repeat, numPeers);
 
             getReportsDownloader().setTestNum(testProfile.getTestExecutionNumber());
 
