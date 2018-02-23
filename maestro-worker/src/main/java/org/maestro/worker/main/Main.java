@@ -91,9 +91,10 @@ public class Main {
 
         role = cmdLine.getOptionValue('r');
         if (role == null) {
-            System.err.println("The worker role is missing (option -w)");
+            System.err.println("The worker role is missing (option -r)");
             help(options, -1);
         }
+        System.setProperty("maestro.worker.role", role);
 
         host = cmdLine.getOptionValue('H');
         if (host == null) {
