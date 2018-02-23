@@ -1,13 +1,14 @@
 package org.maestro.tests;
 
+import org.maestro.client.notes.*;
 import org.maestro.common.NodeUtils;
 import org.maestro.client.exchange.MaestroNoteProcessor;
-import org.maestro.client.notes.PingResponse;
-import org.maestro.client.notes.TestFailedNotification;
-import org.maestro.client.notes.TestSuccessfulNotification;
 import org.maestro.reports.ReportsDownloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * This class provides a generic/reusable test processor that evaluates the individual
@@ -26,6 +27,7 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     private int notifications = 0;
 
     private int flushWaitSeconds = DEFAULT_WAIT_TIME;
+    private Map<String, String> dataServers = new HashMap<>();
 
     /**
      * Constructor
@@ -36,6 +38,17 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     public AbstractTestProcessor(AbstractTestProfile testProfile, ReportsDownloader reportsDownloader) {
         this.testProfile = testProfile;
         this.reportsDownloader = reportsDownloader;
+    }
+
+    @Override
+    protected void processGetResponse(GetResponse note) {
+        logger.debug("Processing data server response");
+        super.processGetResponse(note);
+
+        if (note.getOption() == GetOption.MAESTRO_NOTE_OPT_GET_DS) {
+            logger.info("Registering data server at {}", note.getValue());
+            dataServers.put(note.getName(), note.getValue());
+        }
     }
 
     @Override
@@ -69,7 +82,9 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
         logger.info("Test parameters used: " + testProfile.toString());
 
         String type = NodeUtils.getTypeFromName(note.getName());
-        String host = NodeUtils.getHostFromName(note.getName());
+        String host = dataServers.get(note.getName());
+
+        // TODO: what if host is null?
 
         waitForFlush();
 
@@ -86,7 +101,9 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
         logger.info("Test parameter used");
 
         String type = NodeUtils.getTypeFromName(note.getName());
-        String host = NodeUtils.getHostFromName(note.getName());
+        String host = dataServers.get(note.getName());
+
+        // TODO: what if host is null?
 
         waitForFlush();
 

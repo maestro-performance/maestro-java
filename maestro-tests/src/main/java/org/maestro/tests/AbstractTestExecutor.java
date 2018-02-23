@@ -72,6 +72,21 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         return numPeers;
     }
 
+
+    /**
+     * Resolve the data servers connected to the test cluster
+     * @throws MaestroConnectionException
+     * @throws InterruptedException
+     */
+    protected void resolveDataServers() throws MaestroConnectionException, InterruptedException {
+        logger.debug("Collecting responses to ensure topic is clean prior to collecting data servers");
+        maestro.collect();
+
+        logger.debug("Sending request to collect data servers");
+        maestro.getDataServer();
+
+    }
+
     protected void processReplies(AbstractTestProcessor testProcessor, long repeat, int numPeers) {
         while (testProcessor.getNotifications() != numPeers) {
             List<MaestroNote> replies = getMaestro().collect(1000, 1);

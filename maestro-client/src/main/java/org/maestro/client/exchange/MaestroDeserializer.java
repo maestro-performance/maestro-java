@@ -70,6 +70,9 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_STATS: {
                 return new StatsResponse(unpacker);
             }
+            case MAESTRO_NOTE_GET: {
+                return new GetResponse(unpacker);
+            }
             case MAESTRO_NOTE_START_RECEIVER:
             case MAESTRO_NOTE_STOP_RECEIVER:
             case MAESTRO_NOTE_START_SENDER:
@@ -126,6 +129,9 @@ public class MaestroDeserializer {
             }
             case MAESTRO_NOTE_HALT: {
                 return new Halt();
+            }
+            case MAESTRO_NOTE_GET: {
+                return new GetRequest(unpacker);
             }
             default: {
                 throw new MalformedNoteException("Invalid request command: " + tmpCommand);

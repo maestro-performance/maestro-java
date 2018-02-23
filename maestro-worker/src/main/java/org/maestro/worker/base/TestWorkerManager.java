@@ -3,6 +3,7 @@ package org.maestro.worker.base;
 import org.maestro.client.notes.*;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.*;
+import org.maestro.worker.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,8 +36,8 @@ public class TestWorkerManager extends MaestroWorkerManager {
      * @throws MaestroException
      */
     public TestWorkerManager(final String maestroURL, final String role, final String host, final File logDir,
-                             final Class<MaestroWorker> workerClass) throws MaestroException {
-        super(maestroURL, role, host);
+                             final Class<MaestroWorker> workerClass, final MaestroDataServer dataServer) throws MaestroException {
+        super(maestroURL, role, host, dataServer);
 
         this.container = WorkerContainer.getInstance(getClient());
         this.workerClass = workerClass;

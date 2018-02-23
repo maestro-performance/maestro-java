@@ -44,6 +44,8 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
     public boolean run() {
         try {
+            resolveDataServers();
+
             // Clean up the topic
             getMaestro().collect();
 

@@ -399,6 +399,18 @@ public final class Maestro implements MaestroRequester {
 
 
     /**
+     * Sends a get request
+     * @throws MaestroConnectionException if unable to send the MQTT request
+     */
+    public void getDataServer() throws MaestroConnectionException {
+        GetRequest maestroNote = new GetRequest();
+
+        maestroNote.setGetOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+    /**
      * Collect replies
      * @return A list of serialized maestro replies
      */

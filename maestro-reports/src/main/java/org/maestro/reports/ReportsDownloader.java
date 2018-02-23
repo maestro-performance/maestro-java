@@ -58,7 +58,7 @@ public class ReportsDownloader {
     }
 
     private void downloadReport(final String host, final String hostType, final String reportSource, final String name) throws ResourceExchangeException {
-        String baseURL = "http://" + host + ":8000/" + reportSource + "/";
+        String baseURL = host + "/logs/test/" + reportSource + "/";
         String targetURL = baseURL + name;
 
         final String destinationDir = buildDir(host, hostType);

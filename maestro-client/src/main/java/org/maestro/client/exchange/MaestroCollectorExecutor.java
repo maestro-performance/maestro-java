@@ -29,7 +29,6 @@ import java.util.List;
  */
 public class MaestroCollectorExecutor extends AbstractMaestroExecutor {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollectorExecutor.class);
-    private MaestroCollector maestroCollector = null;
 
     /**
      * Constructor

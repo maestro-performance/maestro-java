@@ -1,6 +1,7 @@
 package org.maestro.worker.base;
 
 import org.maestro.client.exchange.AbstractMaestroPeer;
+import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.notes.*;
 import org.maestro.common.URLQuery;
 import org.maestro.common.exceptions.DurationParseException;
@@ -11,6 +12,7 @@ import org.maestro.common.worker.*;
 import org.maestro.client.MaestroReceiverClient;
 import org.maestro.client.exchange.MaestroDeserializer;
 import org.maestro.client.exceptions.MalformedNoteException;
+import org.maestro.worker.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -27,6 +29,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     private final MaestroReceiverClient client;
     private WorkerOptions workerOptions;
     private boolean running = true;
+    private MaestroDataServer dataServer;
 
     /**
      * Constructor
@@ -35,13 +38,14 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
      * @param host hostname
      * @throws MaestroException
      */
-    public MaestroWorkerManager(final String maestroURL, final String role, final String host) throws MaestroException {
+    public MaestroWorkerManager(final String maestroURL, final String role, final String host, final MaestroDataServer dataServer) throws MaestroException {
         super(maestroURL, role, MaestroDeserializer::deserializeEvent);
 
         logger.debug("Creating the receiver client");
         client = new MaestroReceiverClient(maestroURL, clientName, host, id);
 
         workerOptions = new WorkerOptions();
+        this.dataServer = dataServer;
     }
 
 
@@ -210,5 +214,24 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     @Override
     public void handle(PingRequest note) throws MaestroConnectionException, MalformedNoteException {
         client.pingResponse(note.getSec(), note.getUsec());
+    }
+
+
+    @Override
+    public void handle(GetRequest note) {
+        logger.info("A get request has arrived");
+        switch (note.getOption()) {
+            case MAESTRO_NOTE_OPT_GET_DS: {
+                String dataServerAddress = dataServer.getServerURL();
+
+                GetResponse response = new GetResponse();
+
+                response.setOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
+                response.setValue(dataServerAddress);
+
+                client.getResponse(response);
+            }
+        }
+
     }
 }

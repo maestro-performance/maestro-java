@@ -13,14 +13,13 @@ import java.io.File;
 
 public class MaestroWorkerExecutor extends AbstractMaestroExecutor {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerExecutor.class);
-    private final Thread dataServerThread;
-    private MaestroDataServer dataServer;
+    private Thread dataServerThread;
 
-    public MaestroWorkerExecutor(final String url, final String role, final String host, final File logDir, final Class<MaestroWorker> workerClass) throws MaestroException {
-        super(new TestWorkerManager(url, role, host, logDir, workerClass));
+    public MaestroWorkerExecutor(final String url, final String role, final String host, final File logDir,
+                                 final Class<MaestroWorker> workerClass, final MaestroDataServer dataServer) throws MaestroException {
+        super(new TestWorkerManager(url, role, host, logDir, workerClass, dataServer));
 
         logger.info("Creating the data server");
-        dataServer = new MaestroDataServer(logDir);
 
         dataServerThread = new Thread(dataServer);
         dataServerThread.start();

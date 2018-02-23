@@ -16,14 +16,15 @@
 
 package org.maestro.client.exchange;
 
-import org.maestro.client.notes.MaestroNote;
-import org.maestro.client.notes.PingResponse;
-import org.maestro.client.notes.TestFailedNotification;
-import org.maestro.client.notes.TestSuccessfulNotification;
+import org.maestro.client.notes.*;
 
 import java.util.List;
 
 public class MaestroNoteProcessor {
+    protected void processGetResponse(GetResponse note) {
+
+    }
+
     protected void processPingResponse(PingResponse note) {
 
     }
@@ -40,6 +41,10 @@ public class MaestroNoteProcessor {
         switch (note.getMaestroCommand()) {
             case MAESTRO_NOTE_PING: {
                 processPingResponse((PingResponse) note);
+                break;
+            }
+            case MAESTRO_NOTE_GET: {
+                processGetResponse((GetResponse) note);
                 break;
             }
         }
@@ -82,8 +87,5 @@ public class MaestroNoteProcessor {
                 }
             }
         }
-
-
-
     }
 }

@@ -48,6 +48,8 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     public boolean run() {
         logger.info("Starting the test");
         try {
+            resolveDataServers();
+
             // Clean up the topic
             getMaestro().collect();
 

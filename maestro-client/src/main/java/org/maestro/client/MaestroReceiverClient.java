@@ -118,12 +118,32 @@ public class MaestroReceiverClient extends MaestroClient implements MaestroRecei
 
     /**
      * Publishes a stats response as a reply to a stats request
-     * @param statsResponse the stats reponse to publish
+     * @param statsResponse the stats response to publish
      */
     public void statsResponse(final StatsResponse statsResponse) {
         statsResponse.setName(clientName + "@" + host);
         statsResponse.setId(id);
 
-        super.publish(MaestroTopics.MAESTRO_TOPIC, statsResponse, 0, false);
+        try {
+            super.publish(MaestroTopics.MAESTRO_TOPIC, statsResponse, 0, false);
+        } catch (Exception e) {
+            logger.error("Unable to publish the status response: {}", e.getMessage(), e);
+        }
+    }
+
+
+    /**
+     * Publishes a get response as a reply to a get request
+     * @param getResponse the get response to publish
+     */
+    public void getResponse(final GetResponse getResponse) {
+        getResponse.setName(clientName + "@" + host);
+        getResponse.setId(id);
+
+        try {
+            super.publish(MaestroTopics.MAESTRO_TOPIC, getResponse, 0, false);
+        } catch (Exception e) {
+            logger.error("Unable to publish the get response: {}", e.getMessage(), e);
+        }
     }
 }

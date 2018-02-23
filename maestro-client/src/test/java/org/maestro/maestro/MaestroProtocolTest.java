@@ -21,6 +21,7 @@ import org.junit.Test;
 import org.maestro.client.notes.*;
 
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertEquals;
 
 public class MaestroProtocolTest {
 
@@ -95,5 +96,35 @@ public class MaestroProtocolTest {
         assertTrue("Parsed object is not a Test failed Notification",
                 parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
         assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_NOTIFY_FAIL);
+    }
+
+
+    @Test
+    public void serializeGetRequest() throws Exception {
+        GetRequest getRequest = new GetRequest();
+        getRequest.setGetOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(getRequest));
+
+        assertTrue(parsed instanceof GetRequest);
+        assertTrue("Parsed object is not a GET request",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_GET);
+    }
+
+    @Test
+    public void serializeGetResponse() throws Exception {
+        final String url = "http://0.0.0.0:8101/";
+        GetResponse getResponse = new GetResponse();
+        getResponse.setOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
+        getResponse.setValue(url);
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(getResponse));
+
+        assertTrue(parsed instanceof GetResponse);
+        assertTrue("Parsed object is not a GET response",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_GET);
+        assertEquals("URLs do not match", url, ((GetResponse)parsed).getValue());
     }
 }

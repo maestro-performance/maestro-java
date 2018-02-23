@@ -38,7 +38,11 @@ public enum MaestroCommand {
 
     /** Notifications */
     MAESTRO_NOTE_NOTIFY_FAIL(15),
-    MAESTRO_NOTE_NOTIFY_SUCCESS(16);
+    MAESTRO_NOTE_NOTIFY_SUCCESS(16),
+
+    // New commands with v >= 1.3
+    /* Get request */
+    MAESTRO_NOTE_GET(17);
 
     private final long value;
 
@@ -69,6 +73,7 @@ public enum MaestroCommand {
             case 14: return MAESTRO_NOTE_ABNORMAL_DISCONNECT;
             case 15: return MAESTRO_NOTE_NOTIFY_FAIL;
             case 16: return MAESTRO_NOTE_NOTIFY_SUCCESS;
+            case 17: return MAESTRO_NOTE_GET;
         }
 
         return null;

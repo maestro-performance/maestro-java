@@ -17,6 +17,7 @@
 package org.maestro.worker.main;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.maestro.client.Maestro;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
@@ -24,6 +25,7 @@ import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.client.exchange.MaestroTopics;
 import org.apache.commons.cli.*;
+import org.maestro.worker.ds.MaestroDataServer;
 
 import java.io.File;
 
@@ -134,8 +136,11 @@ public class Main {
 
         try {
             Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
+            File logDirFile = new File(logDir);
 
-            MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroUrl, role, host, new File(logDir), clazz);
+            MaestroDataServer dataServer = new MaestroDataServer(logDirFile);
+
+            MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroUrl, role, host, logDirFile, clazz, dataServer);
 
             switch (role) {
                 case "sender": {

@@ -50,4 +50,6 @@ public interface MaestroEventListener {
     void handle(TestSuccessfulNotification note);
 
     void handle(AbnormalDisconnect note);
+
+    void handle(GetRequest note);
 }

@@ -3,6 +3,7 @@ package org.maestro.worker.ds;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
+import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.*;
 import org.eclipse.jetty.util.resource.Resource;
 import org.maestro.common.ConfigurationWrapper;
@@ -14,10 +15,15 @@ import java.io.File;
 
 public class MaestroDataServer implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MaestroDataServer.class);
-    private static final int DEFAULT_DS_PORT = 8000;
+
+    private static final String WORKER_LOGS_CONTEXT = "/logs/worker";
+    private static final String TEST_LOGS_CONTEXT = "/logs/test";
+
+    private static final int DEFAULT_DS_PORT = 0;
 
     private Server server;
     private File logDir;
+    private int dataServerPort;
 
     public MaestroDataServer(final File logDir) {
         this.logDir = logDir;
@@ -25,11 +31,10 @@ public class MaestroDataServer implements Runnable {
 
     private void runServerInt() throws Exception {
         AbstractConfiguration config = ConfigurationWrapper.getConfig();
-        int dataServerPort = config.getInteger("data.server.port", DEFAULT_DS_PORT);
+
+        dataServerPort = config.getInteger("data.server.port", DEFAULT_DS_PORT);
+
         server = new Server(dataServerPort);
-
-        logger.info("Starting the data server on 0.0.0.0:{} to serve log files", DEFAULT_DS_PORT);
-
 
         ResourceHandler logResourceHandler = new ResourceHandler();
         logResourceHandler.setStylesheet(this.getClass().getResource("jetty-dir.css").getPath());
@@ -37,13 +42,13 @@ public class MaestroDataServer implements Runnable {
 
         // Serve the tests logs on /logs/tests
         ContextHandler context0 = new ContextHandler();
-        context0.setContextPath("/logs/tests");
+        context0.setContextPath(TEST_LOGS_CONTEXT);
         context0.addAliasCheck(new ContextHandler.ApproveAliases());
 
         context0.setBaseResource(Resource.newResource(logDir));
         context0.setHandler(logResourceHandler);
 
-        logger.info("Serving files from {} on /logs/tests", logDir.getPath());
+        logger.debug("Serving files from {} on /logs/tests", logDir.getPath());
 
         ResourceHandler workerResourceHandler = new ResourceHandler();
         workerResourceHandler.setStylesheet(this.getClass().getResource("jetty-dir.css").getPath());
@@ -51,19 +56,26 @@ public class MaestroDataServer implements Runnable {
 
         // Serve the worker logs on /logs/worker
         ContextHandler context1 = new ContextHandler();
-        context1.setContextPath("/logs/worker");
+        context1.setContextPath(WORKER_LOGS_CONTEXT);
         context1.addAliasCheck(new ContextHandler.ApproveAliases());
 
         context1.setBaseResource(Resource.newResource(Constants.MAESTRO_LOG_DIR));
         context1.setHandler(workerResourceHandler);
-        logger.info("Serving files from {} on /logs/worker", Constants.MAESTRO_LOG_DIR);
+        logger.debug("Serving files from {} on /logs/worker", Constants.MAESTRO_LOG_DIR);
 
         ContextHandlerCollection contexts = new ContextHandlerCollection();
         contexts.setHandlers(new Handler[] { context0, context1 });
 
         server.setHandler(contexts);
 
+        logger.debug("Starting the data server");
         server.start();
+        if (dataServerPort == 0) {
+            dataServerPort = ((ServerConnector)server.getConnectors()[0]).getLocalPort();
+        }
+
+        logger.info("The data server is now serving worker log files on {}{}", getServerURL(), WORKER_LOGS_CONTEXT);
+        logger.info("The data server is now serving test log files on {}{}", getServerURL(), TEST_LOGS_CONTEXT);
     }
 
     @Override
@@ -74,5 +86,9 @@ public class MaestroDataServer implements Runnable {
         } catch (Exception e) {
             logger.error("Unable to start the data server: {}", e.getMessage(), e);
         }
+    }
+
+    public String getServerURL() {
+        return "http://0.0.0.0:" + dataServerPort;
     }
 }
