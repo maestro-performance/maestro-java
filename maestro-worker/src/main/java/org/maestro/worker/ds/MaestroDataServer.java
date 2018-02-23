@@ -32,26 +32,31 @@ public class MaestroDataServer implements Runnable {
 
 
         ResourceHandler logResourceHandler = new ResourceHandler();
+        logResourceHandler.setStylesheet(this.getClass().getResource("jetty-dir.css").getPath());
 
-        // Serve the logs on /logs
+
+        // Serve the tests logs on /logs/tests
         ContextHandler context0 = new ContextHandler();
-        context0.setContextPath("/logs");
+        context0.setContextPath("/logs/tests");
         context0.addAliasCheck(new ContextHandler.ApproveAliases());
 
         context0.setBaseResource(Resource.newResource(logDir));
         context0.setHandler(logResourceHandler);
-        logger.info("Serving files from {} on /logs", logDir.getPath());
+
+        logger.info("Serving files from {} on /logs/tests", logDir.getPath());
 
         ResourceHandler workerResourceHandler = new ResourceHandler();
+        workerResourceHandler.setStylesheet(this.getClass().getResource("jetty-dir.css").getPath());
 
-        // Serve the worker logs on /worker
+
+        // Serve the worker logs on /logs/worker
         ContextHandler context1 = new ContextHandler();
-        context1.setContextPath("/worker");
+        context1.setContextPath("/logs/worker");
         context1.addAliasCheck(new ContextHandler.ApproveAliases());
 
         context1.setBaseResource(Resource.newResource(Constants.MAESTRO_LOG_DIR));
         context1.setHandler(workerResourceHandler);
-        logger.info("Serving files from {} on /worker", Constants.MAESTRO_LOG_DIR);
+        logger.info("Serving files from {} on /logs/worker", Constants.MAESTRO_LOG_DIR);
 
         ContextHandlerCollection contexts = new ContextHandlerCollection();
         contexts.setHandlers(new Handler[] { context0, context1 });
