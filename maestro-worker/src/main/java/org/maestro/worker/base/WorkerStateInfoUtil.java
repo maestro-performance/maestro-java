@@ -3,7 +3,7 @@ package org.maestro.worker.base;
 import org.maestro.common.worker.WorkerStateInfo;
 
 
-class WorkerStateInfoUtil {
+public class WorkerStateInfoUtil {
 
     /**
      * Utility to check if the workers exited cleanly or not

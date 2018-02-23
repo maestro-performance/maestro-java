@@ -17,41 +17,48 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.List;
 
-import static org.maestro.worker.base.WorkerStateInfoUtil.isCleanExit;
-
-public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> implements MaestroEventListener {
-    private static final long TIMEOUT_STOP_WORKER_MILLIS = 1_000;
+/**
+ * A base worker class that implements the most basic worker functionality
+ */
+public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> implements MaestroEventListener {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
 
     private final MaestroReceiverClient client;
-    private final WorkerContainer container;
-    private final Class<MaestroWorker> workerClass;
-
-    private final File logDir;
-
     private WorkerOptions workerOptions;
-    private Thread latencyWriterThread;
-    private Thread rateWriterThread;
-
     private boolean running = true;
 
-    public MaestroWorkerManager(final String maestroURL, final String role, final String host, final File logDir,
-                                final Class<MaestroWorker> workerClass) throws MaestroException {
+    /**
+     * Constructor
+     * @param maestroURL Maestro broker URL
+     * @param role Worker role
+     * @param host hostname
+     * @throws MaestroException
+     */
+    public MaestroWorkerManager(final String maestroURL, final String role, final String host) throws MaestroException {
         super(maestroURL, role, MaestroDeserializer::deserializeEvent);
 
         logger.debug("Creating the receiver client");
         client = new MaestroReceiverClient(maestroURL, clientName, host, id);
 
-        this.workerClass = workerClass;
-        String host1 = host;
-        this.logDir = logDir;
-        this.container = WorkerContainer.getInstance(client);
-
         workerOptions = new WorkerOptions();
     }
+
+
+    protected WorkerOptions getWorkerOptions() {
+        return workerOptions;
+    }
+
+
+    protected void setWorkerOptions(WorkerOptions workerOptions) {
+        this.workerOptions = workerOptions;
+    }
+
+
+    protected MaestroReceiverClient getClient() {
+        return client;
+    }
+
 
     @Override
     public void connect() throws MaestroConnectionException {
@@ -59,6 +66,12 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
 
         client.connect();
     }
+
+
+    protected void setRunning(boolean running) {
+        this.running = running;
+    }
+
 
     @Override
     public boolean isRunning() {
@@ -95,22 +108,22 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         statsResponse.setTimestamp("0");
 
         client.statsResponse(statsResponse);
-
     }
+
 
     @Override
     public void handle(FlushRequest note) {
         logger.debug("Flush request received");
     }
 
+
     @Override
     public void handle(Halt note) {
         logger.debug("Halt request received");
 
-        container.stop();
-
-        running = false;
+        setRunning(false);
     }
+
 
     @Override
     public void handle(SetRequest note) {
@@ -149,12 +162,10 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
                 workerOptions.setFcl(note.getValue());
             }
         }
-
-        container.setWorkerOptions(workerOptions);
-        client.replyOk();
     }
 
-    private void writeTestProperties(File testLogDir) throws IOException, URISyntaxException, DurationParseException {
+
+    protected void writeTestProperties(final File testLogDir) throws IOException, URISyntaxException, DurationParseException {
         TestProperties testProperties = new TestProperties();
 
         testProperties.setBrokerUri(workerOptions.getBrokerURL());
@@ -174,7 +185,6 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         testProperties.setProtocol(urlQuery.getString("protocol", "AMQP"));
         testProperties.setLimitDestinations(urlQuery.getInteger("limitDestinations", 1));
 
-
         // TODO: collect this
         testProperties.setApiName("JMS");
         testProperties.setApiVersion("1.1");
@@ -182,201 +192,9 @@ public class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> impl
         testProperties.write(new File(testLogDir, "test.properties"));
     }
 
-    private boolean doWorkerStart() {
-        if (container.isTestInProgress()) {
-            logger.warn("Trying to start a new test, but a test execution is already in progress");
-            client.notifyFailure("Test already in progress");
-            return false;
-        }
-
-        final File testLogDir = WorkerLogUtils.findTestLogDir(logDir);
-
-        try {
-            writeTestProperties(testLogDir);
-
-            final List<MaestroWorker> workers = new ArrayList<>();
-            logger.debug("Starting the workers {}", workerClass);
-            container.start(workerClass, workers, this::onStoppedWorkers);
-
-            if (workers.isEmpty()) {
-                logger.warn("No workers has been started!");
-            } else {
-                logger.debug("Creating the writer threads");
-                WorkerLatencyWriter latencyWriter = new WorkerLatencyWriter(testLogDir, workers);
-                this.latencyWriterThread = new Thread(latencyWriter);
-                WorkerChannelWriter rateWriter = new WorkerChannelWriter(testLogDir, workers);
-                this.rateWriterThread = new Thread(rateWriter);
-                logger.debug("Starting the writers threads");
-
-                this.latencyWriterThread.start();
-                this.rateWriterThread.start();
-
-                //TODO handle shutdown gently
-                Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownAndWaitWriters));
-            }
-
-            client.replyOk();
-            return true;
-        } catch (Exception e) {
-            logger.error("Unable to start workers from the container: {}", e.getMessage(), e);
-            client.replyInternalError();
-        }
-
-        return false;
-    }
-
-    private void shutdownAndWaitWriters(){
-        if (this.rateWriterThread != null) {
-            this.rateWriterThread.interrupt();
-        }
-        if (this.latencyWriterThread != null) {
-            this.latencyWriterThread.interrupt();
-        }
-        if (this.rateWriterThread != null) {
-            try {
-                this.rateWriterThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-        if (this.latencyWriterThread != null) {
-            try {
-                this.latencyWriterThread.join();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        }
-    }
-
-    private static boolean awaitWorkers(long startWaitingWorkersEpochMillis, final List<WorkerRuntimeInfo> workers) {
-        final long deadLine = startWaitingWorkersEpochMillis + (workers.size() * TIMEOUT_STOP_WORKER_MILLIS * 2);
-        //workers are being stopped, just need to check if they have finished their jobs
-        boolean allFinished = false;
-        while (!allFinished && System.currentTimeMillis() < deadLine) {
-            allFinished = true;
-            for (int i = 0, size = workers.size(); i < size; i++) {
-                final WorkerRuntimeInfo workerRuntimeInfo = workers.get(i);
-                try {
-                    workerRuntimeInfo.thread.join(TIMEOUT_STOP_WORKER_MILLIS);
-                } catch (InterruptedException e) {
-                    //no op, just retry
-                } finally {
-                    allFinished = !workerRuntimeInfo.thread.isAlive();
-                    if (!allFinished) {
-                        break;
-                    }
-                }
-            }
-        }
-        return allFinished;
-    }
-
-    /**
-     * It should be called by a different thread/concurrently too (eg WatchDog) so it can't modify any this.* members or workers too.
-     */
-    private void onStoppedWorkers(List<WorkerRuntimeInfo> workers) {
-        try {
-            if (this.rateWriterThread != null || this.latencyWriterThread != null) {
-                final long startWaitingWorkers = System.currentTimeMillis();
-                if (!workers.isEmpty()) {
-                    final boolean allFinished = awaitWorkers(startWaitingWorkers, workers);
-                    if (!allFinished) {
-                        logger.warn("The writer will be forced to stop with alive workers");
-                    }
-                }
-
-                shutdownAndWaitWriters();
-                final long elapsedMillis = System.currentTimeMillis() - startWaitingWorkers;
-                logger.info("Awaiting workers and shutting down writers took {} ms", elapsedMillis);
-            }
-
-            boolean failed = false;
-            for (WorkerRuntimeInfo ri : workers) {
-                WorkerStateInfo wsi = ri.worker.getWorkerState();
-
-                if (!isCleanExit(wsi)) {
-                    failed = true;
-                    break;
-                }
-            }
-
-            WorkerLogUtils.createSymlinks(logDir, failed);
-        } finally {
-            //reset it for new incoming tests
-            this.workerOptions = new WorkerOptions();
-        }
-    }
-
-    @Override
-    public void handle(StartInspector note) {
-        logger.debug("Start inspector request received");
-
-        if (MaestroInspectorWorker.class.isAssignableFrom(workerClass)) {
-            if (!doWorkerStart()) {
-                logger.warn("::handle {} can't start worker", note);
-            }
-        }
-    }
-
-    @Override
-    public void handle(StartReceiver note) {
-        logger.debug("Start receiver request received");
-
-        if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
-            if (!doWorkerStart()) {
-                logger.warn("::handle {} can't start worker", note);
-            }
-        }
-    }
-
-    @Override
-    public void handle(StartSender note) {
-        logger.debug("Start sender request received");
-
-        if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
-            if (!doWorkerStart()) {
-                logger.warn("::handle {} can't start worker", note);
-            }
-        }
-    }
-
-    @Override
-    public void handle(StopInspector note) {
-        logger.debug("Stop inspector request received");
-
-        if (MaestroInspectorWorker.class.isAssignableFrom(workerClass)) {
-            container.stop();
-        }
-
-        client.replyOk();
-    }
-
-    @Override
-    public void handle(StopReceiver note) {
-        logger.debug("Stop receiver request received");
-
-        if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
-            container.stop();
-        }
-
-        client.replyOk();
-    }
-
-    @Override
-    public void handle(StopSender note) {
-        logger.debug("Stop sender request received");
-
-        if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
-            container.stop();
-        }
-
-        client.replyOk();
-    }
-
     @Override
     public void handle(TestFailedNotification note) {
         logger.info("Test failed notification received from {}: {}", note.getName(), note.getMessage());
-        container.stop();
     }
 
     @Override
