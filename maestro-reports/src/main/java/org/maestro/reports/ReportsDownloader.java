@@ -16,6 +16,7 @@
 
 package org.maestro.reports;
 
+import org.maestro.common.URLUtils;
 import org.maestro.contrib.utils.Downloader;
 import org.maestro.contrib.utils.resource.exceptions.ResourceExchangeException;
 import org.apache.http.HttpStatus;
@@ -51,17 +52,19 @@ public class ReportsDownloader {
     }
 
 
-    private String buildDir(final String host, final String hostType) {
+    private String buildDir(final String address, final String hostType) {
+        String host = URLUtils.getHostnameFromURL(address);
+
         // <basedir>/sender/failed/0/
-        return baseDir + File.separator + hostType + File.separator + reportTypeDir + File.separator + Integer.toString(testNum) + File.separator
-                + host;
+        return baseDir + File.separator + hostType + File.separator + reportTypeDir + File.separator +
+                Integer.toString(testNum) + File.separator + host;
     }
 
-    private void downloadReport(final String host, final String hostType, final String reportSource, final String name) throws ResourceExchangeException {
-        String baseURL = host + "/logs/test/" + reportSource + "/";
+    private void downloadReport(final String address, final String hostType, final String reportSource, final String name) throws ResourceExchangeException {
+        String baseURL = address + "/logs/test/" + reportSource + "/";
         String targetURL = baseURL + name;
 
-        final String destinationDir = buildDir(host, hostType);
+        final String destinationDir = buildDir(address, hostType);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Downloading file {} to {}", targetURL, destinationDir);
