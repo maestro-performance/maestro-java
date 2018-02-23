@@ -173,8 +173,8 @@ public class Downloader {
 			}
 			throw new ResourceExchangeException("Invalid URI: " + url, e);
 		} catch (Exception e) {
-			System.err.println("Removing file " + outputFile.getPath());
 			if (outputFile != null) {
+				logger.debug("Removing file " + outputFile.getPath());
 				outputFile.delete();
 			}
 
