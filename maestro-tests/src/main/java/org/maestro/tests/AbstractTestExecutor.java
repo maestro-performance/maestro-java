@@ -84,10 +84,9 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
         logger.debug("Sending request to collect data servers");
         maestro.getDataServer();
-
     }
 
-    protected void processReplies(AbstractTestProcessor testProcessor, long repeat, int numPeers) {
+    protected void processNotifications(final AbstractTestProcessor testProcessor, long repeat, int numPeers) {
         while (testProcessor.getNotifications() != numPeers) {
             List<MaestroNote> replies = getMaestro().collect(1000, 1);
 
@@ -101,4 +100,17 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         }
     }
 
+
+    protected void processReplies(final AbstractTestProcessor testProcessor, long repeat) {
+        while (true) {
+            List<MaestroNote> replies = getMaestro().collect(1000, 1);
+
+            testProcessor.process(replies);
+            repeat--;
+
+            if (repeat == 0) {
+                break;
+            }
+        }
+    }
 }

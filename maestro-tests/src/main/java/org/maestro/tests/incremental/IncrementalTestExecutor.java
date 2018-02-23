@@ -58,7 +58,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                 testProcessor.resetNotifications();
 
                 startServices();
-                processReplies(testProcessor, repeat, numPeers);
+                processNotifications(testProcessor, repeat, numPeers);
 
                 testProfile.increment();
                 testProcessor.increaseFlushWaitSeconds();

@@ -48,12 +48,13 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     public boolean run() {
         logger.info("Starting the test");
         try {
-            resolveDataServers();
-
             // Clean up the topic
             getMaestro().collect();
 
             int numPeers = getNumPeers();
+
+            resolveDataServers();
+            processReplies(testProcessor, repeat);
 
             getReportsDownloader().setTestNum(testProfile.getTestExecutionNumber());
 
@@ -61,7 +62,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             testProcessor.resetNotifications();
 
             startServices();
-            processReplies(testProcessor, repeat, numPeers);
+            processNotifications(testProcessor, repeat, numPeers);
 
             if (testProcessor.isSuccessful()) {
                 logger.info("Test completed successfully");
