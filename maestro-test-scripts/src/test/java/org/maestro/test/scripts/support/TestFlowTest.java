@@ -58,6 +58,7 @@ public class TestFlowTest extends EndToEndTest {
         LogConfigurator.silent();
     }
 
+    @Ignore
     @Test
     public void testSimpleTest() throws Exception {
         System.out.println("Running a short-lived test");
