@@ -12,6 +12,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 public class MaestroDataServer implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MaestroDataServer.class);
@@ -88,7 +90,31 @@ public class MaestroDataServer implements Runnable {
         }
     }
 
+
+    /**
+     * Gets the data server base URL. The front-end uses this to download the report files
+     * @return
+     */
     public String getServerURL() {
-        return "http://0.0.0.0:" + dataServerPort;
+        AbstractConfiguration config = ConfigurationWrapper.getConfig();
+        String host = config.getString("data.server.host", null);
+
+        // Host configuration takes priority over detection
+        if (host == null) {
+            host = ((ServerConnector) server.getConnectors()[0]).getHost();
+
+            // If null, it's binding to all interfaces and that's OK
+            if (host == null) {
+                try {
+                    host = InetAddress.getLocalHost().getHostAddress();
+                } catch (UnknownHostException e) {
+                    logger.error("Unable to determine the address of the data server local host. Please set it " +
+                            "manually in the configuration file via 'data.server.host' setting. Using 127.0.0.1 ...");
+                    host = "127.0.0.1";
+                }
+            }
+        }
+
+        return "http://" + host + ":" + dataServerPort;
     }
 }
