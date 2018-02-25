@@ -15,6 +15,6 @@ WORKDIR ${MAESTRO_SUT_ROOT}
 RUN curl https://archive.apache.org/dist/activemq/activemq-artemis/${ARTEMIS_VERSION}/apache-artemis-${ARTEMIS_VERSION}-bin.tar.gz -o apache-artemis.tar.gz
 RUN tar -xvf apache-artemis.tar.gz && ln -s ${MAESTRO_SUT_ROOT}/apache-artemis-${ARTEMIS_VERSION} ${MAESTRO_SUT_ROOT}/apache-artemis
 RUN rm -f apache-artemis.tar.gz
-RUN ${MAESTRO_SUT_ROOT}/apache-artemis/bin/artemis create --${ARTEMIS_JOURNAL} --allow-anonymous --http-host 0.0.0.0 --user admin --password "admin" --role admin ${MAESTRO_SUT_ROOT}/apache-artemis-instance
+RUN ${MAESTRO_SUT_ROOT}/apache-artemis/bin/artemis create --${ARTEMIS_JOURNAL} --allow-anonymous --http-host 0.0.0.0 --user admin --password "admin" --role amq ${MAESTRO_SUT_ROOT}/apache-artemis-instance
 ADD jolokia-access.xml ${MAESTRO_SUT_ROOT}/apache-artemis-instance/etc/jolokia-access.xml
 CMD [ "sh", "-c", "./apache-artemis-instance/bin/artemis run" ]
