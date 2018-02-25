@@ -21,9 +21,4 @@ package org.maestro.worker.tests.support.common;
  */
 public abstract class EndToEndTest {
 
-    public EndToEndTest() {
-        System.setProperty("java.naming.factory.initial",
-                "org.apache.qpid.jms.jndi.JmsInitialContextFactory");
-    }
-
 }

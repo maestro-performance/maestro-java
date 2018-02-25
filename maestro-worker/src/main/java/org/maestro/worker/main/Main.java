@@ -114,8 +114,7 @@ public class Main {
 
     /**
      * Running this as a debug is something like:
-     * java -Djava.naming.factory.initial=org.apache.qpid.jms.jndi.JmsInitialContextFactory {class}
-     *      -m mqtt://maestro-broker:1883
+     * java -m mqtt://maestro-broker:1883
      *      -r sender
      *      -H localhost
      *      -w org.maestro.mpt.maestro.worker.jms.JMSSenderWorker
