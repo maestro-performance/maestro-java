@@ -16,8 +16,8 @@ import static org.maestro.worker.base.WorkerStateInfoUtil.isCleanExit;
 /**
  * A specialized worker manager that can manage concurrent test workers (ie.: senders/receivers)
  */
-public class TestWorkerManager extends MaestroWorkerManager {
-    private static final Logger logger = LoggerFactory.getLogger(TestWorkerManager.class);
+public class ConcurrentWorkerManager extends MaestroWorkerManager {
+    private static final Logger logger = LoggerFactory.getLogger(ConcurrentWorkerManager.class);
     private static final long TIMEOUT_STOP_WORKER_MILLIS = 1_000;
 
     private final WorkerContainer container;
@@ -35,8 +35,8 @@ public class TestWorkerManager extends MaestroWorkerManager {
      * @param workerClass
      * @throws MaestroException
      */
-    public TestWorkerManager(final String maestroURL, final String role, final String host, final File logDir,
-                             final Class<MaestroWorker> workerClass, final MaestroDataServer dataServer) throws MaestroException {
+    public ConcurrentWorkerManager(final String maestroURL, final String role, final String host, final File logDir,
+                                   final Class<MaestroWorker> workerClass, final MaestroDataServer dataServer) throws MaestroException {
         super(maestroURL, role, host, dataServer);
 
         this.container = WorkerContainer.getInstance(getClient());

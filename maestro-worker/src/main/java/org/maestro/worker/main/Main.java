@@ -16,8 +16,7 @@
 
 package org.maestro.worker.main;
 
-import org.apache.commons.configuration.AbstractConfiguration;
-import org.maestro.client.Maestro;
+import org.maestro.client.exchange.AbstractMaestroPeer;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
@@ -25,6 +24,8 @@ import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.client.exchange.MaestroTopics;
 import org.apache.commons.cli.*;
+import org.maestro.worker.base.ConcurrentWorkerManager;
+import org.maestro.worker.base.VoidWorkerManager;
 import org.maestro.worker.ds.MaestroDataServer;
 
 import java.io.File;
@@ -85,11 +86,6 @@ public class Main {
             help(options, -1);
         }
 
-        worker = cmdLine.getOptionValue('w');
-        if (worker == null) {
-            System.err.println("The worker class is missing (option -w)");
-            help(options, -1);
-        }
 
         role = cmdLine.getOptionValue('r');
         if (role == null) {
@@ -97,6 +93,14 @@ public class Main {
             help(options, -1);
         }
         System.setProperty("maestro.worker.role", role);
+
+        worker = cmdLine.getOptionValue('w');
+        if (worker == null) {
+            if (!role.equals("data-server")) {
+                System.err.println("The worker class is missing (option -w)");
+                help(options, -1);
+            }
+        }
 
         host = cmdLine.getOptionValue('H');
         if (host == null) {
@@ -110,6 +114,8 @@ public class Main {
 
             help(options, -1);
         }
+
+
     }
 
     /**
@@ -119,10 +125,11 @@ public class Main {
      *      -H localhost
      *      -w org.maestro.mpt.maestro.worker.jms.JMSSenderWorker
      *      -l /storage/tmp/maestro-java/sender
-     * @param args
      */
     public static void main(String[] args) {
         processCommand(args);
+
+
 
         LogConfigurator.defaultForDaemons();
         try {
@@ -134,26 +141,40 @@ public class Main {
         }
 
         try {
-            Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
+
             File logDirFile = new File(logDir);
 
             MaestroDataServer dataServer = new MaestroDataServer(logDirFile);
 
-            MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroUrl, role, host, logDirFile, clazz, dataServer);
+            MaestroWorkerExecutor executor;
+            AbstractMaestroPeer maestroPeer;
 
             switch (role) {
                 case "sender": {
+                    Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
+
+                    maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDirFile, clazz, dataServer);
+                    executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
+
                     executor.start(MaestroTopics.MAESTRO_SENDER_TOPICS);
                     executor.run();
                     break;
                 }
                 case "receiver": {
+                    Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
+
+                    maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDirFile, clazz, dataServer);
+                    executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
+
                     executor.start(MaestroTopics.MAESTRO_RECEIVER_TOPICS);
                     executor.run();
                     break;
                 }
-                case "inspector": {
-                    executor.start(MaestroTopics.MAESTRO_INSPECTOR_TOPICS);
+                case "data-server": {
+                    maestroPeer = new VoidWorkerManager(maestroUrl, role, host, dataServer);
+                    executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
+
+                    executor.start(MaestroTopics.MAESTRO_RECEIVER_TOPICS);
                     executor.run();
                     break;
                 }
