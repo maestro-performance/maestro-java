@@ -23,8 +23,8 @@ public class MaestroDataServer implements Runnable {
 
     private static final int DEFAULT_DS_PORT = 0;
 
+    private final File logDir;
     private Server server;
-    private File logDir;
     private int dataServerPort;
 
     /**
