@@ -38,7 +38,7 @@ public class Main {
     private static String worker;
     private static String role;
     private static String host;
-    private static String logDir;
+    private static File logDir;
 
     /**
      * Prints the help for the action and exit
@@ -108,14 +108,14 @@ public class Main {
             help(options, -1);
         }
 
-        logDir = cmdLine.getOptionValue('l');
-        if (logDir == null) {
+
+        String logDirVal = cmdLine.getOptionValue('l');
+        if (logDirVal == null) {
             System.err.println("The log directory is missing (option -l)");
 
             help(options, -1);
         }
-
-
+        logDir = new File(logDirVal);
     }
 
     /**
@@ -129,8 +129,6 @@ public class Main {
     public static void main(String[] args) {
         processCommand(args);
 
-
-
         LogConfigurator.defaultForDaemons();
         try {
             ConfigurationWrapper.initConfiguration(Constants.MAESTRO_CONFIG_DIR, "maestro-worker.properties");
@@ -141,10 +139,7 @@ public class Main {
         }
 
         try {
-
-            File logDirFile = new File(logDir);
-
-            MaestroDataServer dataServer = new MaestroDataServer(logDirFile);
+            MaestroDataServer dataServer = new MaestroDataServer(logDir);
 
             MaestroWorkerExecutor executor;
             AbstractMaestroPeer maestroPeer;
@@ -153,7 +148,7 @@ public class Main {
                 case "sender": {
                     Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
 
-                    maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDirFile, clazz, dataServer);
+                    maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDir, clazz, dataServer);
                     executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
                     executor.start(MaestroTopics.MAESTRO_SENDER_TOPICS);
@@ -163,7 +158,7 @@ public class Main {
                 case "receiver": {
                     Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
 
-                    maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDirFile, clazz, dataServer);
+                    maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDir, clazz, dataServer);
                     executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
                     executor.start(MaestroTopics.MAESTRO_RECEIVER_TOPICS);
