@@ -27,6 +27,10 @@ public class MaestroDataServer implements Runnable {
     private File logDir;
     private int dataServerPort;
 
+    /**
+     * Constructor
+     * @param logDir log directory to serve
+     */
     public MaestroDataServer(final File logDir) {
         this.logDir = logDir;
     }
@@ -93,7 +97,7 @@ public class MaestroDataServer implements Runnable {
 
     /**
      * Gets the data server base URL. The front-end uses this to download the report files
-     * @return
+     * @return the data server base URL.
      */
     public String getServerURL() {
         AbstractConfiguration config = ConfigurationWrapper.getConfig();
