@@ -44,39 +44,15 @@ public class MaestroDataServer implements Runnable {
         dataServerPort = config.getInteger("data.server.port", DEFAULT_DS_PORT);
 
         server = new Server(dataServerPort);
-
-        ResourceHandler logResourceHandler = new ResourceHandler();
-        logResourceHandler.setStylesheet(this.getClass().getResource("jetty-dir.css").getPath());
-
-
-        // Serve the tests logs on /logs/tests
-        ContextHandler context0 = new ContextHandler();
-        context0.setContextPath(TEST_LOGS_CONTEXT);
-        context0.addAliasCheck(new ContextHandler.ApproveAliases());
-
-        context0.setBaseResource(Resource.newResource(logDir));
-        context0.setHandler(logResourceHandler);
-
-        logger.debug("Serving files from {} on /logs/tests", logDir.getPath());
-
-        ResourceHandler workerResourceHandler = new ResourceHandler();
-        workerResourceHandler.setStylesheet(this.getClass().getResource("jetty-dir.css").getPath());
-
-        // Serve the worker logs on /logs/worker
-        ContextHandler context1 = new ContextHandler();
-        context1.setContextPath(WORKER_LOGS_CONTEXT);
-        context1.addAliasCheck(new ContextHandler.ApproveAliases());
-
-        context1.setBaseResource(Resource.newResource(Constants.MAESTRO_LOG_DIR));
-        context1.setHandler(workerResourceHandler);
-        logger.debug("Serving files from {} on /logs/worker", Constants.MAESTRO_LOG_DIR);
-
-        contexts.setHandlers(new Handler[] { context0, context1 });
-
         server.setHandler(contexts);
 
         logger.debug("Starting the data server");
         server.start();
+
+        addContext("/logs/tests", logDir.getPath());
+        addContext("/logs/worker", Constants.MAESTRO_LOG_DIR);
+
+
         if (dataServerPort == 0) {
             dataServerPort = ((ServerConnector)server.getConnectors()[0]).getLocalPort();
         }
@@ -85,8 +61,14 @@ public class MaestroDataServer implements Runnable {
         logger.info("The data server is now serving test log files on {}{}", getServerURL(), TEST_LOGS_CONTEXT);
     }
 
+    /**
+     * Adds a new context to be served via data server
+     * @param contextPath the context path (ie.: /path/to/file)
+     * @param location the location to serve
+     * @throws Exception
+     */
     public void addContext(final String contextPath, final String location) throws Exception {
-        logger.info("Trying to add a new handler after start");
+        logger.debug("Serving files from location {} on context {}", contextPath, location);
 
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setStylesheet(this.getClass().getResource("jetty-dir.css").getPath());
@@ -104,6 +86,10 @@ public class MaestroDataServer implements Runnable {
         context.start();
     }
 
+    /**
+     * Removes a context from the data server
+     * @param contextPath the context path to remove
+     */
     public void removeContext(final String contextPath) {
         logger.info("Trying to add a new handler after start");
 
