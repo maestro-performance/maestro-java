@@ -12,10 +12,17 @@ Build Status: [![Build Status](https://travis-ci.org/maestro-performance/maestro
 
 Codacy Report: [![Codacy Badge](https://api.codacy.com/project/badge/Grade/ddaacf55e38140bb82aa15f02f158164)](https://www.codacy.com/app/orpiske/maestro-java?utm_source=github.com&amp;utm_medium=referral&amp;utm_content=orpiske/maestro-java&amp;utm_campaign=Badge_Grade)
 
+
+Local build:
 ```
 mvn clean install
 ```
 
+Packaging for release:
+
+```
+mvn -PDelivery clean package
+```
 
 
 Using Maestro
