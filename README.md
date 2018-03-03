@@ -128,4 +128,4 @@ The following parameters can be set for the JMS worker/client:
 | `ttl` | 5000 | Time to live. |
 | `durable` | true | Durable flag for the message |
 | `priority` | null | Message priority |
-| `appendClientNumber` | `false` | Whether to append the client number to the destination, thus creating a dedicated queue per client |
+| `limitDestinations` | `1` | Distributes the load in a fixed number of queues (<= number of connections) |
