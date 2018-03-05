@@ -19,7 +19,7 @@ public class MaestroDataServer implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MaestroDataServer.class);
 
     private static final String WORKER_LOGS_CONTEXT = "/logs/worker";
-    private static final String TEST_LOGS_CONTEXT = "/logs/test";
+    private static final String TEST_LOGS_CONTEXT = "/logs/tests";
 
     private static final int DEFAULT_DS_PORT = 0;
 
@@ -49,8 +49,8 @@ public class MaestroDataServer implements Runnable {
         logger.debug("Starting the data server");
         server.start();
 
-        addContext("/logs/tests", logDir.getPath());
-        addContext("/logs/worker", Constants.MAESTRO_LOG_DIR);
+        addContext(TEST_LOGS_CONTEXT, logDir.getPath());
+        addContext(WORKER_LOGS_CONTEXT, Constants.MAESTRO_LOG_DIR);
 
 
         if (dataServerPort == 0) {
