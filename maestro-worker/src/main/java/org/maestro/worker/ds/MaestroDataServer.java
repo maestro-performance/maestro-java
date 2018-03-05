@@ -18,9 +18,6 @@ import java.net.UnknownHostException;
 public class MaestroDataServer implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(MaestroDataServer.class);
 
-    private static final String WORKER_LOGS_CONTEXT = "/logs/worker";
-    private static final String TEST_LOGS_CONTEXT = "/logs/tests";
-
     private static final int DEFAULT_DS_PORT = 0;
 
     private final File logDir;
@@ -49,16 +46,18 @@ public class MaestroDataServer implements Runnable {
         logger.debug("Starting the data server");
         server.start();
 
-        addContext(TEST_LOGS_CONTEXT, logDir.getPath());
-        addContext(WORKER_LOGS_CONTEXT, Constants.MAESTRO_LOG_DIR);
+        addContext(Constants.TEST_LOGS_CONTEXT, logDir.getPath());
+        addContext(Constants.WORKER_LOGS_CONTEXT, Constants.MAESTRO_LOG_DIR);
 
 
         if (dataServerPort == 0) {
             dataServerPort = ((ServerConnector)server.getConnectors()[0]).getLocalPort();
         }
 
-        logger.info("The data server is now serving worker log files on {}{}", getServerURL(), WORKER_LOGS_CONTEXT);
-        logger.info("The data server is now serving test log files on {}{}", getServerURL(), TEST_LOGS_CONTEXT);
+        logger.info("The data server is now serving worker log files on {}{}", getServerURL(),
+                Constants.WORKER_LOGS_CONTEXT);
+        logger.info("The data server is now serving test log files on {}{}", getServerURL(),
+                Constants.TEST_LOGS_CONTEXT);
     }
 
     /**

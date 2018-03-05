@@ -16,6 +16,7 @@
 
 package org.maestro.reports;
 
+import org.maestro.common.Constants;
 import org.maestro.common.URLUtils;
 import org.maestro.contrib.utils.Downloader;
 import org.maestro.contrib.utils.resource.exceptions.ResourceExchangeException;
@@ -61,7 +62,7 @@ public class ReportsDownloader {
     }
 
     private void downloadReport(final String address, final String hostType, final String reportSource, final String name) throws ResourceExchangeException {
-        String baseURL = address + "/logs/test/" + reportSource + "/";
+        String baseURL = address + Constants.TEST_LOGS_CONTEXT + "/" + reportSource + "/";
         String targetURL = baseURL + name;
 
         final String destinationDir = buildDir(address, hostType);

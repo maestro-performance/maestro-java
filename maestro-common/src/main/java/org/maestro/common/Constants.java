@@ -19,49 +19,53 @@ import java.io.File;
 
 /**
  * Application constants
- *
  */
 public final class Constants {
 
-	public static final String VERSION = "1.3.0-SNAPSHOT";
+    public static final String WORKER_LOGS_CONTEXT = "/logs/worker";
 
-	public static final String BIN_NAME = "maestro-java";
+    public static final String TEST_LOGS_CONTEXT = "/logs/test";
 
-	public static final String HOME_PROPERTY = "org.maestro.home";
+    public static final String VERSION = "1.3.0-SNAPSHOT";
 
-	public static final String HOME_DIR;
+    public static final String BIN_NAME = "maestro-java";
 
-	public static final String MAESTRO_CONFIG_DIR;
+    public static final String HOME_PROPERTY = "org.maestro.home";
 
-	public static final String MAESTRO_LOG_DIR;
+    public static final String HOME_DIR;
 
-	static {
-		HOME_DIR = System.getProperty(HOME_PROPERTY);
+    public static final String MAESTRO_CONFIG_DIR;
 
-		MAESTRO_CONFIG_DIR = System.getProperty(HOME_PROPERTY) + File.separator + "config";
+    public static final String MAESTRO_LOG_DIR;
 
-		MAESTRO_LOG_DIR = System.getProperty(HOME_PROPERTY) + File.separator + "logs";
-	}
+    static {
+        HOME_DIR = System.getProperty(HOME_PROPERTY);
 
-	/**
-	 * File extension for HDR histogram files
-	 */
-	public static final String FILE_EXTENSION_HDR_HISTOGRAM = "hdr";
+        MAESTRO_CONFIG_DIR = System.getProperty(HOME_PROPERTY) + File.separator + "config";
 
-	/**
-	 * File extension for MPT and BMIC compressed rate files
-	 */
-	public static final String FILE_EXTENSION_MPT_COMPRESSED = "gz";
+        MAESTRO_LOG_DIR = System.getProperty(HOME_PROPERTY) + File.separator + "logs";
+    }
 
-	/**
-	 * File hint for inspector files
-	 */
-	public static final String FILE_HINT_INSPECTOR = "inspector";
+    /**
+     * File extension for HDR histogram files
+     */
+    public static final String FILE_EXTENSION_HDR_HISTOGRAM = "hdr";
 
-	/**
-	 * Restricted constructor
-	 */
-	private Constants() {}
+    /**
+     * File extension for MPT and BMIC compressed rate files
+     */
+    public static final String FILE_EXTENSION_MPT_COMPRESSED = "gz";
+
+    /**
+     * File hint for inspector files
+     */
+    public static final String FILE_HINT_INSPECTOR = "inspector";
+
+    /**
+     * Restricted constructor
+     */
+    private Constants() {
+    }
 
 
 }
