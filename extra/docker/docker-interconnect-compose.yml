@@ -1,0 +1,65 @@
+version: '3'
+networks:
+    maestro-net:
+      driver: bridge
+services: 
+  maestro-broker:
+    build: maestro-broker
+    networks: 
+      - maestro-net
+    ports:
+      - "18161:8161"
+      # Usually it's not needed to expose MQTT port
+      # - "18883:1883"
+  maestro-sut:
+    build: maestro-suts/qpid-dispatch
+    networks: 
+      - maestro-net
+    ports:
+      - "48161:8161"
+# This is not needed, unless you want to test the
+# broker within the container
+#      - "45672:5672"
+#      - "41616:61616"
+  maestro-receiver:
+    build:
+      context: maestro-worker/maestro-receiver
+      args:
+        - MAESTRO_WORKER_VERSION=1.2.4
+    ports:
+      - "28000:8000"
+    volumes:
+      - ${HOME}/tmp/maestro:/maestro
+    networks: 
+      - maestro-net
+    depends_on:
+      - maestro-broker
+      - maestro-sut
+  maestro-sender:
+    build:
+      context: maestro-worker/maestro-sender
+      args:
+        - MAESTRO_WORKER_VERSION=1.2.4
+    ports:
+      - "38000:8000"
+    volumes:
+      - ${HOME}/tmp/maestro:/maestro
+    networks: 
+      - maestro-net
+    depends_on:
+      - maestro-receiver
+  maestro-client:
+    build:
+      context: maestro-client
+      args:
+        - MAESTRO_WORKER_VERSION=1.2.4
+    volumes:
+      - ${HOME}/tmp/maestro:/maestro
+    networks: 
+      - maestro-net
+    ports:
+      - "8000:8000"
+    depends_on:
+      - maestro-sender
+      - maestro-receiver
+  
