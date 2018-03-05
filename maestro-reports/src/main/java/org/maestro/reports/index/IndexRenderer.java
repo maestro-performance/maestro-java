@@ -28,13 +28,13 @@ import java.util.Map;
 public class IndexRenderer extends AbstractRenderer {
     private static final Logger logger = LoggerFactory.getLogger(IndexRenderer.class);
 
-    public IndexRenderer(Map<String, Object> context) {
-        super(context);
+    public IndexRenderer() {
+        super();
     }
 
     @Override
-    public String render() throws Exception {
-        return super.render("/org/maestro/reports/index-main.html");
+    public String render(final Map<String, Object> context) throws Exception {
+        return super.render("/org/maestro/reports/index-main.html", context);
     }
 
     public void copyResources(File path) throws IOException {

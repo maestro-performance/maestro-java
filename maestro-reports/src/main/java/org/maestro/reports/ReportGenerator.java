@@ -47,6 +47,9 @@ public class ReportGenerator {
     private PlotterWrapperFactory<HdrPlotterWrapper> hdrPlotterWrapperFactory = new HdrPlotterWrapperFactory();
     private PlotterWrapperFactory<RatePlotterWrapper> ratePlotterWrapperFactory = new RatePlotterWrapperFactory();
 
+    private final IndexRenderer indexRenderer = new IndexRenderer();
+    private final NodeReportRenderer reportRenderer = new NodeReportRenderer();
+
     private final String path;
 
     public ReportGenerator(final String path) {
@@ -97,10 +100,9 @@ public class ReportGenerator {
     }
 
     private void renderReportIndex(final File baseDir, final Map<String, Object> context) {
-        IndexRenderer indexRenderer = new IndexRenderer(context);
         File outFile = new File(path, "index.html");
         try {
-            FileUtils.writeStringToFile(outFile, indexRenderer.render(), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(outFile, indexRenderer.render(context), StandardCharsets.UTF_8);
             indexRenderer.copyResources(baseDir);
         } catch (Exception e) {
             e.printStackTrace();
@@ -110,11 +112,10 @@ public class ReportGenerator {
     private void renderNodePage(final ReportDirInfo report) {
         logger.info("Processing report dir: {}", report.getReportDir());
         Map<String, Object> nodeReportContext = NodeContextBuilder.toContext(report);
-        NodeReportRenderer reportRenderer = new NodeReportRenderer(nodeReportContext);
 
         try {
             File outFile = new File(report.getReportDir(), "index.html");
-            FileUtils.writeStringToFile(outFile, reportRenderer.render(), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(outFile, reportRenderer.render(nodeReportContext), StandardCharsets.UTF_8);
             reportRenderer.copyResources(outFile.getParentFile());
         } catch (Exception e) {
             e.printStackTrace();

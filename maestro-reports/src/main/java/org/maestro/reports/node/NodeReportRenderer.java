@@ -28,14 +28,14 @@ import java.util.Map;
 public class NodeReportRenderer extends AbstractRenderer {
     private static final Logger logger = LoggerFactory.getLogger(NodeReportRenderer.class);
 
-    public NodeReportRenderer(Map<String, Object> context) {
-        super(context);
+    public NodeReportRenderer() {
+        super();
     }
 
 
     @Override
-    public String render() throws Exception {
-        return super.render("/org/maestro/reports/index-node.html");
+    public String render(final Map<String, Object> context) throws Exception {
+        return super.render("/org/maestro/reports/index-node.html", context);
     }
 
     public void copyResources(File path) throws IOException {

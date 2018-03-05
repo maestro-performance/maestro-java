@@ -31,17 +31,15 @@ import java.io.*;
 import java.nio.file.Paths;
 import java.util.Map;
 
+/**
+ * A base class for rendering reports using Jinja2
+ */
 public abstract class AbstractRenderer {
     private static final Logger logger = LoggerFactory.getLogger(AbstractRenderer.class);
 
-    private Map<String, Object> context;
+    private final Jinjava jinjava;
 
-    private Jinjava jinjava;
-
-    @Deprecated
-    public AbstractRenderer(Map<String, Object> context) {
-        this.context = context;
-
+    public AbstractRenderer() {
         JinjavaConfig config = new JinjavaConfig();
 
         jinjava = new Jinjava(config);
@@ -77,7 +75,14 @@ public abstract class AbstractRenderer {
         }
     }
 
-    protected String render(final String name) throws Exception {
+    /**
+     * Render a report
+     * @param name The resource name to be parsed
+     * @param context the Jinja context containing the variables to be used
+     * @return A String contained the parsed template
+     * @throws Exception If unable to parse the template
+     */
+    protected String render(final String name, final Map<String, Object> context) throws Exception {
         String text;
 
         text = IOUtils.toString(this.getClass().getResourceAsStream(name), Charsets.UTF_8);
@@ -85,12 +90,19 @@ public abstract class AbstractRenderer {
         return jinjava.render(text, context);
     }
 
-    protected void copyResources(File path, String resource, String outName) throws IOException {
+    /**
+     * Copy static resources
+     * @param path the path to copy to
+     * @param resource the resource name
+     * @param destinationName the destination name
+     * @throws IOException
+     */
+    protected void copyResources(final File path, final String resource, final String destinationName) throws IOException {
         InputStream inputStream = null;
         OutputStream outputStream = null;
 
         // Skip duplicate static resources
-        File outputFile = new File(path, outName);
+        File outputFile = new File(path, destinationName);
         if (outputFile.exists()) {
             return;
         }
@@ -106,5 +118,11 @@ public abstract class AbstractRenderer {
         }
     }
 
-    abstract public String render() throws Exception;
+    /**
+     * Render a report
+     * @param context the Jinja context containing the variables to be used
+     * @return A String contained the parsed template
+     * @throws Exception If unable to parse the template
+     */
+    abstract public String render(final Map<String, Object> context) throws Exception;
 }
