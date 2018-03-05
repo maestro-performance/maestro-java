@@ -68,7 +68,7 @@ public class MaestroDataServer implements Runnable {
      * @throws Exception
      */
     public void addContext(final String contextPath, final String location) throws Exception {
-        logger.debug("Serving files from location {} on context {}", contextPath, location);
+        logger.debug("Serving files from location {} on context {}", location, contextPath);
 
         ResourceHandler resourceHandler = new ResourceHandler();
         resourceHandler.setStylesheet(this.getClass().getResource("jetty-dir.css").getPath());
