@@ -18,6 +18,7 @@ package org.maestro.reports.plotter;
 
 import net.orpiske.hhp.plot.HdrData;
 import net.orpiske.hhp.plot.HdrLogProcessorWrapper;
+import net.orpiske.hhp.plot.HdrPropertyWriter;
 import net.orpiske.hhp.plot.HdrReader;
 import org.apache.commons.io.FilenameUtils;
 import org.slf4j.Logger;
@@ -61,6 +62,8 @@ public class HdrPlotterWrapper implements PlotterWrapper {
             plotter.setOutputWidth(1024);
             plotter.setOutputHeight(600);
             plotter.plot(hdrData.getPercentile(), hdrData.getValue());
+
+            HdrPropertyWriter.writeFrom(file);
 
             return true;
         }
