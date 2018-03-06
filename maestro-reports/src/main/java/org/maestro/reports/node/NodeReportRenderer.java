@@ -35,7 +35,7 @@ public class NodeReportRenderer extends AbstractRenderer {
 
     @Override
     public String render(final Map<String, Object> context) throws Exception {
-        return super.render("/org/maestro/reports/index-node.html", context);
+        return super.render("/org/maestro/reports/modern/index-node.html", context);
     }
 
     public void copyResources(File path) throws IOException {

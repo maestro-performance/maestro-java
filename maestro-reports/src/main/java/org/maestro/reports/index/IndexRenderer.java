@@ -16,12 +16,14 @@
 
 package org.maestro.reports.index;
 
+import org.apache.commons.io.FileUtils;
 import org.maestro.reports.AbstractRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.Map;
 
 
@@ -34,12 +36,19 @@ public class IndexRenderer extends AbstractRenderer {
 
     @Override
     public String render(final Map<String, Object> context) throws Exception {
-        return super.render("/org/maestro/reports/index-main.html", context);
+        return super.render("/org/maestro/reports/modern/index-main.html", context);
     }
 
     public void copyResources(File path) throws IOException {
-        super.copyResources(path, "/org/maestro/reports/sorttable.js", "sorttable.js");
         super.copyResources(path, "/org/maestro/reports/favicon.png", "favicon.png");
+
+        // Template resources
+        URL resourcesUrl = this.getClass().getResource("/org/maestro/reports/modern/resources");
+
+        File resources = new File(resourcesUrl.getPath());
+
+        FileUtils.copyDirectory(resources, new File(path, "resources"));
+
 
     }
 }
