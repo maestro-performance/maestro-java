@@ -24,7 +24,7 @@ public final class Constants {
 
     public static final String WORKER_LOGS_CONTEXT = "/logs/worker";
 
-    public static final String TEST_LOGS_CONTEXT = "/logs/test";
+    public static final String TEST_LOGS_CONTEXT = "/logs/tests";
 
     public static final String VERSION = "1.3.0-SNAPSHOT";
 
