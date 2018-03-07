@@ -43,6 +43,12 @@
             <version>2.5</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.codehaus.groovy</groupId>
+            <artifactId>groovy-all</artifactId>
+            <version>2.4.14</version>
+        </dependency>
+
         <!-- Junit (for tests only) -->
         <dependency>
             <groupId>junit</groupId>

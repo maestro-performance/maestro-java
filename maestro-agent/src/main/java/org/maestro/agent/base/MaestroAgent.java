@@ -7,12 +7,9 @@ import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.base.MaestroWorkerManager;
 import org.maestro.worker.ds.MaestroDataServer;
 
-import groovy.lang.Binding;
-import groovy.util.GroovyScriptEngine;
-import groovy.util.ResourceException;
-import groovy.util.ScriptException;
+import java.io.File;
+import java.net.URL;
 
-import java.io.IOException;
 import org.apache.log4j.Logger;
 
 //import javax.naming.Binding;
@@ -24,11 +21,13 @@ public class MaestroAgent extends MaestroWorkerManager {
     private static final String DETAILS="details";
     private static final String STATUS_OK="OK";
     private static final String STATUS_ERROR="ERROR";
-    private static final Logger log = Logger.getLogger(MaestroAgent.class);
+    private static final Logger logger = Logger.getLogger(MaestroAgent.class);
+    private GroovyHandler groovyHandler;
 
 
     public MaestroAgent(String maestroURL, String role, String host, MaestroDataServer dataServer) throws MaestroException {
         super(maestroURL, role, host, dataServer);
+        groovyHandler = new GroovyHandler();
     }
 
     public void handle(StartInspector note) {
@@ -63,13 +62,22 @@ public class MaestroAgent extends MaestroWorkerManager {
     @Override
     public void handle(FlushRequest note) {
         super.handle(note);
-        log.debug("XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX");
 
-        try {
-            executeScript("../groovy", "Hello.groovy");
-        } catch (Exception e) {
-            e.printStackTrace();
+        URL uri = this.getClass().getResource("/org/maestro/agent/ext/requests/flush/");
+        if (uri != null) {
+            String path = uri.getPath();
+            File file = new File(path);
+            try {
+                groovyHandler.setInitialPath(file);
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
+        else{
+            logger.error("Unable to load files for extension points.");
+        }
+
+
     }
 
     @Override
@@ -108,29 +116,4 @@ public class MaestroAgent extends MaestroWorkerManager {
         super.handle(note);
     }
 
-    /**
-     *
-     * @param path
-     * @param script
-     * @throws IOException
-     * @throws ResourceException
-     * @throws ScriptException
-     */
-    private void executeScript(String path, String script) throws IOException, ResourceException, ScriptException {
-
-        Binding binding = new Binding();
-        GroovyScriptEngine engine = new GroovyScriptEngine(path);
-
-        Object ret = engine.run(script, binding);
-
-        if(STATUS_OK.equals(ret.toString())){
-            if(binding.hasVariable(DETAILS)){
-                Object details = binding.getVariable(DETAILS);
-                System.out.println(details);
-            }
-        }else{
-            log.warn("Something wrong in groovy");
-        }
-
-    }
 }
