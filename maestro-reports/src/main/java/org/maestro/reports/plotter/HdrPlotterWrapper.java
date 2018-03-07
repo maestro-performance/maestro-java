@@ -63,7 +63,9 @@ public class HdrPlotterWrapper implements PlotterWrapper {
             plotter.setOutputHeight(600);
             plotter.plot(hdrData.getPercentile(), hdrData.getValue());
 
-            HdrPropertyWriter.writeFrom(file);
+            HdrPropertyWriter propertyWriter = new HdrPropertyWriter();
+
+            propertyWriter.postProcess(file);
 
             return true;
         }
