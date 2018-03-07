@@ -53,8 +53,8 @@ public class BmicPlotterWrapper implements PlotterWrapper {
                 logger.debug("Adding date record for plotting: {}", d);
             }
 
-            plotter.setOutputWidth(1024);
-            plotter.setOutputHeight(600);
+            plotter.setOutputWidth(1280);
+            plotter.setOutputHeight(1024);
             plotter.plot(bmicData);
 
             return true;

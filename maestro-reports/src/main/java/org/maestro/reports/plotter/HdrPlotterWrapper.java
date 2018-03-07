@@ -59,8 +59,9 @@ public class HdrPlotterWrapper implements PlotterWrapper {
             // HdrPlotterWrapper
             net.orpiske.hhp.plot.HdrPlotter plotter = new net.orpiske.hhp.plot.HdrPlotter(FilenameUtils.removeExtension(file.getPath()));
 
-            plotter.setOutputWidth(1024);
-            plotter.setOutputHeight(600);
+            plotter.getChartProperties().setTitle("");
+            plotter.setOutputWidth(1280);
+            plotter.setOutputHeight(1024);
             plotter.plot(hdrData.getPercentile(), hdrData.getValue());
 
             HdrPropertyWriter propertyWriter = new HdrPropertyWriter();

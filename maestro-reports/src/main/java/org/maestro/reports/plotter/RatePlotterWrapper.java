@@ -73,8 +73,9 @@ public class RatePlotterWrapper implements PlotterWrapper {
                 }
             }
 
-            plotter.setOutputWidth(1024);
-            plotter.setOutputHeight(600);
+            plotter.getChartProperties().setTitle("");
+            plotter.setOutputWidth(1280);
+            plotter.setOutputHeight(1024);
             plotter.plot(ratePeriods, rateData.getRateValues());
 
             RatePropertyWriter.write(rateData, file.getParentFile());
