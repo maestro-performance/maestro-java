@@ -45,6 +45,7 @@ public class NodeContextBuilder {
         loadProperties(new File(reportDirInfo.getReportDir(),"test.properties"), context);
         loadProperties(new File(reportDirInfo.getReportDir(),"broker.properties"), context);
         loadProperties(new File(reportDirInfo.getReportDir(),"rate.properties"), context);
+        loadProperties(new File(reportDirInfo.getReportDir(),"latency.properties"), context);
 
         return context;
     }
