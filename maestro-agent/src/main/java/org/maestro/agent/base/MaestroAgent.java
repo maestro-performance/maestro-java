@@ -69,6 +69,7 @@ public class MaestroAgent extends MaestroWorkerManager {
             File file = new File(path);
             try {
                 groovyHandler.setInitialPath(file);
+                groovyHandler.runCallbacks();
             } catch (Exception e) {
                 e.printStackTrace();
             }
