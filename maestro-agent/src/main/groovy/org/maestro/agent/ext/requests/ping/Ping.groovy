@@ -1,4 +1,4 @@
-package org.maestro.agent.ext.requests.flush
+package org.maestro.agent.ext.requests.ping
 
 import org.maestro.client.exchange.MaestroTopics
 import org.maestro.client.notes.OkResponse
