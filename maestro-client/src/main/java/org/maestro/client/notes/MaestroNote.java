@@ -21,7 +21,7 @@ import org.msgpack.core.MessagePack;
 
 import java.io.IOException;
 
-public class MaestroNote {
+public abstract class MaestroNote {
     private MaestroNoteType noteType;
     private MaestroCommand maestroCommand;
 
