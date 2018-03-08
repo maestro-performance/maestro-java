@@ -16,58 +16,35 @@
 
 package org.maestro.client.notes;
 
-import org.msgpack.core.MessageBufferPacker;
-import org.msgpack.core.MessagePack;
-
 import java.io.IOException;
 
-public abstract class MaestroNote {
-    private MaestroNoteType noteType;
-    private MaestroCommand maestroCommand;
+/**
+ * A basic interface for Maestro Notes
+ */
+public interface MaestroNote {
 
-    public MaestroNote(MaestroNoteType type, MaestroCommand command) {
-        setNoteType(type);
-        setMaestroCommand(command);
-    }
+    /**
+     * Gets the note type
+     * @return the note type
+     */
+    MaestroNoteType getNoteType();
 
-    public MaestroNoteType getNoteType() {
-        return noteType;
-    }
+    /**
+     * Gets the Maestro command for the note
+     * @return the maestro command as an instace of MaestroCommand
+     */
+    MaestroCommand getMaestroCommand();
 
-    protected void setNoteType(MaestroNoteType noteType) {
-        this.noteType = noteType;
-    }
+    /**
+     * Serialize the note
+     * @return The serialized note
+     * @throws IOException if unable to serialize the note
+     */
+    byte[] serialize() throws IOException;
 
-    public MaestroCommand getMaestroCommand() {
-        return maestroCommand;
-    }
-
-    protected void setMaestroCommand(MaestroCommand maestroCommand) {
-        this.maestroCommand = maestroCommand;
-    }
-
-    protected MessageBufferPacker pack() throws IOException {
-        MessageBufferPacker packer = MessagePack.newDefaultBufferPacker();
-
-        packer.packShort(noteType.getValue());
-        packer.packLong(maestroCommand.getValue());
-
-        return packer;
-    }
-
-    final public byte[] serialize() throws IOException {
-        MessageBufferPacker packer = pack();
-
-        packer.close();
-
-        return packer.toByteArray();
-    }
-
-    @Override
-    public String toString() {
-        return "MaestroNote{" +
-                "noteType=" + noteType +
-                ", maestroCommand=" + maestroCommand +
-                '}';
-    }
+    /**
+     * Converts the note to string for debugging purposes
+     * @return
+     */
+    String toString();
 }

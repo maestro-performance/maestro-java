@@ -21,7 +21,7 @@ import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
-public class MaestroResponse extends MaestroNote {
+public class MaestroResponse extends AbtractMaestroNote {
     private String id = "";
     private String name = "";
 
