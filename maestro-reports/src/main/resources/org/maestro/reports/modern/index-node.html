@@ -32,55 +32,55 @@
 
 <body>
 
-<nav class="navbar navbar-default navbar-pf" role="navigation">
-    <div class="navbar-header">
-        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
-            <span class="sr-only">Toggle navigation</span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-            <span class="icon-bar"></span>
-        </button>
-        <a class="navbar-brand" href="/">
-            <img src="resources/img/brand.svg" alt="Maestro - Messaging Performance Reports" />
-        </a>
-    </div>
-    <div class="collapse navbar-collapse navbar-collapse-1">
-        <ul class="nav navbar-nav navbar-primary">
-            <li>
-                <a href="#0">Test Run Index</a>
-            </li>
-            <li>
-                <a href="#test-summary">Test Summary</a>
-            </li>
-            {% if nodeType == "receiver" %}
-            <li>
-                <a href="#lat-all-summary">Latency Summary</a>
-            </li>
-            <li>
-                <a href="#lat-all-range">Latency: Full Data Set</a>
-            </li>
-            <li>
-                <a href="#90th-per">Latency: 90ᵗʰ percentile</a>
-            </li>
-            <li>
-                <a href="#99th-per">Latency: 99ᵗʰ percentile</a>
-            </li>
-            {% endif %}
+    <nav class="navbar navbar-default navbar-pf" role="navigation">
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="http://github.com/maestro-performance/maestro-java">
+                <img src="resources/img/brand.svg" alt="Maestro - Messaging Performance Reports" />
+            </a>
+        </div>
+        <div class="collapse navbar-collapse navbar-collapse-1">
+            <ul class="nav navbar-nav navbar-primary">
+                <li>
+                    <a href="../../../../index.html">Test Run Index</a>
+                </li>
+                <li>
+                    <a href="#test-summary">Test Summary</a>
+                </li>
+                {% if nodeType == "receiver" %}
+                <li>
+                    <a href="#lat-all-summary">Latency Summary</a>
+                </li>
+                <li>
+                    <a href="#lat-all-range">Percentile Distribution</a>
+                </li>
+                <li>
+                    <a href="#90th-per">90ᵗʰ Percentile Distribution</a>
+                </li>
+                <li>
+                    <a href="#99th-per">99ᵗʰ Percentile Distribution</a>
+                </li>
+                {% endif %}
 
-            {% if nodeType == "receiver" or nodeType == "sender" %}
-            <li>
-                <a href="#rate">Rate</a>
-            </li>
-            {% endif %}
+                {% if nodeType == "receiver" or nodeType == "sender" %}
+                <li>
+                    <a href="#rate">Rate</a>
+                </li>
+                {% endif %}
 
-            {% if nodeType == "inspector" %}
-            <li>
-                <a href="#queue-size">Inspector</a>
-            </li>
-            {% endif %}
-        </ul>
-    </div>
-</nav>
+                {% if nodeType == "inspector" %}
+                <li>
+                    <a href="#queue-size">Inspector</a>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+    </nav>
 
     <main>
         <header>
@@ -88,24 +88,9 @@
         </header>
 
         <div class="col-sm-12">
-            <h2 id="#test-summary">Test Summary</h2>
-
-            <div class="row toolbar-pf-results">
-                <div class="col-sm-9">
-                    <div class="hidden">
-                        <h5>0 Results</h5>
-                        <p>Active filters:</p>
-                        <ul class="list-inline"></ul>
-                        <p><a href="#">Clear All Filters</a></p>
-                    </div>
-                </div>
-                <div class="col-sm-3 table-view-pf-select-results">
-                    <strong>0</strong> of <strong>0</strong> selected
-                </div>
-            </div>
-
             <div class="col-md-8 col-lg-12">
                 <div class="row">
+                    <h2 id="#test-summary">Test Summary</h2>
                     <div>
                         <table class="table table-striped table-bordered table-hover" id="summary-table">
                             <thead>
@@ -165,7 +150,8 @@
 
                 {% if nodeType == "receiver" %}
                 <div class="row">
-                    <h2 id="lat-all-summary">Latency: summary</h2>
+                    <h2 id="lat-main">Latency</h2>
+                    <h3 id="lat-all-summary">Summary</h3>
                     <table class="table table-striped table-bordered table-hover" id="latency-summary-table">
                         <thead>
                             <tr>
@@ -176,49 +162,49 @@
                         <tbody>
                             <tr>
                                 <td>Total Count </td>
-                                <td>{{ latencyTotalCount | round(0) }}</td>
+                                <td>{{ latencyTotalCount | round(0) }} messages</td>
                             </tr>
                             <tr>
                                 <td>Max Latency</td>
-                                <td>{{ latencyMaxValue | round(6) }}</td>
+                                <td>{{ latencyMaxValue | round(4) }} μs</td>
                             </tr>
                             <tr>
                                 <td>Mean Latency</td>
-                                <td>{{ latencyMean | round(6) }}</td>
+                                <td>{{ latencyMean | round(4) }} μs</td>
                             </tr>
                             <tr>
                                 <td>Standard Deviation</td>
-                                <td>{{ latencyStdDeviation | round(6) }}</td>
+                                <td>{{ latencyStdDeviation | round(4) }}</td>
                             </tr>
                             <tr>
-                                <td>99.99th Percentile</td>
-                                <td>{{ latency9999th | round(6) }}</td>
+                                <td>99.99ᵗʰ Percentile</td>
+                                <td>{{ latency9999th | round(4) }} μs</td>
                             </tr>
                             <tr>
-                                <td>99.9th Percentile</td>
-                                <td>{{ latency999th | round(6) }}</td>
+                                <td>99.9ᵗʰ Percentile</td>
+                                <td>{{ latency999th | round(4) }} μs</td>
                             </tr>
                             <tr>
-                                <td>99th Percentile</td>
-                                <td>{{ latency99th | round(6) }}</td>
+                                <td>99ᵗʰ Percentile</td>
+                                <td>{{ latency99th | round(4) }} μs</td>
                             </tr>
                             <tr>
-                                <td>95th Percentile</td>
-                                <td>{{ latency95th | round(6) }}</td>
+                                <td>95ᵗʰ Percentile</td>
+                                <td>{{ latency95th | round(4) }} μs</td>
                             </tr>
                             <tr>
-                                <td>90th Percentile</td>
-                                <td>{{ latency90th | round(6) }}</td>
+                                <td>90ᵗʰ Percentile</td>
+                                <td>{{ latency90th | round(4) }} μs</td>
                             </tr>
                             <tr>
-                                <td>50th Percentile</td>
-                                <td>{{ latency50th | round(6) }}</td>
+                                <td>50ᵗʰ Percentile</td>
+                                <td>{{ latency50th | round(4) }} μs</td>
                             </tr>
                         </tbody>
                     </table>
 
                     <div>
-                        <h2 id="lat-all-range">Latency: full data set</h2>
+                        <h3 id="lat-all-range">Percentile Distribution</h3>
 
 
                         {% set rcvLatFilename = nodeType + "d-latency_all.png" %}
@@ -237,7 +223,7 @@
 
                     </div>
                     <div>
-                        <h2 id="90th-per">Latency: 90ᵗʰ percentile</h2>
+                        <h3 id="90th-per">90ᵗʰ Percentile Distribution</h3>
 
                         {% set rcvLatFilename = nodeType + "d-latency_90.png" %}
                         {% set rcvLatFilenameExists = rcvLatFilename|fe(reportDirInfo.reportDir) %}
@@ -255,7 +241,7 @@
 
                     </div>
                     <div>
-                        <h2 id="99th-per">Latency: 99ᵗʰ percentile</h2>
+                        <h3 id="99th-per">99ᵗʰ Percentile Distribution</h3>
                         {% set rcvLatFilename = nodeType + "d-latency_99.png" %}
                         {% set rcvLatFilenameExists = rcvLatFilename|fe(reportDirInfo.reportDir) %}
 
@@ -283,6 +269,7 @@
 
                         {% if rcvRateFilenameExists %}
 
+                        <h3 id="rate-summary">Summary</h3>
                         <table class="table table-striped table-bordered table-hover" id="latency-table">
                             <thead>
                                 <tr>
@@ -323,6 +310,7 @@
                             </tbody>
                         </table>
 
+                        <h3 id="rate-distribution">Rate Distribution Over Time</h3>
                         <img class="img-responsive" src="{{rcvRateFilename}}" />
                     </div>
 
@@ -376,25 +364,6 @@
     </main>
 
     <script type="text/javascript" src="resources/components/jquery/jquery.min.js"></script>
-    <script type="text/javascript" src="resources/components/jquery/jquery.dataTables.js"></script>
     <script type="text/javascript" src="resources/js/patternfly.min.js"></script>
-    <script type="text/javascript">
-                    $(function() {
-                        $('table').DataTable({
-                            pfConfig: {
-                                emptyStateSelector: "#emptyState",
-                                filterCaseInsensitive: true,
-                                filterCols: [
-                                    null,
-                                    {
-                                        default: true,
-                                        optionSelector: "#filter",
-                                        placeholder: "Filter By Software Under Test..."
-                                    }
-                                ],
-                            }
-                        });
-                    });
-    </script>
 </body>
 </html>
