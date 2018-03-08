@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.maestro.client.notes;
+package org.maestro.common.client.notes;
 
 import java.io.IOException;
 

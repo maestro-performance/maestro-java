@@ -1,4 +1,4 @@
-package org.maestro.client.notes;
+package org.maestro.common.client.notes;
 
 /**
  * Options available for the GetRequest and GetResponse commands

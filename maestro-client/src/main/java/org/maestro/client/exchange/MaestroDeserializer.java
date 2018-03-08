@@ -17,6 +17,9 @@
 package org.maestro.client.exchange;
 
 import org.maestro.client.exceptions.MalformedNoteException;
+import org.maestro.common.client.notes.MaestroCommand;
+import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.MaestroNoteType;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessageUnpacker;
 import org.maestro.client.notes.*;

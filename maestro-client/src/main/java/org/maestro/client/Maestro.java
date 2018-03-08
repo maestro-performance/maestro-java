@@ -17,6 +17,8 @@
 package org.maestro.client;
 
 import org.maestro.common.client.MaestroRequester;
+import org.maestro.common.client.notes.GetOption;
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.client.exchange.MaestroClient;

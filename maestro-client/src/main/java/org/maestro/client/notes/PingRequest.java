@@ -16,6 +16,7 @@
 
 package org.maestro.client.notes;
 
+import org.maestro.common.client.notes.MaestroCommand;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 

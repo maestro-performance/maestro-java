@@ -1,9 +1,9 @@
 package org.maestro.worker.base;
 
 import org.maestro.client.exchange.AbstractMaestroPeer;
-import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.notes.*;
 import org.maestro.common.URLQuery;
+import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;

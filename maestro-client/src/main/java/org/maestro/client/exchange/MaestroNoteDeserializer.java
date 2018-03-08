@@ -18,7 +18,7 @@
 package org.maestro.client.exchange;
 
 import org.maestro.client.exceptions.MalformedNoteException;
-import org.maestro.client.notes.MaestroNote;
+import org.maestro.common.client.notes.MaestroNote;
 
 import java.io.IOException;
 

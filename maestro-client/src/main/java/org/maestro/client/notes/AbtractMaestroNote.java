@@ -1,11 +1,14 @@
 package org.maestro.client.notes;
 
+import org.maestro.common.client.notes.MaestroCommand;
+import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.MaestroNoteType;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
 
 import java.io.IOException;
 
-class AbtractMaestroNote implements MaestroNote {
+abstract class AbtractMaestroNote implements MaestroNote {
     private MaestroNoteType noteType;
     private MaestroCommand maestroCommand;
 

@@ -16,6 +16,8 @@
 
 package org.maestro.client.notes;
 
+import org.maestro.common.client.notes.MaestroCommand;
+
 public class StopReceiver extends MaestroRequest {
     public StopReceiver() {
         super(MaestroCommand.MAESTRO_NOTE_STOP_RECEIVER);

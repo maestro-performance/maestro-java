@@ -29,7 +29,7 @@
 
 import org.maestro.client.Maestro
 import org.maestro.client.exchange.MaestroNoteProcessor
-import org.maestro.client.notes.MaestroNote
+import org.maestro.common.client.notes.MaestroNote
 import org.maestro.client.notes.PingResponse
 import org.maestro.client.notes.TestFailedNotification
 import org.maestro.client.notes.TestSuccessfulNotification

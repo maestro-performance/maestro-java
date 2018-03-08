@@ -28,7 +28,7 @@ package utils.commands
 @Grab(group='org.maestro', module='maestro-client', version='1.3.0-SNAPSHOT')
 
 import org.maestro.client.Maestro
-import org.maestro.client.notes.MaestroNote
+import org.maestro.common.client.notes.MaestroNote
 
 /**
  * This sample script shows how to use the Maestro client API to send a flush request to

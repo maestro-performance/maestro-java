@@ -20,7 +20,7 @@ import org.maestro.common.URLUtils;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.client.exceptions.MalformedNoteException;
-import org.maestro.client.notes.MaestroNote;
+import org.maestro.common.client.notes.MaestroNote;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;

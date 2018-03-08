@@ -3,6 +3,7 @@ package org.maestro.tests;
 import org.maestro.client.notes.*;
 import org.maestro.common.NodeUtils;
 import org.maestro.client.exchange.MaestroNoteProcessor;
+import org.maestro.common.client.notes.GetOption;
 import org.maestro.reports.ReportsDownloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

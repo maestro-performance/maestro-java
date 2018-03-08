@@ -16,6 +16,8 @@
 
 package org.maestro.client.notes;
 
+import org.maestro.common.client.notes.MaestroCommand;
+
 public class InternalError extends MaestroResponse {
     public InternalError() {
         super(MaestroCommand.MAESTRO_NOTE_INTERNAL_ERROR);

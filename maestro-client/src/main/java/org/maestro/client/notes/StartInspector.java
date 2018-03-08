@@ -16,6 +16,8 @@
 
 package org.maestro.client.notes;
 
+import org.maestro.common.client.notes.MaestroCommand;
+
 public class StartInspector extends MaestroRequest {
     public StartInspector() {
         super(MaestroCommand.MAESTRO_NOTE_START_INSPECTOR);

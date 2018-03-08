@@ -4,6 +4,7 @@ package org.maestro.exporter.main;
 import io.prometheus.client.Counter;
 import io.prometheus.client.exporter.HTTPServer;
 import org.maestro.client.notes.*;
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.exporter.collectors.ConnectionCount;

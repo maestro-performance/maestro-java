@@ -17,6 +17,7 @@
 package org.maestro.client.exchange;
 
 import org.maestro.client.notes.*;
+import org.maestro.common.client.notes.MaestroNote;
 
 import java.util.List;
 

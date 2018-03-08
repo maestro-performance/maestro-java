@@ -16,6 +16,8 @@
 
 package org.maestro.client.notes;
 
+import org.maestro.common.client.notes.MaestroCommand;
+
 public class OkResponse extends MaestroResponse {
     public OkResponse() {
         super(MaestroCommand.MAESTRO_NOTE_OK);

@@ -19,9 +19,9 @@ package org.maestro.test.scripts.support;
 import net.orpiske.jms.test.annotations.Provider;
 import org.maestro.common.LogConfigurator;
 import org.maestro.client.Maestro;
-import org.maestro.client.notes.MaestroCommand;
-import org.maestro.client.notes.MaestroNote;
-import org.maestro.client.notes.MaestroNoteType;
+import org.maestro.common.client.notes.MaestroCommand;
+import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.MaestroNoteType;
 
 import net.orpiske.jms.provider.activemq.ActiveMqProvider;
 

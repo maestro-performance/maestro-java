@@ -17,7 +17,7 @@ package org.maestro.cli.main.actions;
 
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.client.Maestro;
-import org.maestro.client.notes.MaestroNote;
+import org.maestro.common.client.notes.MaestroNote;
 import org.apache.commons.cli.*;
 
 import java.util.List;
