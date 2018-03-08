@@ -60,6 +60,7 @@ public class HdrPlotterWrapper implements PlotterWrapper {
             net.orpiske.hhp.plot.HdrPlotter plotter = new net.orpiske.hhp.plot.HdrPlotter(FilenameUtils.removeExtension(file.getPath()));
 
             plotter.getChartProperties().setTitle("");
+            plotter.getChartProperties().setSeriesName("Percentile");
             plotter.setOutputWidth(1280);
             plotter.setOutputHeight(1024);
             plotter.plot(hdrData.getPercentile(), hdrData.getValue());
