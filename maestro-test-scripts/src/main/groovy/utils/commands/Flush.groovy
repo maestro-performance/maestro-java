@@ -63,7 +63,7 @@ List<MaestroNote> replies = maestro.collect(1000, 10)
  */
 println "Processing " + replies.size() + " replies"
 replies.each { MaestroNote note ->
-    println "Available responses on the broker: " + note
+    println "Available responses on the broker: " + note.toString()
 }
 
 /**

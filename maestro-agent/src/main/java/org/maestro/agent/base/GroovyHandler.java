@@ -4,6 +4,7 @@ import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.maestro.common.agent.AgentHandler;
+import org.maestro.common.client.MaestroClient;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.contrib.groovy.GroovyCallbackWalker;
 import org.maestro.contrib.groovy.GroovyClasspathHelper;
@@ -23,6 +24,11 @@ public class GroovyHandler implements AgentHandler {
 
     private Map<String, Object> context;
     private List<File> fileList;
+    private MaestroClient client;
+
+    public GroovyHandler(MaestroClient client) {
+        this.client = client;
+    }
 
     private GroovyObject getObject(final File file) {
         GroovyClasspathHelper classpathHelper = GroovyClasspathHelper.getInstance();
@@ -62,6 +68,7 @@ public class GroovyHandler implements AgentHandler {
     private void runCallback(final File file, String callbackName) {
         GroovyObject groovyObject = getObject(file);
 
+        groovyObject.invokeMethod("setMaestroClient", this.client);
         groovyObject.invokeMethod(callbackName, context);
     }
 
@@ -77,10 +84,5 @@ public class GroovyHandler implements AgentHandler {
         logger.debug("Processing {}", initialPath.getAbsolutePath());
 
         fileList = walker.load(initialPath);
-    }
-
-    @Override
-    public Object handle(Object input, Object[] args) {
-        return null;
     }
 }

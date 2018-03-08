@@ -1,7 +1,7 @@
 package org.maestro.agent.base;
 
-import org.maestro.client.exceptions.MalformedNoteException;
 import org.maestro.client.notes.*;
+import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.base.MaestroWorkerManager;
@@ -22,7 +22,7 @@ public class MaestroAgent extends MaestroWorkerManager {
 
     public MaestroAgent(String maestroURL, String role, String host, MaestroDataServer dataServer) throws MaestroException {
         super(maestroURL, role, host, dataServer);
-        groovyHandler = new GroovyHandler();
+        groovyHandler = new GroovyHandler(super.getClient());
     }
 
     public void handle(StartInspector note) {
