@@ -1,10 +1,10 @@
 package org.maestro.client;
 
+import org.maestro.client.exchange.MaestroMqttClient;
 import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
 import org.maestro.common.exceptions.MaestroException;
-import org.maestro.client.exchange.MaestroClient;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
@@ -13,7 +13,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
-public class MaestroReceiverClient extends MaestroClient implements MaestroReceiver {
+public class MaestroReceiverClient extends MaestroMqttClient implements MaestroReceiver {
     private static final Logger logger = LoggerFactory.getLogger(MaestroReceiverClient.class);
 
     private final EpochMicroClock epochMicroClock;

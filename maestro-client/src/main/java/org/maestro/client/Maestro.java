@@ -16,12 +16,13 @@
 
 package org.maestro.client;
 
+import org.maestro.client.exchange.MaestroMqttClient;
 import org.maestro.common.client.MaestroRequester;
 import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
-import org.maestro.client.exchange.MaestroClient;
+import org.maestro.common.client.MaestroClient;
 import org.maestro.client.exchange.MaestroCollectorExecutor;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.notes.*;
@@ -46,7 +47,7 @@ public final class Maestro implements MaestroRequester {
     public Maestro(final String url) throws MaestroException {
         collectorExecutor = new MaestroCollectorExecutor(url);
 
-        maestroClient = new MaestroClient(url);
+        maestroClient = new MaestroMqttClient(url);
         maestroClient.connect();
 
         collectorThread = new Thread(collectorExecutor);

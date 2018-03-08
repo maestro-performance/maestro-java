@@ -11,7 +11,7 @@ import org.maestro.common.test.TestProperties;
 import org.maestro.common.worker.*;
 import org.maestro.client.MaestroReceiverClient;
 import org.maestro.client.exchange.MaestroDeserializer;
-import org.maestro.client.exceptions.MalformedNoteException;
+import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.worker.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

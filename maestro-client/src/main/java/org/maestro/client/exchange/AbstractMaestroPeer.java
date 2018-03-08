@@ -2,7 +2,7 @@ package org.maestro.client.exchange;
 
 import org.maestro.common.URLUtils;
 import org.maestro.common.exceptions.MaestroConnectionException;
-import org.maestro.client.exceptions.MalformedNoteException;
+import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.MaestroNote;
 import org.eclipse.paho.client.mqttv3.*;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;

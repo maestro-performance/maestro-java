@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.maestro.client.exceptions;
+package org.maestro.common.client.exceptions;
 
 import org.maestro.common.exceptions.MaestroException;
 

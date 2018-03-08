@@ -1,40 +1,22 @@
-/*
- *  Copyright 2017 Otavio R. Piske <angusyoung@gmail.com>
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
-
 package org.maestro.client.exchange;
 
-import org.maestro.common.URLUtils;
-import org.maestro.common.exceptions.MaestroConnectionException;
-import org.maestro.common.exceptions.MaestroException;
-import org.maestro.client.exceptions.MalformedNoteException;
-import org.maestro.common.client.notes.MaestroNote;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.maestro.common.client.exceptions.MalformedNoteException;
+import org.maestro.common.URLUtils;
+import org.maestro.common.client.MaestroClient;
+import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.exceptions.MaestroConnectionException;
+import org.maestro.common.exceptions.MaestroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.UUID;
 
-/**
- * A generic Maestro client that can be used for publishing or receiving messages (usually for publishing)
- */
-public class MaestroClient {
+public class MaestroMqttClient implements MaestroClient {
     private static final Logger logger = LoggerFactory.getLogger(MaestroClient.class);
 
     private MqttClient mqttClient;
@@ -44,7 +26,7 @@ public class MaestroClient {
      * @param url Maestro broker URL
      * @throws MaestroException if unable to create the client
      */
-    public MaestroClient(final String url) throws MaestroException {
+    public MaestroMqttClient(final String url) throws MaestroException {
         String adjustedUrl = URLUtils.sanitizeURL(url);
 
         UUID uuid = UUID.randomUUID();
@@ -136,6 +118,4 @@ public class MaestroClient {
     public void publish(final String topic, final MaestroNote note) throws MalformedNoteException, MaestroConnectionException {
         publish(topic, note, 0, false);
     }
-
-
 }
