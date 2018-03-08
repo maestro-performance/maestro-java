@@ -212,6 +212,7 @@
 
                         {% if rcvLatFilenameExists %}
                         <img class="img-responsive" src="{{rcvLatFilename}}" />
+
                         {% else %}
                         <div class="alert alert-danger">
                             <span class="pficon pficon-error-circle-o"></span>
@@ -256,6 +257,20 @@
                         </div>
                         {% endif %}
                     </div>
+
+                    <div>
+                        {% set rcvSourceLatFilename = nodeType + "d-latency.csv" %}
+                        {% set rcvSourceLatFilenameExists = rcvSourceLatFilename|fe(reportDirInfo.reportDir) %}
+                        {% if rcvSourceLatFilenameExists %}
+
+                        <p>
+                            You can <strong>download</strong> the source files for these images here:<br>
+                            <a href="./receiverd-latency.csv" class="btn btn-default" role="button">Latency CSV</a>
+                            <a href="./receiverd-latency.hdr" class="btn btn-default" role="button">HDR Histogram</a>
+                        </p>
+
+                        {% endif %}
+                    </div>
                 </div>
                 {% endif %}
 
@@ -264,10 +279,10 @@
                 <div class="row">
                     <div>
                         <h2 id="rate">Rate</h2>
-                        {% set rcvRateFilename = nodeType + "d-rate_rate.png" %}
-                        {% set rcvRateFilenameExists = rcvRateFilename|fe(reportDirInfo.reportDir) %}
+                        {% set rateFilename = nodeType + "d-rate_rate.png" %}
+                        {% set rateFilenameExists = rateFilename|fe(reportDirInfo.reportDir) %}
 
-                        {% if rcvRateFilenameExists %}
+                        {% if rateFilenameExists %}
 
                         <h3 id="rate-summary">Summary</h3>
                         <table class="table table-striped table-bordered table-hover" id="latency-table">
@@ -311,16 +326,28 @@
                         </table>
 
                         <h3 id="rate-distribution">Distribution Over Time</h3>
-                        <img class="img-responsive" src="{{rcvRateFilename}}" />
+                        <img class="img-responsive" src="{{rateFilename}}" />
+                        {% else %}
+                        <div class="alert alert-danger">
+                            <span class="pficon pficon-error-circle-o"></span>
+                            <strong>Error:</strong> the plotted report file for this connection is missing. This is
+                            likely caused due to an error on the load generator backend.
+                        </div>
+                        {% endif %}
                     </div>
 
-                    {% else %}
-                    <div class="alert alert-danger">
-                        <span class="pficon pficon-error-circle-o"></span>
-                        <strong>Error:</strong> the plotted report file for this connection is missing. This is
-                        likely caused due to an error on the load generator backend.
+                    <div>
+                        {% set sourceRateFilename = nodeType + "d-rate.csv.gz" %}
+                        {% set sourceRateFilenameExists = sourceRateFilename|fe(reportDirInfo.reportDir) %}
+                        {% if sourceRateFilenameExists %}
+
+                        <p>
+                            You can <strong>download</strong> the source files for these images here:<br>
+                            <a href="./{{ sourceRateFilename }}" class="btn btn-default" role="button">Compressed Rate CSV</a>
+                        </p>
+
+                        {% endif %}
                     </div>
-                    {% endif %}
                 </div>
                 {% endif %}
 
