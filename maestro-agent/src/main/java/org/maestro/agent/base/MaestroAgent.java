@@ -16,11 +16,6 @@ import org.apache.log4j.Logger;
 
 public class MaestroAgent extends MaestroWorkerManager {
 
-
-    private static final String HOUSE="house";
-    private static final String DETAILS="details";
-    private static final String STATUS_OK="OK";
-    private static final String STATUS_ERROR="ERROR";
     private static final Logger logger = Logger.getLogger(MaestroAgent.class);
     private GroovyHandler groovyHandler;
 
