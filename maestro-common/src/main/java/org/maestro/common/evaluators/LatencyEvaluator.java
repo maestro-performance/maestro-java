@@ -17,11 +17,14 @@
 package org.maestro.common.evaluators;
 
 import org.HdrHistogram.Histogram;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A evaluator that checks if the latency is greater than a certain threshold
  */
 public class LatencyEvaluator implements Evaluator<Histogram> {
+    private static final Logger logger = LoggerFactory.getLogger(LatencyEvaluator.class);
     private double maxValue;
     private boolean conditionStatus = true;
 
@@ -36,6 +39,10 @@ public class LatencyEvaluator implements Evaluator<Histogram> {
 
     @Override
     public synchronized void record(Histogram histogram) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Checking the current latency: {} x {}", histogram.getMaxValue(), this.maxValue);
+        }
+
         if (histogram.getMaxValue() > this.maxValue) {
             this.conditionStatus = false;
         }

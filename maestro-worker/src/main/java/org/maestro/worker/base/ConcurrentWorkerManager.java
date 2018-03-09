@@ -1,6 +1,8 @@
 package org.maestro.worker.base;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.notes.*;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.*;
@@ -20,6 +22,7 @@ import static org.maestro.worker.base.WorkerStateInfoUtil.isCleanExit;
 public class ConcurrentWorkerManager extends MaestroWorkerManager {
     private static final Logger logger = LoggerFactory.getLogger(ConcurrentWorkerManager.class);
     private static final long TIMEOUT_STOP_WORKER_MILLIS = 1_000;
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
     private final WorkerContainer container;
     private final Class<MaestroWorker> workerClass;
@@ -56,10 +59,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
 
         final File testLogDir = WorkerLogUtils.findTestLogDir(logDir);
 
-        Double givenLatency = super.getWorkerOptions().getFclAsDouble();
-        if (givenLatency != null) {
-            this.latencyEvaluator = new LatencyEvaluator(givenLatency);
-        }
+        setupLatencyEvaluator();
 
         try {
             super.writeTestProperties(testLogDir);
@@ -72,13 +72,24 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
             if (workers.isEmpty()) {
                 logger.warn("No workers has been started!");
             } else {
-                logger.debug("Creating the writer threads");
-                WorkerLatencyWriter latencyWriter = new WorkerLatencyWriter(testLogDir, workers, latencyEvaluator);
+                logger.debug("Creating the latency writer thread");
+
+                WorkerLatencyWriter latencyWriter;
+                if (latencyEvaluator == null) {
+                    latencyWriter = new WorkerLatencyWriter(testLogDir, workers);
+                }
+                else {
+                    long reportingInterval = config.getLong("maestro.worker.reporting.interval", 10000);
+                    latencyWriter = new WorkerLatencyWriter(testLogDir, workers, latencyEvaluator,
+                            reportingInterval);
+                }
                 this.latencyWriterThread = new Thread(latencyWriter);
+
+                logger.debug("Creating the rate writer thread");
                 WorkerChannelWriter rateWriter = new WorkerChannelWriter(testLogDir, workers);
                 this.rateWriterThread = new Thread(rateWriter);
-                logger.debug("Starting the writers threads");
 
+                logger.debug("Starting the writers threads");
                 this.latencyWriterThread.start();
                 this.rateWriterThread.start();
 
@@ -94,6 +105,16 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
         }
 
         return false;
+    }
+
+    private void setupLatencyEvaluator() {
+        Double givenLatency = super.getWorkerOptions().getFclAsDouble();
+        if (givenLatency != null) {
+            logger.debug("Setting max latency to {}", givenLatency);
+
+            // The latency comes as milliseconds from the front-end
+            this.latencyEvaluator = new LatencyEvaluator(givenLatency * 1000);
+        }
     }
 
     private void shutdownAndWaitWriters(){

@@ -5,6 +5,8 @@ import org.maestro.common.worker.MaestroReceiverWorker;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.writers.LatencyWriter;
 import org.HdrHistogram.Histogram;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,6 +16,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 public final class WorkerLatencyWriter implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(WorkerLatencyWriter.class);
 
     private static final class WorkerIntervalReport {
         private final MaestroWorker worker;
@@ -43,7 +46,11 @@ public final class WorkerLatencyWriter implements Runnable {
 
             // Latency evaluation is optional
             if (this.latencyEvaluator != null) {
+                logger.debug("Recording latency ...");
                 this.latencyEvaluator.record(this.intervalHistogram);
+            }
+            else {
+                logger.debug("No latency evaluator was set, ignoring ...");
             }
         }
 
@@ -85,8 +92,7 @@ public final class WorkerLatencyWriter implements Runnable {
     private LatencyEvaluator latencyEvaluator;
 
 
-    public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers,
-                               final LatencyEvaluator latencyEvaluator) {
+    public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers) {
         this.reportFolder = reportFolder;
         this.workers = new ArrayList<>(workers);
         //the first sleep will be a very long one :)
@@ -95,9 +101,11 @@ public final class WorkerLatencyWriter implements Runnable {
         this.latencyEvaluator = latencyEvaluator;
     }
 
-    public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers, long reportingIntervalMs) {
+    public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers,
+                               final LatencyEvaluator latencyEvaluator, long reportingIntervalMs) {
         this.reportFolder = reportFolder;
         this.workers = new ArrayList<>(workers);
+        this.latencyEvaluator = latencyEvaluator;
         this.reportingIntervalMs = reportingIntervalMs;
         this.reportIntervalLatencies = true;
     }
@@ -111,6 +119,8 @@ public final class WorkerLatencyWriter implements Runnable {
 
     @Override
     public void run() {
+        logger.debug("Updating latency information every {} milliseconds", reportingIntervalMs);
+
         final long anyWorkers = this.workers.stream()
                 .filter(w -> w instanceof MaestroReceiverWorker).count();
         //avoid creating any file if there aren't  any MaestroReceiverWorker
@@ -126,6 +136,7 @@ public final class WorkerLatencyWriter implements Runnable {
                 final Thread currentThread = Thread.currentThread();
                 long startTime = System.currentTimeMillis();
                 long nextReportingTime = startTime + reportingIntervalMs;
+
                 try {
                     while (!currentThread.isInterrupted()) {
                         final long now = getCurrentTimeMsecWithDelay(nextReportingTime);
