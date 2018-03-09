@@ -32,5 +32,5 @@ public interface Evaluator<T> {
      * Record the condition
      * @param data data containing the condition to be evaluated
      */
-    void record(T data);
+    void record(final T data);
 }

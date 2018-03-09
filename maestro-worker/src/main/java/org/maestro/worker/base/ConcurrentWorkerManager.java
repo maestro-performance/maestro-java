@@ -3,7 +3,9 @@ package org.maestro.worker.base;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.evaluators.HardLatencyEvaluator;
 import org.maestro.common.evaluators.LatencyEvaluator;
+import org.maestro.common.evaluators.SoftLatencyEvaluator;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.*;
 import org.maestro.worker.ds.MaestroDataServer;
@@ -107,14 +109,32 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
         return false;
     }
 
+    // TODO: it might be better to pick this from a given percentile, so it can rule out
+    // some of the initial bits due to warm up. Verify ...
     private void setupLatencyEvaluator() {
         Double givenLatency = super.getWorkerOptions().getFclAsDouble();
-        if (givenLatency != null) {
+        if (givenLatency == null) {
+            return;
+        }
+
+        String policy = config.getString("maestro.worker.fcl.default.policy", "soft");
+
+        if (policy.equals("soft")) {
+            double defaultPercentile = config.getDouble("maestro.worker.fcl.soft.percentile", 90.0);
+
+            logger.debug("Setting max latency to {} if at percentile {}", givenLatency, defaultPercentile);
+
+            // The latency comes as milliseconds from the front-end
+            this.latencyEvaluator = new SoftLatencyEvaluator(givenLatency * 1000, defaultPercentile);
+        }
+        else {
             logger.debug("Setting max latency to {}", givenLatency);
 
             // The latency comes as milliseconds from the front-end
-            this.latencyEvaluator = new LatencyEvaluator(givenLatency * 1000);
+            this.latencyEvaluator = new HardLatencyEvaluator(givenLatency * 1000);
         }
+
+
     }
 
     private void shutdownAndWaitWriters(){
