@@ -160,45 +160,50 @@
                             </tr>
                         </thead>
                         <tbody>
+                            <!--
+                            The numbers come straight from the latency.properties file which is generated  by
+                            HDR Histogram Plotter library. They are stored with nanosecond precision, that is why they
+                            are divided by 1000 here
+                            -->
                             <tr>
                                 <td>Total Count </td>
                                 <td>{{ latencyTotalCount | round(0) }} messages</td>
                             </tr>
                             <tr>
                                 <td>Max Latency</td>
-                                <td>{{ latencyMaxValue | round(4) }} μs</td>
+                                <td>{{ (latencyMaxValue / 1000)| round(4) }} μs</td>
                             </tr>
                             <tr>
                                 <td>Mean Latency</td>
-                                <td>{{ latencyMean | round(4) }} μs</td>
+                                <td>{{ (latencyMean / 1000) | round(4) }} μs</td>
                             </tr>
                             <tr>
                                 <td>Standard Deviation</td>
-                                <td>{{ latencyStdDeviation | round(4) }}</td>
+                                <td>{{ (latencyStdDeviation / 1000) | round(4) }}</td>
                             </tr>
                             <tr>
                                 <td>99.99ᵗʰ Percentile</td>
-                                <td>{{ latency9999th | round(4) }} μs</td>
+                                <td>{{ ( latency9999th / 1000)| round(4) }} μs</td>
                             </tr>
                             <tr>
                                 <td>99.9ᵗʰ Percentile</td>
-                                <td>{{ latency999th | round(4) }} μs</td>
+                                <td>{{ ( latency999th / 1000)| round(4) }} μs</td>
                             </tr>
                             <tr>
                                 <td>99ᵗʰ Percentile</td>
-                                <td>{{ latency99th | round(4) }} μs</td>
+                                <td>{{ ( latency99th / 1000) | round(4) }} μs</td>
                             </tr>
                             <tr>
                                 <td>95ᵗʰ Percentile</td>
-                                <td>{{ latency95th | round(4) }} μs</td>
+                                <td>{{ ( latency95th / 1000) | round(4) }} μs</td>
                             </tr>
                             <tr>
                                 <td>90ᵗʰ Percentile</td>
-                                <td>{{ latency90th | round(4) }} μs</td>
+                                <td>{{ ( latency90th / 1000) | round(4) }} μs</td>
                             </tr>
                             <tr>
                                 <td>50ᵗʰ Percentile</td>
-                                <td>{{ latency50th | round(4) }} μs</td>
+                                <td>{{ ( latency50th / 1000) | round(4) }} μs</td>
                             </tr>
                         </tbody>
                     </table>
