@@ -39,11 +39,17 @@ public class LatencyEvaluator implements Evaluator<Histogram> {
 
     @Override
     public synchronized void record(Histogram histogram) {
+        long maxRecordedValue = histogram.getMaxValue();
+
+
         if (logger.isTraceEnabled()) {
-            logger.trace("Checking the current latency: {} x {}", histogram.getMaxValue(), this.maxValue);
+            logger.trace("Checking the current latency: {} x {}", maxRecordedValue, this.maxValue);
         }
 
-        if (histogram.getMaxValue() > this.maxValue) {
+        if (maxRecordedValue > this.maxValue) {
+            logger.warn("The maximum recorded latency ({} us) exceeds the maximum allowed value of ({} us)",
+                    maxRecordedValue, this.maxValue);
+
             this.conditionStatus = false;
         }
     }
