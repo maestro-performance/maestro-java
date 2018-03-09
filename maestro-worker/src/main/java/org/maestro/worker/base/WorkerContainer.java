@@ -1,6 +1,7 @@
 package org.maestro.worker.base;
 
 import org.maestro.common.client.MaestroReceiver;
+import org.maestro.common.evaluators.Evaluator;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.worker.WorkerOptions;
 
@@ -57,12 +58,13 @@ public final class WorkerContainer {
      * @throws IllegalAccessException if unable to access the worker constructor
      * @throws InstantiationException if unable to instantiate the worker
      */
-    public void start(final Class<MaestroWorker> clazz, Collection<? super MaestroWorker> workers, Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped)
+    public void start(final Class<MaestroWorker> clazz, Collection<? super MaestroWorker> workers,
+                      Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped, Evaluator<?> evaluator)
             throws IllegalAccessException, InstantiationException {
         final int parallelCount = Integer.parseInt(workerOptions.getParallelCount());
         this.workerRuntimeInfos.clear();
         try {
-            createAndStartWorkers(clazz, workerOptions, parallelCount, this.workerRuntimeInfos, onWorkersStopped);
+            createAndStartWorkers(clazz, workerOptions, parallelCount, this.workerRuntimeInfos, onWorkersStopped, evaluator);
         } catch (Throwable t) {
             //interrupt any workers
             this.workerRuntimeInfos.forEach(info -> info.thread.interrupt());
@@ -74,7 +76,10 @@ public final class WorkerContainer {
         workers.addAll(this.workerRuntimeInfos.stream().map(info -> info.worker).collect(Collectors.toList()));
     }
 
-    private void createAndStartWorkers(final Class<MaestroWorker> clazz, WorkerOptions workerOptions, int workers, List<WorkerRuntimeInfo> workerRuntimeInfos,final Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped) throws IllegalAccessException, InstantiationException {
+    private void createAndStartWorkers(final Class<MaestroWorker> clazz, WorkerOptions workerOptions, int workers,
+                                       List<WorkerRuntimeInfo> workerRuntimeInfos,
+                                       final Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped,
+                                       final Evaluator<?> evaluator) throws IllegalAccessException, InstantiationException {
         for (int i = 0; i < workers; i++) {
             final WorkerRuntimeInfo ri = new WorkerRuntimeInfo();
             ri.worker = clazz.newInstance();
@@ -85,7 +90,7 @@ public final class WorkerContainer {
             workerRuntimeInfos.add(ri);
         }
 
-        workerWatchdog = new WorkerWatchdog(workerRuntimeInfos, endpoint, onWorkersStopped);
+        workerWatchdog = new WorkerWatchdog(workerRuntimeInfos, endpoint, onWorkersStopped, evaluator);
 
         watchDogThread = new Thread(workerWatchdog);
         watchDogThread.start();

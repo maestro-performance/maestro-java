@@ -1,5 +1,6 @@
 package org.maestro.worker.base;
 
+import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.worker.MaestroReceiverWorker;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.writers.LatencyWriter;
@@ -21,8 +22,10 @@ public final class WorkerLatencyWriter implements Runnable {
         private Histogram intervalHistogram;
         private final boolean reportIntervalLatencies;
         private final long startReportingTime;
+        private final LatencyEvaluator latencyEvaluator;
 
-        public WorkerIntervalReport(LatencyWriter latencyWriter, MaestroWorker worker, boolean reportIntervalLatencies, long globalStartReportingTime) {
+        public WorkerIntervalReport(LatencyWriter latencyWriter, MaestroWorker worker, boolean reportIntervalLatencies,
+                                    long globalStartReportingTime, LatencyEvaluator latencyEvaluator) {
             this.latencyWriter = latencyWriter;
             this.worker = worker;
             this.intervalHistogram = null;
@@ -32,10 +35,16 @@ public final class WorkerLatencyWriter implements Runnable {
             this.lastReportTime = Math.max(globalStartReportingTime, startedWorkerTime < 0 ? System.currentTimeMillis() : startedWorkerTime);
             this.startReportingTime = this.lastReportTime;
             this.reportIntervalLatencies = reportIntervalLatencies;
+            this.latencyEvaluator = latencyEvaluator;
         }
 
         public void updateReport() {
             updateReport(false);
+
+            // Latency evaluation is optional
+            if (this.latencyEvaluator != null) {
+                this.latencyEvaluator.record(this.intervalHistogram);
+            }
         }
 
         /**
@@ -73,14 +82,17 @@ public final class WorkerLatencyWriter implements Runnable {
     private final File reportFolder;
     private final long reportingIntervalMs;
     private final boolean reportIntervalLatencies;
+    private LatencyEvaluator latencyEvaluator;
 
 
-    public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers) {
+    public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers,
+                               final LatencyEvaluator latencyEvaluator) {
         this.reportFolder = reportFolder;
         this.workers = new ArrayList<>(workers);
         //the first sleep will be a very long one :)
         this.reportingIntervalMs = TimeUnit.DAYS.toMillis(365);
         this.reportIntervalLatencies = false;
+        this.latencyEvaluator = latencyEvaluator;
     }
 
     public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers, long reportingIntervalMs) {
@@ -108,7 +120,8 @@ public final class WorkerLatencyWriter implements Runnable {
                 latencyWriter.outputLegend(globalStartReportingTime);
                 //TODO collect only receiver worker latencies: make it configurable or available on the MaestroWorker API
                 final List<WorkerIntervalReport> workerReports = this.workers.stream()
-                        .filter(w -> w instanceof MaestroReceiverWorker).map(w -> new WorkerIntervalReport(latencyWriter, w, reportIntervalLatencies, globalStartReportingTime))
+                        .filter(w -> w instanceof MaestroReceiverWorker).map(w ->
+                                new WorkerIntervalReport(latencyWriter, w, reportIntervalLatencies, globalStartReportingTime, latencyEvaluator))
                         .collect(Collectors.toList());
                 final Thread currentThread = Thread.currentThread();
                 long startTime = System.currentTimeMillis();

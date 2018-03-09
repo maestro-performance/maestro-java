@@ -133,7 +133,7 @@ public class WorkerLatencyWriterSanityTest {
         });
         roundRobinReceivers.start();
         final File reportFolder = tempTestFolder.newFolder("report");
-        final WorkerLatencyWriter latencyWriter = new WorkerLatencyWriter(reportFolder, Arrays.asList(dummyReceiverWorkers));
+        final WorkerLatencyWriter latencyWriter = new WorkerLatencyWriter(reportFolder, Arrays.asList(dummyReceiverWorkers), null);
         final Thread writerThread = new Thread(latencyWriter);
         writerThread.setDaemon(true);
         writerThread.start();

@@ -1,6 +1,7 @@
 package org.maestro.worker.base;
 
 import org.maestro.client.notes.*;
+import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.*;
 import org.maestro.worker.ds.MaestroDataServer;
@@ -25,6 +26,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
     private final File logDir;
     private Thread latencyWriterThread;
     private Thread rateWriterThread;
+    private LatencyEvaluator latencyEvaluator;
 
     /**
      * Constructor
@@ -54,19 +56,24 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
 
         final File testLogDir = WorkerLogUtils.findTestLogDir(logDir);
 
+        Double givenLatency = super.getWorkerOptions().getFclAsDouble();
+        if (givenLatency != null) {
+            this.latencyEvaluator = new LatencyEvaluator(givenLatency);
+        }
+
         try {
             super.writeTestProperties(testLogDir);
 
             final List<MaestroWorker> workers = new ArrayList<>();
 
             logger.debug("Starting the workers {}", workerClass);
-            container.start(workerClass, workers, this::onStoppedWorkers);
+            container.start(workerClass, workers, this::onStoppedWorkers, latencyEvaluator);
 
             if (workers.isEmpty()) {
                 logger.warn("No workers has been started!");
             } else {
                 logger.debug("Creating the writer threads");
-                WorkerLatencyWriter latencyWriter = new WorkerLatencyWriter(testLogDir, workers);
+                WorkerLatencyWriter latencyWriter = new WorkerLatencyWriter(testLogDir, workers, latencyEvaluator);
                 this.latencyWriterThread = new Thread(latencyWriter);
                 WorkerChannelWriter rateWriter = new WorkerChannelWriter(testLogDir, workers);
                 this.rateWriterThread = new Thread(rateWriter);

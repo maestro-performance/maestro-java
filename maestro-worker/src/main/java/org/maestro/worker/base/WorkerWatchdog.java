@@ -2,6 +2,7 @@ package org.maestro.worker.base;
 
 import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.worker.WorkerStateInfo;
+import org.maestro.common.evaluators.Evaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -23,6 +24,7 @@ class WorkerWatchdog implements Runnable {
     private final MaestroReceiver endpoint;
     private volatile boolean running = false;
     private final Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped;
+    private Evaluator<?> evaluator;
 
 
     /**
@@ -30,10 +32,12 @@ class WorkerWatchdog implements Runnable {
      * @param workers A list of workers to inspect
      * @param endpoint The maestro endpoint that is to be notified of the worker status
      */
-    public WorkerWatchdog(List<WorkerRuntimeInfo> workers, MaestroReceiver endpoint, Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped) {
+    public WorkerWatchdog(List<WorkerRuntimeInfo> workers, MaestroReceiver endpoint,
+                          Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped, final Evaluator<?> evaluator) {
         this.workers = new ArrayList<>(workers);
         this.onWorkersStopped = onWorkersStopped;
         this.endpoint = endpoint;
+        this.evaluator = evaluator;
     }
 
 
@@ -66,6 +70,14 @@ class WorkerWatchdog implements Runnable {
         try {
             while (running && workersRunning()) {
                 try {
+                    if (evaluator != null) {
+                        if (!evaluator.eval()) {
+                            endpoint.notifyFailure("The evaluation of the latency condition failed");
+                            WorkerContainer container = WorkerContainer.getInstance(null);
+                            container.stop();
+                        }
+                    }
+
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     logger.info("The worker thread was interrupted", e);
