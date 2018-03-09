@@ -35,7 +35,7 @@ public class URLUtils {
 
             return url.getHost();
         } catch (MalformedURLException e) {
-            throw new MaestroException("Invalid URL");
+            throw new MaestroException("Invalid URL: " + string);
         }
     }
 }

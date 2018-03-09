@@ -51,13 +51,30 @@ ReportsDownloader reportsDownloader = new ReportsDownloader(args[0])
 IncrementalTestProfile testProfile = new SimpleTestProfile()
 
 testProfile.setBrokerURL(brokerURL)
-testProfile.setInitialRate(500)
-testProfile.setDuration(TestDurationBuilder.build("90s"))
-testProfile.setMessageSize(MessageSize.variable(256))
-testProfile.setMaximumLatency(200)
-testProfile.setCeilingRate(600)
-testProfile.setParallelCountIncrement(1)
-testProfile.setCeilingParallelCount(1)
+
+rate = System.getenv("RATE")
+testProfile.setInitialRate(Integer.parseInt(rate))
+
+duration = System.getenv("TEST_DURATION")
+testProfile.setDuration(TestDurationBuilder.build(duration))
+
+messageSize = System.getenv("MESSAGE_SIZE")
+testProfile.setMessageSize(messageSize)
+
+maxLatency = System.getenv("MAXIMUM_LATENCY")
+testProfile.setMaximumLatency(Integer.parseInt(maxLatency))
+
+ceilingRate = System.getenv("CEILING_RATE")
+testProfile.setCeilingRate(Integer.parseInt(ceilingRate))
+
+parallelCountIncrement = System.getenv("PARALLEL_COUNT_INCREMENT")
+testProfile.setParallelCountIncrement(Integer.parseInt(parallelCountIncrement))
+
+rateIncrement = System.getenv("RATE_INCREMENT")
+testProfile.setRateIncrement(Integer.parseInt(rateIncrement))
+
+parallelCount = System.getenv("PARALLEL_COUNT")
+testProfile.setCeilingParallelCount(Integer.parseInt(parallelCount))
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
 
