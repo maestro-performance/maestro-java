@@ -46,11 +46,11 @@ public final class WorkerLatencyWriter implements Runnable {
 
             // Latency evaluation is optional
             if (this.latencyEvaluator != null) {
-                logger.debug("Recording latency ...");
+                logger.trace("Recording latency ...");
                 this.latencyEvaluator.record(this.intervalHistogram);
             }
             else {
-                logger.debug("No latency evaluator was set, ignoring ...");
+                logger.trace("No latency evaluator was set, ignoring ...");
             }
         }
 
