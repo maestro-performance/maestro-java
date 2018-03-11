@@ -38,7 +38,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
      * @param host hostname
      * @throws MaestroException
      */
-    public MaestroWorkerManager(final String maestroURL, final String role, final String host, final MaestroDataServer dataServer) throws MaestroException {
+    public MaestroWorkerManager(final String maestroURL, final String role, final String host, final MaestroDataServer datathrServer) throws MaestroException {
         super(maestroURL, role, MaestroDeserializer::deserializeEvent);
 
         logger.debug("Creating the receiver client");
