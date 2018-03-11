@@ -239,13 +239,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
 
     @Override
     public void handle(StartInspector note) {
-        logger.debug("Start inspector request received");
-
-        if (MaestroInspectorWorker.class.isAssignableFrom(workerClass)) {
-            if (!doWorkerStart()) {
-                logger.warn("::handle {} can't start worker", note);
-            }
-        }
+       // NO-OP
     }
 
     @Override
@@ -272,13 +266,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
 
     @Override
     public void handle(StopInspector note) {
-        logger.debug("Stop inspector request received");
-
-        if (MaestroInspectorWorker.class.isAssignableFrom(workerClass)) {
-            container.stop();
-        }
-
-        getClient().replyOk();
+        // NO-OP
     }
 
     @Override
