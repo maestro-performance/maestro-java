@@ -131,4 +131,40 @@ public class MaestroProtocolTest {
         assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_GET);
         assertEquals("URLs do not match", url, ((GetResponse)parsed).getValue());
     }
+
+    @Test
+    public void serializeStatsRequest() throws Exception {
+        StatsRequest statsRequest = new StatsRequest();
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(statsRequest));
+
+        assertTrue(parsed instanceof StatsRequest);
+        assertTrue("Parsed object is not a STATS Request",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_STATS);
+    }
+
+
+    @Test
+    public void serializeStatsResponse() throws Exception {
+        StatsResponse statsResponse = new StatsResponse();
+
+        statsResponse.setChildCount(0);
+
+        statsResponse.setRole("tester");
+        statsResponse.setLatency(1.123);
+        statsResponse.setRate(1122);
+        statsResponse.setRoleInfo("");
+        statsResponse.setTimestamp("1521027548");
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(statsResponse));
+
+        assertTrue(parsed instanceof StatsResponse);
+        assertTrue("Parsed object is not a STATS Request",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_STATS);
+        assertEquals("tester", ((StatsResponse) parsed).getRole());
+        assertTrue(1.123 == ((StatsResponse) parsed).getLatency());
+        assertEquals("1521027548", ((StatsResponse) parsed).getTimestamp());
+    }
 }

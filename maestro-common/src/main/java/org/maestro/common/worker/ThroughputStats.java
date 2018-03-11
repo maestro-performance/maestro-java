@@ -21,7 +21,6 @@ import java.time.Duration;
 public class ThroughputStats implements PerfStats {
     private Duration duration;
     private long count;
-    private double rate;
 
     public Duration getDuration() {
         return duration;
@@ -40,11 +39,7 @@ public class ThroughputStats implements PerfStats {
     }
 
     public double getRate() {
-        return rate;
-    }
-
-    public void setRate(double rate) {
-        this.rate = rate;
+        return count / duration.getSeconds();
     }
 
     @Override
@@ -52,7 +47,6 @@ public class ThroughputStats implements PerfStats {
         return "ThroughputStats{" +
                 "duration=" + duration +
                 ", count=" + count +
-                ", rate=" + rate +
                 '}';
     }
 }

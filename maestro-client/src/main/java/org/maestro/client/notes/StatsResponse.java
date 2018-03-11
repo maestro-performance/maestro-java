@@ -17,6 +17,7 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
@@ -48,6 +49,22 @@ public class StatsResponse extends MaestroResponse {
         count = unpacker.unpackLong();
         rate = unpacker.unpackDouble();
         latency = unpacker.unpackDouble();
+    }
+
+    @Override
+    protected MessageBufferPacker pack() throws IOException {
+        MessageBufferPacker packer = super.pack();
+
+        packer.packLong(this.childCount);
+        packer.packString(this.role);
+        packer.packString(this.roleInfo);
+        packer.packShort(this.statsType);
+        packer.packString(this.timestamp);
+        packer.packLong(this.count);
+        packer.packDouble(this.rate);
+        packer.packDouble(this.latency);
+
+        return packer;
     }
 
     public String getTimestamp() {

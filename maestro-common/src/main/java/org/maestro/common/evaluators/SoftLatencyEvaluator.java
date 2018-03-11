@@ -12,6 +12,7 @@ import org.slf4j.LoggerFactory;
 public class SoftLatencyEvaluator extends LatencyEvaluator {
     private static final Logger logger = LoggerFactory.getLogger(SoftLatencyEvaluator.class);
     private final double defaultPercentile;
+    private double mean;
 
     /**
      * Constructor
@@ -28,7 +29,6 @@ public class SoftLatencyEvaluator extends LatencyEvaluator {
     public synchronized void record(final Histogram histogram) {
         long maxRecordedValue = histogram.getValueAtPercentile(this.defaultPercentile);
 
-
         if (logger.isTraceEnabled()) {
             logger.trace("Checking the current latency: {} x {}", maxRecordedValue, getMaxValue());
         }
@@ -39,5 +39,12 @@ public class SoftLatencyEvaluator extends LatencyEvaluator {
 
             setEvalFailed();
         }
+
+        mean = histogram.getMean();
+    }
+
+    @Override
+    public double getMean() {
+        return mean;
     }
 }

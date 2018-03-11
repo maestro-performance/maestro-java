@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
  */
 public class HardLatencyEvaluator extends LatencyEvaluator {
     private static final Logger logger = LoggerFactory.getLogger(HardLatencyEvaluator.class);
+    private double mean;
 
     /**
      * Constructor
@@ -23,7 +24,6 @@ public class HardLatencyEvaluator extends LatencyEvaluator {
     public synchronized void record(final Histogram histogram) {
         long maxRecordedValue = histogram.getMaxValue();
 
-
         if (logger.isTraceEnabled()) {
             logger.trace("Checking the current latency: {} x {}", maxRecordedValue, getMaxValue());
         }
@@ -34,5 +34,12 @@ public class HardLatencyEvaluator extends LatencyEvaluator {
 
             setEvalFailed();
         }
+
+        mean = histogram.getMean();
+    }
+
+    @Override
+    public double getMean() {
+        return mean;
     }
 }

@@ -2,9 +2,14 @@ package org.maestro.worker.base;
 
 import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.evaluators.Evaluator;
+import org.maestro.common.evaluators.LatencyEvaluator;
+import org.maestro.common.worker.LatencyStats;
 import org.maestro.common.worker.MaestroWorker;
+import org.maestro.common.worker.ThroughputStats;
 import org.maestro.common.worker.WorkerOptions;
 
+import java.time.Duration;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -23,6 +28,8 @@ public final class WorkerContainer {
     private WorkerWatchdog workerWatchdog;
     private Thread watchDogThread;
     private final MaestroReceiver endpoint;
+    private LocalDateTime startTime;
+    private Evaluator<?> evaluator;
 
     private WorkerContainer(MaestroReceiver endpoint) {
         this.endpoint = endpoint;
@@ -63,6 +70,7 @@ public final class WorkerContainer {
             throws IllegalAccessException, InstantiationException {
         final int parallelCount = Integer.parseInt(workerOptions.getParallelCount());
         this.workerRuntimeInfos.clear();
+        this.evaluator = evaluator;
         try {
             createAndStartWorkers(clazz, workerOptions, parallelCount, this.workerRuntimeInfos, onWorkersStopped, evaluator);
         } catch (Throwable t) {
@@ -74,6 +82,7 @@ public final class WorkerContainer {
         }
         //the workers are started
         workers.addAll(this.workerRuntimeInfos.stream().map(info -> info.worker).collect(Collectors.toList()));
+        startTime = LocalDateTime.now();
     }
 
     private void createAndStartWorkers(final Class<MaestroWorker> clazz, WorkerOptions workerOptions, int workers,
@@ -125,5 +134,39 @@ public final class WorkerContainer {
 
 
         return false;
+    }
+
+    public ThroughputStats throughputStats() {
+        ThroughputStats ret = new ThroughputStats();
+
+        long messageCount = 0;
+        for (WorkerRuntimeInfo runtimeInfo : workerRuntimeInfos) {
+            messageCount += runtimeInfo.worker.messageCount();
+        }
+        ret.setCount(messageCount);
+
+        LocalDateTime now = LocalDateTime.now();
+        Duration duration = Duration.between(startTime, now);
+        ret.setDuration(duration);
+
+        return ret;
+    }
+
+    public LatencyStats latencyStats() {
+        if (evaluator instanceof LatencyEvaluator) {
+            LatencyStats ret = new LatencyStats();
+            
+            LatencyEvaluator latencyEvaluator = (LatencyEvaluator) evaluator;
+
+            LocalDateTime now = LocalDateTime.now();
+            Duration duration = Duration.between(startTime, now);
+            ret.setDuration(duration);
+
+            ret.setLatency(latencyEvaluator.getMean());
+
+            return ret;
+        }
+
+        return null;
     }
 }

@@ -20,7 +20,7 @@ import java.time.Duration;
 
 public class LatencyStats implements PerfStats {
     private Duration duration;
-    private Duration elapsed;
+    private double latency;
 
     public Duration getDuration() {
         return duration;
@@ -30,19 +30,19 @@ public class LatencyStats implements PerfStats {
         this.duration = duration;
     }
 
-    public Duration getElapsed() {
-        return elapsed;
+    public double getLatency() {
+        return latency;
     }
 
-    public void setElapsed(Duration elapsed) {
-        this.elapsed = elapsed;
+    public void setLatency(double latency) {
+        this.latency = latency;
     }
 
     @Override
     public String toString() {
         return "LatencyStats{" +
                 "duration=" + duration +
-                ", elapsed=" + elapsed +
+                ", latency=" + latency +
                 '}';
     }
 }

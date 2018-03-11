@@ -302,4 +302,43 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
 
         getClient().replyOk();
     }
+
+    @Override
+    public void handle(StatsRequest note) {
+        logger.debug("Stats request received");
+        StatsResponse statsResponse = new StatsResponse();
+
+        String parallelCount = getWorkerOptions().getParallelCount();
+
+        if (parallelCount == null) {
+            statsResponse.setChildCount(0);
+        }
+        else {
+            statsResponse.setChildCount(Integer.parseInt(parallelCount));
+        }
+
+        // Explanation: the role is the name as the role (ie: clientName@host)
+        statsResponse.setRole(getClientName());
+
+        LatencyStats latencyStats = container.latencyStats();
+        if (latencyStats != null) {
+            statsResponse.setLatency(latencyStats.getLatency());
+        }
+        else {
+            statsResponse.setLatency(0);
+        }
+
+        ThroughputStats throughputStats = container.throughputStats();
+
+        if (throughputStats != null) {
+            statsResponse.setRate(throughputStats.getRate());
+        }
+        else {
+            statsResponse.setRate(0);
+        }
+        statsResponse.setRoleInfo("");
+        statsResponse.setTimestamp("0");
+
+        getClient().statsResponse(statsResponse);
+    }
 }

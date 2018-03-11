@@ -48,9 +48,16 @@ public abstract class LatencyEvaluator implements Evaluator<Histogram> {
     }
 
     /**
+     * Get the mean latency as last recorded
+     * @return
+     */
+    abstract public double getMean();
+
+    /**
      * Mark the evaluation as failed
      */
     protected void setEvalFailed() {
         this.conditionStatus = false;
     }
+
 }
