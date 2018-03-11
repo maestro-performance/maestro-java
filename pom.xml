@@ -67,6 +67,7 @@
         <module>maestro-test-scripts</module>
         <module>maestro-agent</module>
         <module>maestro-inspector</module>
+        <module>maestro-inspectors</module>
     </modules>
 
     <profiles>
