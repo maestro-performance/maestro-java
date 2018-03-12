@@ -16,7 +16,7 @@ public abstract class AbstractHandler implements AgentEndpoint{
      * Sets the content of the note associated with the external endpoint
      * @param note the note
      */
-    public void setMaestroNote(MaestroNote note) {
+    public void setMaestroNote(final MaestroNote note) {
         this.note = note;
     }
 
@@ -32,7 +32,7 @@ public abstract class AbstractHandler implements AgentEndpoint{
      * Sets the content of the client associated with the external endpoint.
      * @param client the maestro client
      */
-    public void setMaestroClient(MaestroClient client) {
+    public void setMaestroClient(final MaestroClient client) {
         this.client = client;
     }
 
