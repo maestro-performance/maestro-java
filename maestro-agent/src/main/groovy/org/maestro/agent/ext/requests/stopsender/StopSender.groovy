@@ -6,7 +6,7 @@ import org.maestro.common.agent.AgentEndpoint
 import org.maestro.common.client.MaestroClient
 import org.maestro.common.client.notes.MaestroNote
 
-class FlushHandler implements AgentEndpoint{
+class StopSenderHandler implements AgentEndpoint{
 
     private MaestroClient client;
 
