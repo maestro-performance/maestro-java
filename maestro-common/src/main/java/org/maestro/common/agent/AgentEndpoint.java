@@ -21,8 +21,20 @@ public interface AgentEndpoint {
     void setMaestroNote(MaestroNote note);
 
     /**
+     * Get the content of the note associated with the external endpoint.
+     * @return the note
+     */
+    MaestroNote getNote();
+
+    /**
      * Sets the content of the client associated with the external endpoint.
      * @param client the maestro client
      */
     void setMaestroClient(MaestroClient client);
+
+    /**
+     * Get the content of the client associated with the external endpoint.
+     * @return the maestro client
+     */
+    MaestroClient getClient();
 }
