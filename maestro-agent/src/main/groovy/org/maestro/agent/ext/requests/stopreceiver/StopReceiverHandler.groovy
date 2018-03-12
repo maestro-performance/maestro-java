@@ -2,7 +2,7 @@ package org.maestro.agent.ext.requests.stopreceiver
 
 import org.maestro.agent.base.AbstractHandler
 
-class StopReceiverhHandler extends AbstractHandler {
+class StopReceiverHandler extends AbstractHandler {
 
     @Override
     Object handle() {
