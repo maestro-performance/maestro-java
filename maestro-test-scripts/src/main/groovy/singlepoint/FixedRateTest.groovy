@@ -55,7 +55,7 @@ FixedRateTestProfile testProfile = new FixedRateTestProfile()
 testProfile.setBrokerURL(brokerURL)
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(messageSize)
-testProfile.setMaximumLatency(200)
+testProfile.setMaximumLatency(20000)
 testProfile.setRate(Integer.parseInt(rate))
 testProfile.setParallelCount(Integer.parseInt(parallelCount))
 
