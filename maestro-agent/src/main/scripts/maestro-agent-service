@@ -33,15 +33,15 @@ function start() {
         MAESTRO_LOCAL_HOSTNAME=$(hostname -f)
     fi
 
-    nohup "$installdir"/bin/maestro-worker -m "$MAESTRO_BROKER" -w "$MAESTRO_WORKER" -l "$MAESTRO_LOG_DIR" -r "$MAESTRO_WORKER_ROLE" -H "$MAESTRO_LOCAL_HOSTNAME" $@ > /dev/null 2> /dev/null &
+    nohup "$installdir"/bin/maestro-agent -m "$MAESTRO_BROKER" -w "$MAESTRO_WORKER" -l "$MAESTRO_LOG_DIR" -r "$MAESTRO_WORKER_ROLE" -H "$MAESTRO_LOCAL_HOSTNAME" $@ > /dev/null 2> /dev/null &
     sleep 2s
-    for pid in $(ps -ef | grep -i maestro-worker | grep java | grep -v worker-service | grep -i "$MAESTRO_WORKER_ROLE"  | grep -v grep | awk ' { print $2 } ') ; do
+    for pid in $(ps -ef | grep -i maestro-agent | grep java | grep -v worker-service | grep -i "$MAESTRO_WORKER_ROLE"  | grep -v grep | awk ' { print $2 } ') ; do
         echo "Maestro agent started $pid"
     done
 }
 
 function stop() {
-    for pid in $(ps -ef | grep -i maestro-worker | grep -v service | grep -i "$MAESTRO_WORKER_ROLE" | grep -v grep | awk ' { print $2 } ') ; do
+    for pid in $(ps -ef | grep -i maestro-agent | grep -v service | grep -i "$MAESTRO_WORKER_ROLE" | grep -v grep | awk ' { print $2 } ') ; do
         echo "Killing maestro-agent $pid"
         kill -TERM ${pid}
     done

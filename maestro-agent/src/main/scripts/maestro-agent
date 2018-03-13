@@ -48,4 +48,4 @@ fi
 mainclass=org.maestro.agent.main.Main
 pid_file="$installdir"/tmp/maestro-agent.pid
 
-java -classpath "$installdir"/bin/*maestro-worker-*.jar -Dorg.maestro.home="$installdir" "$mainclass" $@
+java -classpath "$installdir"/bin/*maestro-agent-*.jar -Dorg.maestro.home="$installdir" "$mainclass" $@
