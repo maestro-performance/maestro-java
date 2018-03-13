@@ -1,5 +1,8 @@
 package org.maestro.common.worker;
 
+/**
+ * Represents the options set on the worker by the front-end
+ */
 public class WorkerOptions {
     private String brokerURL;
     private String duration;
@@ -10,6 +13,10 @@ public class WorkerOptions {
     private String rate;
     private String fcl;
 
+    /**
+     * Gets the broker URL
+     * @return the broker URL
+     */
     public String getBrokerURL() {
         return brokerURL;
     }
@@ -22,16 +29,29 @@ public class WorkerOptions {
         this.brokerURL = brokerURL;
     }
 
+
+    /**
+     * The test duration as a string
+     * @return the test duration as a string
+     */
     public String getDuration() {
         return duration;
     }
 
 
-
+    /**
+     * Sets the test duration
+     * @param duration
+     */
     public void setDuration(String duration) {
         this.duration = duration;
     }
 
+
+    /**
+     * Gets the log level
+     * @return
+     */
     public String getLogLevel() {
         return logLevel;
     }

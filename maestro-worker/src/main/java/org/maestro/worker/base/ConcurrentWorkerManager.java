@@ -51,6 +51,11 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
         this.logDir = logDir;
     }
 
+
+    /**
+     * Starts the workers and add them to a container
+     * @return
+     */
     private boolean doWorkerStart() {
         if (container.isTestInProgress()) {
             logger.warn("Trying to start a new test, but a test execution is already in progress");
@@ -109,8 +114,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
         return false;
     }
 
-    // TODO: it might be better to pick this from a given percentile, so it can rule out
-    // some of the initial bits due to warm up. Verify ...
+
     private void setupLatencyEvaluator() {
         Double givenLatency = super.getWorkerOptions().getFclAsDouble();
         if (givenLatency == null) {
@@ -133,8 +137,6 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
             // The latency comes as milliseconds from the front-end
             this.latencyEvaluator = new HardLatencyEvaluator(givenLatency * 1000);
         }
-
-
     }
 
     private void shutdownAndWaitWriters(){
