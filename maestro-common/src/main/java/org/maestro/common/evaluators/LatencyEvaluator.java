@@ -25,6 +25,10 @@ public abstract class LatencyEvaluator implements Evaluator<Histogram> {
     private double maxValue;
     private boolean conditionStatus = true;
 
+    /**
+     * Constructor
+     * @param maxValue maximum value allowed
+     */
     public LatencyEvaluator(double maxValue) {
         this.maxValue = maxValue;
     }
@@ -34,10 +38,18 @@ public abstract class LatencyEvaluator implements Evaluator<Histogram> {
         return this.conditionStatus;
     }
 
+    /**
+     * Gets the maximum allowed value
+     * @return the maximum allowed value
+     */
     public double getMaxValue() {
         return maxValue;
     }
 
+    /**
+     * Sets whether the evaluation has passed (true) or not (false)
+     * @param conditionStatus the condition status as true for passed or false otherwise
+     */
     protected void setConditionStatus(boolean conditionStatus) {
         this.conditionStatus = conditionStatus;
     }
