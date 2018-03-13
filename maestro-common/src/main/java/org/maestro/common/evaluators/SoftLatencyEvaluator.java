@@ -37,7 +37,7 @@ public class SoftLatencyEvaluator extends LatencyEvaluator {
             logger.warn("The maximum recorded latency ({} us) exceeds the maximum allowed value of ({} us) at percentile",
                     maxRecordedValue, getMaxValue());
 
-            setConditionStatus(false);
+            setEvalFailed();
         }
     }
 }

@@ -32,7 +32,7 @@ public class HardLatencyEvaluator extends LatencyEvaluator {
             logger.warn("The maximum recorded latency ({} us) exceeds the maximum allowed value of ({} us)",
                     maxRecordedValue, getMaxValue());
 
-            setConditionStatus(false);
+            setEvalFailed();
         }
     }
 }

@@ -21,15 +21,16 @@ import org.HdrHistogram.Histogram;
 /**
  * A evaluator that checks if the latency is greater than a certain threshold
  */
+@SuppressWarnings("WeakerAccess")
 public abstract class LatencyEvaluator implements Evaluator<Histogram> {
-    private double maxValue;
+    private final double maxValue;
     private boolean conditionStatus = true;
 
     /**
      * Constructor
      * @param maxValue maximum value allowed
      */
-    public LatencyEvaluator(double maxValue) {
+    protected LatencyEvaluator(double maxValue) {
         this.maxValue = maxValue;
     }
 
@@ -47,10 +48,9 @@ public abstract class LatencyEvaluator implements Evaluator<Histogram> {
     }
 
     /**
-     * Sets whether the evaluation has passed (true) or not (false)
-     * @param conditionStatus the condition status as true for passed or false otherwise
+     * Mark the evaluation as failed
      */
-    protected void setConditionStatus(boolean conditionStatus) {
-        this.conditionStatus = conditionStatus;
+    protected void setEvalFailed() {
+        this.conditionStatus = false;
     }
 }
