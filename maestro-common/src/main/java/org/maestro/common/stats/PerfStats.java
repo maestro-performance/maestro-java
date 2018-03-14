@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.maestro.common.worker;
+package org.maestro.common.stats;
 
 /**
  * A common interface for performance statistics

@@ -16,6 +16,8 @@
 
 package org.maestro.common.worker;
 
+import org.maestro.common.stats.PerfStats;
+
 import java.time.Duration;
 
 
