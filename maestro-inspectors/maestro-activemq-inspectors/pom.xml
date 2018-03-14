@@ -9,7 +9,20 @@
     </parent>
 
     <artifactId>maestro-activemq-inspectors</artifactId>
-    <groupId>org.maestro</groupId>
+
+    <dependencies>
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.jolokia</groupId>
+            <artifactId>jolokia-client-java</artifactId>
+            <version>1.2.2</version>
+        </dependency>
+    </dependencies>
 
 
 </project>

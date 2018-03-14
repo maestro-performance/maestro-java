@@ -28,5 +28,11 @@
             <artifactId>maestro-worker</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-activemq-inspectors</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 </project>
