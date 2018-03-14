@@ -16,5 +16,8 @@
 
 package org.maestro.common.worker;
 
+/**
+ * A common interface for performance statistics
+ */
 public interface PerfStats {
 }

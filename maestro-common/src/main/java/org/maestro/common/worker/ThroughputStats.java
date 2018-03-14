@@ -18,6 +18,10 @@ package org.maestro.common.worker;
 
 import java.time.Duration;
 
+
+/**
+ * A container for throughput statistics
+ */
 public class ThroughputStats implements PerfStats {
     private Duration duration;
     private long count;

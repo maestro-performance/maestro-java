@@ -18,6 +18,9 @@ package org.maestro.common.worker;
 
 import java.time.Duration;
 
+/**
+ * A container for latency statistics
+ */
 public class LatencyStats implements PerfStats {
     private Duration duration;
     private double latency;

@@ -115,6 +115,11 @@ public final class WorkerContainer {
         }
     }
 
+
+    /**
+     * Checks whether the test is in progress or not
+     * @return
+     */
     public boolean isTestInProgress() {
         if (watchDogThread == null) {
             return false;
@@ -136,6 +141,10 @@ public final class WorkerContainer {
         return false;
     }
 
+    /**
+     * Gets the throughput statistics
+     * @return the throughput statistics
+     */
     public ThroughputStats throughputStats() {
         ThroughputStats ret = new ThroughputStats();
 
@@ -152,6 +161,10 @@ public final class WorkerContainer {
         return ret;
     }
 
+    /**
+     * Gets the latency statistics
+     * @return the latency statistics or null if not applicable for the work set in the container
+     */
     public LatencyStats latencyStats() {
         if (evaluator instanceof LatencyEvaluator) {
             LatencyStats ret = new LatencyStats();
