@@ -332,9 +332,11 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
 
         if (throughputStats != null) {
             statsResponse.setRate(throughputStats.getRate());
+            statsResponse.setCount(throughputStats.getCount());
         }
         else {
             statsResponse.setRate(0);
+            statsResponse.setCount(0);
         }
         statsResponse.setRoleInfo("");
         statsResponse.setTimestamp("0");
