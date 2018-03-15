@@ -65,7 +65,7 @@ public class ArtemisInspector implements MaestroInspector {
 
             J4pReadResponse response = j4p.execute(req);
 
-            logger.debug("Heap Memory Usage: {}", response.getValue());
+            logger.debug("Heap Memory Usage: {}", (Object) response.getValue());
             Thread.sleep(1000);
         }
     }
