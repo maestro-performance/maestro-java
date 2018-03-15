@@ -39,7 +39,9 @@ public class SetRequest extends MaestroRequest {
         /** Set rate */
         MAESTRO_NOTE_OPT_SET_RATE(6),
         /** Set fail condition  */
-        MAESTRO_NOTE_OPT_FCL(7);
+        MAESTRO_NOTE_OPT_FCL(7),
+        /** Sets the management interface */
+        MAESTRO_NOTE_OPT_SET_MI(8);
 
         private long value;
 
@@ -65,6 +67,7 @@ public class SetRequest extends MaestroRequest {
                 case 5: return MAESTRO_NOTE_OPT_SET_THROTTLE;
                 case 6: return MAESTRO_NOTE_OPT_SET_RATE;
                 case 7: return MAESTRO_NOTE_OPT_FCL;
+                case 8: return MAESTRO_NOTE_OPT_SET_MI;
             }
 
             return null;
@@ -120,6 +123,10 @@ public class SetRequest extends MaestroRequest {
 
     public void setFCL(final String value) {
         set(Option.MAESTRO_NOTE_OPT_FCL, value);
+    }
+
+    public void setManagementInterface(final String value) {
+        set(Option.MAESTRO_NOTE_OPT_SET_MI, value);
     }
 
     public Option getOption() {

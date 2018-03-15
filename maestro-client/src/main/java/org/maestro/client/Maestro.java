@@ -315,6 +315,20 @@ public final class Maestro implements MaestroRequester {
 
 
     /**
+     * Sets the management interface URL
+     * @param value The value to set the (remote) parameter to
+     * @throws MaestroException if unable to send the MQTT request
+     */
+    public void setManagementInterface(final String value) throws MaestroException {
+        SetRequest maestroNote = new SetRequest();
+
+        maestroNote.setManagementInterface(value);
+
+        maestroClient.publish(MaestroTopics.BROKER_INSPECTOR_DAEMONS, maestroNote);
+    }
+
+
+    /**
      * Sends a start inspector request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
