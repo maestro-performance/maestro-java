@@ -22,10 +22,7 @@ public final class RateWriter implements AutoCloseable {
      */
     public static final String TIMESTAMP_FORMAT = "\"yyyy-MM-dd HH:mm:ss.SSSSSS\"";
     public static final char SEPARATOR = ',';
-    /**
-     * It doesn't include any {@code '\n'}.
-     */
-    public static final int HEADER_LENGTH = ("etd" + SEPARATOR + "atd").length();
+
     /**
      * It include the {@code "} around the timestamps and {@code '\n'}.
      */
@@ -44,15 +41,27 @@ public final class RateWriter implements AutoCloseable {
         final String role = sender ? "sender" : "receiver";
         final String fileName = role + (compressed ? "d-rate.csv.gz" : "d-rate.csv");
         this.reportFile = new File(reportFolder, fileName);
+
+        outputStream = createOutputStream(compressed);
+
+        writeHeader(sender);
+    }
+
+    private OutputStream createOutputStream(boolean compressed) throws IOException {
         final FileOutputStream fileStream = new FileOutputStream(reportFile);
+
         if (compressed) {
-            outputStream = new GZIPOutputStream(fileStream);
+            return new GZIPOutputStream(fileStream);
         } else {
-            outputStream = fileStream;
+            return fileStream;
         }
+    }
+
+    private void writeHeader(boolean sender) throws IOException {
         //header depend on being sender/receiver
         final String firstTimeColumn;
         final String secondTimeColumn;
+
         if (sender) {
             firstTimeColumn = "etd";
             secondTimeColumn = "atd";
@@ -60,6 +69,7 @@ public final class RateWriter implements AutoCloseable {
             firstTimeColumn = "eta";
             secondTimeColumn = "ata";
         }
+
         final int encodedSize = encodeAscii(lineBuilder.append(firstTimeColumn).append(SEPARATOR).append(secondTimeColumn), writeBuffer);
         outputStream.write(writeBuffer, 0, encodedSize);
     }
@@ -115,6 +125,7 @@ public final class RateWriter implements AutoCloseable {
         final long startRemainingMicros = startTimeStampEpochMicros % 1000L;
         final long endMillis = endTimeStampEpochMicros / 1000L;
         final long endRemainingMicros = endTimeStampEpochMicros % 1000L;
+
         lineBuilder.setLength(0);
         lineBuilder.append('\n');
         date.setTime(startMillis);
@@ -128,6 +139,7 @@ public final class RateWriter implements AutoCloseable {
 
     private static int encodeAscii(StringBuffer buffer, byte[] encodedBuffer) {
         final int bufferLength = buffer.length();
+
         for (int i = 0; i < bufferLength; i++) {
             final char c = buffer.charAt(i);
             byte b = (byte) c;
@@ -136,6 +148,7 @@ public final class RateWriter implements AutoCloseable {
             }
             encodedBuffer[i] = b;
         }
+
         return bufferLength;
     }
 
