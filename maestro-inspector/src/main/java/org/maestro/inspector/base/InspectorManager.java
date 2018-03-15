@@ -8,20 +8,22 @@ import org.maestro.worker.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class InspectorManager extends MaestroWorkerManager {
     private static final Logger logger = LoggerFactory.getLogger(InspectorManager.class);
     private static final String INSPECTOR_ROLE = "inspector";
     private Thread inspectorThread;
     private InspectorContainer inspectorContainer;
+    private MaestroInspector inspector;
 
     public InspectorManager(final String maestroURL, final String host, final MaestroDataServer dataServer,
                             final MaestroInspector inspector) throws MaestroException
     {
         super(maestroURL, INSPECTOR_ROLE, host, dataServer);
 
-        inspector.setUrl("http://localhost:8161/console/jolokia");
-        inspector.setUser("admin");
-        inspector.setPassword("admin");
+        this.inspector = inspector;
 
         inspectorContainer = new InspectorContainer(inspector);
     }
@@ -37,6 +39,40 @@ public class InspectorManager extends MaestroWorkerManager {
         }
         catch (Throwable t) {
             logger.error("Unable to start inspector: {}", t.getMessage(), t);
+        }
+    }
+
+
+    @Override
+    public void handle(SetRequest note) {
+        super.handle(note);
+
+        if (note.getOption() == SetRequest.Option.MAESTRO_NOTE_OPT_SET_MI) {
+            String value = note.getValue();
+            try {
+                URL url = new URL(value);
+
+                /*
+                 * Jolokia client does not handle well the userinfo part of the URL ... that's
+                 * why it reformats the URL without it.
+                 */
+                String newUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/" + url.getPath();
+                inspector.setUrl(newUrl);
+
+                String userInfo = url.getUserInfo();
+                if (userInfo != null) {
+                    String[] parts = userInfo.split(":");
+                    String username = parts[0];
+                    inspector.setUser(username);
+
+                    if (parts.length == 2) {
+                        inspector.setPassword(parts[1]);
+                    }
+                }
+            } catch (MalformedURLException e) {
+                logger.error("Unable to parse management interface URL {}: {}", value, e.getMessage(), e);
+                getClient().replyInternalError();
+            }
         }
     }
 
