@@ -24,15 +24,17 @@ public class MaestroDataServer implements Runnable {
     private Server server;
     private int dataServerPort;
     private final HandlerCollection contexts;
+    private String host;
 
     /**
      * Constructor
      * @param logDir log directory to serve
      */
-    public MaestroDataServer(final File logDir) {
+    public MaestroDataServer(final File logDir, final String host) {
         this.logDir = logDir;
 
-        contexts = new HandlerCollection(true);
+        this.contexts = new HandlerCollection(true);
+        this.host = host;
     }
 
     private void runServerInt() throws Exception {
@@ -120,21 +122,24 @@ public class MaestroDataServer implements Runnable {
      * @return the data server base URL.
      */
     public String getServerURL() {
-        AbstractConfiguration config = ConfigurationWrapper.getConfig();
-        String host = config.getString("data.server.host", null);
-
-        // Host configuration takes priority over detection
         if (host == null) {
-            host = ((ServerConnector) server.getConnectors()[0]).getHost();
+            AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
-            // If null, it's binding to all interfaces and that's OK
+            host = config.getString("data.server.host", null);
+
+            // Host configuration takes priority over detection
             if (host == null) {
-                try {
-                    host = InetAddress.getLocalHost().getHostAddress();
-                } catch (UnknownHostException e) {
-                    logger.error("Unable to determine the address of the data server local host. Please set it " +
-                            "manually in the configuration file via 'data.server.host' setting. Using 127.0.0.1 ...");
-                    host = "127.0.0.1";
+                host = ((ServerConnector) server.getConnectors()[0]).getHost();
+
+                // If null, it's binding to all interfaces and that's OK
+                if (host == null) {
+                    try {
+                        host = InetAddress.getLocalHost().getHostAddress();
+                    } catch (UnknownHostException e) {
+                        logger.error("Unable to determine the address of the data server local host. Please set it " +
+                                "manually in the configuration file via 'data.server.host' setting. Using 127.0.0.1 ...");
+                        host = "127.0.0.1";
+                    }
                 }
             }
         }

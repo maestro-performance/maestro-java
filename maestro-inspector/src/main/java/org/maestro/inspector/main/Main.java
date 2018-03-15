@@ -22,6 +22,7 @@ import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
+import org.maestro.common.NetworkUtils;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.common.worker.MaestroWorker;
@@ -32,6 +33,8 @@ import org.maestro.worker.ds.MaestroDataServer;
 import org.maestro.worker.main.MaestroWorkerExecutor;
 
 import java.io.File;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 
 
 public class Main {
@@ -66,7 +69,7 @@ public class Main {
         options.addOption("i", "inspector", true,
                 "maestro inspector to use");
         options.addOption("H", "host", true,
-                "this' host hostname");
+                "optional hostname (to override auto-detection)");
         options.addOption("l", "log-dir", true,
                 "this' host hostname");
 
@@ -93,10 +96,6 @@ public class Main {
         }
 
         host = cmdLine.getOptionValue('H');
-        if (host == null) {
-            System.err.println("The peer hostname is missing (option -H)");
-            help(options, -1);
-        }
 
         String logDirVal = cmdLine.getOptionValue('l');
         if (logDirVal == null) {
@@ -110,12 +109,18 @@ public class Main {
     /**
      * Running this as a debug is something like:
      * java -m mqtt://maestro-broker:1883
-     *      -H localhost
      *      -I org.maestro.maestro.inspector.activemq.ArtemisInspector
      *      -l /storage/tmp/maestro-java/sender
      */
     public static void main(String[] args) {
         processCommand(args);
+
+        try {
+            host = NetworkUtils.getHost("maestro.inspector.host");
+        } catch (UnknownHostException e) {
+            System.err.println("Unable to determine the hostname and the peer hostname is missing (set with option -H)");
+            System.exit(1);
+        }
 
         LogConfigurator.defaultForDaemons();
         try {
@@ -127,7 +132,7 @@ public class Main {
         }
 
         try {
-            MaestroDataServer dataServer = new MaestroDataServer(logDir);
+            MaestroDataServer dataServer = new MaestroDataServer(logDir, host);
 
             MaestroWorkerExecutor executor;
             AbstractMaestroPeer maestroPeer;
