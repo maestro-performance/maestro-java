@@ -35,7 +35,7 @@ public class InspectorManager extends MaestroWorkerManager {
         inspectorThread = new Thread(inspectorContainer);
 
         try {
-            inspectorThread.run();
+            inspectorThread.start();
         }
         catch (Throwable t) {
             logger.error("Unable to start inspector: {}", t.getMessage(), t);
@@ -78,6 +78,7 @@ public class InspectorManager extends MaestroWorkerManager {
 
     @Override
     public void handle(StopInspector note) {
+        logger.debug("Stop inspector request received");
         inspectorThread.interrupt();
     }
 

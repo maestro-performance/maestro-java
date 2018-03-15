@@ -18,7 +18,11 @@ public class InspectorContainer implements Runnable {
             inspector.start();
         }
         catch (InterruptedException e) {
-
+            try {
+                inspector.stop();
+            } catch (Exception e1) {
+                logger.error("Error stopping the inspector: {}", e.getMessage(), e);
+            }
         }
         catch (Exception e) {
             logger.error("Error running the inspector: {}", e.getMessage(), e);

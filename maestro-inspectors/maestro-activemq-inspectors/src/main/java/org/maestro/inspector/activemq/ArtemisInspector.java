@@ -14,6 +14,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ArtemisInspector implements MaestroInspector {
     private static final Logger logger = LoggerFactory.getLogger(ArtemisInspector.class);
+    private boolean running = true;
     private String url;
     private String user;
     private String password;
@@ -58,9 +59,10 @@ public class ArtemisInspector implements MaestroInspector {
     }
 
     public int start() throws Exception {
+        running = true;
         connect();
 
-        while (true) {
+        while (running) {
 
             J4pReadRequest req = new J4pReadRequest("java.lang:type=Memory", "HeapMemoryUsage");
 
@@ -69,9 +71,12 @@ public class ArtemisInspector implements MaestroInspector {
             logger.debug("Heap Memory Usage: {}", (Object) response.getValue());
             Thread.sleep(1000);
         }
+
+        logger.debug("Artemis inspector is terminating");
+        return 0;
     }
 
     public void stop() throws Exception {
-
+        running = false;
     }
 }
