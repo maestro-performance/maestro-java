@@ -84,6 +84,10 @@ public class MaestroAction extends Action {
                     maestro.halt();
                     break;
                 }
+                case "start-inspector": {
+                    maestro.startInspector();
+                    break;
+                }
                 case "stop": {
                     maestro.stopSender();
                     maestro.stopReceiver();
