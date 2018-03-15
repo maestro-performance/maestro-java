@@ -1,5 +1,6 @@
 package org.maestro.inspector.activemq;
 
+import org.apache.http.protocol.HTTP;
 import org.jolokia.client.BasicAuthenticator;
 import org.jolokia.client.J4pClient;
 import org.jolokia.client.request.J4pReadRequest;
