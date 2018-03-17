@@ -64,6 +64,7 @@ public class ArtemisInspector implements MaestroInspector {
 
         while (running) {
             logger.debug("Heap Memory Usage: {}", artemisDataReader.jvmHeapMemory());
+            logger.debug("Eden Memory Usage: {}", artemisDataReader.jvmEdenSpace());
             Thread.sleep(1000);
         }
 

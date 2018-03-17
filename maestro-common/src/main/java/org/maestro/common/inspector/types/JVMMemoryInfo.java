@@ -1,16 +1,22 @@
 package org.maestro.common.inspector.types;
 
-public class JVMHeapInfo {
+public class JVMMemoryInfo {
+    private final String memoryAreaName;
     private long initial;
     private long committed;
     private long max;
     private long used;
 
-    public JVMHeapInfo(long initial, long committed, long max, long used) {
+    public JVMMemoryInfo(final String memoryAreaName, long initial, long committed, long max, long used) {
+        this.memoryAreaName = memoryAreaName;
         this.initial = initial;
         this.committed = committed;
         this.max = max;
         this.used = used;
+    }
+
+    public String getMemoryAreaName() {
+        return memoryAreaName;
     }
 
     public long getInitial() {
@@ -31,7 +37,7 @@ public class JVMHeapInfo {
 
     @Override
     public String toString() {
-        return "JVMHeapInfo{" +
+        return "JVMMemoryInfo{" +
                 "initial=" + initial +
                 ", committed=" + committed +
                 ", max=" + max +
