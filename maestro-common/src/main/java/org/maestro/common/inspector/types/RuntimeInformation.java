@@ -4,12 +4,12 @@ import java.util.HashMap;
 import java.util.Map;
 
 /**
- * A container for operating system information
+ * A container class for runtime information
  */
-public class OSInfo implements InspectorType {
+public class RuntimeInformation implements InspectorType {
     private final Map<String, Object> osProperties;
 
-    public OSInfo(final Map<String, Object> osProperties) {
+    public RuntimeInformation(final Map<String, Object> osProperties) {
         this.osProperties = osProperties;
     }
 
@@ -19,7 +19,7 @@ public class OSInfo implements InspectorType {
 
     @Override
     public String toString() {
-        return "OSInfo{" +
+        return "RuntimeInformation{" +
                 "osProperties=" + osProperties +
                 '}';
     }
