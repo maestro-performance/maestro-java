@@ -2,8 +2,6 @@ package org.maestro.inspector.activemq;
 
 import org.jolokia.client.BasicAuthenticator;
 import org.jolokia.client.J4pClient;
-import org.jolokia.client.request.J4pReadRequest;
-import org.jolokia.client.request.J4pReadResponse;
 import org.maestro.common.inspector.MaestroInspector;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +16,7 @@ public class ArtemisInspector implements MaestroInspector {
     private String user;
     private String password;
 
+    private ArtemisDataReader artemisDataReader;
     private J4pClient j4p;
 
     public ArtemisInspector() {
@@ -55,6 +54,8 @@ public class ArtemisInspector implements MaestroInspector {
                 .authenticator(new BasicAuthenticator().preemptive())
                 .connectionTimeout(3000)
                 .build();
+
+        artemisDataReader = new ArtemisDataReader(j4p);
     }
 
     public int start() throws Exception {
@@ -62,12 +63,7 @@ public class ArtemisInspector implements MaestroInspector {
         connect();
 
         while (running) {
-
-            J4pReadRequest req = new J4pReadRequest("java.lang:type=Memory", "HeapMemoryUsage");
-
-            J4pReadResponse response = j4p.execute(req);
-
-            logger.debug("Heap Memory Usage: {}", (Object) response.getValue());
+            logger.debug("Heap Memory Usage: {}", artemisDataReader.jvmHeapMemory());
             Thread.sleep(1000);
         }
 
