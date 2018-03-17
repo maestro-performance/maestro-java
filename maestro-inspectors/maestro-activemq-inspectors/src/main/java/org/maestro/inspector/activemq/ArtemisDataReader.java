@@ -70,11 +70,11 @@ public class ArtemisDataReader {
             String tmp = (String) key;
             logger.debug("Checking key {}", tmp);
 
-            Pattern pattern = Pattern.compile(".*name=.*,.*");
+            Pattern pattern = Pattern.compile(".*name=(.*),.*");
             Matcher matcher = pattern.matcher(tmp);
 
             if (matcher.matches()) {
-                memoryAreaName = matcher.group();
+                memoryAreaName = matcher.group(1);
 
                 logger.debug("Reading information from memory area '{}'", memoryAreaName);
             }
