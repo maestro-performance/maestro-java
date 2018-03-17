@@ -38,7 +38,8 @@ public class JVMMemoryInfo {
     @Override
     public String toString() {
         return "JVMMemoryInfo{" +
-                "initial=" + initial +
+                "memoryAreaName='" + memoryAreaName + '\'' +
+                ", initial=" + initial +
                 ", committed=" + committed +
                 ", max=" + max +
                 ", used=" + used +
