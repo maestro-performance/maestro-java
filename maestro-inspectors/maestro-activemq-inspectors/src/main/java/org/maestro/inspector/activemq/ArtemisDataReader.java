@@ -15,19 +15,17 @@ import org.slf4j.LoggerFactory;
 
 import javax.management.MalformedObjectNameException;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 import static org.maestro.inspector.activemq.JolokiaUtils.*;
 
 public class ArtemisDataReader {
     private static final Logger logger = LoggerFactory.getLogger(ArtemisDataReader.class);
+    private final DefaultJolokiaParser defaultJolokiaParser = new DefaultJolokiaParser();
     private J4pClient j4pClient;
 
     public ArtemisDataReader(J4pClient j4pClient) {
         this.j4pClient = j4pClient;
     }
-
 
     /**
      * Reads JVM Heap heap memory information information (might be JVM-specific)
@@ -51,31 +49,6 @@ public class ArtemisDataReader {
         return new JVMMemoryInfo("Heap", init, committed, max, used);
     }
 
-    private void assignMemoryInfo(final JolokiaConverter converter, final Object key, final Object object) {
-        if (logger.isTraceEnabled()) {
-            logger.trace("Processing returned JSON Key {} with value: {}", key, object);
-        }
-
-        String jolokiaPropertyName = "";
-        if (key instanceof String) {
-            String tmp = (String) key;
-            logger.debug("Checking property name/group {}", tmp);
-
-            Pattern pattern = Pattern.compile(".*name=(.*),.*");
-            Matcher matcher = pattern.matcher(tmp);
-
-            if (matcher.matches()) {
-                jolokiaPropertyName = matcher.group(1);
-
-                logger.debug("Reading property name/group '{}'", jolokiaPropertyName);
-            }
-            else {
-                jolokiaPropertyName = tmp;
-            }
-        }
-
-        converter.convert(jolokiaPropertyName, object);
-    }
 
     /**
      * Reads JVM Heap heap memory information information (might be JVM-specific)
@@ -99,7 +72,7 @@ public class ArtemisDataReader {
 
         List<JVMMemoryInfo> jvmMemoryInfos = new LinkedList<>();
         JolokiaConverter jolokiaConverter = new JVMMemoryConverter(jvmMemoryInfos);
-        jo.forEach((key, value) -> assignMemoryInfo(jolokiaConverter, key, value));
+        jo.forEach((key, value) -> defaultJolokiaParser.parse(jolokiaConverter, key, value));
 
         return jvmMemoryInfos;
     }
@@ -124,7 +97,7 @@ public class ArtemisDataReader {
 
         Map<String, Object> osProperties = new HashMap<>();
         JolokiaConverter jolokiaConverter = new MapConverter(osProperties);
-        jo.forEach((key, value) -> assignMemoryInfo(jolokiaConverter, key, value));
+        jo.forEach((key, value) -> defaultJolokiaParser.parse(jolokiaConverter, key, value));
 
         return new OSInfo(osProperties);
     }
@@ -150,7 +123,7 @@ public class ArtemisDataReader {
 
         Map<String, Object> osProperties = new HashMap<>();
         JolokiaConverter jolokiaConverter = new MapConverter(osProperties);
-        jo.forEach((key, value) -> assignMemoryInfo(jolokiaConverter, key, value));
+        jo.forEach((key, value) -> defaultJolokiaParser.parse(jolokiaConverter, key, value));
 
         return new RuntimeInformation(osProperties);
     }
