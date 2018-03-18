@@ -3,6 +3,8 @@ package org.maestro.inspector.activemq;
 import org.jolokia.client.BasicAuthenticator;
 import org.jolokia.client.J4pClient;
 import org.maestro.common.inspector.MaestroInspector;
+import org.maestro.common.inspector.types.OSInfo;
+import org.maestro.common.inspector.types.RuntimeInformation;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,9 +62,18 @@ public class ArtemisInspector implements MaestroInspector {
 
     public int start() throws Exception {
         running = true;
+        if (url == null) {
+            logger.error("No management interface was given for the test. Therefore, ignoring");
+            return 1;
+        }
+
         connect();
 
-        logger.debug("Operating system: {}", artemisDataReader.operatingSystem());
+        OSInfo osInfo = artemisDataReader.operatingSystem();
+        logger.debug("Operating system: {}", osInfo);
+
+        RuntimeInformation runtimeInformation = artemisDataReader.runtimeInformation();
+        logger.debug("Runtime information: {}", runtimeInformation);
         while (running) {
             logger.debug("Heap Memory Usage: {}", artemisDataReader.jvmHeapMemory());
             logger.debug("Eden Memory Usage: {}", artemisDataReader.jvmEdenSpace());
