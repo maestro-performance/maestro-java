@@ -7,6 +7,7 @@ import org.jolokia.client.request.J4pReadResponse;
 import org.json.simple.JSONObject;
 import org.maestro.common.inspector.types.JVMMemoryInfo;
 import org.maestro.common.inspector.types.OSInfo;
+import org.maestro.common.inspector.types.RuntimeInformation;
 import org.maestro.inspector.activemq.converter.MapConverter;
 import org.maestro.inspector.activemq.converter.JVMMemoryConverter;
 import org.slf4j.Logger;
@@ -68,6 +69,9 @@ public class ArtemisDataReader {
 
                 logger.debug("Reading property name/group '{}'", jolokiaPropertyName);
             }
+            else {
+                jolokiaPropertyName = tmp;
+            }
         }
 
         converter.convert(jolokiaPropertyName, object);
@@ -123,5 +127,31 @@ public class ArtemisDataReader {
         jo.forEach((key, value) -> assignMemoryInfo(jolokiaConverter, key, value));
 
         return new OSInfo(osProperties);
+    }
+
+
+    /**
+     * Reads runtime information information (might be JVM-specific)
+     * @return operating system information
+     * @throws MalformedObjectNameException
+     * @throws J4pException if unable to read (ie: forbidden to read the value)
+     */
+    public RuntimeInformation runtimeInformation() throws MalformedObjectNameException, J4pException {
+        J4pReadRequest req = new J4pReadRequest("java.lang:type=Runtime", "");
+
+        // Throws if unable to read
+        J4pReadResponse response = j4pClient.execute(req);
+
+        JSONObject jo = response.getValue();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("JSON response: {}", jo.toString());
+        }
+
+        Map<String, Object> osProperties = new HashMap<>();
+        JolokiaConverter jolokiaConverter = new MapConverter(osProperties);
+        jo.forEach((key, value) -> assignMemoryInfo(jolokiaConverter, key, value));
+
+        return new RuntimeInformation(osProperties);
     }
 }
