@@ -83,8 +83,14 @@ public class Main {
 
 
         host = cmdLine.getOptionValue('H');
-
-
+        if (host == null) {
+            try {
+                host = NetworkUtils.getHost("maestro.agent.host");
+            } catch (UnknownHostException e) {
+                System.err.println("Unable to determine the hostname and the peer hostname is missing (set with option -H)");
+                help(options, -1);
+            }
+        }
 
         String logDirVal = cmdLine.getOptionValue('l');
         if (logDirVal == null) {
@@ -102,13 +108,6 @@ public class Main {
      */
     public static void main(String[] args) {
         processCommand(args);
-
-        try {
-            host = NetworkUtils.getHost("maestro.agent.host");
-        } catch (UnknownHostException e) {
-            System.err.println("Unable to determine the hostname and the peer hostname is missing (set with option -H)");
-            System.exit(1);
-        }
 
         LogConfigurator.defaultForDaemons();
         try {
