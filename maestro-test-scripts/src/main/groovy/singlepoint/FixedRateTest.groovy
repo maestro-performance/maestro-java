@@ -42,6 +42,7 @@ messageSize = System.getenv("MESSAGE_SIZE")
 duration = System.getenv("TEST_DURATION")
 rate = System.getenv("RATE")
 parallelCount = System.getenv("PARALLEL_COUNT")
+managementInterface = System.getenv("MANAGEMENT_INTERFACE");
 
 LogConfigurator.verbose()
 
@@ -60,6 +61,13 @@ testProfile.setRate(Integer.parseInt(rate))
 testProfile.setParallelCount(Integer.parseInt(parallelCount))
 
 FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, reportsDownloader, testProfile)
+
+if (managementInterface != null) {
+    maestro.setManagementInterface(managementInterface)
+}
+else {
+    println "No management interface address was given"
+}
 
 if (!testExecutor.run()) {
     maestro.stop()
