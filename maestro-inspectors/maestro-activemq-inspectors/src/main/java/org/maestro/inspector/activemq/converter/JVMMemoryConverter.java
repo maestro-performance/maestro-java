@@ -9,20 +9,32 @@ import java.util.List;
 import static org.maestro.inspector.activemq.JolokiaUtils.*;
 
 public class JVMMemoryConverter implements JolokiaConverter {
-    public List<JVMMemoryInfo> jvmMemoryInfos;
+    private final List<JVMMemoryInfo> jvmMemoryInfos;
+    private final String parentPropertyName;
 
-    public JVMMemoryConverter(final List<JVMMemoryInfo> jvmMemoryInfos) {
+    public JVMMemoryConverter(final List<JVMMemoryInfo> jvmMemoryInfos, final String parentPropertyName) {
         this.jvmMemoryInfos = jvmMemoryInfos;
+        this.parentPropertyName = parentPropertyName;
     }
 
 
 
     @Override
     public void convert(final String propertyName, JSONObject jsonObject) {
-        long init = getLong(jsonObject.get("init"));
-        long committed = getLong(jsonObject.get("committed"));
-        long max = getLong(jsonObject.get("max"));
-        long used = getLong(jsonObject.get("used"));
+        Object tmp = jsonObject.get(parentPropertyName);
+        long init = 0;
+        long committed = 0;
+        long max = 0;
+        long used = 0;
+
+        if (tmp instanceof JSONObject) {
+            JSONObject childObject = (JSONObject) tmp;
+
+            init = getLong(childObject.get("init"));
+            committed = getLong(childObject.get("committed"));
+            max = getLong(childObject.get("max"));
+            used = getLong(childObject.get("used"));
+        }
 
         JVMMemoryInfo jvmMemoryInfo = new JVMMemoryInfo(propertyName, init, committed, max, used);
         jvmMemoryInfos.add(jvmMemoryInfo);

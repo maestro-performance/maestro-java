@@ -56,7 +56,7 @@ public class ArtemisDataReader {
      * @throws MalformedObjectNameException
      * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
-    public List<JVMMemoryInfo> jvmEdenSpace() throws MalformedObjectNameException, J4pException {
+    public List<JVMMemoryInfo> jvmMemoryAreas() throws MalformedObjectNameException, J4pException {
         J4pReadRequest req = new J4pReadRequest("java.lang:name=*,type=MemoryPool", "Usage");
 
         // Throws if unable to read
@@ -71,7 +71,7 @@ public class ArtemisDataReader {
         }
 
         List<JVMMemoryInfo> jvmMemoryInfos = new LinkedList<>();
-        JolokiaConverter jolokiaConverter = new JVMMemoryConverter(jvmMemoryInfos);
+        JolokiaConverter jolokiaConverter = new JVMMemoryConverter(jvmMemoryInfos, "Usage");
         jo.forEach((key, value) -> defaultJolokiaParser.parse(jolokiaConverter, key, value));
 
         return jvmMemoryInfos;
