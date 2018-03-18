@@ -32,13 +32,14 @@ public class InspectorManager extends MaestroWorkerManager {
     public void handle(StartInspector note) {
         logger.debug("Start inspector request received");
 
-        inspectorThread = new Thread(inspectorContainer);
-
         try {
+            inspector.setDuration(getWorkerOptions().getDuration());
+            inspectorThread = new Thread(inspectorContainer);
             inspectorThread.start();
         }
         catch (Throwable t) {
             logger.error("Unable to start inspector: {}", t.getMessage(), t);
+            getClient().replyInternalError();
         }
     }
 
@@ -79,7 +80,10 @@ public class InspectorManager extends MaestroWorkerManager {
     @Override
     public void handle(StopInspector note) {
         logger.debug("Stop inspector request received");
-        inspectorThread.interrupt();
+
+        if (inspectorThread != null) {
+            inspectorThread.interrupt();
+        }
     }
 
     @Override

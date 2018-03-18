@@ -32,6 +32,10 @@ public class TestDurationBuilder {
      * @throws DurationParseException
      */
     public static TestDuration build(final String durationSpec) throws DurationParseException {
+        if (durationSpec == null) {
+            throw new DurationParseException("Invalid duration: null");
+        }
+
         if (durationSpec.matches(".*[a-zA-Z].*")) {
             return new DurationTime(durationSpec);
         }
