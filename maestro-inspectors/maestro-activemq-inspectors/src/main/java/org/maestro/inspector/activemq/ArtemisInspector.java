@@ -81,9 +81,15 @@ public class ArtemisInspector implements MaestroInspector {
 
             while (duration.canContinue(this) && isRunning()) {
                 logger.debug("Heap Memory Usage: {}", artemisDataReader.jvmHeapMemory());
-                logger.debug("Eden Memory Usage: {}", artemisDataReader.jvmMemoryAreas());
+                logger.debug("JVM Memory Usage: {}", artemisDataReader.jvmMemoryAreas());
+                try {
+                    logger.debug("Queue information: {}", artemisDataReader.queueInformation());
+                }
+                catch (Exception e) {
+                    logger.error("Unable to read queue information: {}", e.getMessage(), e);
+                }
 
-                Thread.sleep(1000);
+                Thread.sleep(5000);
             }
 
             logger.debug("The test has finished and the Artemis inspector is terminating");

@@ -7,6 +7,7 @@ import org.jolokia.client.request.J4pReadResponse;
 import org.json.simple.JSONObject;
 import org.maestro.common.inspector.types.JVMMemoryInfo;
 import org.maestro.common.inspector.types.OSInfo;
+import org.maestro.common.inspector.types.QueueInfo;
 import org.maestro.common.inspector.types.RuntimeInformation;
 import org.maestro.inspector.activemq.converter.MapConverter;
 import org.maestro.inspector.activemq.converter.JVMMemoryConverter;
@@ -63,8 +64,6 @@ public class ArtemisDataReader {
         J4pReadResponse response = j4pClient.execute(req);
 
         JSONObject jo = response.getValue();
-
-
 
         if (logger.isDebugEnabled()) {
             logger.debug("JSON response: {}", jo.toString());
@@ -126,5 +125,24 @@ public class ArtemisDataReader {
         jo.forEach((key, value) -> defaultJolokiaParser.parse(jolokiaConverter, key, value));
 
         return new RuntimeInformation(osProperties);
+    }
+
+    public QueueInfo queueInformation() throws MalformedObjectNameException, J4pException {
+        J4pReadRequest req = new J4pReadRequest("org.apache.activemq.artemis:address=*,broker=*,component=addresses,queue=*,*", "");
+
+        // Throws if unable to read
+        J4pReadResponse response = j4pClient.execute(req);
+
+        JSONObject jo = response.getValue();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("JSON response: {}", jo.toString());
+        }
+
+        Map<String, Object> queueProperties = new HashMap<>();
+        JolokiaConverter jolokiaConverter = new MapConverter(queueProperties);
+        jo.forEach((key, value) -> defaultJolokiaParser.parse(jolokiaConverter, key, value));
+
+        return new QueueInfo(queueProperties);
     }
 }
