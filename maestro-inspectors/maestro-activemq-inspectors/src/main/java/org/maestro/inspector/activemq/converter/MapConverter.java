@@ -1,5 +1,6 @@
 package org.maestro.inspector.activemq.converter;
 
+import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
 import org.maestro.inspector.activemq.JolokiaConverter;
 
@@ -33,6 +34,16 @@ public class MapConverter implements JolokiaConverter {
             return;
         }
 
+        if (object instanceof Boolean) {
+            convert(propertyName, (Boolean) object);
+            return;
+        }
+
+        // TODO: support JSON array
+        if (object instanceof JSONArray) {
+            return;
+        }
+
         throw new IllegalArgumentException("The input object of type " + (object == null ? "'null'" : object.getClass())
                 + " for property " +  propertyName + " cannot be converted to a JSONObject");
     }
@@ -47,6 +58,10 @@ public class MapConverter implements JolokiaConverter {
     }
 
     public void convert(String propertyName, String value) {
+        properties.put(propertyName, value);
+    }
+
+    public void convert(String propertyName, Boolean value) {
         properties.put(propertyName, value);
     }
 }
