@@ -74,7 +74,20 @@ public class ReportsDownloader {
             logger.info("Downloading file {}", targetURL);
         }
 
-        Downloader.download(targetURL, destinationDir, true);
+        try {
+            Downloader.download(targetURL, destinationDir, true);
+        }
+        catch (ResourceExchangeException re) {
+            if (re.getCode() == HttpStatus.SC_NOT_FOUND) {
+                try {
+                    Thread.sleep(5000);
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+                // Maybe it's still flushing the data ... who knows. We can wait a bit and try again
+                Downloader.download(targetURL, destinationDir, true);
+            }
+        }
     }
 
     private void downloadSenderReports(final String host, final String reportSource) throws ResourceExchangeException {
