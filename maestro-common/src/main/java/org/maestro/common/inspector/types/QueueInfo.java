@@ -7,7 +7,7 @@ import java.util.Map;
 /**
  * A container for queue information
  */
-public class QueueInfo implements InspectorType {
+public class QueueInfo implements InspectorType, QueueInfoType {
     private final Map<String, Object> queueProperties;
 
     public QueueInfo(final Map<String, Object> queueProperties) {

@@ -6,10 +6,10 @@ import java.util.Map;
 /**
  * A container class for runtime information
  */
-public class RuntimeInformation implements InspectorType {
+public class RuntimeInfo implements InspectorType, RuntimeInfoType {
     private final Map<String, Object> osProperties;
 
-    public RuntimeInformation(final Map<String, Object> osProperties) {
+    public RuntimeInfo(final Map<String, Object> osProperties) {
         this.osProperties = osProperties;
     }
 
@@ -19,7 +19,7 @@ public class RuntimeInformation implements InspectorType {
 
     @Override
     public String toString() {
-        return "RuntimeInformation{" +
+        return "RuntimeInfo{" +
                 "osProperties=" + osProperties +
                 '}';
     }

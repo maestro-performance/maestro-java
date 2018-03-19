@@ -8,7 +8,7 @@ import org.json.simple.JSONObject;
 import org.maestro.common.inspector.types.JVMMemoryInfo;
 import org.maestro.common.inspector.types.OSInfo;
 import org.maestro.common.inspector.types.QueueInfo;
-import org.maestro.common.inspector.types.RuntimeInformation;
+import org.maestro.common.inspector.types.RuntimeInfo;
 import org.maestro.inspector.activemq.converter.MapConverter;
 import org.maestro.inspector.activemq.converter.JVMMemoryConverter;
 import org.slf4j.Logger;
@@ -108,7 +108,7 @@ public class ArtemisDataReader {
      * @throws MalformedObjectNameException
      * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
-    public RuntimeInformation runtimeInformation() throws MalformedObjectNameException, J4pException {
+    public RuntimeInfo runtimeInformation() throws MalformedObjectNameException, J4pException {
         J4pReadRequest req = new J4pReadRequest("java.lang:type=Runtime", "");
 
         // Throws if unable to read
@@ -124,7 +124,7 @@ public class ArtemisDataReader {
         JolokiaConverter jolokiaConverter = new MapConverter(osProperties);
         jo.forEach((key, value) -> defaultJolokiaParser.parse(jolokiaConverter, key, value));
 
-        return new RuntimeInformation(osProperties);
+        return new RuntimeInfo(osProperties);
     }
 
     public QueueInfo queueInformation() throws MalformedObjectNameException, J4pException {

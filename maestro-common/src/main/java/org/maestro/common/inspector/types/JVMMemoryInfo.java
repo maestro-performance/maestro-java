@@ -3,7 +3,7 @@ package org.maestro.common.inspector.types;
 /**
  * A type container for the JVM memory information (of all types)
  */
-public class JVMMemoryInfo implements InspectorType {
+public class JVMMemoryInfo implements InspectorType, JVMMemoryInfoType {
     private final String memoryAreaName;
     private long initial;
     private long committed;
