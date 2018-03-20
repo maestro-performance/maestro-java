@@ -11,6 +11,7 @@ import org.maestro.common.inspector.types.QueueInfo;
 import org.maestro.common.inspector.types.RuntimeInfo;
 import org.maestro.inspector.activemq.converter.MapConverter;
 import org.maestro.inspector.activemq.converter.JVMMemoryConverter;
+import org.maestro.inspector.activemq.converter.QueueInfoConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -22,6 +23,7 @@ import static org.maestro.inspector.activemq.JolokiaUtils.*;
 public class ArtemisDataReader {
     private static final Logger logger = LoggerFactory.getLogger(ArtemisDataReader.class);
     private final DefaultJolokiaParser defaultJolokiaParser = new DefaultJolokiaParser();
+
     private J4pClient j4pClient;
 
     public ArtemisDataReader(J4pClient j4pClient) {
@@ -140,8 +142,8 @@ public class ArtemisDataReader {
         }
 
         Map<String, Object> queueProperties = new HashMap<>();
-        JolokiaConverter jolokiaConverter = new MapConverter(queueProperties);
-        jo.forEach((key, value) -> defaultJolokiaParser.parse(jolokiaConverter, key, value));
+        QueueInfoConverter jolokiaConverter = new QueueInfoConverter(queueProperties);
+        jo.forEach((key, value) -> defaultJolokiaParser.parseQueueInfo(jolokiaConverter, key, value));
 
         return new QueueInfo(queueProperties);
     }

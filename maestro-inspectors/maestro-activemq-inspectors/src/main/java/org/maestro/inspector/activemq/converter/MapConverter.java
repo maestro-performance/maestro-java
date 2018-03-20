@@ -14,6 +14,10 @@ public class MapConverter implements JolokiaConverter {
         this.properties = properties;
     }
 
+    protected Map<String, Object> getProperties() {
+        return properties;
+    }
+
     @Override
     public void convert(String propertyName, Object object) {
         if (object instanceof JSONObject) {
@@ -41,6 +45,11 @@ public class MapConverter implements JolokiaConverter {
 
         // TODO: support JSON array
         if (object instanceof JSONArray) {
+            return;
+        }
+
+        if (object == null) {
+            properties.put(propertyName, object);
             return;
         }
 

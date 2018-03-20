@@ -1,8 +1,13 @@
 package org.maestro.inspector.activemq;
 
+import org.json.simple.JSONObject;
+import org.maestro.inspector.activemq.converter.MapConverter;
+import org.maestro.inspector.activemq.converter.QueueInfoConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -44,5 +49,57 @@ public class DefaultJolokiaParser {
         }
 
         converter.convert(jolokiaPropertyName, object);
+    }
+
+    /**
+     * Parse a jolokia property
+     * @param converter
+     * @param key
+     * @param object
+     */
+    void parseQueueInfo(final QueueInfoConverter converter, final Object key, final Object object) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Processing returned JSON Key {} with value: {}", key, object);
+        }
+
+        JSONObject jo;
+        if (object instanceof JSONObject) {
+            jo = (JSONObject) object;
+        }
+        else {
+            return;
+        }
+
+        Map<String, Object> queueProperties = new HashMap<>();
+        JolokiaConverter innerConverters = new MapConverter(queueProperties);
+        jo.forEach((param, value) -> parse(innerConverters, param, value));
+
+
+        Object tmpName = queueProperties.get("Name");
+
+        if (tmpName instanceof String) {
+            String queueName = (String) tmpName;
+            converter.convert(queueName, queueProperties);
+        }
+        else {
+            String jolokiaPropertyName = "";
+            if (key instanceof String) {
+                String tmp = (String) key;
+                logger.debug("Checking property name/group {}", tmp);
+
+                Pattern pattern = Pattern.compile(".*address=(\".*\"),.*");
+                Matcher matcher = pattern.matcher(tmp);
+
+                if (matcher.matches()) {
+                    jolokiaPropertyName = matcher.group(1);
+
+                    logger.debug("Reading property name/group '{}'", jolokiaPropertyName);
+                } else {
+                    jolokiaPropertyName = tmp;
+                }
+            }
+
+            converter.convert(jolokiaPropertyName, queueProperties);
+        }
     }
 }
