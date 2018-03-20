@@ -41,18 +41,31 @@ public class QueueInfoWriter implements InspectorDataWriter<QueueInfo>, AutoClos
         }
     }
 
+
+    public void write(final String key, final Object object) {
+        if (object instanceof Map) {
+            final Map<String, Object> queueProperties = (Map) object;
+            logger.debug("Queue information: {}", queueProperties);
+
+            try {
+                csvPrinter.printRecord(queueProperties.get("Name"), queueProperties.get("MessagesAdded"),
+                        queueProperties.get("MessageCount"), queueProperties.get("MessagesAcknowledged"),
+                        queueProperties.get("MessagesExpired"), queueProperties.get("ConsumerCount"));
+            } catch (IOException e) {
+                logger.error("Unable to write record: {}", e.getMessage(), e);
+            }
+        }
+        else {
+            logger.warn("Invalid value type for {}", key);
+        }
+    }
+
     @Override
     public void write(final QueueInfo data) {
         logger.debug("Queue information: {}", data);
 
         Map<String, Object> queueProperties = data.getQueueProperties();
 
-        try {
-            csvPrinter.printRecord(queueProperties.get("Name"), queueProperties.get("MessagesAdded"),
-                    queueProperties.get("MessageCount"), queueProperties.get("MessagesAcknowledged"),
-                    queueProperties.get("MessagesExpired"), queueProperties.get("ConsumerCount"));
-        } catch (IOException e) {
-            logger.error("Unable to write record: {}", e.getMessage(), e);
-        }
+        queueProperties.forEach((key, value) -> write(key, value));
     }
 }
