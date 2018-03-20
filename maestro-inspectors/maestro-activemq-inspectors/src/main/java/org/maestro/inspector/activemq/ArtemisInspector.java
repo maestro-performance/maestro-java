@@ -85,12 +85,18 @@ public class ArtemisInspector implements MaestroInspector {
         File logDir = TestLogUtils.nextTestLogDir(this.baseLogDir);
         InspectorProperties inspectorProperties = new InspectorProperties();
 
+        JVMMemoryInfoWriter heapMemoryWriter = new JVMMemoryInfoWriter(logDir, "heap");
+        JVMMemoryInfoWriter jvmMemoryAreasWriter = new JVMMemoryInfoWriter(logDir, "memory-areas");
+        RuntimeInfoWriter runtimeInfoWriter = new RuntimeInfoWriter(inspectorProperties);
+        OSInfoWriter osInfoWriter = new OSInfoWriter(inspectorProperties);
+        QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues");
+
         try {
-            JVMMemoryInfoWriter heapMemoryWriter = new JVMMemoryInfoWriter(logDir, "heap");
-            JVMMemoryInfoWriter jvmMemoryAreasWriter = new JVMMemoryInfoWriter(logDir, "memory-areas");
-            RuntimeInfoWriter runtimeInfoWriter = new RuntimeInfoWriter(inspectorProperties);
-            OSInfoWriter osInfoWriter = new OSInfoWriter(inspectorProperties);
-            QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues");
+//            JVMMemoryInfoWriter heapMemoryWriter = new JVMMemoryInfoWriter(logDir, "heap");
+//            JVMMemoryInfoWriter jvmMemoryAreasWriter = new JVMMemoryInfoWriter(logDir, "memory-areas");
+//            RuntimeInfoWriter runtimeInfoWriter = new RuntimeInfoWriter(inspectorProperties);
+//            OSInfoWriter osInfoWriter = new OSInfoWriter(inspectorProperties);
+//            QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues");
 
             startedEpochMillis = System.currentTimeMillis();
             running = true;
@@ -130,11 +136,14 @@ public class ArtemisInspector implements MaestroInspector {
                 Thread.sleep(5000);
             }
 
-            heapMemoryWriter.close();
             logger.debug("The test has finished and the Artemis inspector is terminating");
             return 0;
         } finally {
             startedEpochMillis = Long.MIN_VALUE;
+
+            heapMemoryWriter.close();
+            jvmMemoryAreasWriter.close();
+            queueInfoWriter.close();
         }
     }
 
