@@ -13,6 +13,7 @@ import java.io.IOException;
 import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+import java.time.LocalDateTime;
 import java.util.Map;
 
 public class QueueInfoWriter implements InspectorDataWriter<QueueInfo>, AutoCloseable {
@@ -42,13 +43,14 @@ public class QueueInfoWriter implements InspectorDataWriter<QueueInfo>, AutoClos
     }
 
 
-    public void write(final String key, final Object object) {
+    public void write(final LocalDateTime now, final String key, final Object object) {
         if (object instanceof Map) {
             final Map<String, Object> queueProperties = (Map) object;
             logger.debug("Queue information: {}", queueProperties);
 
             try {
-                csvPrinter.printRecord(queueProperties.get("Name"), queueProperties.get("MessagesAdded"),
+                csvPrinter.printRecord(
+                        queueProperties.get("Name"), queueProperties.get("MessagesAdded"),
                         queueProperties.get("MessageCount"), queueProperties.get("MessagesAcknowledged"),
                         queueProperties.get("MessagesExpired"), queueProperties.get("ConsumerCount"));
             } catch (IOException e) {
@@ -61,11 +63,11 @@ public class QueueInfoWriter implements InspectorDataWriter<QueueInfo>, AutoClos
     }
 
     @Override
-    public void write(final QueueInfo data) {
+    public void write(final LocalDateTime now, final QueueInfo data) {
         logger.debug("Queue information: {}", data);
 
         Map<String, Object> queueProperties = data.getQueueProperties();
 
-        queueProperties.forEach((key, value) -> write(key, value));
+        queueProperties.forEach((key, value) -> write(now, key, value));
     }
 }

@@ -17,6 +17,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.time.LocalDateTime;
 import java.util.List;
 
 /**
@@ -118,6 +119,7 @@ public class ArtemisInspector implements MaestroInspector {
             inspectorProperties.write(propertiesFile);
 
             while (duration.canContinue(this) && isRunning()) {
+                LocalDateTime now = LocalDateTime.now();
                 heapMemoryWriter.write(artemisDataReader.jvmHeapMemory());
 
                 List<JVMMemoryInfo> memoryInfoList = artemisDataReader.jvmMemoryAreas();

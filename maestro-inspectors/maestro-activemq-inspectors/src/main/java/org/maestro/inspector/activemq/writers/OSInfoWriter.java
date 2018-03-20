@@ -6,6 +6,7 @@ import org.maestro.common.writers.InspectorDataWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 public class OSInfoWriter implements InspectorDataWriter<OSInfo> {
@@ -17,7 +18,7 @@ public class OSInfoWriter implements InspectorDataWriter<OSInfo> {
     }
 
     @Override
-    public void write(final OSInfo data) {
+    public void write(final LocalDateTime now, final OSInfo data) {
         logger.debug("Operating system: {}", data);
 
         Map<String, Object> osProperties = data.getOsProperties();

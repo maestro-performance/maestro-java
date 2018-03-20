@@ -7,6 +7,7 @@ import org.maestro.common.writers.InspectorDataWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.LocalDateTime;
 import java.util.Map;
 
 public class RuntimeInfoWriter implements InspectorDataWriter<RuntimeInfo> {
@@ -18,7 +19,7 @@ public class RuntimeInfoWriter implements InspectorDataWriter<RuntimeInfo> {
     }
 
     @Override
-    public void write(final RuntimeInfo data) {
+    public void write(final LocalDateTime now, final RuntimeInfo data) {
         logger.debug("Runtime information: {}", data);
 
         Map<String, Object> runtimeProperties = data.getProperties();
