@@ -11,5 +11,5 @@ public interface RuntimeInfoType {
      * Get OS properties as a map
      * @return
      */
-    Map<String, Object> getOsProperties();
+    Map<String, Object> getProperties();
 }

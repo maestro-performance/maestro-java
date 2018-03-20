@@ -18,6 +18,9 @@ public class JVMMemoryInfo implements InspectorType, JVMMemoryInfoType {
         this.used = used;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public String getMemoryAreaName() {
         return memoryAreaName;
     }

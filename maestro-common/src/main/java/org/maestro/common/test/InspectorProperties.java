@@ -22,13 +22,13 @@ public class InspectorProperties implements MaestroTestProperties {
     private String operatingSystemName;
     private String operatingSystemArch;
     private String operatingSystemVersion;
-    private int systemCpuCount;
+    private long systemCpuCount;
     private long systemMemory;
     private long systemSwap;
     private String productName;
     private String productVersion;
 
-    public void load(File testProperties) throws IOException {
+    public void load(final File testProperties) throws IOException {
         logger.trace("Reading properties from {}", testProperties.getPath());
 
         Properties prop = new Properties();
@@ -53,26 +53,35 @@ public class InspectorProperties implements MaestroTestProperties {
 
     }
 
-    public void write(File testProperties) throws IOException {
+    public void write(final File testProperties) throws IOException {
         logger.trace("Writing properties to {}", testProperties.getPath());
-
 
         Properties prop = new Properties();
 
         prop.setProperty("jvmName", jvmName);
         prop.setProperty("jvmVersion", jvmVersion);
-        prop.setProperty("jvmPackageVersion", jvmPackageVersion);
+
+        if (jvmPackageVersion != null) {
+            prop.setProperty("jvmPackageVersion", jvmPackageVersion);
+        }
+
         prop.setProperty("operatingSystemName", operatingSystemName);
         prop.setProperty("operatingSystemArch", operatingSystemArch);
         prop.setProperty("operatingSystemVersion", operatingSystemVersion);
-        prop.setProperty("systemCpuCount", Integer.toString(systemCpuCount));
+        prop.setProperty("systemCpuCount", Long.toString(systemCpuCount));
         prop.setProperty("systemMemory", Long.toString(systemMemory));
         prop.setProperty("systemSwap", Long.toString(systemSwap));
-        prop.setProperty("productName", productName);
-        prop.setProperty("productVersion", productVersion);
+
+        if (productName != null) {
+            prop.setProperty("productName", productName);
+        }
+
+        if (productVersion != null) {
+            prop.setProperty("productVersion", productVersion);
+        }
 
         try (FileOutputStream fos = new FileOutputStream(testProperties)) {
-            prop.store(fos, "mpt");
+            prop.store(fos, "maestro");
         }
     }
 
@@ -124,11 +133,11 @@ public class InspectorProperties implements MaestroTestProperties {
         this.operatingSystemVersion = operatingSystemVersion;
     }
 
-    public int getSystemCpuCount() {
+    public long getSystemCpuCount() {
         return systemCpuCount;
     }
 
-    public void setSystemCpuCount(int systemCpuCount) {
+    public void setSystemCpuCount(long systemCpuCount) {
         this.systemCpuCount = systemCpuCount;
     }
 

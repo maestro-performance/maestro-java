@@ -64,7 +64,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
             return false;
         }
 
-        final File testLogDir = WorkerLogUtils.findTestLogDir(logDir);
+        final File testLogDir = TestLogUtils.nextTestLogDir(logDir);
 
         setupLatencyEvaluator();
 
@@ -214,7 +214,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
                 }
             }
 
-            WorkerLogUtils.createSymlinks(logDir, failed);
+            TestLogUtils.createSymlinks(logDir, failed);
         } finally {
             //reset it for new incoming tests
             setWorkerOptions(new WorkerOptions());

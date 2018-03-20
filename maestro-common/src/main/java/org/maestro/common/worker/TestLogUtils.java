@@ -1,4 +1,4 @@
-package org.maestro.worker.base;
+package org.maestro.common.worker;
 
 import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
@@ -15,8 +15,8 @@ import java.nio.file.Paths;
  * A set of worker log utilities.
  *
  */
-public class WorkerLogUtils {
-    private static final Logger logger = LoggerFactory.getLogger(WorkerLogUtils.class);
+public class TestLogUtils {
+    private static final Logger logger = LoggerFactory.getLogger(TestLogUtils.class);
 
     public static File findLastLogDir(final File logDir) {
         File currentLogDir = new File(logDir, "0");
@@ -33,7 +33,7 @@ public class WorkerLogUtils {
         return lastLogDir;
     }
 
-    public static File findTestLogDir(final File logDir) {
+    public static File nextTestLogDir(final File logDir) {
         File testLogDir = new File(logDir, "0");
         int count = 0;
 

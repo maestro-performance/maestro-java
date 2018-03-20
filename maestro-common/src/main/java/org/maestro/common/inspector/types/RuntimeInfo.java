@@ -13,7 +13,7 @@ public class RuntimeInfo implements InspectorType, RuntimeInfoType {
         this.osProperties = osProperties;
     }
 
-    public Map<String, Object> getOsProperties() {
+    public Map<String, Object> getProperties() {
         return new HashMap<>(osProperties);
     }
 

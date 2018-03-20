@@ -3,6 +3,8 @@ package org.maestro.common.inspector;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.exceptions.DurationParseException;
 
+import java.io.File;
+
 public interface MaestroInspector extends TestDuration.TestProgress {
 
     void setUrl(String url);
@@ -12,6 +14,8 @@ public interface MaestroInspector extends TestDuration.TestProgress {
     void setPassword(String password);
 
     void setDuration(String duration) throws DurationParseException;
+
+    void setBaseLogDir(File logDir);
 
     /**
      * Inspectors normally don't know how many messages have been

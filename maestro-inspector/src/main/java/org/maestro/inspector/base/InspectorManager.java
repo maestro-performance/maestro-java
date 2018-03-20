@@ -8,6 +8,7 @@ import org.maestro.worker.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
 
@@ -24,7 +25,6 @@ public class InspectorManager extends MaestroWorkerManager {
         super(maestroURL, INSPECTOR_ROLE, host, dataServer);
 
         this.inspector = inspector;
-
         inspectorContainer = new InspectorContainer(inspector);
     }
 

@@ -135,8 +135,11 @@ public class Main {
             AbstractMaestroPeer maestroPeer;
 
             Class<MaestroInspector> clazz = (Class<MaestroInspector>) Class.forName(inspector);
+            MaestroInspector inspector = clazz.newInstance();
 
-            maestroPeer = new InspectorManager(maestroUrl, host, dataServer, clazz.newInstance());
+            inspector.setBaseLogDir(logDir);
+
+            maestroPeer = new InspectorManager(maestroUrl, host, dataServer, inspector);
             executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
             executor.start(MaestroTopics.MAESTRO_INSPECTOR_TOPICS);
