@@ -93,12 +93,6 @@ public class ArtemisInspector implements MaestroInspector {
         QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues");
 
         try {
-//            JVMMemoryInfoWriter heapMemoryWriter = new JVMMemoryInfoWriter(logDir, "heap");
-//            JVMMemoryInfoWriter jvmMemoryAreasWriter = new JVMMemoryInfoWriter(logDir, "memory-areas");
-//            RuntimeInfoWriter runtimeInfoWriter = new RuntimeInfoWriter(inspectorProperties);
-//            OSInfoWriter osInfoWriter = new OSInfoWriter(inspectorProperties);
-//            QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues");
-
             startedEpochMillis = System.currentTimeMillis();
             running = true;
 
@@ -110,26 +104,26 @@ public class ArtemisInspector implements MaestroInspector {
             connect();
 
             OSInfo osInfo = artemisDataReader.operatingSystem();
-            osInfoWriter.write(osInfo);
+            osInfoWriter.write(null, osInfo);
 
             RuntimeInfo runtimeInfo = artemisDataReader.runtimeInformation();
-            runtimeInfoWriter.write(runtimeInfo);
+            runtimeInfoWriter.write(null, runtimeInfo);
 
             File propertiesFile = new File(logDir, "inspector.properties");
             inspectorProperties.write(propertiesFile);
 
             while (duration.canContinue(this) && isRunning()) {
                 LocalDateTime now = LocalDateTime.now();
-                heapMemoryWriter.write(artemisDataReader.jvmHeapMemory());
+                heapMemoryWriter.write(now, artemisDataReader.jvmHeapMemory());
 
                 List<JVMMemoryInfo> memoryInfoList = artemisDataReader.jvmMemoryAreas();
                 for (JVMMemoryInfo memoryInfo : memoryInfoList) {
-                    jvmMemoryAreasWriter.write(memoryInfo);
+                    jvmMemoryAreasWriter.write(now, memoryInfo);
                 }
 
                 try {
                     QueueInfo queueInfoList = artemisDataReader.queueInformation();
-                    queueInfoWriter.write(queueInfoList);
+                    queueInfoWriter.write(now, queueInfoList);
                 }
                 catch (Exception e) {
                     logger.error("Unable to read queue information: {}", e.getMessage(), e);
