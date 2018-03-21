@@ -3,6 +3,7 @@ package org.maestro.inspector.activemq;
 import org.jolokia.client.BasicAuthenticator;
 import org.jolokia.client.J4pClient;
 import org.jolokia.client.exception.J4pException;
+import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
@@ -32,6 +33,7 @@ public class ArtemisInspector implements MaestroInspector {
     private String password;
     private File baseLogDir;
     private TestDuration duration;
+    private MaestroReceiver endpoint;
 
     private ArtemisDataReader artemisDataReader;
     private J4pClient j4p;
@@ -61,6 +63,11 @@ public class ArtemisInspector implements MaestroInspector {
     @Override
     public void setBaseLogDir(final File baseLogDir) {
         this.baseLogDir = baseLogDir;
+    }
+
+    @Override
+    public void setEndpoint(MaestroReceiver endpoint) {
+        this.endpoint = endpoint;
     }
 
     public boolean isRunning() {
@@ -123,9 +130,19 @@ public class ArtemisInspector implements MaestroInspector {
                 Thread.sleep(5000);
             }
 
+            endpoint.notifySuccess("Inspector finished successfully");
             logger.debug("The test has finished and the Artemis inspector is terminating");
+
             return 0;
-        } finally {
+        } catch (InterruptedException eie) {
+            endpoint.notifySuccess("Inspector finished successfully");
+            throw eie;
+        }
+        catch (Exception e) {
+            endpoint.notifyFailure("Inspector failed");
+            throw e;
+        }
+        finally {
             startedEpochMillis = Long.MIN_VALUE;
 
             heapMemoryWriter.close();

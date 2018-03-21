@@ -112,9 +112,10 @@ public class ReportsDownloader {
     }
 
     private void downloadInspectorReports(final String host, final String reportSource) throws ResourceExchangeException {
-        downloadReport(host, INSPECTOR_HOST, reportSource, "broker-jvm-inspector.csv.gz");
-        downloadReport(host, INSPECTOR_HOST, reportSource, "test.properties");
-        downloadReport(host, INSPECTOR_HOST, reportSource, "broker.properties");
+        downloadReport(host, INSPECTOR_HOST, reportSource, "inspector.properties");
+        downloadReport(host, INSPECTOR_HOST, reportSource, "memory-areas.csv");
+        downloadReport(host, INSPECTOR_HOST, reportSource, "heap.csv");
+        downloadReport(host, INSPECTOR_HOST, reportSource, "queues.csv");
     }
 
     public void downloadLastSuccessful(final String type, final String host, final String name) {

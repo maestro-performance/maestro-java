@@ -25,6 +25,7 @@ public class InspectorManager extends MaestroWorkerManager {
         super(maestroURL, INSPECTOR_ROLE, host, dataServer);
 
         this.inspector = inspector;
+        this.inspector.setEndpoint(getClient());
         inspectorContainer = new InspectorContainer(inspector);
     }
 
