@@ -16,15 +16,18 @@
 
 package org.maestro.reports.index;
 
-import org.apache.commons.io.FileUtils;
 import org.maestro.reports.AbstractRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.URL;
+import java.io.InputStream;
+import java.util.Enumeration;
 import java.util.Map;
+import java.util.jar.JarFile;
+import java.util.zip.ZipEntry;
 
 
 public class IndexRenderer extends AbstractRenderer {
@@ -42,9 +45,38 @@ public class IndexRenderer extends AbstractRenderer {
     public void copyResources(File path) throws IOException {
         super.copyResources(path, "/org/maestro/reports/favicon.png", "favicon.png");
 
-        // Template resources org/maestro/reports/modern/resources
-        URL resourcesUrl = this.getClass().getResource("/org/maestro/reports/modern/resources");
+        File jarPath = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+        JarFile jarFile = new JarFile(jarPath);
 
-        FileUtils.copyURLToFile(resourcesUrl, new File(path, "resources"));
+        Enumeration entries = jarFile.entries();
+
+        while(entries.hasMoreElements()){
+            ZipEntry entry = (ZipEntry)entries.nextElement();
+
+            String name = entry.getName().replace("org/maestro/reports/modern/", "");
+
+            // Skip those files which aren't in resources subfolder
+            if(!name.contains("resources"))
+                continue;
+
+            if(entry.isDirectory()){
+                String destPath = path.getPath() + File.separator + name;
+                File file = new File(destPath);
+                file.mkdirs();
+            }
+            else{
+                String destPath = path.getPath() + File.separator + name;
+
+                // This cause the performance problem, it copy only files from resources but it's really slow (15-20s, unzip can do it in 1s)
+                try(InputStream inputStream = jarFile.getInputStream(entry);
+                    FileOutputStream outputStream = new FileOutputStream(destPath);
+                ){
+                    int data;
+                    while((data = inputStream.read()) != -1){
+                        outputStream.write(data);
+                    }
+                }
+            }
+        }
     }
 }
