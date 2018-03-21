@@ -15,9 +15,12 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class JVMMemoryInfoWriter implements InspectorDataWriter<JVMMemoryInfo>, AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(JVMMemoryInfoWriter.class);
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     private BufferedWriter writer;
     private CSVPrinter csvPrinter;
 
@@ -26,7 +29,7 @@ public class JVMMemoryInfoWriter implements InspectorDataWriter<JVMMemoryInfo>, 
 
          writer = Files.newBufferedWriter(Paths.get(outputFile.getPath()), Charset.defaultCharset());
          csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-                .withHeader("Name", "Initial", "Max", "Committed", "Used"));
+                .withHeader("Timestamp", "Name", "Initial", "Max", "Committed", "Used"));
     }
 
     @Override
@@ -46,7 +49,9 @@ public class JVMMemoryInfoWriter implements InspectorDataWriter<JVMMemoryInfo>, 
         logger.debug("{} Memory Usage: {}", data.getMemoryAreaName(), data);
 
         try {
-            csvPrinter.printRecord(data.getMemoryAreaName(), data.getInitial(), data.getMax(),
+            String timestamp = now.format(formatter);
+
+            csvPrinter.printRecord(timestamp, data.getMemoryAreaName(), data.getInitial(), data.getMax(),
                     data.getCommitted(), data.getUsed());
         } catch (IOException e) {
             logger.error("Unable to write record: {}", e.getMessage(), e);

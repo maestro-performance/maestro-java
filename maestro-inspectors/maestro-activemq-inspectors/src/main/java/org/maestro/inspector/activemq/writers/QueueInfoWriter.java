@@ -14,10 +14,12 @@ import java.nio.charset.Charset;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Map;
 
 public class QueueInfoWriter implements InspectorDataWriter<QueueInfo>, AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(QueueInfoWriter.class);
+    private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private BufferedWriter writer;
     private CSVPrinter csvPrinter;
 
@@ -26,8 +28,8 @@ public class QueueInfoWriter implements InspectorDataWriter<QueueInfo>, AutoClos
 
         writer = Files.newBufferedWriter(Paths.get(outputFile.getPath()), Charset.defaultCharset());
         csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-                .withHeader("Name", "MessagesAdded", "MessageCount", "MessagesAcknowledged", "MessagesExpired",
-                        "ConsumerCount"));
+                .withHeader("Timestamp", "Name", "MessagesAdded", "MessageCount", "MessagesAcknowledged",
+                        "MessagesExpired", "ConsumerCount"));
     }
 
     @Override
@@ -49,7 +51,9 @@ public class QueueInfoWriter implements InspectorDataWriter<QueueInfo>, AutoClos
             logger.debug("Queue information: {}", queueProperties);
 
             try {
-                csvPrinter.printRecord(
+                String timestamp = now.format(formatter);
+
+                csvPrinter.printRecord(timestamp,
                         queueProperties.get("Name"), queueProperties.get("MessagesAdded"),
                         queueProperties.get("MessageCount"), queueProperties.get("MessagesAcknowledged"),
                         queueProperties.get("MessagesExpired"), queueProperties.get("ConsumerCount"));
