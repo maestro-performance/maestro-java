@@ -33,6 +33,8 @@ import java.util.zip.ZipEntry;
 public class IndexRenderer extends AbstractRenderer {
     private static final Logger logger = LoggerFactory.getLogger(IndexRenderer.class);
 
+    private static final int BUFFER_SIZE = 4096;
+
     public IndexRenderer() {
         super();
     }
@@ -45,7 +47,7 @@ public class IndexRenderer extends AbstractRenderer {
     public void copyResources(File path) throws IOException {
         super.copyResources(path, "/org/maestro/reports/favicon.png", "favicon.png");
 
-        File jarPath = new File(this.getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
+        File jarPath = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
         JarFile jarFile = new JarFile(jarPath);
 
         Enumeration entries = jarFile.entries();
@@ -56,24 +58,25 @@ public class IndexRenderer extends AbstractRenderer {
             String name = entry.getName().replace("org/maestro/reports/modern/", "");
 
             // Skip those files which aren't in resources subfolder
-            if(!name.contains("resources"))
+            if(!name.contains("resources")) {
                 continue;
+            }
+
+            String destPath = path.getPath() + File.separator + name;
 
             if(entry.isDirectory()){
-                String destPath = path.getPath() + File.separator + name;
                 File file = new File(destPath);
                 file.mkdirs();
             }
             else{
-                String destPath = path.getPath() + File.separator + name;
-
-                // This cause the performance problem, it copy only files from resources but it's really slow (15-20s, unzip can do it in 1s)
                 try(InputStream inputStream = jarFile.getInputStream(entry);
                     FileOutputStream outputStream = new FileOutputStream(destPath);
                 ){
-                    int data;
-                    while((data = inputStream.read()) != -1){
-                        outputStream.write(data);
+                    final byte[] buffer = new byte[BUFFER_SIZE];
+
+                    int nextCount;
+                    while ((nextCount = inputStream.read(buffer)) >= 0) {
+                        outputStream.write(buffer, 0, nextCount);
                     }
                 }
             }
