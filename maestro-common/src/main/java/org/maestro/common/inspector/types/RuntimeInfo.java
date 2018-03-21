@@ -7,20 +7,20 @@ import java.util.Map;
  * A container class for runtime information
  */
 public class RuntimeInfo implements InspectorType, RuntimeInfoType {
-    private final Map<String, Object> osProperties;
+    private final Map<String, Object> runtimeProperties;
 
-    public RuntimeInfo(final Map<String, Object> osProperties) {
-        this.osProperties = osProperties;
+    public RuntimeInfo(final Map<String, Object> runtimeProperties) {
+        this.runtimeProperties = runtimeProperties;
     }
 
     public Map<String, Object> getProperties() {
-        return new HashMap<>(osProperties);
+        return new HashMap<>(runtimeProperties);
     }
 
     @Override
     public String toString() {
         return "RuntimeInfo{" +
-                "osProperties=" + osProperties +
+                "runtimeProperties=" + runtimeProperties +
                 '}';
     }
 }

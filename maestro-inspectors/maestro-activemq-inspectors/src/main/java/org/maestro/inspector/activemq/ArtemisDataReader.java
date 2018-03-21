@@ -5,13 +5,11 @@ import org.jolokia.client.exception.J4pException;
 import org.jolokia.client.request.J4pReadRequest;
 import org.jolokia.client.request.J4pReadResponse;
 import org.json.simple.JSONObject;
-import org.maestro.common.inspector.types.JVMMemoryInfo;
-import org.maestro.common.inspector.types.OSInfo;
-import org.maestro.common.inspector.types.QueueInfo;
-import org.maestro.common.inspector.types.RuntimeInfo;
+import org.maestro.common.inspector.types.*;
 import org.maestro.inspector.activemq.converter.MapConverter;
 import org.maestro.inspector.activemq.converter.JVMMemoryConverter;
 import org.maestro.inspector.activemq.converter.QueueInfoConverter;
+import org.maestro.inspector.activemq.types.ArtemisProductInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -30,6 +28,20 @@ public class ArtemisDataReader {
         this.j4pClient = j4pClient;
     }
 
+    private JSONObject getJsonObject(String s, String s2) throws MalformedObjectNameException, J4pException {
+        J4pReadRequest req = new J4pReadRequest(s, s2);
+
+        // Throws if unable to read
+        J4pReadResponse response = j4pClient.execute(req);
+
+        JSONObject jo = response.getValue();
+
+        if (logger.isDebugEnabled()) {
+            logger.debug("JSON response: {}", jo.toString());
+        }
+        return jo;
+    }
+
     /**
      * Reads JVM Heap heap memory information information (might be JVM-specific)
      * @return JVM heap memory information
@@ -37,12 +49,7 @@ public class ArtemisDataReader {
      * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
     public JVMMemoryInfo jvmHeapMemory() throws MalformedObjectNameException, J4pException {
-        J4pReadRequest req = new J4pReadRequest("java.lang:type=Memory", "HeapMemoryUsage");
-
-        // Throws if unable to read
-        J4pReadResponse response = j4pClient.execute(req);
-
-        JSONObject jo = response.getValue();
+        JSONObject jo = getJsonObject("java.lang:type=Memory", "HeapMemoryUsage");
 
         long init = getLong(jo.get("init"));
         long committed = getLong(jo.get("committed"));
@@ -60,16 +67,7 @@ public class ArtemisDataReader {
      * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
     public List<JVMMemoryInfo> jvmMemoryAreas() throws MalformedObjectNameException, J4pException {
-        J4pReadRequest req = new J4pReadRequest("java.lang:name=*,type=MemoryPool", "Usage");
-
-        // Throws if unable to read
-        J4pReadResponse response = j4pClient.execute(req);
-
-        JSONObject jo = response.getValue();
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("JSON response: {}", jo.toString());
-        }
+        JSONObject jo = getJsonObject("java.lang:name=*,type=MemoryPool", "Usage");
 
         List<JVMMemoryInfo> jvmMemoryInfos = new LinkedList<>();
         JolokiaConverter jolokiaConverter = new JVMMemoryConverter(jvmMemoryInfos, "Usage");
@@ -85,16 +83,7 @@ public class ArtemisDataReader {
      * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
     public OSInfo operatingSystem() throws MalformedObjectNameException, J4pException {
-        J4pReadRequest req = new J4pReadRequest("java.lang:type=OperatingSystem", "");
-
-        // Throws if unable to read
-        J4pReadResponse response = j4pClient.execute(req);
-
-        JSONObject jo = response.getValue();
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("JSON response: {}", jo.toString());
-        }
+        JSONObject jo = getJsonObject("java.lang:type=OperatingSystem", "");
 
         Map<String, Object> osProperties = new HashMap<>();
         JolokiaConverter jolokiaConverter = new MapConverter(osProperties);
@@ -111,16 +100,7 @@ public class ArtemisDataReader {
      * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
     public RuntimeInfo runtimeInformation() throws MalformedObjectNameException, J4pException {
-        J4pReadRequest req = new J4pReadRequest("java.lang:type=Runtime", "");
-
-        // Throws if unable to read
-        J4pReadResponse response = j4pClient.execute(req);
-
-        JSONObject jo = response.getValue();
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("JSON response: {}", jo.toString());
-        }
+        JSONObject jo = getJsonObject("java.lang:type=Runtime", "");
 
         Map<String, Object> osProperties = new HashMap<>();
         JolokiaConverter jolokiaConverter = new MapConverter(osProperties);
@@ -130,21 +110,22 @@ public class ArtemisDataReader {
     }
 
     public QueueInfo queueInformation() throws MalformedObjectNameException, J4pException {
-        J4pReadRequest req = new J4pReadRequest("org.apache.activemq.artemis:address=*,broker=*,component=addresses,queue=*,*", "");
-
-        // Throws if unable to read
-        J4pReadResponse response = j4pClient.execute(req);
-
-        JSONObject jo = response.getValue();
-
-        if (logger.isDebugEnabled()) {
-            logger.debug("JSON response: {}", jo.toString());
-        }
+        JSONObject jo = getJsonObject("org.apache.activemq.artemis:address=*,broker=*,component=addresses,queue=*,*", "");
 
         Map<String, Object> queueProperties = new HashMap<>();
         QueueInfoConverter jolokiaConverter = new QueueInfoConverter(queueProperties);
         jo.forEach((key, value) -> defaultJolokiaParser.parseQueueInfo(jolokiaConverter, key, value));
 
         return new QueueInfo(queueProperties);
+    }
+
+    public ProductInfo productInformation() throws MalformedObjectNameException, J4pException {
+        JSONObject jo = getJsonObject("org.apache.activemq.artemis:broker=*", "Version");
+
+        Map<String, Object> productProperties = new HashMap<>();
+        JolokiaConverter converter = new MapConverter(productProperties);
+        jo.forEach((key, value) -> defaultJolokiaParser.parse(converter, key, value));
+
+        return new ArtemisProductInfo(productProperties);
     }
 }

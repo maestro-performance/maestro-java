@@ -21,7 +21,7 @@ public class QueueInfo implements InspectorType, QueueInfoType {
     @Override
     public String toString() {
         return "QueueInfo{" +
-                "queueProperties=" + queueProperties +
+                "productProperties=" + queueProperties +
                 '}';
     }
 }

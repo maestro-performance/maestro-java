@@ -2,6 +2,7 @@ package org.maestro.inspector.activemq;
 
 import org.jolokia.client.BasicAuthenticator;
 import org.jolokia.client.J4pClient;
+import org.jolokia.client.exception.J4pException;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
@@ -9,14 +10,13 @@ import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.common.inspector.types.*;
 import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.worker.TestLogUtils;
-import org.maestro.inspector.activemq.writers.JVMMemoryInfoWriter;
-import org.maestro.inspector.activemq.writers.OSInfoWriter;
-import org.maestro.inspector.activemq.writers.QueueInfoWriter;
-import org.maestro.inspector.activemq.writers.RuntimeInfoWriter;
+import org.maestro.inspector.activemq.writers.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.management.MalformedObjectNameException;
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -78,10 +78,7 @@ public class ArtemisInspector implements MaestroInspector {
         artemisDataReader = new ArtemisDataReader(j4p);
     }
 
-    /*
-        prop.setProperty("productName", productName);
-        prop.setProperty("productVersion", productVersion);
-     */
+
     public int start() throws Exception {
         File logDir = TestLogUtils.nextTestLogDir(this.baseLogDir);
         InspectorProperties inspectorProperties = new InspectorProperties();
@@ -91,6 +88,7 @@ public class ArtemisInspector implements MaestroInspector {
         RuntimeInfoWriter runtimeInfoWriter = new RuntimeInfoWriter(inspectorProperties);
         OSInfoWriter osInfoWriter = new OSInfoWriter(inspectorProperties);
         QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues");
+        ProductInfoWriter productInfoWriter = new ProductInfoWriter(inspectorProperties);
 
         try {
             startedEpochMillis = System.currentTimeMillis();
@@ -103,14 +101,7 @@ public class ArtemisInspector implements MaestroInspector {
 
             connect();
 
-            OSInfo osInfo = artemisDataReader.operatingSystem();
-            osInfoWriter.write(null, osInfo);
-
-            RuntimeInfo runtimeInfo = artemisDataReader.runtimeInformation();
-            runtimeInfoWriter.write(null, runtimeInfo);
-
-            File propertiesFile = new File(logDir, "inspector.properties");
-            inspectorProperties.write(propertiesFile);
+            writeInspectorProperties(logDir, inspectorProperties, runtimeInfoWriter, osInfoWriter, productInfoWriter);
 
             while (duration.canContinue(this) && isRunning()) {
                 LocalDateTime now = LocalDateTime.now();
@@ -141,6 +132,22 @@ public class ArtemisInspector implements MaestroInspector {
             jvmMemoryAreasWriter.close();
             queueInfoWriter.close();
         }
+    }
+
+    private void writeInspectorProperties(File logDir, InspectorProperties inspectorProperties,
+                                          RuntimeInfoWriter runtimeInfoWriter, OSInfoWriter osInfoWriter,
+                                          ProductInfoWriter productInfoWriter) throws MalformedObjectNameException, J4pException, IOException {
+        OSInfo osInfo = artemisDataReader.operatingSystem();
+        osInfoWriter.write(null, osInfo);
+
+        RuntimeInfo runtimeInfo = artemisDataReader.runtimeInformation();
+        runtimeInfoWriter.write(null, runtimeInfo);
+
+        ProductInfo productInfo = artemisDataReader.productInformation();
+        productInfoWriter.write(null, productInfo);
+
+        File propertiesFile = new File(logDir, "inspector.properties");
+        inspectorProperties.write(propertiesFile);
     }
 
     public void stop() throws Exception {

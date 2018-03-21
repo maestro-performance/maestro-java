@@ -23,8 +23,8 @@ public class RuntimeInfoWriter implements InspectorDataWriter<RuntimeInfo> {
         logger.debug("Runtime information: {}", data);
 
         Map<String, Object> runtimeProperties = data.getProperties();
-
+        
         inspectorProperties.setJvmName((String) runtimeProperties.get("VmName"));
-        inspectorProperties.setJvmVersion((String) runtimeProperties.get("VmVersion"));
+        inspectorProperties.setJvmVersion((String) runtimeProperties.get("SpecVersion"));
     }
 }
