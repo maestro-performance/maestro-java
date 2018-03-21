@@ -45,7 +45,7 @@ if [ "$installdir" = "." ] ; then
 	installdir=".."
 fi
 
-mainclass=org.maestro.worker.main.Main
+mainclass=org.maestro.inspector.main.Main
 pid_file="$installdir"/tmp/maestro-inspector.pid
 
 java -classpath "$installdir"/bin/*maestro-inspector-*.jar -Dorg.maestro.home="$installdir" "$mainclass" $@
