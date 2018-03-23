@@ -37,11 +37,47 @@ import org.maestro.common.LogConfigurator
 import org.maestro.common.duration.TestDurationBuilder
 
 maestroURL = System.getenv("MAESTRO_BROKER")
+if (maestroURL == null) {
+    println "Error: the maestro broker was not given"
+
+    System.exit(1)
+}
+
 brokerURL = System.getenv("BROKER_URL")
+if (brokerURL == null) {
+    println "Error: the broker URL was not given"
+
+    System.exit(1)
+}
+
 messageSize = System.getenv("MESSAGE_SIZE")
+if (messageSize == null) {
+    println "Error: the message size was not given"
+
+    System.exit(1)
+}
+
 duration = System.getenv("TEST_DURATION")
+if (duration == null) {
+    println "Error: the test duration was not given"
+
+    System.exit(1)
+}
+
 rate = System.getenv("RATE")
+if (rate == null) {
+    println "Error: the test rate was not given"
+
+    System.exit(1)
+}
+
 parallelCount = System.getenv("PARALLEL_COUNT")
+if (parallelCount == null) {
+    println "Error: the test parallel count was not given"
+
+    System.exit(1)
+}
+
 managementInterface = System.getenv("MANAGEMENT_INTERFACE");
 
 LogConfigurator.verbose()
