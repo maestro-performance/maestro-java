@@ -76,6 +76,9 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_GET: {
                 return new GetResponse(unpacker);
             }
+            case MAESTRO_NOTE_AGENT_GENERAL_EXECUTE: {
+                return new AgentGeneralResponse(unpacker);
+            }
             case MAESTRO_NOTE_START_RECEIVER:
             case MAESTRO_NOTE_STOP_RECEIVER:
             case MAESTRO_NOTE_START_SENDER:
@@ -84,7 +87,9 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_STOP_INSPECTOR:
             case MAESTRO_NOTE_FLUSH:
             case MAESTRO_NOTE_SET:
-            case MAESTRO_NOTE_HALT: {
+            case MAESTRO_NOTE_HALT:
+            case MAESTRO_NOTE_START_AGENT:
+            case MAESTRO_NOTE_STOP_AGENT:{
                 logger.warn("Unexpected maestro command for a response: {}", tmpCommand);
             }
             default: {
@@ -135,6 +140,15 @@ public class MaestroDeserializer {
             }
             case MAESTRO_NOTE_GET: {
                 return new GetRequest(unpacker);
+            }
+            case MAESTRO_NOTE_START_AGENT: {
+                return new StartAgent();
+            }
+            case MAESTRO_NOTE_STOP_AGENT: {
+                return new StopAgent();
+            }
+            case MAESTRO_NOTE_AGENT_GENERAL_EXECUTE: {
+                return new AgentGeneralRequest(unpacker);
             }
             default: {
                 throw new MalformedNoteException("Invalid request command: " + tmpCommand);

@@ -229,4 +229,22 @@ public interface MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
     void getDataServer() throws MaestroConnectionException;
+
+    /**
+     * Sends a start agent request
+     * @throws MaestroConnectionException if unable to send the MQTT request
+     */
+    void startAgent() throws MaestroConnectionException;
+
+    /**
+     * Sends a stop agent request
+     * @throws MaestroConnectionException if unable to send the MQTT request
+     */
+    void stopAgent() throws MaestroConnectionException;
+
+    /**
+     * Sends a agent general execution request
+     * @throws MaestroConnectionException if unable to send the MQTT request
+     */
+    void setExecuteCommand(final String command) throws MaestroConnectionException;
 }

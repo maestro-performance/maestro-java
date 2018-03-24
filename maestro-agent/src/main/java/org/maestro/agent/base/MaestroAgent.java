@@ -222,6 +222,7 @@ public class MaestroAgent extends MaestroWorkerManager {
         callbacksWrapper(entryPointDir);
     }
 
+
     /**
      * Callbacks wrapper for execute external points scripts
      * @param entryPointDir Path to external point dir
@@ -237,4 +238,33 @@ public class MaestroAgent extends MaestroWorkerManager {
         }
     }
 
+    /**
+     * Start agent handler
+     * @param note Start Agent note
+     */
+    @Override
+    public void handle(StartAgent note) {
+
+    }
+
+    /**
+     * Stop agent handler
+     * @param note Stop Agent note
+     */
+    @Override
+    public void handle(StopAgent note) {
+
+    }
+
+    /**
+     * Agent general execution handler
+     * @param note Agent General Request note
+     */
+    @Override
+    public void handle(AgentGeneralRequest note) {
+        super.handle(note);
+
+        File entryPointDir = new File(path, note.getValue());
+        callbacksWrapper(entryPointDir);
+    }
 }

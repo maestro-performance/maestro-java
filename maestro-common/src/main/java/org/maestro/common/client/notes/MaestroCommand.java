@@ -42,7 +42,12 @@ public enum MaestroCommand {
 
     // New commands with v >= 1.3
     /* Get request */
-    MAESTRO_NOTE_GET(17);
+    MAESTRO_NOTE_GET(17),
+
+    /** Agent execution **/
+    MAESTRO_NOTE_START_AGENT(18),
+    MAESTRO_NOTE_STOP_AGENT(19),
+    MAESTRO_NOTE_AGENT_GENERAL_EXECUTE(20);
 
     private final long value;
 
@@ -74,6 +79,9 @@ public enum MaestroCommand {
             case 15: return MAESTRO_NOTE_NOTIFY_FAIL;
             case 16: return MAESTRO_NOTE_NOTIFY_SUCCESS;
             case 17: return MAESTRO_NOTE_GET;
+            case 18: return MAESTRO_NOTE_START_AGENT;
+            case 19: return MAESTRO_NOTE_STOP_AGENT;
+            case 20: return MAESTRO_NOTE_AGENT_GENERAL_EXECUTE;
         }
 
         return null;

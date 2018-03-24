@@ -43,6 +43,12 @@ class AgentConstants {
 
     static final String STOP_SENDER = "stopsender";
 
+    static final String START_AGENT = "startagent";
+
+    static final String START_STOP = "stopagent";
+
+//    static final String GENERAL_EXECUTION = "startrouter";
+
     static final String OK = "ok";
 
     static final String PROTOCOL_ERROR = "protocolerror";

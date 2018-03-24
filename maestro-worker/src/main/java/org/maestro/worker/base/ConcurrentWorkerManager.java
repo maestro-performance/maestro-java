@@ -265,6 +265,11 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
     }
 
     @Override
+    public void handle(StartAgent note) {
+        // NO-OP
+    }
+
+    @Override
     public void handle(StopInspector note) {
         // NO-OP
     }
@@ -289,6 +294,11 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
         }
 
         getClient().replyOk();
+    }
+
+    @Override
+    public void handle(StopAgent note) {
+        // NO-OP
     }
 
     @Override

@@ -105,4 +105,14 @@ public class InspectorManager extends MaestroWorkerManager {
     public void handle(StopSender note) {
         // NO-P
     }
+
+    @Override
+    public void handle(StartAgent note) {
+        // NO-OP
+    }
+
+    @Override
+    public void handle(StopAgent note) {
+        // NO-OP
+    }
 }

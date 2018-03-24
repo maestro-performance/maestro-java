@@ -52,4 +52,10 @@ public interface MaestroEventListener {
     void handle(AbnormalDisconnect note);
 
     void handle(GetRequest note);
+
+    void handle(StartAgent note);
+
+    void handle(StopAgent note);
+
+    void handle(AgentGeneralRequest note);
 }

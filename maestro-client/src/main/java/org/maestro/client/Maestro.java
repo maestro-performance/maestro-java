@@ -428,6 +428,38 @@ public final class Maestro implements MaestroRequester {
     }
 
     /**
+     * Sends a start agent request
+     * @throws MaestroConnectionException if unable to send the MQTT request
+     */
+    public void startAgent() throws MaestroConnectionException {
+        StartAgent maestroNote = new StartAgent();
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+    /**
+     * Sends a stop agent request
+     * @throws MaestroConnectionException if unable to send the MQTT request
+     */
+    public void stopAgent() throws MaestroConnectionException {
+        StopAgent maestroNote = new StopAgent();
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+    /**
+     * Sends a agent general execution request
+     * @throws MaestroConnectionException if unable to send the MQTT request
+     */
+    public void setExecuteCommand(final String command) throws MaestroConnectionException {
+        AgentGeneralRequest maestroNote = new AgentGeneralRequest();
+
+        maestroNote.setExecuteCommand(command);
+
+        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+    }
+
+    /**
      * Collect replies
      * @return A list of serialized maestro replies
      */

@@ -38,6 +38,10 @@ public class MaestroNoteProcessor {
 
     }
 
+    protected void processAgentGeneralResponse(AgentGeneralResponse note) {
+
+    }
+
     protected void processResponse(MaestroNote note) {
         switch (note.getMaestroCommand()) {
             case MAESTRO_NOTE_PING: {
@@ -46,6 +50,10 @@ public class MaestroNoteProcessor {
             }
             case MAESTRO_NOTE_GET: {
                 processGetResponse((GetResponse) note);
+                break;
+            }
+            case MAESTRO_NOTE_AGENT_GENERAL_EXECUTE: {
+                processAgentGeneralResponse((AgentGeneralResponse) note);
                 break;
             }
         }

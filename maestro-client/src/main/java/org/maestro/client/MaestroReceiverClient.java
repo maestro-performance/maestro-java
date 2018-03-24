@@ -146,4 +146,18 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
             logger.error("Unable to publish the get response: {}", e.getMessage(), e);
         }
     }
+
+    /**
+     *  Publishes a agent general response as a reply to a agent general request
+     * @param agentGeneralResponse the agent general response to publish
+     */
+    public void AgentGeneralResponse(final AgentGeneralResponse agentGeneralResponse) {
+        agentGeneralResponse.setName(clientName + "@" + host);
+        agentGeneralResponse.setId(id);
+
+        // @TODO jstejska: delete after test
+        logger.debug(agentGeneralResponse.toString());
+
+        super.publish(MaestroTopics.MAESTRO_TOPIC, agentGeneralResponse);
+    }
 }

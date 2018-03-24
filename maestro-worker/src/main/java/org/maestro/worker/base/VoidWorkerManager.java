@@ -31,6 +31,11 @@ public class VoidWorkerManager extends MaestroWorkerManager {
     }
 
     @Override
+    public void handle(StartAgent note) {
+
+    }
+
+    @Override
     public void handle(StopInspector note) {
 
     }
@@ -42,6 +47,11 @@ public class VoidWorkerManager extends MaestroWorkerManager {
 
     @Override
     public void handle(StopSender note) {
+
+    }
+
+    @Override
+    public void handle(StopAgent note) {
 
     }
 }
