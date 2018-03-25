@@ -40,12 +40,12 @@ public class GroovyCallbackWalker extends DirectoryWalker<File> {
     }
 
     @Override
-    protected boolean handleDirectory(File directory, int depth, Collection results) throws IOException {
+    protected boolean handleDirectory(File directory, int depth, Collection<File> results) throws IOException {
         return true;
     }
 
     @Override
-    protected void handleFile(File file, int depth, Collection results)
+    protected void handleFile(File file, int depth, Collection<File> results)
             throws IOException
 
     {

@@ -41,12 +41,12 @@ public class GroovyClasspathWalker extends DirectoryWalker<File> {
     }
 
     @Override
-    protected void handleDirectoryStart(File directory, int depth, Collection results) throws IOException {
+    protected void handleDirectoryStart(File directory, int depth, Collection<File> results) throws IOException {
         loader.addClasspath(directory.getCanonicalPath());
     }
 
     @Override
-    protected void handleFile(File file, int depth, Collection results)
+    protected void handleFile(File file, int depth, Collection<File> results)
             throws IOException
 
     {
@@ -73,7 +73,7 @@ public class GroovyClasspathWalker extends DirectoryWalker<File> {
         }
 
         try {
-            walk(file, new ArrayList());
+            walk(file, new ArrayList<>());
         } catch (IOException e) {
             logger.error("Unable to walk the whole directory: " + e.getMessage(), e);
             logger.error("Returning a partial list of all the repository data due to errors");
