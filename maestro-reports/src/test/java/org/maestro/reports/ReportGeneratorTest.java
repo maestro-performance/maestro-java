@@ -32,6 +32,7 @@ public class ReportGeneratorTest {
     private static final String HOST_02 = "fake-02.host.com";
     private static final String HOST_03 = "fake-03.host.com";
 
+
     @Before
     public void setUp() {
         LogConfigurator.silent();
@@ -124,8 +125,9 @@ public class ReportGeneratorTest {
     public void testGenerate() {
         String path = this.getClass().getResource("/data-ok").getPath();
 
+        ReportGenerator reportGenerator = new ReportGenerator(path);
 
-        ReportGenerator.generate(path);
+        reportGenerator.generate();
 
         File indexFile = new File(path, "index.html");
         assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
@@ -141,7 +143,9 @@ public class ReportGeneratorTest {
     public void testGenerateMissingLatency() {
         String path = this.getClass().getResource("/data-missing-latency").getPath();
 
-        ReportGenerator.generate(path);
+        ReportGenerator reportGenerator = new ReportGenerator(path);
+
+        reportGenerator.generate();
 
         File indexFile = new File(path, "index.html");
         assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
@@ -158,7 +162,9 @@ public class ReportGeneratorTest {
     public void testGenerateEmptyRateRecords() {
         String path = this.getClass().getResource("/data-empty-sender-rate-records").getPath();
 
-        ReportGenerator.generate(path);
+        ReportGenerator reportGenerator = new ReportGenerator(path);
+
+        reportGenerator.generate();
 
         File indexFile = new File(path, "index.html");
         assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
