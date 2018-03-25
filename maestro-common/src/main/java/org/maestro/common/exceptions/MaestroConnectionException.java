@@ -1,6 +1,6 @@
 package org.maestro.common.exceptions;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "serial"})
 public class MaestroConnectionException extends MaestroException {
     public MaestroConnectionException() {
         super();

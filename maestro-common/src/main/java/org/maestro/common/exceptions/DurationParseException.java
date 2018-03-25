@@ -16,7 +16,7 @@
 
 package org.maestro.common.exceptions;
 
-@SuppressWarnings("unused")
+@SuppressWarnings({"unused", "serial"})
 public class DurationParseException extends Exception {
     public DurationParseException() {
     }

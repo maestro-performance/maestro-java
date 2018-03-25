@@ -16,6 +16,7 @@
 
 package org.maestro.common.exceptions;
 
+@SuppressWarnings({"unused", "serial"})
 public class MaestroException extends RuntimeException {
     public MaestroException() {
         super();

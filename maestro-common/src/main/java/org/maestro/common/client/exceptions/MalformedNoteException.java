@@ -18,6 +18,7 @@ package org.maestro.common.client.exceptions;
 
 import org.maestro.common.exceptions.MaestroException;
 
+@SuppressWarnings({"unused", "serial"})
 public class MalformedNoteException extends MaestroException {
     public MalformedNoteException(String message) {
         super(message);
