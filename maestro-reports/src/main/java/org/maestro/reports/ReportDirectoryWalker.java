@@ -36,7 +36,7 @@ import java.util.List;
 /**
  * Walks through the report directory in order to build the list of files to process
  */
-final class ReportDirectoryWalker extends DirectoryWalker {
+final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
     private static final Logger logger = LoggerFactory.getLogger(ReportDirectoryWalker.class);
 
 
