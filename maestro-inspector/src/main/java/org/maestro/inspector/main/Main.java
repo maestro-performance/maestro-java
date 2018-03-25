@@ -132,8 +132,9 @@ public class Main {
             MaestroDataServer dataServer = new MaestroDataServer(logDir, host);
 
             MaestroWorkerExecutor executor;
-            AbstractMaestroPeer maestroPeer;
+            AbstractMaestroPeer<?> maestroPeer;
 
+            @SuppressWarnings("unchecked")
             Class<MaestroInspector> clazz = (Class<MaestroInspector>) Class.forName(inspector);
             MaestroInspector inspector = clazz.newInstance();
 
