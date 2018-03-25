@@ -52,10 +52,12 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     }
 
     public synchronized List<MaestroNote> collect() {
+        logger.trace("Collecting messages");
         List<MaestroNote> ret = new LinkedList<>(collected);
 
         collected.clear();
 
+        logger.trace("Number of messages collected: {}", ret.size());
         return ret;
     }
 

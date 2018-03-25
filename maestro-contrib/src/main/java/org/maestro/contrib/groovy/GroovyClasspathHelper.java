@@ -46,6 +46,7 @@ public class GroovyClasspathHelper {
      * @param path the path
      */
     public void addClasspath(final String path) {
+        logger.trace("Adding path {} to classpath", path);
         loader.addClasspath(path);
     }
 
@@ -56,7 +57,11 @@ public class GroovyClasspathHelper {
      */
     public void addClasspath(final File file) throws IOException {
         if (file.exists()) {
+            logger.trace("Adding path {} to classpath", file.getPath());
             loader.addClasspath(file.getCanonicalPath());
+        }
+        else {
+            logger.trace("Path {} does not exist. Not adding to the classpath", file.getPath());
         }
     }
 

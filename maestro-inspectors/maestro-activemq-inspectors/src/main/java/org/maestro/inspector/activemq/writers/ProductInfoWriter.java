@@ -9,7 +9,7 @@ import org.slf4j.LoggerFactory;
 import java.time.LocalDateTime;
 
 public class ProductInfoWriter implements InspectorDataWriter<ProductInfo> {
-    private static final Logger logger = LoggerFactory.getLogger(OSInfoWriter.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProductInfoWriter.class);
     private final InspectorProperties inspectorProperties;
 
     public ProductInfoWriter(final InspectorProperties inspectorProperties) {
@@ -18,6 +18,8 @@ public class ProductInfoWriter implements InspectorDataWriter<ProductInfo> {
 
     @Override
     public void write(LocalDateTime time, ProductInfo data) {
+        logger.trace("Writing product information: {}", data);
+
         inspectorProperties.setProductName(data.getProductName());
         inspectorProperties.setProductVersion(data.getProductVersion());
     }
