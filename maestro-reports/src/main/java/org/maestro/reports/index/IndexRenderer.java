@@ -26,6 +26,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.Enumeration;
 import java.util.Map;
+import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
@@ -50,10 +51,10 @@ public class IndexRenderer extends AbstractRenderer {
         File jarPath = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
         JarFile jarFile = new JarFile(jarPath);
 
-        Enumeration entries = jarFile.entries();
+        Enumeration<JarEntry> entries = jarFile.entries();
 
         while(entries.hasMoreElements()){
-            ZipEntry entry = (ZipEntry)entries.nextElement();
+            ZipEntry entry = entries.nextElement();
 
             String name = entry.getName().replace("org/maestro/reports/modern/", "");
 
