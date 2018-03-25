@@ -25,8 +25,9 @@ public class DiskCleaner implements ReportFileProcessor {
             case FILE_EXTENSION_CSV:
                 logger.debug("Cleaning file {}", sourceFile.getPath());
                 FileUtils.deleteQuietly(sourceFile);
+                break;
             default:
-
+                break;
         }
     }
 
