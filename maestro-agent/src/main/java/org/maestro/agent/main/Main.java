@@ -98,6 +98,7 @@ public class Main {
 
             help(options, -1);
         }
+        assert logDirVal != null;
         logDir = new File(logDirVal);
     }
 
@@ -122,7 +123,7 @@ public class Main {
             MaestroDataServer dataServer = new MaestroDataServer(logDir, host);
 
             MaestroWorkerExecutor executor;
-            AbstractMaestroPeer maestroPeer;
+            AbstractMaestroPeer<?> maestroPeer;
 
             maestroPeer = new MaestroAgent(maestroUrl, "agent", host, dataServer);
             executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
