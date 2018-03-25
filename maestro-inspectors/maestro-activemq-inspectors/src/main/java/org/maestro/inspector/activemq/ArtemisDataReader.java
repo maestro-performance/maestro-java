@@ -66,6 +66,7 @@ public class ArtemisDataReader {
      * @throws MalformedObjectNameException
      * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
+    @SuppressWarnings("unchecked")
     public List<JVMMemoryInfo> jvmMemoryAreas() throws MalformedObjectNameException, J4pException {
         JSONObject jo = getJsonObject("java.lang:name=*,type=MemoryPool", "Usage");
 
@@ -82,6 +83,7 @@ public class ArtemisDataReader {
      * @throws MalformedObjectNameException
      * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
+    @SuppressWarnings("unchecked")
     public OSInfo operatingSystem() throws MalformedObjectNameException, J4pException {
         JSONObject jo = getJsonObject("java.lang:type=OperatingSystem", "");
 
@@ -99,6 +101,7 @@ public class ArtemisDataReader {
      * @throws MalformedObjectNameException
      * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
+    @SuppressWarnings("unchecked")
     public RuntimeInfo runtimeInformation() throws MalformedObjectNameException, J4pException {
         JSONObject jo = getJsonObject("java.lang:type=Runtime", "");
 
@@ -109,6 +112,14 @@ public class ArtemisDataReader {
         return new RuntimeInfo(osProperties);
     }
 
+
+    /**
+     * Read queue information
+     * @return
+     * @throws MalformedObjectNameException
+     * @throws J4pException
+     */
+    @SuppressWarnings("unchecked")
     public QueueInfo queueInformation() throws MalformedObjectNameException, J4pException {
         JSONObject jo = getJsonObject("org.apache.activemq.artemis:address=*,broker=*,component=addresses,queue=*,*", "");
 
@@ -119,6 +130,14 @@ public class ArtemisDataReader {
         return new QueueInfo(queueProperties);
     }
 
+
+    /**
+     * Read product information
+     * @return
+     * @throws MalformedObjectNameException
+     * @throws J4pException
+     */
+    @SuppressWarnings("unchecked")
     public ProductInfo productInformation() throws MalformedObjectNameException, J4pException {
         JSONObject jo = getJsonObject("org.apache.activemq.artemis:broker=*", "Version");
 
