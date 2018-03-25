@@ -29,10 +29,10 @@ public class PropertyUtils {
             try (FileInputStream in = new FileInputStream(testProperties)) {
                 prop.load(in);
 
-                for (Map.Entry e : prop.entrySet()) {
-                    logger.trace("Adding entry {} with value {}", e.getKey(), e.getValue());
-                    context.put((String) e.getKey(), e.getValue());
-                }
+                prop.forEach((key, value) -> {
+                    logger.trace("Adding entry {} with value {}", key, value);
+                    context.put((String) key, value);
+                });
             } catch (FileNotFoundException e) {
                 logger.error("File not found error: {}", e.getMessage(), e);
             } catch (IOException e) {
