@@ -65,7 +65,7 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
     }
 
     @Override
-    protected void handleFile(File file, int depth, Collection results)
+    protected void handleFile(File file, int depth, Collection<ReportFile> results)
 
     {
         logger.debug("Processing file {}", file.getPath());
@@ -94,7 +94,7 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
 
         try {
            if (reportsDir.exists()) {
-                walk(reportsDir, new ArrayList());
+                walk(reportsDir, new ArrayList<ReportFile>());
             }
             else {
                 logger.error("The reports directory does not exist: {}", reportsDir.getPath());
