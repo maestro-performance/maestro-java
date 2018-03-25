@@ -182,13 +182,4 @@ public class ReportGenerator {
     public void setRatePlotterWrapperFactory(PlotterWrapperFactory<RatePlotterWrapper> ratePlotterWrapperFactory) {
         this.ratePlotterWrapperFactory = ratePlotterWrapperFactory;
     }
-
-    @Deprecated
-    public static void generate(final String path) {
-        ReportGenerator reportGenerator = new ReportGenerator(path);
-
-        reportGenerator.generate();
-    }
-
-
 }
