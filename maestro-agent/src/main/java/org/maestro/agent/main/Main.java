@@ -128,7 +128,7 @@ public class Main {
             maestroPeer = new MaestroAgent(maestroUrl, "agent", host, dataServer);
             executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
-            executor.start(new String[]{MaestroTopics.ALL_DAEMONS});
+            executor.start(MaestroTopics.MAESTRO_AGENT_TOPICS);
             executor.run();
 
 
