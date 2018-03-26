@@ -131,7 +131,6 @@ public class Main {
             executor.start(MaestroTopics.MAESTRO_AGENT_TOPICS);
             executor.run();
 
-
             System.out.println("Finished execution ...");
         } catch (MaestroException e) {
             System.err.println(e.getMessage());

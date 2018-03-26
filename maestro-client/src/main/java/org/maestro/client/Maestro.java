@@ -324,7 +324,7 @@ public final class Maestro implements MaestroRequester {
 
         maestroNote.setManagementInterface(value);
 
-        maestroClient.publish(MaestroTopics.BROKER_INSPECTOR_DAEMONS, maestroNote);
+        maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, maestroNote);
     }
 
 
@@ -335,7 +335,7 @@ public final class Maestro implements MaestroRequester {
     public void startInspector() throws MaestroConnectionException {
         StartInspector maestroNote = new StartInspector();
 
-        maestroClient.publish(MaestroTopics.BROKER_INSPECTOR_DAEMONS, maestroNote);
+        maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, maestroNote);
     }
 
 
@@ -346,7 +346,7 @@ public final class Maestro implements MaestroRequester {
     public void stopInspector() throws MaestroConnectionException {
         StopInspector maestroNote = new StopInspector();
 
-        maestroClient.publish(MaestroTopics.BROKER_INSPECTOR_DAEMONS, maestroNote);
+        maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, maestroNote);
     }
 
 
