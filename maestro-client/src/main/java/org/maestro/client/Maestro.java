@@ -456,7 +456,7 @@ public final class Maestro implements MaestroRequester {
 
         maestroNote.setExecuteCommand(command);
 
-        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+        maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
     }
 
     /**
