@@ -19,7 +19,7 @@ package org.maestro.client.notes;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.client.notes.MaestroNoteType;
 
-public abstract class MaestroRequest extends MaestroEvent {
+public abstract class MaestroRequest<T> extends MaestroEvent<T> {
     public MaestroRequest(MaestroCommand maestroCommand) {
         super(MaestroNoteType.MAESTRO_TYPE_REQUEST, maestroCommand);
     }

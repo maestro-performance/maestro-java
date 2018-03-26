@@ -21,7 +21,7 @@ import static org.maestro.worker.base.WorkerStateInfoUtil.isCleanExit;
 /**
  * A specialized worker manager that can manage concurrent test workers (ie.: senders/receivers)
  */
-public class ConcurrentWorkerManager extends MaestroWorkerManager {
+public class ConcurrentWorkerManager extends MaestroWorkerManager implements MaestroReceiverEventListener,MaestroSenderEventListener {
     private static final Logger logger = LoggerFactory.getLogger(ConcurrentWorkerManager.class);
     private static final long TIMEOUT_STOP_WORKER_MILLIS = 1_000;
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
@@ -238,11 +238,6 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
     }
 
     @Override
-    public void handle(StartInspector note) {
-       // NO-OP
-    }
-
-    @Override
     public void handle(StartReceiver note) {
         logger.debug("Start receiver request received");
 
@@ -262,16 +257,6 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
                 logger.warn("::handle {} can't start worker", note);
             }
         }
-    }
-
-    @Override
-    public void handle(StartAgent note) {
-        // NO-OP
-    }
-
-    @Override
-    public void handle(StopInspector note) {
-        // NO-OP
     }
 
     @Override
@@ -296,10 +281,6 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager {
         getClient().replyOk();
     }
 
-    @Override
-    public void handle(StopAgent note) {
-        // NO-OP
-    }
 
     @Override
     public void handle(StatsRequest note) {

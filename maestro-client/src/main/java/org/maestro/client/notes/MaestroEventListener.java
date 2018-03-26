@@ -33,18 +33,6 @@ public interface MaestroEventListener {
 
     void handle(SetRequest note);
 
-    void handle(StartInspector note);
-
-    void handle(StartReceiver note);
-
-    void handle(StartSender note);
-
-    void handle(StopInspector note);
-
-    void handle(StopReceiver note);
-
-    void handle(StopSender note);
-
     void handle(TestFailedNotification note);
 
     void handle(TestSuccessfulNotification note);
@@ -53,9 +41,4 @@ public interface MaestroEventListener {
 
     void handle(GetRequest note);
 
-    void handle(StartAgent note);
-
-    void handle(StopAgent note);
-
-    void handle(AgentGeneralRequest note);
 }

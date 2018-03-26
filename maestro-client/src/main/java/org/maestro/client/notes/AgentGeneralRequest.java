@@ -22,7 +22,7 @@ import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
-public class AgentGeneralRequest extends MaestroRequest {
+public class AgentGeneralRequest extends MaestroRequest<MaestroAgentEventListener> {
 
 
     public enum Option {
@@ -94,7 +94,7 @@ public class AgentGeneralRequest extends MaestroRequest {
     }
 
     @Override
-    public void notify(MaestroEventListener visitor) {
+    public void notify(MaestroAgentEventListener visitor) {
         visitor.handle(this);
     }
 

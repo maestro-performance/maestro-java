@@ -22,7 +22,7 @@ import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
-public class SetRequest extends MaestroRequest {
+public class SetRequest extends MaestroRequest<MaestroEventListener> {
     public enum Option {
         /** Broker address */
         MAESTRO_NOTE_OPT_SET_BROKER(0),

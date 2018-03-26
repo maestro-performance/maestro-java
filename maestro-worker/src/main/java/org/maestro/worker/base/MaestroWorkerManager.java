@@ -234,15 +234,4 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         }
 
     }
-
-    // @TODO jstejska: move this into agent somehow?
-    @Override
-    public void handle(AgentGeneralRequest note) {
-        logger.info("Execution request arrived");
-
-        AgentGeneralResponse response = new AgentGeneralResponse();
-        // @TODO jstejska: status should be setted in groovy handler script I guess
-        response.setStatus("OK");
-        client.AgentGeneralResponse(response);
-    }
 }

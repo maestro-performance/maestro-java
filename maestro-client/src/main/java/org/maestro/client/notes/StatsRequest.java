@@ -18,7 +18,7 @@ package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
 
-public class StatsRequest extends MaestroRequest {
+public class StatsRequest extends MaestroRequest<MaestroEventListener> {
     public StatsRequest() {
         super(MaestroCommand.MAESTRO_NOTE_STATS);
     }

@@ -18,7 +18,7 @@ package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
 
-public class FlushRequest extends MaestroRequest {
+public class FlushRequest extends MaestroRequest<MaestroEventListener> {
     public FlushRequest() {
         super(MaestroCommand.MAESTRO_NOTE_FLUSH);
     }

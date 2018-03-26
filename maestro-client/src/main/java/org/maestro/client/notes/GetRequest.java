@@ -26,7 +26,7 @@ import java.io.IOException;
 /**
  * A GET request queries the peers for information
  */
-public class GetRequest extends MaestroRequest {
+public class GetRequest extends MaestroRequest<MaestroEventListener> {
     private GetOption option;
 
     public GetRequest() {

@@ -18,13 +18,13 @@ package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
 
-public class StartReceiver extends MaestroRequest {
+public class StartReceiver extends MaestroRequest<MaestroReceiverEventListener> {
     public StartReceiver() {
         super(MaestroCommand.MAESTRO_NOTE_START_RECEIVER);
     }
 
     @Override
-    public void notify(MaestroEventListener visitor) {
+    public void notify(MaestroReceiverEventListener visitor) {
         visitor.handle(this);
     }
 

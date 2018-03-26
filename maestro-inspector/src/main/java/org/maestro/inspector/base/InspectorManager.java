@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.net.MalformedURLException;
 import java.net.URL;
 
-public class InspectorManager extends MaestroWorkerManager {
+public class InspectorManager extends MaestroWorkerManager implements MaestroInspectorEventListener {
     private static final Logger logger = LoggerFactory.getLogger(InspectorManager.class);
     private static final String INSPECTOR_ROLE = "inspector";
     private Thread inspectorThread;
@@ -84,35 +84,5 @@ public class InspectorManager extends MaestroWorkerManager {
         if (inspectorThread != null) {
             inspectorThread.interrupt();
         }
-    }
-
-    @Override
-    public void handle(StartReceiver note) {
-        // NO-OP
-    }
-
-    @Override
-    public void handle(StartSender note) {
-        // NO-OP
-    }
-
-    @Override
-    public void handle(StopReceiver note) {
-        // NO-OP
-    }
-
-    @Override
-    public void handle(StopSender note) {
-        // NO-P
-    }
-
-    @Override
-    public void handle(StartAgent note) {
-        // NO-OP
-    }
-
-    @Override
-    public void handle(StopAgent note) {
-        // NO-OP
     }
 }

@@ -18,7 +18,7 @@ package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
 
-public class Halt extends MaestroRequest {
+public class Halt extends MaestroRequest<MaestroEventListener> {
     public Halt() {
         super(MaestroCommand.MAESTRO_NOTE_HALT);
     }

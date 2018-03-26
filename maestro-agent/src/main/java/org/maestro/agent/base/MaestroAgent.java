@@ -20,7 +20,7 @@ import java.net.URL;
 /**
  * Agent for handle extension points
  */
-public class MaestroAgent extends MaestroWorkerManager {
+public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEventListener {
 
     private static final Logger logger = LoggerFactory.getLogger(MaestroAgent.class);
     private final GroovyHandler groovyHandler;
@@ -277,15 +277,22 @@ public class MaestroAgent extends MaestroWorkerManager {
 
     }
 
-    /**
-     * Agent general execution handler
-     * @param note Agent General Request note
-     */
+    // @TODO jstejska: move this into agent somehow?
     @Override
     public void handle(AgentGeneralRequest note) {
-        super.handle(note);
+        logger.info("Execution request arrived");
 
         File entryPointDir = new File(path, note.getValue());
         callbacksWrapper(entryPointDir);
+
+        AgentGeneralResponse response = new AgentGeneralResponse();
+        // @TODO jstejska: status should be set in groovy handler script I guess
+        response.setStatus("OK");
+        getClient().AgentGeneralResponse(response);
+    }
+
+    @Override
+    public void handle(AgentSourceRequest note) {
+
     }
 }

@@ -14,44 +14,4 @@ public class VoidWorkerManager extends MaestroWorkerManager {
     {
         super(maestroURL, role, host, dataServer);
     }
-
-    @Override
-    public void handle(StartInspector note) {
-
-    }
-
-    @Override
-    public void handle(StartReceiver note) {
-
-    }
-
-    @Override
-    public void handle(StartSender note) {
-
-    }
-
-    @Override
-    public void handle(StartAgent note) {
-
-    }
-
-    @Override
-    public void handle(StopInspector note) {
-
-    }
-
-    @Override
-    public void handle(StopReceiver note) {
-
-    }
-
-    @Override
-    public void handle(StopSender note) {
-
-    }
-
-    @Override
-    public void handle(StopAgent note) {
-
-    }
 }

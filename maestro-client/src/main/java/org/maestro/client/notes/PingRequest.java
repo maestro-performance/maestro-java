@@ -23,7 +23,7 @@ import org.msgpack.core.MessageUnpacker;
 import java.io.IOException;
 import java.time.Instant;
 
-public class PingRequest extends MaestroRequest {
+public class PingRequest extends MaestroRequest<MaestroEventListener> {
     private long sec;
     private long usec;
 

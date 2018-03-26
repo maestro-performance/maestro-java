@@ -23,7 +23,7 @@ import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
-public abstract class MaestroNotification extends MaestroEvent {
+public abstract class MaestroNotification extends MaestroEvent<MaestroEventListener> {
     private String id;
     private String name;
 

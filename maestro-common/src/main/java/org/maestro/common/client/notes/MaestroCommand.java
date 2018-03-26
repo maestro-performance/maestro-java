@@ -47,7 +47,8 @@ public enum MaestroCommand {
     /** Agent execution **/
     MAESTRO_NOTE_START_AGENT(18),
     MAESTRO_NOTE_STOP_AGENT(19),
-    MAESTRO_NOTE_AGENT_GENERAL_EXECUTE(20);
+    MAESTRO_NOTE_AGENT_GENERAL_EXECUTE(20),
+    MAESTRO_NOTE_AGENT_SOURCE(21);
 
     private final long value;
 

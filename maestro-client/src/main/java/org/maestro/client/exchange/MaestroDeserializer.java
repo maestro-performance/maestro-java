@@ -150,6 +150,9 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_AGENT_GENERAL_EXECUTE: {
                 return new AgentGeneralRequest(unpacker);
             }
+            case MAESTRO_NOTE_AGENT_SOURCE: {
+                return new AgentSourceRequest(unpacker);
+            }
             default: {
                 throw new MalformedNoteException("Invalid request command: " + tmpCommand);
             }

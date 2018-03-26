@@ -18,13 +18,13 @@ package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
 
-public class StopAgent extends MaestroRequest {
+public class StopAgent extends MaestroRequest<MaestroAgentEventListener> {
     public StopAgent() {
         super(MaestroCommand.MAESTRO_NOTE_START_AGENT);
     }
 
     @Override
-    public void notify(MaestroEventListener visitor) {
+    public void notify(MaestroAgentEventListener visitor) {
         visitor.handle(this);
     }
 
