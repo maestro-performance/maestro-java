@@ -24,12 +24,14 @@ public class MaestroTopics {
     public final static String SENDER_DAEMONS = "/mpt/daemon/sender";
     public final static String RECEIVER_DAEMONS ="/mpt/daemon/receiver";
     public final static String BROKER_INSPECTOR_DAEMONS = "/mpt/daemon/brokerd";
+    public final static String AGENT_DAEMONS = "/mpt/daemon/agent";
 
     public final static String[] MAESTRO_TOPICS = {MAESTRO_TOPIC, NOTIFICATION_TOPIC};
 
     public final static String[] MAESTRO_SENDER_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC, SENDER_DAEMONS};
     public final static String[] MAESTRO_RECEIVER_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC, RECEIVER_DAEMONS};
     public final static String[] MAESTRO_INSPECTOR_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC, BROKER_INSPECTOR_DAEMONS};
+    public final static String[] MAESTRO_AGENT_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC, AGENT_DAEMONS};
 
     private MaestroTopics() {}
 }
