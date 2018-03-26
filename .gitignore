@@ -33,4 +33,10 @@ Makefile
 # editor files
 *~
 
+inspector.log*
+sender.log*
+receiver.log*
+agent.log*
+data-server.log*
+
 # eof
