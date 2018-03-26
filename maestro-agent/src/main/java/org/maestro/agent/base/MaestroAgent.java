@@ -18,9 +18,12 @@ import java.io.File;
 import java.net.URL;
 
 /**
- * Agent for handle extension points
+ * Agent for handle extension points. It implements everything that there is because it servers as a scriptable
+ * extension that can act based on any maestro command
  */
-public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEventListener {
+public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEventListener, MaestroSenderEventListener,
+        MaestroReceiverEventListener, MaestroInspectorEventListener
+{
 
     private static final Logger logger = LoggerFactory.getLogger(MaestroAgent.class);
     private final GroovyHandler groovyHandler;
@@ -62,6 +65,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * Start inspector handler
      * @param note StartInspector note
      */
+    @Override
     public void handle(StartInspector note) {
         File entryPointDir = new File(path, AgentConstants.START_INSPECTOR);
         callbacksWrapper(entryPointDir);
@@ -71,6 +75,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * Start receiver handler
      * @param note StartReceiver note
      */
+    @Override
     public void handle(StartReceiver note) {
         File entryPointDir = new File(path, AgentConstants.START_RECEIVER);
         callbacksWrapper(entryPointDir);
@@ -80,6 +85,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * Start sender handler
      * @param note StartSender note
      */
+    @Override
     public void handle(StartSender note) {
         File entryPointDir = new File(path, AgentConstants.START_SENDER);
         callbacksWrapper(entryPointDir);
@@ -89,6 +95,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * Stop Inspector handler
      * @param note StopInspector note
      */
+    @Override
     public void handle(StopInspector note) {
         File entryPointDir = new File(path, AgentConstants.STOP_INSPECTOR);
         callbacksWrapper(entryPointDir);
@@ -98,6 +105,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * Stop receiver handler
      * @param note StopReceiver note
      */
+    @Override
     public void handle(StopReceiver note) {
         File entryPointDir = new File(path, AgentConstants.STOP_RECEIVER);
         callbacksWrapper(entryPointDir);
