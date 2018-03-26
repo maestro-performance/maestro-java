@@ -16,6 +16,9 @@
 
 package org.maestro.common.client.notes;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public enum MaestroCommand {
     /** Receiver execution **/
     MAESTRO_NOTE_START_RECEIVER(0),
@@ -83,6 +86,12 @@ public enum MaestroCommand {
             case 18: return MAESTRO_NOTE_START_AGENT;
             case 19: return MAESTRO_NOTE_STOP_AGENT;
             case 20: return MAESTRO_NOTE_AGENT_GENERAL_EXECUTE;
+            case 21: return MAESTRO_NOTE_AGENT_SOURCE;
+            default: {
+                Logger logger = LoggerFactory.getLogger(MaestroCommand.class);
+                logger.error("The command {} is not implemented. This is a bug in Maestro", value);
+            }
+
         }
 
         return null;

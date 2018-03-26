@@ -19,6 +19,14 @@ public class AgentSourceRequest extends MaestroRequest<MaestroAgentEventListener
         this.sourceUrl = unpacker.unpackString();
     }
 
+    public String getSourceUrl() {
+        return sourceUrl;
+    }
+
+    public void setSourceUrl(String sourceUrl) {
+        this.sourceUrl = sourceUrl;
+    }
+
     @Override
     public void notify(MaestroAgentEventListener visitor) {
         visitor.handle(this);
@@ -31,5 +39,12 @@ public class AgentSourceRequest extends MaestroRequest<MaestroAgentEventListener
         packer.packString(this.sourceUrl);
 
         return packer;
+    }
+
+    @Override
+    public String toString() {
+        return "AgentSourceRequest{" +
+                "sourceUrl='" + sourceUrl + '\'' +
+                "} " + super.toString();
     }
 }

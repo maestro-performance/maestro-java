@@ -288,7 +288,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     // @TODO jstejska: move this into agent somehow?
     @Override
     public void handle(AgentGeneralRequest note) {
-        logger.info("Execution request arrived");
+        logger.info("Execute request arrived");
 
         File entryPointDir = new File(path, note.getValue());
         callbacksWrapper(entryPointDir);
@@ -301,6 +301,8 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
 
     @Override
     public void handle(AgentSourceRequest note) {
+        logger.info("Source request arrived");
+
 
     }
 }
