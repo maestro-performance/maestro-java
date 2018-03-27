@@ -309,7 +309,14 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
         logger.info("Source request arrived");
 
         final String sourceUrl = note.getSourceUrl();
-        logger.info("Preparing to download code from {}", sourceUrl);
+        final String branch = note.getBranch();
+
+        if (branch == null) {
+            logger.info("Preparing to download code from {}", sourceUrl);
+        }
+        else {
+            logger.info("Preparing to download code from {} from branch {}", sourceUrl, branch);
+        }
         final String tmpPath = config.getString("maestro.agent.source.root", "/tmp/maestro/agent/work");
         final String projectDir = UUID.randomUUID().toString();
 
@@ -327,6 +334,11 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
         cloneCommand.setDirectory(repositoryDir);
         cloneCommand.setProgressMonitor(NullProgressMonitor.INSTANCE);
 
+
+        if (branch != null) {
+            cloneCommand.setBranch(branch);
+        }
+
         try {
             cloneCommand.call();
             logger.info("Source directory for project created at {}", repositoryDir);
@@ -336,11 +348,6 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
         } catch (GitAPIException e) {
             logger.error("Unable to clone repository: {}", e.getMessage(), e);
             getClient().replyInternalError();
-        }
-        finally {
-            if (repositoryDir != null) {
-                repositoryDir.deleteOnExit();
-            }
         }
     }
 }

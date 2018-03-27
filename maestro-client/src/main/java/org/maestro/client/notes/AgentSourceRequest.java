@@ -8,6 +8,7 @@ import java.io.IOException;
 
 public class AgentSourceRequest extends MaestroRequest<MaestroAgentEventListener> {
     private String sourceUrl;
+    private String branch;
 
     public AgentSourceRequest() {
         super(MaestroCommand.MAESTRO_NOTE_AGENT_SOURCE);
@@ -17,6 +18,10 @@ public class AgentSourceRequest extends MaestroRequest<MaestroAgentEventListener
         super(MaestroCommand.MAESTRO_NOTE_AGENT_SOURCE);
 
         this.sourceUrl = unpacker.unpackString();
+
+        if (unpacker.hasNext()) {
+            branch = unpacker.unpackString();
+        }
     }
 
     public String getSourceUrl() {
@@ -26,6 +31,15 @@ public class AgentSourceRequest extends MaestroRequest<MaestroAgentEventListener
     public void setSourceUrl(String sourceUrl) {
         this.sourceUrl = sourceUrl;
     }
+
+    public String getBranch() {
+        return branch;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
+    }
+
 
     @Override
     public void notify(MaestroAgentEventListener visitor) {
@@ -38,6 +52,10 @@ public class AgentSourceRequest extends MaestroRequest<MaestroAgentEventListener
 
         packer.packString(this.sourceUrl);
 
+        if (this.branch != null) {
+            packer.packString(branch);
+        }
+
         return packer;
     }
 
@@ -45,6 +63,7 @@ public class AgentSourceRequest extends MaestroRequest<MaestroAgentEventListener
     public String toString() {
         return "AgentSourceRequest{" +
                 "sourceUrl='" + sourceUrl + '\'' +
+                ", branch='" + branch + '\'' +
                 "} " + super.toString();
     }
 }

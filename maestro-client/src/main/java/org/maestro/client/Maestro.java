@@ -463,10 +463,11 @@ public final class Maestro implements MaestroRequester {
      * Sends a source request to the agent (which causes it to download the given source)
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void sourceRequest(final String sourceUrl) throws MaestroConnectionException {
+    public void sourceRequest(final String sourceUrl, final String branch) throws MaestroConnectionException {
         AgentSourceRequest maestroNote = new AgentSourceRequest();
 
         maestroNote.setSourceUrl(sourceUrl);
+        maestroNote.setBranch(branch);
 
         maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
     }
