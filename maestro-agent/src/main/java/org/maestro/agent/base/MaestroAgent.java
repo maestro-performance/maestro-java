@@ -1,6 +1,10 @@
 package org.maestro.agent.base;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.eclipse.jgit.api.CloneCommand;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
+import org.eclipse.jgit.lib.NullProgressMonitor;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
@@ -16,6 +20,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
+import java.util.UUID;
 
 /**
  * Agent for handle extension points. It implements everything that there is because it servers as a scriptable
@@ -28,7 +33,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     private static final Logger logger = LoggerFactory.getLogger(MaestroAgent.class);
     private final GroovyHandler groovyHandler;
     private AbstractConfiguration config = ConfigurationWrapper.getConfig();
-    private final File path;
+    private File extPointPath;
     private Thread thread;
 
 
@@ -56,7 +61,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
             }
         }
 
-        path = new File(pathStr);
+        extPointPath = new File(pathStr);
 
         groovyHandler = new GroovyHandler(super.getClient());
     }
@@ -67,7 +72,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StartInspector note) {
-        File entryPointDir = new File(path, AgentConstants.START_INSPECTOR);
+        File entryPointDir = new File(extPointPath, AgentConstants.START_INSPECTOR);
         callbacksWrapper(entryPointDir);
     }
 
@@ -77,7 +82,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StartReceiver note) {
-        File entryPointDir = new File(path, AgentConstants.START_RECEIVER);
+        File entryPointDir = new File(extPointPath, AgentConstants.START_RECEIVER);
         callbacksWrapper(entryPointDir);
     }
 
@@ -87,7 +92,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StartSender note) {
-        File entryPointDir = new File(path, AgentConstants.START_SENDER);
+        File entryPointDir = new File(extPointPath, AgentConstants.START_SENDER);
         callbacksWrapper(entryPointDir);
     }
 
@@ -97,7 +102,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StopInspector note) {
-        File entryPointDir = new File(path, AgentConstants.STOP_INSPECTOR);
+        File entryPointDir = new File(extPointPath, AgentConstants.STOP_INSPECTOR);
         callbacksWrapper(entryPointDir);
     }
 
@@ -107,7 +112,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StopReceiver note) {
-        File entryPointDir = new File(path, AgentConstants.STOP_RECEIVER);
+        File entryPointDir = new File(extPointPath, AgentConstants.STOP_RECEIVER);
         callbacksWrapper(entryPointDir);
     }
 
@@ -116,7 +121,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param note StopSender note
      */
     public void handle(StopSender note) {
-        File entryPointDir = new File(path, AgentConstants.STOP_SENDER);
+        File entryPointDir = new File(extPointPath, AgentConstants.STOP_SENDER);
         callbacksWrapper(entryPointDir);
     }
 
@@ -128,7 +133,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(StatsRequest note) {
         super.handle(note);
 
-        File entryPointDir = new File(path, AgentConstants.STATS);
+        File entryPointDir = new File(extPointPath, AgentConstants.STATS);
         callbacksWrapper(entryPointDir);
     }
 
@@ -140,7 +145,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(FlushRequest note) {
         super.handle(note);
 
-        File entryPointDir = new File(path, AgentConstants.FLUSH);
+        File entryPointDir = new File(extPointPath, AgentConstants.FLUSH);
         callbacksWrapper(entryPointDir);
     }
 
@@ -152,7 +157,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(Halt note) {
         super.handle(note);
 
-        File entryPointDir = new File(path, AgentConstants.HALT);
+        File entryPointDir = new File(extPointPath, AgentConstants.HALT);
         callbacksWrapper(entryPointDir);
     }
 
@@ -164,7 +169,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(SetRequest note) {
         super.handle(note);
 
-        File entryPointDir = new File(path, AgentConstants.SET);
+        File entryPointDir = new File(extPointPath, AgentConstants.SET);
         callbacksWrapper(entryPointDir);
     }
 
@@ -176,7 +181,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(TestFailedNotification note) {
         super.handle(note);
 
-        File entryPointDir = new File(path, AgentConstants.NOTIFY_FAIL);
+        File entryPointDir = new File(extPointPath, AgentConstants.NOTIFY_FAIL);
         callbacksWrapper(entryPointDir);
     }
 
@@ -188,7 +193,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(TestSuccessfulNotification note) {
         super.handle(note);
 
-        File entryPointDir = new File(path, AgentConstants.NOTIFY_SUCCESS);
+        File entryPointDir = new File(extPointPath, AgentConstants.NOTIFY_SUCCESS);
         callbacksWrapper(entryPointDir);
     }
 
@@ -200,7 +205,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(AbnormalDisconnect note) {
         super.handle(note);
 
-        File entryPointDir = new File(path, AgentConstants.ABNORMAL_DISCONNECT);
+        File entryPointDir = new File(extPointPath, AgentConstants.ABNORMAL_DISCONNECT);
         callbacksWrapper(entryPointDir);
     }
 
@@ -214,7 +219,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(PingRequest note) throws MaestroConnectionException, MalformedNoteException {
         super.handle(note);
 
-        File entryPointDir = new File(path, AgentConstants.PING);
+        File entryPointDir = new File(extPointPath, AgentConstants.PING);
         callbacksWrapper(entryPointDir);
     }
 
@@ -226,7 +231,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(GetRequest note) {
         super.handle(note);
 
-        File entryPointDir = new File(path, AgentConstants.GET);
+        File entryPointDir = new File(extPointPath, AgentConstants.GET);
         callbacksWrapper(entryPointDir);
     }
 
@@ -290,7 +295,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(AgentGeneralRequest note) {
         logger.info("Execute request arrived");
 
-        File entryPointDir = new File(path, note.getValue());
+        File entryPointDir = new File(extPointPath, note.getValue());
         callbacksWrapper(entryPointDir);
 
         AgentGeneralResponse response = new AgentGeneralResponse();
@@ -303,6 +308,39 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(AgentSourceRequest note) {
         logger.info("Source request arrived");
 
+        final String sourceUrl = note.getSourceUrl();
+        logger.info("Preparing to download code from {}", sourceUrl);
+        final String tmpPath = config.getString("maestro.agent.source.root", "/tmp/maestro/agent/work");
+        final String projectDir = UUID.randomUUID().toString();
 
+        File repositoryDir = new File(tmpPath + File.separator + projectDir + File.separator);
+
+        if (!repositoryDir.exists()) {
+            if (!repositoryDir.mkdirs()) {
+                logger.warn("Unable to create directory: {}", repositoryDir);
+            }
+        }
+
+        CloneCommand cloneCommand = Git.cloneRepository();
+
+        cloneCommand.setURI(sourceUrl);
+        cloneCommand.setDirectory(repositoryDir);
+        cloneCommand.setProgressMonitor(NullProgressMonitor.INSTANCE);
+
+        try {
+            cloneCommand.call();
+            logger.info("Source directory for project created at {}", repositoryDir);
+            extPointPath = new File(repositoryDir, "requests");
+
+            getClient().replyOk();
+        } catch (GitAPIException e) {
+            logger.error("Unable to clone repository: {}", e.getMessage(), e);
+            getClient().replyInternalError();
+        }
+        finally {
+            if (repositoryDir != null) {
+                repositoryDir.deleteOnExit();
+            }
+        }
     }
 }
