@@ -1,4 +1,4 @@
-/**
+/*
  * Copyright 2013 Otavio Rodolfo Piske
  * <p/>
  * Licensed under the Apache License, Version 2.0 (the "License");
@@ -32,18 +32,20 @@ import java.util.List;
  */
 public class GroovyCallbackWalker extends DirectoryWalker<File> {
 
-    private static Logger logger = LoggerFactory.getLogger(GroovyCallbackWalker.class);
+    private static final Logger logger = LoggerFactory.getLogger(GroovyCallbackWalker.class);
     private List<File> fileList;
 
     public GroovyCallbackWalker() {
 
     }
 
+    @SuppressWarnings("RedundantThrows")
     @Override
     protected boolean handleDirectory(File directory, int depth, Collection<File> results) throws IOException {
         return true;
     }
 
+    @SuppressWarnings("RedundantThrows")
     @Override
     protected void handleFile(File file, int depth, Collection<File> results)
             throws IOException
