@@ -68,9 +68,11 @@ public class GroovyCallbackWalker extends DirectoryWalker<File> {
      * @param file A file object pointing to the directory
      */
     @SuppressWarnings("unchecked")
-    public List<File> load(final File file) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Loading classes from " + file.getName());
+    public List<File> load(final File file) throws IOException {
+        logger.debug("Loading classes from directory {}", file.getPath());
+
+        if (!file.exists()) {
+            throw new IOException("The input directory " + file.getPath() + " does not exist");
         }
 
         try {
