@@ -23,7 +23,7 @@ fi
 source "$installdir"/config/maestro-agent-service.conf
 
 function start() {
-    nohup "$installdir"/bin/maestro-agent -m "$MAESTRO_BROKER" -l "$MAESTRO_LOG_DIR" -H "$MAESTRO_LOCAL_HOSTNAME" $@ > /dev/null 2> /dev/null &
+    nohup "$installdir"/bin/maestro-agent -m "$MAESTRO_BROKER" -l "$MAESTRO_LOG_DIR" $@ > /dev/null 2> /dev/null &
     sleep 2s
     for pid in $(ps -ef | grep -i maestro-agent | grep java | grep -v worker-agent | grep -v grep | awk ' { print $2 } ') ; do
         echo "Maestro agent started $pid"
