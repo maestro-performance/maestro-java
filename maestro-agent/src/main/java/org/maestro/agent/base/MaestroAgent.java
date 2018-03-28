@@ -20,6 +20,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.UUID;
 
 /**
@@ -33,6 +35,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     private static final Logger logger = LoggerFactory.getLogger(MaestroAgent.class);
     private final GroovyHandler groovyHandler;
     private AbstractConfiguration config = ConfigurationWrapper.getConfig();
+    private List<ExtensionPoint> extensionPoints = new LinkedList<>();
     private File extPointPath;
     private Thread thread;
 
@@ -61,8 +64,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
             }
         }
 
-        extPointPath = new File(pathStr);
-
+        extensionPoints.add(new ExtensionPoint(new File(pathStr), false));
         groovyHandler = new GroovyHandler(super.getClient());
     }
 
@@ -72,8 +74,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StartInspector note) {
-        File entryPointDir = new File(extPointPath, AgentConstants.START_INSPECTOR);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.START_INSPECTOR));
     }
 
     /**
@@ -82,8 +83,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StartReceiver note) {
-        File entryPointDir = new File(extPointPath, AgentConstants.START_RECEIVER);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.START_RECEIVER));
     }
 
     /**
@@ -92,8 +92,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StartSender note) {
-        File entryPointDir = new File(extPointPath, AgentConstants.START_SENDER);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.START_SENDER));
     }
 
     /**
@@ -102,8 +101,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StopInspector note) {
-        File entryPointDir = new File(extPointPath, AgentConstants.STOP_INSPECTOR);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_INSPECTOR));
     }
 
     /**
@@ -112,8 +110,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StopReceiver note) {
-        File entryPointDir = new File(extPointPath, AgentConstants.STOP_RECEIVER);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_RECEIVER));
     }
 
     /**
@@ -121,8 +118,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param note StopSender note
      */
     public void handle(StopSender note) {
-        File entryPointDir = new File(extPointPath, AgentConstants.STOP_SENDER);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_SENDER));
     }
 
     /**
@@ -133,8 +129,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(StatsRequest note) {
         super.handle(note);
 
-        File entryPointDir = new File(extPointPath, AgentConstants.STATS);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STATS));
     }
 
     /**
@@ -145,8 +140,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(FlushRequest note) {
         super.handle(note);
 
-        File entryPointDir = new File(extPointPath, AgentConstants.FLUSH);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.FLUSH));
     }
 
     /**
@@ -157,8 +151,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(Halt note) {
         super.handle(note);
 
-        File entryPointDir = new File(extPointPath, AgentConstants.HALT);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.HALT));
     }
 
     /**
@@ -169,8 +162,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(SetRequest note) {
         super.handle(note);
 
-        File entryPointDir = new File(extPointPath, AgentConstants.SET);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.SET));
     }
 
     /**
@@ -181,8 +173,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(TestFailedNotification note) {
         super.handle(note);
 
-        File entryPointDir = new File(extPointPath, AgentConstants.NOTIFY_FAIL);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.NOTIFY_FAIL));
     }
 
     /**
@@ -193,8 +184,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(TestSuccessfulNotification note) {
         super.handle(note);
 
-        File entryPointDir = new File(extPointPath, AgentConstants.NOTIFY_SUCCESS);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.NOTIFY_SUCCESS));
     }
 
     /**
@@ -205,8 +195,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(AbnormalDisconnect note) {
         super.handle(note);
 
-        File entryPointDir = new File(extPointPath, AgentConstants.ABNORMAL_DISCONNECT);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.ABNORMAL_DISCONNECT));
     }
 
     /**
@@ -219,8 +208,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(PingRequest note) throws MaestroConnectionException, MalformedNoteException {
         super.handle(note);
 
-        File entryPointDir = new File(extPointPath, AgentConstants.PING);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.PING));
     }
 
     /**
@@ -231,17 +219,17 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(GetRequest note) {
         super.handle(note);
 
-        File entryPointDir = new File(extPointPath, AgentConstants.GET);
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.GET));
     }
 
 
     /**
      * Callbacks wrapper for execute external points scripts
-     * @param entryPointDir Path to external point dir
+     * @param entryPointPath the root directory of the extension points
      */
-    private void callbacksWrapper(File entryPointDir) {
+    private void callbacksWrapper(final File entryPointPath, final String codeDir) {
         try {
+            File entryPointDir = new File(entryPointPath, codeDir);
 
             groovyHandler.setInitialPath(entryPointDir);
             thread = new Thread(new Runnable() {
@@ -295,8 +283,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(AgentGeneralRequest note) {
         logger.info("Execute request arrived");
 
-        File entryPointDir = new File(extPointPath, note.getValue());
-        callbacksWrapper(entryPointDir);
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  note.getValue());
 
         AgentGeneralResponse response = new AgentGeneralResponse();
         // @TODO jstejska: status should be set in groovy handler script I guess
@@ -342,7 +329,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
         try {
             cloneCommand.call();
             logger.info("Source directory for project created at {}", repositoryDir);
-            extPointPath = new File(repositoryDir, "requests");
+            extensionPoints.add(new ExtensionPoint(new File(repositoryDir, "requests"), true));
 
             getClient().replyOk();
         } catch (GitAPIException e) {
