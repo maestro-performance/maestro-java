@@ -30,6 +30,7 @@ package utils.commands
 
 
 import org.maestro.client.Maestro
+import org.maestro.common.client.notes.MaestroNote
 
 /**
  * Another example: a simple use case of the higher level maestro client
@@ -62,6 +63,12 @@ maestro.pingRequest()
 
 println "Stopping the agent"
 maestro.stopAgent()
+
+List<MaestroNote> replies = maestro.collect(1000, 10)
+println "Processing " + replies.size() + " replies"
+replies.each { MaestroNote note ->
+    println "Available responses on the broker: " + note
+}
 
 println "Stopping maestro"
 maestro.stop()
