@@ -247,10 +247,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
 
                     }
                     catch (Exception e) {
-                        groovyHandler.getClient().notifyFailure(this.getClass().getName());
-                    }
-                    finally {
-                        groovyHandler.getClient().notifySuccess(this.getClass().getName());
+                        groovyHandler.getClient().notifyFailure(e.getMessage());
                     }
                 }
             });
@@ -300,6 +297,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     @Override
     public void handle(StopAgent note) {
         extensionPoints.stream().filter(ep -> ep.isTransient()).forEach(this::cleanExtensionPoints);
+        extensionPoints.removeIf(ep -> ep.isTransient());
     }
 
     // @TODO jstejska: move this into agent somehow?
