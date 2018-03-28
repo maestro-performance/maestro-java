@@ -65,7 +65,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
             extensionPoints.add(new ExtensionPoint(defaultExtPointFile, false));
         }
         else  {
-            logger.warn("The extension point at {} does not exist");
+            logger.warn("The extension point at {} does not exist", defaultExtPointFile.getPath());
         }
 
         String defaultSourceDir = FileUtils.getTempDirectoryPath() + File.separator + "maestro-agent-work";
