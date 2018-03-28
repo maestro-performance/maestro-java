@@ -23,7 +23,7 @@ class AgentConstants {
 
     static final String NOTIFY_FAIL = "notifyfail";
 
-    static final String NOTIFY_SUCCESS = "notifysuccess;";
+    static final String NOTIFY_SUCCESS = "notifysuccess";
 
     static final String PING = "ping";
 
