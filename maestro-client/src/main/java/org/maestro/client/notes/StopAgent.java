@@ -30,6 +30,6 @@ public class StopAgent extends MaestroRequest<MaestroAgentEventListener> {
 
     @Override
     public String toString() {
-        return "StartAgent{} " + super.toString();
+        return "StopAgent{} " + super.toString();
     }
 }
