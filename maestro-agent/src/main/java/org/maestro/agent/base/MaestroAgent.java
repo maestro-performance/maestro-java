@@ -1,6 +1,7 @@
 package org.maestro.agent.base;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
@@ -39,6 +40,8 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     private File extPointPath;
     private Thread thread;
 
+    private final String sourceRoot;
+
 
     /**
      * Constructor
@@ -63,6 +66,8 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
                 pathStr = Constants.HOME_DIR + File.separator + AgentConstants.EXTENSION_POINT;
             }
         }
+
+        sourceRoot = config.getString("maestro.agent.source.root", FileUtils.getTempDirectoryPath());
 
         extensionPoints.add(new ExtensionPoint(new File(pathStr), false));
         groovyHandler = new GroovyHandler(super.getClient());
@@ -304,10 +309,9 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
         else {
             logger.info("Preparing to download code from {} from branch {}", sourceUrl, branch);
         }
-        final String tmpPath = config.getString("maestro.agent.source.root", "/tmp/maestro/agent/work");
         final String projectDir = UUID.randomUUID().toString();
 
-        File repositoryDir = new File(tmpPath + File.separator + projectDir + File.separator);
+        File repositoryDir = new File(sourceRoot + File.separator + projectDir + File.separator);
 
         if (!repositoryDir.exists()) {
             if (!repositoryDir.mkdirs()) {
