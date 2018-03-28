@@ -41,6 +41,7 @@ import org.maestro.client.Maestro
  */
 maestroURL = System.getenv("MAESTRO_BROKER")
 sourceURL = System.getenv("SOURCE_URL")
+branch = System.getenv("BRANCH")
 
 
 
@@ -51,7 +52,7 @@ maestro = new Maestro(maestroURL)
  * Sends a stop command to all the test cluster
  */
 println "Sending the start commands commands"
-maestro.sourceRequest(sourceURL, "devel")
+maestro.sourceRequest(sourceURL, branch)
 
 println "Waiting 2 seconds"
 Thread.sleep(12000)
@@ -59,6 +60,9 @@ Thread.sleep(12000)
 println "Sending ping ..."
 maestro.pingRequest()
 
-println "All sent"
+println "Stopping the agent"
+maestro.stopAgent()
+
+println "Stopping maestro"
 maestro.stop()
 
