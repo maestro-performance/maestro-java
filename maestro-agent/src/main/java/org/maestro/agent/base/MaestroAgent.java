@@ -54,22 +54,23 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public MaestroAgent(String maestroURL, String role, String host, MaestroDataServer dataServer) throws MaestroException {
         super(maestroURL, role, host, dataServer);
 
-        String pathStr = config.getString("maestro.agent.ext.path", null);
+        String pathStr = config.getString("maestro.agent.ext.path.override", null);
 
         if (pathStr == null){
-            URL uri = this.getClass().getResource("/org/maestro/agent/ext/requests/");
-            if (uri != null) {
-                pathStr = uri.getPath();
-            }
-            else{
-                logger.error("Unable to load files for extension points.");
-                pathStr = Constants.HOME_DIR + File.separator + AgentConstants.EXTENSION_POINT;
-            }
+            pathStr = Constants.HOME_DIR + "ext" + File.separator + "requests";
         }
 
-        sourceRoot = config.getString("maestro.agent.source.root", FileUtils.getTempDirectoryPath());
+        File defaultExtPointFile = new File(pathStr);
+        if (defaultExtPointFile.exists()) {
+            extensionPoints.add(new ExtensionPoint(defaultExtPointFile, false));
+        }
+        else  {
+            logger.warn("The extension point at {} does not exist");
+        }
 
-        extensionPoints.add(new ExtensionPoint(new File(pathStr), false));
+        String defaultSourceDir = FileUtils.getTempDirectoryPath() + File.separator + "maestro-agent-work";
+
+        sourceRoot = config.getString("maestro.agent.source.root", defaultSourceDir);
         groovyHandler = new GroovyHandler(super.getClient());
     }
 
@@ -288,7 +289,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(AgentGeneralRequest note) {
         logger.info("Execute request arrived");
 
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  note.getValue());
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  note.getValue()));
 
         AgentGeneralResponse response = new AgentGeneralResponse();
         // @TODO jstejska: status should be set in groovy handler script I guess

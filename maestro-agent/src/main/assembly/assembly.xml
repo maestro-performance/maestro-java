@@ -97,6 +97,13 @@
 				<exclude>*/**</exclude>
 			</excludes>
 		</fileSet>
+		<fileSet>
+			<directory>${project.basedir}/src/main/groovy/org/maestro/agent/ext</directory>
+			<outputDirectory>/ext</outputDirectory>
+			<includes>
+				<include>**/*.*</include>
+			</includes>
+		</fileSet>
 	</fileSets>
 
 	<includeBaseDirectory>true</includeBaseDirectory>
