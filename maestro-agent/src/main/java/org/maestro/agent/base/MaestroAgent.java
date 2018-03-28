@@ -11,12 +11,11 @@ import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.base.MaestroWorkerManager;
 import org.maestro.worker.ds.MaestroDataServer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.URL;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Agent for handle extension points
@@ -27,6 +26,7 @@ public class MaestroAgent extends MaestroWorkerManager {
     private final GroovyHandler groovyHandler;
     private AbstractConfiguration config = ConfigurationWrapper.getConfig();
     private final File path;
+    private Thread thread;
 
 
     /**
@@ -229,8 +229,29 @@ public class MaestroAgent extends MaestroWorkerManager {
      */
     private void callbacksWrapper(File entryPointDir) {
         try {
+
             groovyHandler.setInitialPath(entryPointDir);
-            groovyHandler.runCallbacks();
+            thread = new Thread(new Runnable() {
+                @Override
+                public void run() {
+                    try{
+                        System.out.println("Executing groovyHandler by thread: " + this.getClass().getName());
+                        groovyHandler.runCallbacks();
+
+                    }
+                    catch (Exception e) {
+                        groovyHandler.getClient().notifyFailure(this.getClass().getName());
+                    }
+                    finally {
+                        groovyHandler.getClient().notifySuccess(this.getClass().getName());
+                    }
+                }
+            });
+
+            thread.start();
+
+            this.getClient().replyOk();
+
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("Error during callback execution: {}", e.getMessage(), e);
