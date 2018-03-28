@@ -22,6 +22,18 @@ fi
 
 source "$installdir"/config/maestro-worker-service.conf
 
+RED="\e[0;31m"
+GREEN="\e[0;32m"
+RESET="\e[0m"
+
+function esuccess() {
+    echo -e "$GREEN OK$RESET"
+}
+
+function eerror() {
+    echo -e "$RED failed$RESET ($@)"
+}
+
 function start() {
     if [[ "$MAESTRO_WORKER_ROLE" == "sender" ]] ; then
         export MAESTRO_WORKER="$MAESTRO_SENDER_WORKER"
@@ -33,11 +45,26 @@ function start() {
         MAESTRO_LOCAL_HOSTNAME=$(hostname -f)
     fi
 
+    echo -en "Starting the $MAESTRO_WORKER_ROLE daemon: "
     nohup "$installdir"/bin/maestro-worker -m "$MAESTRO_BROKER" -w "$MAESTRO_WORKER" -l "$MAESTRO_LOG_DIR" -r "$MAESTRO_WORKER_ROLE" -H "$MAESTRO_LOCAL_HOSTNAME" $@ > /dev/null 2> /dev/null &
+    if [ $? -ne 0 ] ; then
+        eerror "failed to daemonize the Maestro worker"
+        exit 1
+    fi
+
     sleep 2s
+    proc_count=0
     for pid in $(ps -ef | grep -i maestro-worker | grep java | grep -v worker-service | grep -i "$MAESTRO_WORKER_ROLE"  | grep -v grep | awk ' { print $2 } ') ; do
-        echo "Maestro worker started $pid"
+        if [ $proc_count -eq 0 ] ; then
+            esuccess
+        fi
+        echo -e "Maestro worker started:$GREEN $pid $RESET"
+        ((proc_count++))
     done
+
+    if [ $proc_count -eq 0 ] ; then
+        eerror "Maestro agent did not start successfully"
+    fi
 }
 
 function stop() {

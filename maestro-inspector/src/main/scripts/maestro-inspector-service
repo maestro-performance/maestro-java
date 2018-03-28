@@ -22,13 +22,38 @@ fi
 
 source "$installdir"/config/maestro-inspector-service.conf
 
-function start() {
+RED="\e[0;31m"
+GREEN="\e[0;32m"
+RESET="\e[0m"
 
+function esuccess() {
+    echo -e "$GREEN OK$RESET"
+}
+
+function eerror() {
+    echo -e "$RED failed$RESET ($@)"
+}
+
+function start() {
+    echo -en "Starting the daemon: "
     nohup "$installdir"/bin/maestro-inspector -m "$MAESTRO_BROKER" -i "$MAESTRO_INSPECTOR_CLASS" -l "$MAESTRO_LOG_DIR" $@ > /dev/null 2> /dev/null &
+    if [ $? -ne 0 ] ; then
+        eerror "failed to daemonize the Maestro inspector"
+        exit 1
+    fi
+
     sleep 2s
+    proc_count=0
     for pid in $(ps -ef | grep -i maestro-inspector | grep java | grep -v inspector-service | grep -v grep | awk ' { print $2 } ') ; do
-        echo "Maestro inspector started $pid"
+        if [ $proc_count -eq 0 ] ; then
+            esuccess
+        fi
+        echo -e "Maestro inspector started:$GREEN $pid $RESET"
     done
+
+    if [ $proc_count -eq 0 ] ; then
+        eerror "Maestro inspector did not start successfully"
+    fi
 }
 
 function stop() {

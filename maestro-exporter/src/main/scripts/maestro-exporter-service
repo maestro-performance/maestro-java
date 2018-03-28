@@ -22,11 +22,35 @@ fi
 
 source "$installdir"/config/maestro-exporter-service.conf
 
+RED="\e[0;31m"
+GREEN="\e[0;32m"
+RESET="\e[0m"
+
+function esuccess() {
+    echo -e "$GREEN OK$RESET"
+}
+
+function eerror() {
+    echo -e "$RED failed$RESET ($@)"
+}
+
 function start() {
+    echo -en "Starting the daemon: "
     nohup "$installdir"/bin/maestro-exporter -m "$MAESTRO_BROKER" $@ > /dev/null 2> /dev/null &
+    if [ $? -ne 0 ] ; then
+        eerror "failed to daemonize the Maestro agent"
+        exit 1
+    fi
+
     sleep 2s
+    proc_count=0
     for pid in $(ps -ef | grep -i maestro-exporter | grep java | grep -v bash | grep -v exporter-service | grep -v grep | awk ' { print $2 } ') ; do
-        echo "Maestro exporter started $pid"
+        if [ $proc_count -eq 0 ] ; then
+            esuccess
+        fi
+
+        echo -e "Maestro exporter started:$GREEN $pid $RESET"
+        ((proc_count++))
     done
 }
 
