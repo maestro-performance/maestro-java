@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.net.URL;
+import java.io.IOException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.UUID;
@@ -275,13 +275,31 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
 
     }
 
+    private void cleanExtensionPoints(final ExtensionPoint extensionPoint) {
+        logger.info("Removing extension point {}", extensionPoint);
+
+        try {
+            /*
+             The directory comes with the sub-directory "request", as set on
+             the SourceRequest handler. Therefore we pick the parent.
+            */
+            File transientDir = extensionPoint.getPath().getParentFile();
+            if (transientDir.exists()) {
+                FileUtils.deleteDirectory(transientDir);
+            }
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     /**
      * Stop agent handler
      * @param note Stop Agent note
      */
     @Override
     public void handle(StopAgent note) {
-
+        extensionPoints.stream().filter(ep -> ep.isTransient()).forEach(this::cleanExtensionPoints);
     }
 
     // @TODO jstejska: move this into agent somehow?
