@@ -117,6 +117,7 @@ class WorkerWatchdog implements Runnable {
                     endpoint.notifyFailure("Unhandled worker error");
                 }
             }
+            setRunning(false);
         }
 
         logger.info("Finished running the worker watchdog");
