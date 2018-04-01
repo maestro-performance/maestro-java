@@ -46,6 +46,47 @@ public class FixedRateMultipointTestProfile extends FixedRateTestProfile impleme
 
     }
 
+    public void setParallelCount(int parallelCount) {
+        this.parallelCount = parallelCount;
+    }
+
+    public int getParallelCount() {
+        return this.parallelCount;
+    }
+
+    public void setRate(int rate) {
+        this.rate = rate;
+    }
+
+    public int getRate() {
+        return this.rate;
+    }
+
+    public int getMaximumLatency() {
+        return this.maximumLatency;
+    }
+
+    public void setMaximumLatency(int maximumLatency) {
+        this.maximumLatency = maximumLatency;
+    }
+
+    public TestDuration getDuration() {
+        return this.duration;
+    }
+
+    public void setDuration(TestDuration duration) {
+        this.duration = duration;
+    }
+
+    public String getMessageSize() {
+        return this.messageSize;
+    }
+
+    public void setMessageSize(String messageSize) {
+        this.messageSize = messageSize;
+    }
+
+
     @Override
     public void addEndPoint(EndPoint endPoint) {
         endPoints.add(endPoint);
