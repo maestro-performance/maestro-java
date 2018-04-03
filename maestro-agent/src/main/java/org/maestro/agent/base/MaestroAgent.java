@@ -244,7 +244,10 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
                 @Override
                 public void run() {
                     try{
-                        System.out.println("Executing groovyHandler by thread: " + this.getClass().getName());
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("Executing groovyHandler on thread: {}", Thread.currentThread().getId());
+                        }
+
                         groovyHandler.runCallbacks();
 
                     }
