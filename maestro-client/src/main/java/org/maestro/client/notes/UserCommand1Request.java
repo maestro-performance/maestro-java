@@ -23,37 +23,8 @@ import org.msgpack.core.MessageUnpacker;
 import java.io.IOException;
 
 public class UserCommand1Request extends MaestroRequest<MaestroAgentEventListener> {
-
-
-    public enum Option {
-        /** Broker address */
-        MAESTRO_NOTE_EXECUTE_COMMAND(0);
-
-        private long value;
-
-        Option(long value) {
-            this.value = value;
-        }
-
-        public long getValue() {
-            return value;
-        }
-
-        public void setValue(long value) {
-            this.value = value;
-        }
-
-        static public UserCommand1Request.Option from(long value) {
-            switch ((int) value) {
-                case 0: return MAESTRO_NOTE_EXECUTE_COMMAND;
-            }
-
-            return null;
-        }
-    }
-
-    private UserCommand1Request.Option option;
-    private String value;
+    private long option;
+    private String payload;
 
     public UserCommand1Request() {
         super(MaestroCommand.MAESTRO_NOTE_USER_COMMAND_1);
@@ -62,33 +33,38 @@ public class UserCommand1Request extends MaestroRequest<MaestroAgentEventListene
     public UserCommand1Request(MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_USER_COMMAND_1);
 
-        this.option = Option.from(unpacker.unpackLong());
-        this.value = unpacker.unpackString();
+        if (unpacker.hasNext()) {
+            this.option = unpacker.unpackLong();
+        }
+
+        if (unpacker.hasNext()) {
+            this.payload = unpacker.unpackString();
+        }
     }
 
-    private void set(final UserCommand1Request.Option option, final String value) {
+    private void set(final long option, final String value) {
         this.option = option;
-        this.value = value;
+        this.payload = value;
     }
 
-    public void setExecuteCommand(final String value) {
-        set(UserCommand1Request.Option.MAESTRO_NOTE_EXECUTE_COMMAND, value);
+    public void setPayload(final String payload) {
+        this.payload = payload;
     }
 
-    public UserCommand1Request.Option getOption() {
+    public long getOption() {
         return option;
     }
 
-    public String getValue() {
-        return value;
+    public String getPayload() {
+        return payload;
     }
 
     @Override
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
-        packer.packLong(option.getValue());
-        packer.packString(this.value);
+        packer.packLong(option);
+        packer.packString(this.payload);
 
         return packer;
     }
@@ -102,7 +78,7 @@ public class UserCommand1Request extends MaestroRequest<MaestroAgentEventListene
     public String toString() {
         return "UserCommand1Request{" +
                 "option=" + option +
-                ", value='" + value + '\'' +
+                ", payload='" + payload + '\'' +
                 "} " + super.toString();
     }
 }

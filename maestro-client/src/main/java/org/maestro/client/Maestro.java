@@ -454,7 +454,7 @@ public final class Maestro implements MaestroRequester {
     public void setExecuteCommand(final String command) throws MaestroConnectionException {
         UserCommand1Request maestroNote = new UserCommand1Request();
 
-        maestroNote.setExecuteCommand(command);
+        maestroNote.setPayload(command);
 
         maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
     }
