@@ -305,11 +305,6 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
         logger.info("User command request arrived");
 
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.USER_COMMAND_1));
-
-        UserCommand1Response response = new UserCommand1Response();
-        // @TODO jstejska: status should be set in groovy handler script I guess
-        response.setStatus("OK");
-        getClient().AgentGeneralResponse(response);
     }
 
     @Override
