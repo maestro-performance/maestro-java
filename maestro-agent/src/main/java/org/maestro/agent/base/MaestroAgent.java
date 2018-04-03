@@ -305,7 +305,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(AgentGeneralRequest note) {
         logger.info("Execute request arrived");
 
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  note.getValue()));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.GENERAL_REQUESTS));
 
         AgentGeneralResponse response = new AgentGeneralResponse();
         // @TODO jstejska: status should be set in groovy handler script I guess

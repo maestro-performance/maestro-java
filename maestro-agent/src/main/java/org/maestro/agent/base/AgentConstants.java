@@ -4,6 +4,7 @@ package org.maestro.agent.base;
 /**
  * Agent constants.
  */
+@SuppressWarnings("unused")
 class AgentConstants {
     /**
      * Agent basic constants.
@@ -47,7 +48,7 @@ class AgentConstants {
 
     static final String START_STOP = "stopagent";
 
-//    static final String GENERAL_EXECUTION = "startrouter";
+    static final String GENERAL_REQUESTS = "generalrequest";
 
     static final String OK = "ok";
 
