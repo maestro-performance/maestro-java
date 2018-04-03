@@ -2,6 +2,7 @@ package org.maestro.common.agent;
 
 import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.worker.WorkerOptions;
 
 /**
  * Base interface for implementing Agent endpoints.
@@ -37,4 +38,18 @@ public interface AgentEndpoint {
      * @return the maestro client
      */
     MaestroClient getClient();
+
+
+    /**
+     * Sets the worker options
+     * @param workerOptions the worker options
+     */
+    void setWorkerOptions(final WorkerOptions workerOptions);
+
+
+    /**
+     * Gets the worker options
+     * @return
+     */
+    WorkerOptions getWorkerOptions();
 }

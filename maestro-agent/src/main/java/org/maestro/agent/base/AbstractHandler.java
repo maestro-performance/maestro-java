@@ -3,14 +3,16 @@ package org.maestro.agent.base;
 import org.maestro.common.agent.AgentEndpoint;
 import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.worker.WorkerOptions;
 
 /**
  * Abstract handler class for external points scripts
  */
-public abstract class AbstractHandler implements AgentEndpoint{
+public abstract class AbstractHandler implements AgentEndpoint {
 
     private MaestroClient client;
     private MaestroNote note;
+    private WorkerOptions workerOptions;
 
     /**
      * Sets the content of the note associated with the external endpoint
@@ -42,5 +44,23 @@ public abstract class AbstractHandler implements AgentEndpoint{
      */
     public MaestroClient getClient() {
         return client;
+    }
+
+
+    /**
+     * Sets the worker options
+     * @param workerOptions the worker options
+     */
+    public void setWorkerOptions(final WorkerOptions workerOptions) {
+        this.workerOptions = workerOptions;
+    }
+
+
+    /**
+     * Gets the worker options
+     * @return
+     */
+    public WorkerOptions getWorkerOptions() {
+        return workerOptions;
     }
 }

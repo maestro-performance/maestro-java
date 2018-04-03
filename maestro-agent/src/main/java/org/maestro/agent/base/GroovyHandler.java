@@ -5,7 +5,9 @@ import groovy.lang.GroovyObject;
 import org.codehaus.groovy.control.CompilationFailedException;
 import org.maestro.client.MaestroReceiverClient;
 import org.maestro.common.agent.AgentHandler;
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.worker.WorkerOptions;
 import org.maestro.contrib.groovy.GroovyCallbackWalker;
 import org.maestro.contrib.groovy.GroovyClasspathHelper;
 import org.slf4j.Logger;
@@ -25,6 +27,9 @@ public class GroovyHandler implements AgentHandler {
     private Map<String, Object> context;
     private List<File> fileList;
     private MaestroReceiverClient client;
+
+    private MaestroNote maestroNote;
+    private WorkerOptions workerOptions;
 
     public GroovyHandler(MaestroReceiverClient client) {
         this.client = client;
@@ -68,6 +73,8 @@ public class GroovyHandler implements AgentHandler {
     private void runCallback(final File file, String callbackName) {
         GroovyObject groovyObject = getObject(file);
 
+        groovyObject.invokeMethod("setMaestroNote", this.maestroNote);
+        groovyObject.invokeMethod("setWorkerOptions", this.workerOptions);
         groovyObject.invokeMethod("setMaestroClient", this.client);
         groovyObject.invokeMethod(callbackName, context);
     }
@@ -88,5 +95,21 @@ public class GroovyHandler implements AgentHandler {
 
     public MaestroReceiverClient getClient() {
         return client;
+    }
+
+    public MaestroNote getMaestroNote() {
+        return maestroNote;
+    }
+
+    public void setMaestroNote(MaestroNote maestroNote) {
+        this.maestroNote = maestroNote;
+    }
+
+    public WorkerOptions getWorkerOptions() {
+        return workerOptions;
+    }
+
+    public void setWorkerOptions(WorkerOptions workerOptions) {
+        this.workerOptions = workerOptions;
     }
 }

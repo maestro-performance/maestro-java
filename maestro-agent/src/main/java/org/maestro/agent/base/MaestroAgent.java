@@ -12,6 +12,7 @@ import org.maestro.client.notes.InternalError;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.client.exceptions.MalformedNoteException;
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.base.MaestroWorkerManager;
@@ -79,7 +80,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StartInspector note) {
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.START_INSPECTOR));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.START_INSPECTOR, note));
     }
 
     /**
@@ -88,7 +89,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StartReceiver note) {
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.START_RECEIVER));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.START_RECEIVER, note));
     }
 
     /**
@@ -97,7 +98,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StartSender note) {
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.START_SENDER));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.START_SENDER, note));
     }
 
     /**
@@ -106,7 +107,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StopInspector note) {
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_INSPECTOR));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_INSPECTOR, note));
     }
 
     /**
@@ -115,7 +116,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StopReceiver note) {
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_RECEIVER));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_RECEIVER, note));
     }
 
     /**
@@ -123,7 +124,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param note StopSender note
      */
     public void handle(StopSender note) {
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_SENDER));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_SENDER, note));
     }
 
     /**
@@ -134,7 +135,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(StatsRequest note) {
         super.handle(note);
 
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STATS));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STATS, note));
     }
 
     /**
@@ -145,7 +146,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(FlushRequest note) {
         super.handle(note);
 
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.FLUSH));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.FLUSH, note));
     }
 
     /**
@@ -156,7 +157,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(Halt note) {
         super.handle(note);
 
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.HALT));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.HALT, note));
     }
 
     /**
@@ -167,7 +168,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(SetRequest note) {
         super.handle(note);
 
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.SET));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.SET, note));
     }
 
     /**
@@ -178,7 +179,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(TestFailedNotification note) {
         super.handle(note);
 
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.NOTIFY_FAIL));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.NOTIFY_FAIL, note));
     }
 
     /**
@@ -189,7 +190,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(TestSuccessfulNotification note) {
         super.handle(note);
 
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.NOTIFY_SUCCESS));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.NOTIFY_SUCCESS, note));
     }
 
     /**
@@ -200,7 +201,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(AbnormalDisconnect note) {
         super.handle(note);
 
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.ABNORMAL_DISCONNECT));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.ABNORMAL_DISCONNECT, note));
     }
 
     /**
@@ -213,7 +214,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(PingRequest note) throws MaestroConnectionException, MalformedNoteException {
         super.handle(note);
 
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.PING));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.PING, note));
     }
 
     /**
@@ -224,7 +225,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(GetRequest note) {
         super.handle(note);
 
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.GET));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.GET, note));
     }
 
 
@@ -232,11 +233,13 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * Callbacks wrapper for execute external points scripts
      * @param entryPointPath the root directory of the extension points
      */
-    private void callbacksWrapper(final File entryPointPath, final String codeDir) {
+    private void callbacksWrapper(final File entryPointPath, final String codeDir, final MaestroNote note) {
         try {
             File entryPointDir = new File(entryPointPath, codeDir);
 
             groovyHandler.setInitialPath(entryPointDir);
+            groovyHandler.setWorkerOptions(getWorkerOptions());
+            groovyHandler.setMaestroNote(note);
             thread = new Thread(new Runnable() {
                 @Override
                 public void run() {
@@ -304,7 +307,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(UserCommand1Request note) {
         logger.info("User command request arrived");
 
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.USER_COMMAND_1));
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.USER_COMMAND_1, note));
     }
 
     @Override
