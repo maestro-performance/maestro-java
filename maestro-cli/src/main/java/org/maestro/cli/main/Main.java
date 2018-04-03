@@ -83,6 +83,10 @@ public class Main {
                 action = new DownloadAction(newArgs);
                 break;
             }
+            case "extension-point": {
+                action = new ExtensionPointAction(newArgs);
+                break;
+            }
             default: {
                 help(1);
                 return;
