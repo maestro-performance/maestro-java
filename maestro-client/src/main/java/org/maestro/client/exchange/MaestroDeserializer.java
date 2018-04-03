@@ -76,8 +76,8 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_GET: {
                 return new GetResponse(unpacker);
             }
-            case MAESTRO_NOTE_AGENT_GENERAL_EXECUTE: {
-                return new AgentGeneralResponse(unpacker);
+            case MAESTRO_NOTE_AGENT_GENERIC_REQUEST: {
+                return new AgentGenericResponse(unpacker);
             }
             case MAESTRO_NOTE_START_RECEIVER:
             case MAESTRO_NOTE_STOP_RECEIVER:
@@ -147,8 +147,8 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_STOP_AGENT: {
                 return new StopAgent();
             }
-            case MAESTRO_NOTE_AGENT_GENERAL_EXECUTE: {
-                return new AgentGeneralRequest(unpacker);
+            case MAESTRO_NOTE_AGENT_GENERIC_REQUEST: {
+                return new AgentGenericRequest(unpacker);
             }
             case MAESTRO_NOTE_AGENT_SOURCE: {
                 return new AgentSourceRequest(unpacker);

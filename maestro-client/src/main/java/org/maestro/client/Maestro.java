@@ -452,7 +452,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
     public void setExecuteCommand(final String command) throws MaestroConnectionException {
-        AgentGeneralRequest maestroNote = new AgentGeneralRequest();
+        AgentGenericRequest maestroNote = new AgentGenericRequest();
 
         maestroNote.setExecuteCommand(command);
 

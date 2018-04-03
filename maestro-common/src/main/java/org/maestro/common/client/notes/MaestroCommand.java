@@ -50,7 +50,7 @@ public enum MaestroCommand {
     /** Agent execution **/
     MAESTRO_NOTE_START_AGENT(18),
     MAESTRO_NOTE_STOP_AGENT(19),
-    MAESTRO_NOTE_AGENT_GENERAL_EXECUTE(20),
+    MAESTRO_NOTE_AGENT_GENERIC_REQUEST(20),
     MAESTRO_NOTE_AGENT_SOURCE(21);
 
     private final long value;
@@ -85,7 +85,7 @@ public enum MaestroCommand {
             case 17: return MAESTRO_NOTE_GET;
             case 18: return MAESTRO_NOTE_START_AGENT;
             case 19: return MAESTRO_NOTE_STOP_AGENT;
-            case 20: return MAESTRO_NOTE_AGENT_GENERAL_EXECUTE;
+            case 20: return MAESTRO_NOTE_AGENT_GENERIC_REQUEST;
             case 21: return MAESTRO_NOTE_AGENT_SOURCE;
             default: {
                 Logger logger = LoggerFactory.getLogger(MaestroCommand.class);

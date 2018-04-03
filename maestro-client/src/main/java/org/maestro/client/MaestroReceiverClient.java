@@ -149,15 +149,15 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
 
     /**
      *  Publishes a agent general response as a reply to a agent general request
-     * @param agentGeneralResponse the agent general response to publish
+     * @param agentGenericResponse the agent general response to publish
      */
-    public void AgentGeneralResponse(final AgentGeneralResponse agentGeneralResponse) {
-        agentGeneralResponse.setName(clientName + "@" + host);
-        agentGeneralResponse.setId(id);
+    public void AgentGeneralResponse(final AgentGenericResponse agentGenericResponse) {
+        agentGenericResponse.setName(clientName + "@" + host);
+        agentGenericResponse.setId(id);
 
         // @TODO jstejska: delete after test
-        logger.debug(agentGeneralResponse.toString());
+        logger.debug(agentGenericResponse.toString());
 
-        super.publish(MaestroTopics.MAESTRO_TOPIC, agentGeneralResponse);
+        super.publish(MaestroTopics.MAESTRO_TOPIC, agentGenericResponse);
     }
 }

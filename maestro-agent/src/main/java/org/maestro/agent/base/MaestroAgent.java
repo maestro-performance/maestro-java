@@ -302,12 +302,12 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
 
     // @TODO jstejska: move this into agent somehow?
     @Override
-    public void handle(AgentGeneralRequest note) {
+    public void handle(AgentGenericRequest note) {
         logger.info("Execute request arrived");
 
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.GENERAL_REQUESTS));
 
-        AgentGeneralResponse response = new AgentGeneralResponse();
+        AgentGenericResponse response = new AgentGenericResponse();
         // @TODO jstejska: status should be set in groovy handler script I guess
         response.setStatus("OK");
         getClient().AgentGeneralResponse(response);

@@ -1,8 +1,8 @@
-package org.maestro.agent.ext.requests.generalrequest
+package org.maestro.agent.ext.requests.genericrequest
 
 import org.maestro.agent.base.AbstractHandler
 
-class GeneralRequestHandler extends AbstractHandler {
+class GenericRequestHandler extends AbstractHandler {
 
     @Override
     Object handle() {
