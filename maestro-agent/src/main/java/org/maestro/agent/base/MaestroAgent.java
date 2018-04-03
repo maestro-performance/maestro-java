@@ -37,7 +37,6 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     private final GroovyHandler groovyHandler;
     private AbstractConfiguration config = ConfigurationWrapper.getConfig();
     private List<ExtensionPoint> extensionPoints = new LinkedList<>();
-    private File extPointPath;
     private Thread thread;
 
     private final String sourceRoot;
