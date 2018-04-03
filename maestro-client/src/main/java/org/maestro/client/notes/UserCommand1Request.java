@@ -42,13 +42,9 @@ public class UserCommand1Request extends MaestroRequest<MaestroAgentEventListene
         }
     }
 
-    private void set(final long option, final String value) {
+    public void set(final long option, final String value) {
         this.option = option;
         this.payload = value;
-    }
-
-    public void setPayload(final String payload) {
-        this.payload = payload;
     }
 
     public long getOption() {
@@ -64,7 +60,10 @@ public class UserCommand1Request extends MaestroRequest<MaestroAgentEventListene
         MessageBufferPacker packer = super.pack();
 
         packer.packLong(option);
-        packer.packString(this.payload);
+
+        if (payload != null) {
+            packer.packString(this.payload);
+        }
 
         return packer;
     }

@@ -448,13 +448,14 @@ public final class Maestro implements MaestroRequester {
     }
 
     /**
-     * Sends a agent general execution request
+     * Sends a user command request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void setExecuteCommand(final String command) throws MaestroConnectionException {
+    public void userCommand(final long option, final String payload) throws MaestroConnectionException {
         UserCommand1Request maestroNote = new UserCommand1Request();
 
-        maestroNote.setPayload(command);
+        maestroNote.set(option, payload);
+
 
         maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
     }

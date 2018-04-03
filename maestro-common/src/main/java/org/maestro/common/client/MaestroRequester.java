@@ -244,7 +244,9 @@ public interface MaestroRequester {
 
     /**
      * Sends a agent general execution request
+     * @param option An optional numeric option that can be associated w/ the command
+     * @param payload An option string payload to be sent along w/ the command
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    void setExecuteCommand(final String command) throws MaestroConnectionException;
+    void userCommand(long option, final String payload) throws MaestroConnectionException;
 }
