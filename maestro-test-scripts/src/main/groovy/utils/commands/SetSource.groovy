@@ -52,7 +52,7 @@ maestro = new Maestro(maestroURL)
 /**
  * Sends a stop command to all the test cluster
  */
-println "Sending the start commands commands"
+println "Sending the source command"
 maestro.sourceRequest(sourceURL, branch)
 
 println "Waiting 2 seconds"
