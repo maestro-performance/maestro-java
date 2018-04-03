@@ -22,7 +22,7 @@ import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
-public class AgentGenericRequest extends MaestroRequest<MaestroAgentEventListener> {
+public class UserCommand1Request extends MaestroRequest<MaestroAgentEventListener> {
 
 
     public enum Option {
@@ -43,7 +43,7 @@ public class AgentGenericRequest extends MaestroRequest<MaestroAgentEventListene
             this.value = value;
         }
 
-        static public AgentGenericRequest.Option from(long value) {
+        static public UserCommand1Request.Option from(long value) {
             switch ((int) value) {
                 case 0: return MAESTRO_NOTE_EXECUTE_COMMAND;
             }
@@ -52,30 +52,30 @@ public class AgentGenericRequest extends MaestroRequest<MaestroAgentEventListene
         }
     }
 
-    private AgentGenericRequest.Option option;
+    private UserCommand1Request.Option option;
     private String value;
 
-    public AgentGenericRequest() {
-        super(MaestroCommand.MAESTRO_NOTE_AGENT_GENERIC_REQUEST);
+    public UserCommand1Request() {
+        super(MaestroCommand.MAESTRO_NOTE_USER_COMMAND_1);
     }
 
-    public AgentGenericRequest(MessageUnpacker unpacker) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_AGENT_GENERIC_REQUEST);
+    public UserCommand1Request(MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_USER_COMMAND_1);
 
         this.option = Option.from(unpacker.unpackLong());
         this.value = unpacker.unpackString();
     }
 
-    private void set(final AgentGenericRequest.Option option, final String value) {
+    private void set(final UserCommand1Request.Option option, final String value) {
         this.option = option;
         this.value = value;
     }
 
     public void setExecuteCommand(final String value) {
-        set(AgentGenericRequest.Option.MAESTRO_NOTE_EXECUTE_COMMAND, value);
+        set(UserCommand1Request.Option.MAESTRO_NOTE_EXECUTE_COMMAND, value);
     }
 
-    public AgentGenericRequest.Option getOption() {
+    public UserCommand1Request.Option getOption() {
         return option;
     }
 
@@ -100,7 +100,7 @@ public class AgentGenericRequest extends MaestroRequest<MaestroAgentEventListene
 
     @Override
     public String toString() {
-        return "AgentGenericRequest{" +
+        return "UserCommand1Request{" +
                 "option=" + option +
                 ", value='" + value + '\'' +
                 "} " + super.toString();

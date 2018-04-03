@@ -10,7 +10,7 @@ public interface MaestroAgentEventListener {
 
     void handle(StopAgent note);
 
-    void handle(AgentGenericRequest note);
+    void handle(UserCommand1Request note);
 
     void handle(AgentSourceRequest note);
 }

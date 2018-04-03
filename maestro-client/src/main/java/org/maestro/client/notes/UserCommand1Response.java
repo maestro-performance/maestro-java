@@ -22,16 +22,16 @@ import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
-public class AgentGenericResponse extends MaestroResponse {
+public class UserCommand1Response extends MaestroResponse {
 
     private String status;
 
-    public AgentGenericResponse() {
-        super(MaestroCommand.MAESTRO_NOTE_AGENT_GENERIC_REQUEST);
+    public UserCommand1Response() {
+        super(MaestroCommand.MAESTRO_NOTE_USER_COMMAND_1);
     }
 
-    public AgentGenericResponse(MessageUnpacker unpacker) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_AGENT_GENERIC_REQUEST, unpacker);
+    public UserCommand1Response(MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_USER_COMMAND_1, unpacker);
 
         this.status = unpacker.unpackString();
     }
@@ -56,7 +56,7 @@ public class AgentGenericResponse extends MaestroResponse {
 
     @Override
     public String toString() {
-        return "AgentGenericResponse{" +
+        return "UserCommand1Response{" +
                 "status=" + status +
                 "} " + super.toString();
     }

@@ -48,7 +48,7 @@ class AgentConstants {
 
     static final String START_STOP = "stopagent";
 
-    static final String GENERAL_REQUESTS = "genericrequest";
+    static final String USER_COMMAND_1 = "usercommand1";
 
     static final String OK = "ok";
 

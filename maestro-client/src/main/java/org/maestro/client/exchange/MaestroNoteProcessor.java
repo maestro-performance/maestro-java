@@ -38,7 +38,7 @@ public class MaestroNoteProcessor {
 
     }
 
-    protected void processAgentGeneralResponse(AgentGenericResponse note) {
+    protected void processAgentGeneralResponse(UserCommand1Response note) {
 
     }
 
@@ -52,8 +52,8 @@ public class MaestroNoteProcessor {
                 processGetResponse((GetResponse) note);
                 break;
             }
-            case MAESTRO_NOTE_AGENT_GENERIC_REQUEST: {
-                processAgentGeneralResponse((AgentGenericResponse) note);
+            case MAESTRO_NOTE_USER_COMMAND_1: {
+                processAgentGeneralResponse((UserCommand1Response) note);
                 break;
             }
         }
