@@ -98,8 +98,10 @@ public class Main {
 
             help(options, -1);
         }
+
         assert logDirVal != null;
         logDir = new File(logDirVal);
+        System.setProperty("maestro.log.dir", logDirVal);
     }
 
     /**
