@@ -130,15 +130,18 @@ public class ArtemisInspector implements MaestroInspector {
                 Thread.sleep(5000);
             }
 
+            TestLogUtils.createSymlinks(this.baseLogDir, false);
             endpoint.notifySuccess("Inspector finished successfully");
             logger.debug("The test has finished and the Artemis inspector is terminating");
 
             return 0;
         } catch (InterruptedException eie) {
+            TestLogUtils.createSymlinks(this.baseLogDir, false);
             endpoint.notifySuccess("Inspector finished successfully");
             throw eie;
         }
         catch (Exception e) {
+            TestLogUtils.createSymlinks(this.baseLogDir, true);
             endpoint.notifyFailure("Inspector failed");
             throw e;
         }
