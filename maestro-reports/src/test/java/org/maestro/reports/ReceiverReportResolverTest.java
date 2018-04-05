@@ -23,7 +23,7 @@ import java.util.List;
 import static junit.framework.TestCase.assertEquals;
 
 public class ReceiverReportResolverTest {
-    private static final String BASE_URL = "http://localhost:5006/logs/tests";
+    private static final String BASE_URL = "http://localhost:5006/";
 
     @Test
     public void testSuccessFiles() {

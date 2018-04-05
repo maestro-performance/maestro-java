@@ -23,7 +23,7 @@ import java.util.List;
 import static junit.framework.TestCase.assertEquals;
 
 public class InspectorReportResolverTest {
-    private static final String BASE_URL = "http://localhost:5006/logs/tests";
+    private static final String BASE_URL = "http://localhost:5006/";
 
     @Test
     public void testSuccessFiles() {
@@ -33,13 +33,13 @@ public class InspectorReportResolverTest {
         assertEquals("List size does not match the expected size", 4, successFiles.size());
 
         assertEquals("The sender rate file does not match the expected sender rate file",
-                BASE_URL + "/logs/tests/lastSuccessful/heap.csv.gz", successFiles.get(0));
+                BASE_URL + "/logs/tests/lastSuccessful/heap.csv", successFiles.get(0));
         assertEquals("The test properties file does not match the expected file",
                 BASE_URL + "/logs/tests/lastSuccessful/inspector.properties", successFiles.get(1));
         assertEquals("The memory area file does not match the expected file",
-                BASE_URL + "/logs/tests/lastSuccessful/memory-areas.csv.gz", successFiles.get(2));
+                BASE_URL + "/logs/tests/lastSuccessful/memory-areas.csv", successFiles.get(2));
         assertEquals("The memory area file does not match the expected file",
-                BASE_URL + "/logs/tests/lastSuccessful/queues.csv.gz", successFiles.get(3));
+                BASE_URL + "/logs/tests/lastSuccessful/queues.csv", successFiles.get(3));
     }
 
     @Test
@@ -50,12 +50,12 @@ public class InspectorReportResolverTest {
         assertEquals("List size does not match the expected size", 4, failedFiles.size());
 
         assertEquals("The sender rate file does not match the expected sender rate file",
-                BASE_URL + "/logs/tests/lastFailed/heap.csv.gz", failedFiles.get(0));
+                BASE_URL + "/logs/tests/lastFailed/heap.csv", failedFiles.get(0));
         assertEquals("The test properties file does not match the expected file",
                 BASE_URL + "/logs/tests/lastFailed/inspector.properties", failedFiles.get(1));
         assertEquals("The memory area file does not match the expected file",
-                BASE_URL + "/lastFailed/memory-areas.csv.gz", failedFiles.get(2));
+                BASE_URL + "/logs/tests/lastFailed/memory-areas.csv", failedFiles.get(2));
         assertEquals("The memory area file does not match the expected file",
-                BASE_URL + "/logs/tests/lastFailed/queues.csv.gz", failedFiles.get(3));
+                BASE_URL + "/logs/tests/lastFailed/queues.csv", failedFiles.get(3));
     }
 }
