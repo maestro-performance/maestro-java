@@ -171,14 +171,14 @@ public class Downloader {
 			if (outputFile != null) {
 				outputFile.delete();
 			}
-			throw new ResourceExchangeException("Invalid URI: " + url, e);
+			throw new ResourceExchangeException("Invalid URI: " + url, url, e);
 		} catch (Exception e) {
 			if (outputFile != null) {
 				logger.debug("Removing file " + outputFile.getPath());
 				outputFile.delete();
 			}
 
-			throw new ResourceExchangeException("I/O error: " + e.getMessage(), e);
+			throw new ResourceExchangeException("I/O error: " + e.getMessage(), url, e);
 		}
 	}
 

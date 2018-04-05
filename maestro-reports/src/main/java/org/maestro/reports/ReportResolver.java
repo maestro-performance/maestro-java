@@ -16,5 +16,29 @@
 
 package org.maestro.reports;
 
+import java.util.List;
+
+/**
+ * A report file resolver gets a list of report files for a peer
+ */
 public interface ReportResolver {
+
+    /**
+     * Gets a list of files to be downloaded when a test is successful
+     * @return A list of files (as a URL to the file to be downloaded)
+     */
+    List<String> getSuccessFiles();
+
+    /**
+     * Gets a list of files to be downloaded when a test is failed
+     * @return A list of files (as a URL to the file to be downloaded)
+     */
+    List<String> getFailedFiles();
+
+    /**
+     * Gets a list of files to be downloaded when a test is complete regardless of the result
+     * @param testNum the test number
+     * @return A list of files (as a URL to the file to be downloaded)
+     */
+    List<String> getTestFiles(final String testNum);
 }

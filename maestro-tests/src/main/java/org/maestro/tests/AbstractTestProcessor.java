@@ -90,7 +90,7 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
         waitForFlush();
 
         reportsDownloader.setReportResultTypeDir("success");
-        reportsDownloader.downloadLastSuccessful(type, host, note.getName());
+        reportsDownloader.downloadLastSuccessful(type, host);
 
         notifications++;
     }
@@ -109,7 +109,7 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
         waitForFlush();
 
         reportsDownloader.setReportResultTypeDir("failed");
-        reportsDownloader.downloadLastFailed(type, host, note.getName());
+        reportsDownloader.downloadLastFailed(type, host);
 
         failed = true;
         notifications++;

@@ -17,42 +17,53 @@ package org.maestro.contrib.utils.resource.exceptions;
 
 /**
  * Network exchanges exception
- *
- *
  */
 @SuppressWarnings("serial")
 public class ResourceExchangeException extends Exception {
-	private int code;
+    private int code;
+    private String url;
 
-	/**
-	 * Constructor
-	 * @param message error message
-	 * @param t root cause
-	 */
-	public ResourceExchangeException(String message, Throwable t) {
-		super(message, t);
-	}
+    /**
+     * Constructor
+     *
+     * @param message error message
+     * @param t       root cause
+     */
+    public ResourceExchangeException(final String message, final String url, Throwable t) {
+        super(message, t);
 
-	/**
-	 * Constructor
-	 * @param message error message
-	 */
-	public ResourceExchangeException(final String message, final int code) {
-		super(message);
+        this.url = url;
+    }
 
-		this.code = code;
-	}
+    /**
+     * Constructor
+     *
+     * @param message error message
+     */
+    public ResourceExchangeException(final String message, final String url, final int code) {
+        super(message);
+
+        this.url = url;
+        this.code = code;
+    }
 
 
-	/**
-	 * Constructor
-	 * @param message error message
-	 */
-	public ResourceExchangeException(final String message) {
-		super(message);
-	}
+    /**
+     * Constructor
+     *
+     * @param message error message
+     */
+    public ResourceExchangeException(final String message, final String url) {
+        super(message);
 
-	public int getCode() {
-		return code;
-	}
+        this.url = url;
+    }
+
+    public int getCode() {
+        return code;
+    }
+
+    public String getUrl() {
+        return url;
+    }
 }

@@ -16,7 +16,6 @@
 
 package org.maestro.reports;
 
-import org.maestro.common.Constants;
 import org.maestro.common.URLUtils;
 import org.maestro.contrib.utils.Downloader;
 import org.maestro.contrib.utils.resource.exceptions.ResourceExchangeException;
@@ -25,15 +24,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.List;
 
 public class ReportsDownloader {
     private static final Logger logger = LoggerFactory.getLogger(ReportsDownloader.class);
 
-    private static final String LAST_SUCCESSFUL_DIR = "lastSuccessful";
-    private static final String LAST_FAILED_DIR = "lastFailed";
-    private static final String SENDER_HOST = "sender";
-    private static final String RECEIVER_HOST = "receiver";
-    private static final String INSPECTOR_HOST = "inspector";
+    private static final String SENDER_HOST_TYPE = "sender";
+    private static final String RECEIVER_HOST_TYPE = "receiver";
+    private static final String INSPECTOR_HOST_TYPE = "inspector";
 
     private final String baseDir;
     private String reportTypeDir;
@@ -61,11 +59,8 @@ public class ReportsDownloader {
                 Integer.toString(testNum) + File.separator + host;
     }
 
-    private void downloadReport(final String address, final String hostType, final String reportSource, final String name) throws ResourceExchangeException {
-        String baseURL = address + Constants.TEST_LOGS_CONTEXT + "/" + reportSource + "/";
-        String targetURL = baseURL + name;
-
-        final String destinationDir = buildDir(address, hostType);
+    private void downloadReport(final String targetURL, final String hostType) throws ResourceExchangeException {
+        final String destinationDir = buildDir(targetURL, hostType);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Downloading file {} to {}", targetURL, destinationDir);
@@ -87,68 +82,57 @@ public class ReportsDownloader {
                 // Maybe it's still flushing the data ... who knows. We can wait a bit and try again
                 Downloader.download(targetURL, destinationDir, true);
             }
+            else {
+                throw re;
+            }
         }
     }
 
-    private void downloadSenderReports(final String host, final String reportSource) throws ResourceExchangeException {
-        String name = "senderd-rate.csv.gz";
-
-        downloadReport(host, SENDER_HOST, reportSource, name);
-
-        downloadReport(host, SENDER_HOST, reportSource, "test.properties");
-    }
-
-    private void downloadReceiverReports(final String host, final String reportSource) throws ResourceExchangeException {
-        String tpReport = "receiverd-rate.csv.gz";
-
-        downloadReport(host, RECEIVER_HOST, reportSource, tpReport);
-
-        String latReport = "receiverd-latency.hdr";
-
-        downloadReport(host, RECEIVER_HOST, reportSource, latReport);
-
-
-        downloadReport(host, RECEIVER_HOST, reportSource, "test.properties");
-    }
-
-    private void downloadInspectorReports(final String host, final String reportSource) throws ResourceExchangeException {
-        downloadReport(host, INSPECTOR_HOST, reportSource, "inspector.properties");
-        downloadReport(host, INSPECTOR_HOST, reportSource, "memory-areas.csv");
-        downloadReport(host, INSPECTOR_HOST, reportSource, "heap.csv");
-        downloadReport(host, INSPECTOR_HOST, reportSource, "queues.csv");
-    }
-
-    public void downloadLastSuccessful(final String type, final String host, final String name) {
+    public void downloadLastSuccessful(final String type, final String host) {
         try {
-            if (type.equals(SENDER_HOST)) {
-                downloadSenderReports(host, LAST_SUCCESSFUL_DIR);
+            ReportResolver reportResolver = null;
+
+            if (type.equals(SENDER_HOST_TYPE)) {
+                reportResolver = new SenderReportResolver(host);
             }
 
-            if (type.equals(RECEIVER_HOST)) {
-                downloadReceiverReports(host, LAST_SUCCESSFUL_DIR);
+            if (type.equals(RECEIVER_HOST_TYPE)) {
+                reportResolver = new ReceiverReportResolver(host);
             }
 
-            if (type.equals(INSPECTOR_HOST)) {
-                downloadInspectorReports(host, LAST_SUCCESSFUL_DIR);
+            if (type.equals(INSPECTOR_HOST_TYPE)) {
+                reportResolver = new InspectorReportResolver(host);
             }
-        }
+
+            List<String> files = reportResolver.getSuccessFiles();
+            for (String url : files) {
+                downloadReport(url, type);
+            }
+         }
         catch (Exception e) {
             logger.error("Error: {}", e.getMessage(), e);
         }
     }
 
-    public void downloadLastFailed(final String type, final String host, final String name) {
+    public void downloadLastFailed(final String type, final String host) {
         try {
-            if (type.equals(SENDER_HOST)) {
-                downloadSenderReports(host, LAST_FAILED_DIR);
+            ReportResolver reportResolver = null;
+
+            if (type.equals(SENDER_HOST_TYPE)) {
+                reportResolver = new SenderReportResolver(host);
             }
 
-            if (type.equals(RECEIVER_HOST)) {
-                downloadReceiverReports(host, LAST_FAILED_DIR);
+            if (type.equals(RECEIVER_HOST_TYPE)) {
+                reportResolver = new ReceiverReportResolver(host);
             }
 
-            if (type.equals(INSPECTOR_HOST)) {
-                downloadInspectorReports(host, LAST_FAILED_DIR);
+            if (type.equals(INSPECTOR_HOST_TYPE)) {
+                reportResolver = new InspectorReportResolver(host);
+            }
+
+            List<String> files = reportResolver.getFailedFiles();
+            for (String url : files) {
+                downloadReport(url, type);
             }
         }
         catch (Exception e) {
@@ -157,34 +141,50 @@ public class ReportsDownloader {
     }
 
 
-    public void downloadAny(final String host, String resource) {
+    public void downloadAny(final String host, final String testNumber) {
+
         try {
+            SenderReportResolver senderReportResolver = new SenderReportResolver(host);
+
             try {
-                downloadSenderReports(host, resource);
+                List<String> files = senderReportResolver.getTestFiles(testNumber);
+                for (String url : files) {
+                    downloadReport(url, SENDER_HOST_TYPE);
+                }
             }
             catch (ResourceExchangeException e) {
                 if (e.getCode() != HttpStatus.SC_NOT_FOUND) {
-                    logger.warn("Resource {} not found at {} ", resource, host );
+                    logger.warn("Resource {} not found at {} ", e.getUrl(), host );
                     throw e;
                 }
             }
 
+            ReceiverReportResolver receiverReportResolver = new ReceiverReportResolver(host);
+
             try {
-                downloadReceiverReports(host, resource);
+                List<String> files = receiverReportResolver.getTestFiles(testNumber);
+                for (String url : files) {
+                    downloadReport(url, RECEIVER_HOST_TYPE);
+                }
             }
             catch (ResourceExchangeException e) {
                 if (e.getCode() != HttpStatus.SC_NOT_FOUND) {
-                    logger.warn("Resource {} not found at {} ", resource, host );
+                    logger.warn("Resource {} not found at {} ", e.getUrl(), host );
                     throw e;
                 }
             }
 
+            InspectorReportResolver inspectorReportResolver = new InspectorReportResolver(host);
+
             try {
-                downloadInspectorReports(host, resource);
+                List<String> files = inspectorReportResolver.getTestFiles(testNumber);
+                for (String url : files) {
+                    downloadReport(url, INSPECTOR_HOST_TYPE);
+                }
             }
             catch (ResourceExchangeException e) {
                 if (e.getCode() != HttpStatus.SC_NOT_FOUND) {
-                    logger.warn("Resource {} not found at {} ", resource, host );
+                    logger.warn("Resource {} not found at {} ", e.getUrl(), host );
                     throw e;
                 }
             }
