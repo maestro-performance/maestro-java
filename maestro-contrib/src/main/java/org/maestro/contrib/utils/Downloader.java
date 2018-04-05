@@ -167,7 +167,10 @@ public class Downloader {
 				logger.debug("Releasing resources");
 				resourceExchange.release();
 			}
-		} catch (URISyntaxException e) {
+		} catch (ResourceExchangeException re) {
+			throw re;
+		}
+		catch (URISyntaxException e) {
 			if (outputFile != null) {
 				outputFile.delete();
 			}
