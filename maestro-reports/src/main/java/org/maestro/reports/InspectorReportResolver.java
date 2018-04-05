@@ -17,7 +17,7 @@
 package org.maestro.reports;
 
 public class InspectorReportResolver extends AbstractReportResolver {
-    private static final String[] FILES = { "heap.csv.gz", "inspector.properties", "memory-areas.csv.gz", "queues.csv.gz"};
+    private static final String[] FILES = { "heap.csv", "inspector.properties", "memory-areas.csv", "queues.csv"};
 
     public InspectorReportResolver(final String baseURL) {
         super(baseURL, FILES);
