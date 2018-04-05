@@ -58,6 +58,7 @@ public class TestLogUtils {
     }
 
     public static void createSymlinks(final File logDir, boolean failed) {
+        logger.trace("Creating the symlinks");
         File lastLogDir = findLastLogDir(logDir);
         Path target = Paths.get(lastLogDir.getAbsolutePath());
 
@@ -65,6 +66,7 @@ public class TestLogUtils {
         deleteLinkQuietly(lastLink.toFile());
 
         try {
+            logger.trace("Updating the 'last' link");
             Files.createSymbolicLink(lastLink, target);
         } catch (IOException e) {
             logger.trace("Symbolic link creation error: " + e.getMessage(), e);
@@ -75,6 +77,7 @@ public class TestLogUtils {
             deleteLinkQuietly(lastFailedLink.toFile());
 
             try {
+                logger.trace("Updating the 'lastFailed' link");
                 Files.createSymbolicLink(lastFailedLink, target);
             } catch (IOException e) {
                 logger.trace("Symbolic link creation error: " + e.getMessage(), e);
@@ -85,6 +88,7 @@ public class TestLogUtils {
             deleteLinkQuietly(lastSuccessfulLink.toFile());
 
             try {
+                logger.trace("Updating the 'lastSuccessful' link");
                 Files.createSymbolicLink(lastSuccessfulLink, target);
             } catch (IOException e) {
                 logger.trace("Symbolic link creation error: " + e.getMessage(), e);
