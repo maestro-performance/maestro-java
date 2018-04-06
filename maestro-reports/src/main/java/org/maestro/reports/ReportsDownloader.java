@@ -64,6 +64,15 @@ public class ReportsDownloader {
         this.reportTypeDir = reportTypeDir;
     }
 
+    /**
+     * Add a new report resolver with the given host type
+     * @param hostType the host type
+     * @param reportResolver the report resolver to use for the host type
+     */
+    public void addReportResolver(final String hostType, final ReportResolver reportResolver) {
+        resolverMap.put(hostType, reportResolver);
+    }
+
 
     private String buildDir(final String address, final String hostType) {
         String host = URLUtils.getHostnameFromURL(address);
