@@ -28,6 +28,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A reports downloader that collects the reports after the test is complete or on demand via CLI
+ */
 public class ReportsDownloader {
     private static final Logger logger = LoggerFactory.getLogger(ReportsDownloader.class);
 
@@ -41,7 +44,10 @@ public class ReportsDownloader {
     private String reportTypeDir;
     private int testNum;
 
-
+    /**
+     * Constructor
+     * @param baseDir
+     */
     public ReportsDownloader(final String baseDir) {
         this.baseDir = baseDir;
 
@@ -96,6 +102,11 @@ public class ReportsDownloader {
         }
     }
 
+    /**
+     * Download files from the peers when a test is successful
+     * @param type the type of the peer (sender, receiver, inspector, etc)
+     * @param host the host to download the files from
+     */
     public void downloadLastSuccessful(final String type, final String host) {
         try {
             ReportResolver reportResolver = resolverMap.get(type);
@@ -110,6 +121,11 @@ public class ReportsDownloader {
         }
     }
 
+    /**
+     * Download files from the peers when a test failed
+     * @param type the type of the peer (sender, receiver, inspector, etc)
+     * @param host the host to download the files from
+     */
     public void downloadLastFailed(final String type, final String host) {
         try {
             ReportResolver reportResolver = resolverMap.get(type);
@@ -123,6 +139,7 @@ public class ReportsDownloader {
             logger.error("Error: {}", e.getMessage(), e);
         }
     }
+
 
     private void downloadAny(final ReportResolver reportResolver, final String host, final String testNumber) {
         try {
@@ -142,6 +159,11 @@ public class ReportsDownloader {
     }
 
 
+    /**
+     * Download files from the peers
+     * @param host the host to download the files from
+     * @param testNumber the test execution number from the peer or one of the links (last, lastSuccessful, lastFailed)
+     */
     public void downloadAny(final String host, final String testNumber) {
         resolverMap.values().forEach(value -> downloadAny(value, host, testNumber));
     }
