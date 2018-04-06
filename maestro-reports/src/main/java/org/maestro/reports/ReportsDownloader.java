@@ -42,7 +42,7 @@ public class ReportsDownloader {
     private int testNum;
 
 
-    public ReportsDownloader(String baseDir) {
+    public ReportsDownloader(final String baseDir) {
         this.baseDir = baseDir;
 
         resolverMap.put(SENDER_HOST_TYPE, new SenderReportResolver());
@@ -54,7 +54,7 @@ public class ReportsDownloader {
         this.testNum = testNum;
     }
 
-    public void setReportResultTypeDir(String reportTypeDir) {
+    public void setReportResultTypeDir(final String reportTypeDir) {
         this.reportTypeDir = reportTypeDir;
     }
 
@@ -124,7 +124,7 @@ public class ReportsDownloader {
         }
     }
 
-    private void downloadAny(ReportResolver reportResolver, final String host, final String testNumber) {
+    private void downloadAny(final ReportResolver reportResolver, final String host, final String testNumber) {
         try {
             List<String> files = reportResolver.getTestFiles(host, testNumber);
             for (String url : files) {
@@ -145,6 +145,4 @@ public class ReportsDownloader {
     public void downloadAny(final String host, final String testNumber) {
         resolverMap.values().forEach(value -> downloadAny(value, host, testNumber));
     }
-
-
 }
