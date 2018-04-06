@@ -30,31 +30,35 @@ package singlepoint
 
 
 import org.maestro.client.Maestro
-import org.maestro.client.exchange.MaestroNoteProcessor
-import org.maestro.client.notes.PingResponse
 import org.maestro.client.notes.TestFailedNotification
-import org.maestro.common.client.notes.MaestroNote
-import org.maestro.tests.TestExecutor
+import org.maestro.common.LogConfigurator
+import org.maestro.common.exceptions.MaestroException
+import org.maestro.reports.AbstractReportResolver
+import org.maestro.reports.ReportsDownloader
+import org.maestro.tests.AbstractTestExecutor
+import org.maestro.tests.AbstractTestProcessor
+import org.maestro.tests.AbstractTestProfile
+import org.slf4j.Logger
+import org.slf4j.LoggerFactory
 
 /**
  * This test executes tests via Maestro Agent using Quiver (https://github.com/ssorj/quiver/)
  */
-class QuiverExecutor implements TestExecutor {
+class QuiverExecutor extends AbstractTestExecutor {
     /**
      * The simple processor for Maestro responses
      */
-    class QuiverTestProcessor extends MaestroNoteProcessor {
+    class QuiverTestProcessor extends AbstractTestProcessor {
         private boolean successful = true
 
-        @Override
-        protected void processPingResponse(PingResponse note) {
-            println  "Elapsed time from " + note.getName() + ": " + note.getElapsed() + " ms"
+        QuiverTestProcessor(final AbstractTestProfile testProfile, final ReportsDownloader reportsDownloader) {
+            super(testProfile, reportsDownloader)
         }
 
         @Override
         protected void processNotifyFail(TestFailedNotification note) {
-            println "Test failed on " + note.getName()
-            successful = false;
+            super.processNotifyFail(note)
+            successful = false
         }
 
         boolean isSuccessful() {
@@ -63,29 +67,19 @@ class QuiverExecutor implements TestExecutor {
     }
 
     private Maestro maestro
-    private String brokerURL
-    private String sourceURL
-    private QuiverTestProcessor testProcessor = new QuiverTestProcessor();
 
-    QuiverExecutor(Maestro maestro) {
+    private QuiverTestProcessor testProcessor
+    private ReportsDownloader reportsDownloader
+    private AbstractTestProfile testProfile;
+
+    QuiverExecutor(Maestro maestro, ReportsDownloader reportsDownloader, AbstractTestProfile testProfile) {
+        super(maestro, reportsDownloader)
+
         this.maestro = maestro
-    }
+        this.reportsDownloader = reportsDownloader
+        this.testProfile = testProfile;
 
-
-    String getBrokerURL() {
-        return brokerURL
-    }
-
-    void setBrokerURL(String brokerURL) {
-        this.brokerURL = brokerURL
-    }
-
-    String getSourceURL() {
-        return sourceURL
-    }
-
-    void setSourceURL(String sourceURL) {
-        this.sourceURL = sourceURL
+        testProcessor = new QuiverTestProcessor(testProfile, reportsDownloader)
     }
 
 
@@ -101,28 +95,7 @@ class QuiverExecutor implements TestExecutor {
         // NO-OP
     }
 
-    private void processReplies() {
-        println "Collecting replies "
-        List<MaestroNote> replies = maestro.collect(1000, 10)
-
-        testProcessor.process(replies)
-    }
-
-    private void setTestParameters(String brokerURL) {
-        println "Sending ping request"
-        maestro.pingRequest()
-
-        println "Setting broker"
-        maestro.setBroker(brokerURL)
-
-        println "Downloading Quiver extension point code from ${sourceURL}"
-        maestro.sourceRequest(sourceURL, null)
-
-        println "Setting the broker to ${brokerURL}"
-        maestro.setBroker(brokerURL)
-    }
-
-    private void startServices() {
+    void startServices() {
         maestro.userCommand(0, "rhea")
     }
 
@@ -131,18 +104,89 @@ class QuiverExecutor implements TestExecutor {
      * @return
      */
     boolean run() {
-        setTestParameters(brokerURL)
-        startServices()
-        processReplies()
+        try {
+            int repeat = 2
 
-        println "Waiting a while for the Quiver test is running"
-        Thread.sleep(65000)
+            // Clean up the topic
+            println "Cleaning up the topic"
+            maestro.collect();
 
-        processReplies()
+            println "Collecting the number of peers"
+            int numPeers = getNumPeers();
+
+            println "Resolving data servers"
+            resolveDataServers();
+            processReplies(testProcessor, repeat, numPeers);
+
+            getReportsDownloader().setTestNum(testProfile.getTestExecutionNumber());
+
+            println "Applying the test profile"
+            testProfile.apply(maestro)
+
+            testProcessor.resetNotifications()
+
+            println "Starting the services"
+            startServices()
+
+            println "Processing the replies"
+            processReplies(testProcessor, repeat, numPeers)
+
+            println "Waiting a while for the Quiver test is running"
+            Thread.sleep(80000)
+
+            println "Processing the notifications"
+            processNotifications(testProcessor, repeat * 2, numPeers);
+        }
+        finally {
+            maestro.stopAgent()
+        }
+
         return testProcessor.isSuccessful()
     }
 }
 
+class QuiverTestProfile extends AbstractTestProfile {
+    private String sourceURL;
+    private String brokerURL;
+
+    void setSourceURL(final String sourceURL) {
+        this.sourceURL = sourceURL;
+    }
+
+    void setBrokerURL(String brokerURL) {
+        this.brokerURL = brokerURL
+    }
+
+    @Override
+    void apply(Maestro maestro) throws MaestroException {
+        maestro.setBroker(this.brokerURL);
+        maestro.sourceRequest(sourceURL, null)
+    }
+}
+
+class QuiverReportResolver extends AbstractReportResolver {
+    private static final String[] FILES = ["receiver-snapshots.csv", "receiver-transfers.csv.xz", "sender-summary.json",
+                          "receiver-summary.json", "sender-snapshots.csv", "sender-transfers.csv.xz"]
+
+    QuiverReportResolver() {
+        super(FILES)
+    }
+
+    @Override
+    List<String> getFailedFiles(String baseURL) {
+        return getTestFiles(baseURL, "quiver");
+    }
+
+    @Override
+    List<String> getSuccessFiles(String baseURL) {
+        return getTestFiles(baseURL, "quiver");
+    }
+
+    @Override
+    List<String> getTestFiles(String baseURL, String testNum) {
+        return listBuilder(baseURL, "quiver");
+    }
+}
 
 /**
  * Get the maestro broker URL via the MAESTRO_BROKER environment variable
@@ -168,14 +212,24 @@ if (sourceURL == null) {
     sourceURL = "https://github.com/maestro-performance/maestro-quiver-agent.git"
 }
 
+LogConfigurator.verbose()
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-QuiverExecutor executor = new QuiverExecutor(maestro)
-executor.setBrokerURL(brokerURL)
-executor.setSourceURL(sourceURL)
+ReportsDownloader reportsDownloader = new ReportsDownloader(args[0])
+reportsDownloader.addReportResolver("agent", new QuiverReportResolver())
 
+println "Creating the profile"
+QuiverTestProfile testProfile = new QuiverTestProfile();
+
+testProfile.setBrokerURL(brokerURL)
+testProfile.setSourceURL(sourceURL)
+
+println "Creating the executor"
+QuiverExecutor executor = new QuiverExecutor(maestro, reportsDownloader, testProfile)
+
+println "Running the test"
 if (!executor.run()) {
     maestro.stop()
 
