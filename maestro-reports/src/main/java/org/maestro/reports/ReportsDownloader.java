@@ -24,7 +24,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 public class ReportsDownloader {
     private static final Logger logger = LoggerFactory.getLogger(ReportsDownloader.class);
@@ -33,6 +35,8 @@ public class ReportsDownloader {
     private static final String RECEIVER_HOST_TYPE = "receiver";
     private static final String INSPECTOR_HOST_TYPE = "inspector";
 
+    private Map<String, ReportResolver> resolverMap = new HashMap<>();
+
     private final String baseDir;
     private String reportTypeDir;
     private int testNum;
@@ -40,6 +44,10 @@ public class ReportsDownloader {
 
     public ReportsDownloader(String baseDir) {
         this.baseDir = baseDir;
+
+        resolverMap.put(SENDER_HOST_TYPE, new SenderReportResolver());
+        resolverMap.put(RECEIVER_HOST_TYPE, new ReceiverReportResolver());
+        resolverMap.put(INSPECTOR_HOST_TYPE, new InspectorReportResolver());
     }
 
     public void setTestNum(int testNum) {
@@ -90,19 +98,7 @@ public class ReportsDownloader {
 
     public void downloadLastSuccessful(final String type, final String host) {
         try {
-            ReportResolver reportResolver = null;
-
-            if (type.equals(SENDER_HOST_TYPE)) {
-                reportResolver = new SenderReportResolver();
-            }
-
-            if (type.equals(RECEIVER_HOST_TYPE)) {
-                reportResolver = new ReceiverReportResolver();
-            }
-
-            if (type.equals(INSPECTOR_HOST_TYPE)) {
-                reportResolver = new InspectorReportResolver();
-            }
+            ReportResolver reportResolver = resolverMap.get(type);
 
             List<String> files = reportResolver.getSuccessFiles(host);
             for (String url : files) {
@@ -116,19 +112,7 @@ public class ReportsDownloader {
 
     public void downloadLastFailed(final String type, final String host) {
         try {
-            ReportResolver reportResolver = null;
-
-            if (type.equals(SENDER_HOST_TYPE)) {
-                reportResolver = new SenderReportResolver();
-            }
-
-            if (type.equals(RECEIVER_HOST_TYPE)) {
-                reportResolver = new ReceiverReportResolver();
-            }
-
-            if (type.equals(INSPECTOR_HOST_TYPE)) {
-                reportResolver = new InspectorReportResolver();
-            }
+            ReportResolver reportResolver = resolverMap.get(type);
 
             List<String> files = reportResolver.getFailedFiles(host);
             for (String url : files) {
@@ -140,58 +124,26 @@ public class ReportsDownloader {
         }
     }
 
+    private void downloadAny(ReportResolver reportResolver, final String host, final String testNumber) {
+        try {
+            List<String> files = reportResolver.getTestFiles(host, testNumber);
+            for (String url : files) {
+                downloadReport(url, SENDER_HOST_TYPE);
+            }
+        }
+        catch (ResourceExchangeException e) {
+            if (e.getCode() != HttpStatus.SC_NOT_FOUND) {
+                logger.warn("Resource {} not found at {} ", e.getUrl(), host );
+            }
+            else {
+                logger.error("Unable to download files from " + e.getUrl());
+            }
+        }
+    }
+
 
     public void downloadAny(final String host, final String testNumber) {
-
-        try {
-            SenderReportResolver senderReportResolver = new SenderReportResolver();
-
-            try {
-                List<String> files = senderReportResolver.getTestFiles(host, testNumber);
-                for (String url : files) {
-                    downloadReport(url, SENDER_HOST_TYPE);
-                }
-            }
-            catch (ResourceExchangeException e) {
-                if (e.getCode() != HttpStatus.SC_NOT_FOUND) {
-                    logger.warn("Resource {} not found at {} ", e.getUrl(), host );
-                    throw e;
-                }
-            }
-
-            ReceiverReportResolver receiverReportResolver = new ReceiverReportResolver();
-
-            try {
-                List<String> files = receiverReportResolver.getTestFiles(host, testNumber);
-                for (String url : files) {
-                    downloadReport(url, RECEIVER_HOST_TYPE);
-                }
-            }
-            catch (ResourceExchangeException e) {
-                if (e.getCode() != HttpStatus.SC_NOT_FOUND) {
-                    logger.warn("Resource {} not found at {} ", e.getUrl(), host );
-                    throw e;
-                }
-            }
-
-            InspectorReportResolver inspectorReportResolver = new InspectorReportResolver();
-
-            try {
-                List<String> files = inspectorReportResolver.getTestFiles(host, testNumber);
-                for (String url : files) {
-                    downloadReport(url, INSPECTOR_HOST_TYPE);
-                }
-            }
-            catch (ResourceExchangeException e) {
-                if (e.getCode() != HttpStatus.SC_NOT_FOUND) {
-                    logger.warn("Resource {} not found at {} ", e.getUrl(), host );
-                    throw e;
-                }
-            }
-        }
-        catch (Exception e) {
-            logger.error("Error: {}", e.getMessage(), e);
-        }
+        resolverMap.values().forEach(value -> downloadAny(value, host, testNumber));
     }
 
 
