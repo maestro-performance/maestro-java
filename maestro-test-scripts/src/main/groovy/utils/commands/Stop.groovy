@@ -51,6 +51,7 @@ println "Sending the stop commands"
 maestro.stopSender()
 maestro.stopReceiver()
 maestro.stopInspector()
+maestro.stopAgent()
 
 println "Sent"
 maestro.stop()
