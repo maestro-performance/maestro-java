@@ -19,7 +19,7 @@ package org.maestro.reports;
 public class SenderReportResolver extends AbstractReportResolver {
     private static final String[] FILES = { "senderd-rate.csv.gz", "test.properties"};
 
-    public SenderReportResolver(final String baseURL) {
-        super(baseURL, FILES);
+    public SenderReportResolver() {
+        super(FILES);
     }
 }

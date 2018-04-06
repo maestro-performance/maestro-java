@@ -11,9 +11,9 @@ public class SenderReportResolverTest {
 
     @Test
     public void testSuccessFiles() {
-        ReportResolver reportResolver = new SenderReportResolver(BASE_URL);
+        ReportResolver reportResolver = new SenderReportResolver();
 
-        List<String> successFiles = reportResolver.getSuccessFiles();
+        List<String> successFiles = reportResolver.getSuccessFiles(BASE_URL);
         assertEquals("List size does not match the expected size", 2, successFiles.size());
 
         assertEquals("The sender rate file does not match the expected sender rate file",
@@ -24,9 +24,9 @@ public class SenderReportResolverTest {
 
     @Test
     public void testFailedFiles() {
-        ReportResolver reportResolver = new SenderReportResolver(BASE_URL);
+        ReportResolver reportResolver = new SenderReportResolver();
 
-        List<String> failedFiles = reportResolver.getFailedFiles();
+        List<String> failedFiles = reportResolver.getFailedFiles(BASE_URL);
         assertEquals("List size does not match the expected size", 2, failedFiles.size());
 
         assertEquals("The sender rate file does not match the expected sender rate file",

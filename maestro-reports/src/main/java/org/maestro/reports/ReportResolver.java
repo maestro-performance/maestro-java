@@ -25,20 +25,23 @@ public interface ReportResolver {
 
     /**
      * Gets a list of files to be downloaded when a test is successful
+     * @param baseURL the base URL from which the report files need to be resolved
      * @return A list of files (as a URL to the file to be downloaded)
      */
-    List<String> getSuccessFiles();
+    List<String> getSuccessFiles(final String baseURL);
 
     /**
      * Gets a list of files to be downloaded when a test is failed
+     * @param baseURL the base URL from which the report files need to be resolved
      * @return A list of files (as a URL to the file to be downloaded)
      */
-    List<String> getFailedFiles();
+    List<String> getFailedFiles(final String baseURL);
 
     /**
      * Gets a list of files to be downloaded when a test is complete regardless of the result
+     * @param baseURL the base URL from which the report files need to be resolved
      * @param testNum the test number
      * @return A list of files (as a URL to the file to be downloaded)
      */
-    List<String> getTestFiles(final String testNum);
+    List<String> getTestFiles(final String baseURL, final String testNum);
 }

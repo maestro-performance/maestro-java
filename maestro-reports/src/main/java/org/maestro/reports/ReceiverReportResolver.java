@@ -19,8 +19,8 @@ package org.maestro.reports;
 public class ReceiverReportResolver extends AbstractReportResolver {
     private static final String[] FILES = { "receiverd-rate.csv.gz", "test.properties", "receiverd-latency.hdr"};
 
-    public ReceiverReportResolver(final String baseURL) {
-        super(baseURL, FILES);
+    public ReceiverReportResolver() {
+        super(FILES);
     }
 
 }

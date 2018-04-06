@@ -16,46 +16,45 @@
 
 package org.maestro.reports;
 
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 
-public class AbstractReportResolver implements ReportResolver {
-    private static final String LAST_SUCCESSFUL_DIR = "lastSuccessful";
-    private static final String LAST_FAILED_DIR = "lastFailed";
+/**
+ * A basic resolver for test logs stored in the /logs/tests/ directory of the data server
+ */
+public abstract class AbstractReportResolver implements ReportResolver {
+    protected static final String LAST_SUCCESSFUL_DIR = "lastSuccessful";
+    protected static final String LAST_FAILED_DIR = "lastFailed";
+    protected static final String CONTEXT = "/logs/tests/";
 
-    private final List<String> failedFiles = new LinkedList<>();
-    private final List<String> successFiles = new LinkedList<>();
     private final String[] fileArray;
-    private final String baseURL;
 
-    public AbstractReportResolver(final String baseURL, final String[] fileArray) {
-        this.baseURL = baseURL;
+    public AbstractReportResolver(final String[] fileArray) {
         this.fileArray = fileArray;
+    }
+
+    protected List<String> listBuilder(String baseURL, String lastFailedDir) {
+        List<String> ret = new ArrayList<>(fileArray.length);
 
         for (String file : fileArray) {
-            failedFiles.add(baseURL + "/logs/tests/" + LAST_FAILED_DIR + "/" + file);
-            successFiles.add(baseURL + "/logs/tests/" + LAST_SUCCESSFUL_DIR + "/" + file);
-        }
-    }
-
-    @Override
-    public List<String> getFailedFiles() {
-        return failedFiles;
-    }
-
-    @Override
-    public List<String> getSuccessFiles() {
-        return successFiles;
-    }
-
-    @Override
-    public List<String> getTestFiles(final String testNum) {
-        List<String> files = new LinkedList<>();
-
-        for (String file : fileArray) {
-            files.add(baseURL + "/logs/tests/" + testNum + "/" + file);
+            ret.add(baseURL + CONTEXT + lastFailedDir + "/" + file);
         }
 
-        return files;
+        return ret;
+    }
+
+    @Override
+    public List<String> getFailedFiles(final String baseURL) {
+        return listBuilder(baseURL, LAST_FAILED_DIR);
+    }
+
+    @Override
+    public List<String> getSuccessFiles(final String baseURL) {
+        return listBuilder(baseURL, LAST_SUCCESSFUL_DIR);
+    }
+
+    @Override
+    public List<String> getTestFiles(final String baseURL, final String testNum) {
+        return listBuilder(baseURL, testNum);
     }
 }

@@ -93,18 +93,18 @@ public class ReportsDownloader {
             ReportResolver reportResolver = null;
 
             if (type.equals(SENDER_HOST_TYPE)) {
-                reportResolver = new SenderReportResolver(host);
+                reportResolver = new SenderReportResolver();
             }
 
             if (type.equals(RECEIVER_HOST_TYPE)) {
-                reportResolver = new ReceiverReportResolver(host);
+                reportResolver = new ReceiverReportResolver();
             }
 
             if (type.equals(INSPECTOR_HOST_TYPE)) {
-                reportResolver = new InspectorReportResolver(host);
+                reportResolver = new InspectorReportResolver();
             }
 
-            List<String> files = reportResolver.getSuccessFiles();
+            List<String> files = reportResolver.getSuccessFiles(host);
             for (String url : files) {
                 downloadReport(url, type);
             }
@@ -119,18 +119,18 @@ public class ReportsDownloader {
             ReportResolver reportResolver = null;
 
             if (type.equals(SENDER_HOST_TYPE)) {
-                reportResolver = new SenderReportResolver(host);
+                reportResolver = new SenderReportResolver();
             }
 
             if (type.equals(RECEIVER_HOST_TYPE)) {
-                reportResolver = new ReceiverReportResolver(host);
+                reportResolver = new ReceiverReportResolver();
             }
 
             if (type.equals(INSPECTOR_HOST_TYPE)) {
-                reportResolver = new InspectorReportResolver(host);
+                reportResolver = new InspectorReportResolver();
             }
 
-            List<String> files = reportResolver.getFailedFiles();
+            List<String> files = reportResolver.getFailedFiles(host);
             for (String url : files) {
                 downloadReport(url, type);
             }
@@ -144,10 +144,10 @@ public class ReportsDownloader {
     public void downloadAny(final String host, final String testNumber) {
 
         try {
-            SenderReportResolver senderReportResolver = new SenderReportResolver(host);
+            SenderReportResolver senderReportResolver = new SenderReportResolver();
 
             try {
-                List<String> files = senderReportResolver.getTestFiles(testNumber);
+                List<String> files = senderReportResolver.getTestFiles(host, testNumber);
                 for (String url : files) {
                     downloadReport(url, SENDER_HOST_TYPE);
                 }
@@ -159,10 +159,10 @@ public class ReportsDownloader {
                 }
             }
 
-            ReceiverReportResolver receiverReportResolver = new ReceiverReportResolver(host);
+            ReceiverReportResolver receiverReportResolver = new ReceiverReportResolver();
 
             try {
-                List<String> files = receiverReportResolver.getTestFiles(testNumber);
+                List<String> files = receiverReportResolver.getTestFiles(host, testNumber);
                 for (String url : files) {
                     downloadReport(url, RECEIVER_HOST_TYPE);
                 }
@@ -174,10 +174,10 @@ public class ReportsDownloader {
                 }
             }
 
-            InspectorReportResolver inspectorReportResolver = new InspectorReportResolver(host);
+            InspectorReportResolver inspectorReportResolver = new InspectorReportResolver();
 
             try {
-                List<String> files = inspectorReportResolver.getTestFiles(testNumber);
+                List<String> files = inspectorReportResolver.getTestFiles(host, testNumber);
                 for (String url : files) {
                     downloadReport(url, INSPECTOR_HOST_TYPE);
                 }
