@@ -28,6 +28,7 @@ package singlepoint
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
 @Grab(group='org.maestro', module='maestro-tests', version='1.3.0-SNAPSHOT')
+@Grab(group='org.maestro', module='maestro-reports', version='1.3.0-SNAPSHOT')
 
 
 import org.maestro.client.Maestro
