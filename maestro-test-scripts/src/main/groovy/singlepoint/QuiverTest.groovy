@@ -16,8 +16,6 @@
 
 package singlepoint
 
-import net.orpiske.qdp.main.QuiverReportWalker
-import net.orpiske.qdp.plot.renderer.IndexRenderer
 @GrabConfig(systemClassLoader=true)
 
 @Grab(group='commons-cli', module='commons-cli', version='1.3.1')
@@ -42,6 +40,9 @@ import org.maestro.reports.organizer.DefaultOrganizer
 import org.maestro.tests.AbstractTestExecutor
 import org.maestro.tests.AbstractTestProcessor
 import org.maestro.tests.AbstractTestProfile
+
+import net.orpiske.qdp.main.QuiverReportWalker
+import net.orpiske.qdp.plot.renderer.IndexRenderer
 
 import static net.orpiske.qdp.plot.renderer.EasyRender.renderIndexPage
 import static net.orpiske.qdp.plot.renderer.EasyRender.renderReceiverPage
