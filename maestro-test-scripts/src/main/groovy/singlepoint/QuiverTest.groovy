@@ -40,8 +40,6 @@ import org.maestro.reports.ReportsDownloader
 import org.maestro.tests.AbstractTestExecutor
 import org.maestro.tests.AbstractTestProcessor
 import org.maestro.tests.AbstractTestProfile
-import org.slf4j.Logger
-import org.slf4j.LoggerFactory
 
 /**
  * This test executes tests via Maestro Agent using Quiver (https://github.com/ssorj/quiver/)
