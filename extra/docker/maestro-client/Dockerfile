@@ -1,7 +1,18 @@
-FROM centos:7
+FROM centos:7 AS buildimg
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 ARG MAESTRO_WORKER_VERSION
-ENV MAESTRO_WORKER_VERSION ${MAESTRO_WORKER_VERSION:-1.2.0}
+ENV MAESTRO_WORKER_VERSION ${MAESTRO_WORKER_VERSION:-1.3
+LABEL MAESTRO_VERSION=${MAESTRO_WORKER_VERSION}
+RUN yum install -y java-1.8.0-openjdk-devel git which un
+ENV JAVA_HOME /etc/alternatives/jre
+WORKDIR /root/build
+RUN git clone https://github.com/maestro-performance/maestro-java.git --branch devel
+RUN cd maestro-java && ./mvnw -PPackage clean package
+
+FROM centos:7 as maestro-client
+MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
+ARG MAESTRO_WORKER_VERSION
+ENV MAESTRO_WORKER_VERSION ${MAESTRO_WORKER_VERSION:-1.3.0}
 LABEL MAESTRO_VERSION=${MAESTRO_WORKER_VERSION}
 ENV GROOVY_VERSION 2.4.14
 
@@ -16,11 +27,11 @@ ENV MAESTRO_APP_ROOT /opt/maestro
 RUN mkdir -p ${MAESTRO_APP_ROOT}
 WORKDIR ${MAESTRO_APP_ROOT}
 
-RUN curl http://orpiske.net/files/maestro-java/${MAESTRO_WORKER_VERSION}/maestro-cli-${MAESTRO_WORKER_VERSION}-bin.tar.gz -o maestro-cli.tar.gz
-RUN mkdir maestro-cli && tar --strip-components=1 -xvf maestro-cli.tar.gz -C maestro-cli
+COPY --from=buildimg /root/build/maestro-java/maestro-cli/target/maestro-cli-${MAESTRO_WORKER_VERSION}-bin.tar.gz .
+RUN mkdir maestro-cli && tar --strip-components=1 -xvf maestro-cli-${MAESTRO_WORKER_VERSION}-bin -C maestro-cli
 RUN rm -f maestro-cli.tar.gz
 
-RUN curl http://orpiske.net/files/maestro-java/${MAESTRO_WORKER_VERSION}/maestro-test-scripts-${MAESTRO_WORKER_VERSION}-bin.tar.gz -o maestro-test-scripts.tar.gz
+COPY --from=buildimg /root/build/maestro-java/maestro-test-scripts/target/maestro-test-scripts-${MAESTRO_WORKER_VERSION}-bin.tar.gz .
 RUN mkdir maestro-test-scripts && tar --strip-components=1 -xvf maestro-test-scripts.tar.gz -C maestro-test-scripts
 RUN rm -f maestro-test-scripts.tar.gz
 
