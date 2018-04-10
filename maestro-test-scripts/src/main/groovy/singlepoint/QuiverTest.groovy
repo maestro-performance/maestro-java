@@ -16,7 +16,8 @@
 
 package singlepoint
 
-
+import net.orpiske.qdp.main.QuiverReportWalker
+import net.orpiske.qdp.plot.renderer.IndexRenderer
 @GrabConfig(systemClassLoader=true)
 
 @Grab(group='commons-cli', module='commons-cli', version='1.3.1')
@@ -29,7 +30,7 @@ package singlepoint
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
 @Grab(group='org.maestro', module='maestro-tests', version='1.3.0-SNAPSHOT')
 @Grab(group='org.maestro', module='maestro-reports', version='1.3.0-SNAPSHOT')
-
+@Grab(group='net.orpiske', module='quiver-data-plotter', version='1.0.0')
 
 import org.maestro.client.Maestro
 import org.maestro.client.notes.TestFailedNotification
@@ -37,9 +38,14 @@ import org.maestro.common.LogConfigurator
 import org.maestro.common.exceptions.MaestroException
 import org.maestro.reports.AbstractReportResolver
 import org.maestro.reports.ReportsDownloader
+import org.maestro.reports.organizer.DefaultOrganizer
 import org.maestro.tests.AbstractTestExecutor
 import org.maestro.tests.AbstractTestProcessor
 import org.maestro.tests.AbstractTestProfile
+
+import static net.orpiske.qdp.plot.renderer.EasyRender.renderIndexPage
+import static net.orpiske.qdp.plot.renderer.EasyRender.renderReceiverPage
+import static net.orpiske.qdp.plot.renderer.EasyRender.renderSenderPage
 
 /**
  * This test executes tests via Maestro Agent using Quiver (https://github.com/ssorj/quiver/)
@@ -118,7 +124,7 @@ class QuiverExecutor extends AbstractTestExecutor {
             resolveDataServers();
             processReplies(testProcessor, repeat, numPeers);
 
-            getReportsDownloader().setTestNum(testProfile.getTestExecutionNumber());
+            getReportsDownloader().getOrganizer().getTracker().setCurrentTest(testProfile.getTestExecutionNumber());
 
             println "Applying the test profile"
             testProfile.apply(maestro)
@@ -188,6 +194,37 @@ class QuiverReportResolver extends AbstractReportResolver {
     }
 }
 
+class QuiverOrganizer extends DefaultOrganizer {
+    QuiverOrganizer(String baseDir) {
+        super(baseDir)
+    }
+
+    @Override
+    String organize(String address, String hostType) {
+        return getBaseDir()
+    }
+}
+
+def plotQuiverFiles(String directory) {
+    println "Generating the reports on $directory"
+
+    // Create a walker for the directory where the Quiver files are
+    QuiverReportWalker reportWalker = new QuiverReportWalker();
+
+    // Traverse the directory processing the files and plotting them
+    File outputDirectory = new File(directory);
+    reportWalker.walk(outputDirectory);
+
+    // Generate the HTML reports for the files
+    IndexRenderer indexRenderer = new IndexRenderer();
+    renderSenderPage(indexRenderer, outputDirectory);
+    renderReceiverPage(indexRenderer, outputDirectory);
+    renderIndexPage(indexRenderer, outputDirectory);
+
+    // Copy the common assets
+    indexRenderer.copyResources(outputDirectory);
+}
+
 /**
  * Get the maestro broker URL via the MAESTRO_BROKER environment variable
  */
@@ -217,7 +254,7 @@ LogConfigurator.verbose()
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new ReportsDownloader(args[0])
+ReportsDownloader reportsDownloader = new ReportsDownloader(new QuiverOrganizer(args[0]))
 reportsDownloader.addReportResolver("agent", new QuiverReportResolver())
 
 println "Creating the profile"
@@ -232,9 +269,11 @@ QuiverExecutor executor = new QuiverExecutor(maestro, reportsDownloader, testPro
 println "Running the test"
 if (!executor.run()) {
     maestro.stop()
+    plotQuiverFiles(args[0])
 
     System.exit(1)
 }
 
 maestro.stop()
+plotQuiverFiles(args[0])
 System.exit(0)

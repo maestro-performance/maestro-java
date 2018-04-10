@@ -102,14 +102,13 @@ public class DownloadAction extends Action {
             for (String server : servers) {
                 ReportsDownloader rd = new ReportsDownloader(directory);
 
-                rd.setReportResultTypeDir(result);
+                rd.getOrganizer().setResultType(result);
                 int i = from;
                 do {
                     String resourcePath = Integer.toString(i);
                     System.out.println("Downloading reports from http://" + server + "/" + resourcePath);
 
-
-                    rd.setTestNum(i);
+                    rd.getOrganizer().getTracker().setCurrentTest(i);
                     rd.downloadAny(server, resourcePath +"/");
                     i++;
                 } while (i <= to);

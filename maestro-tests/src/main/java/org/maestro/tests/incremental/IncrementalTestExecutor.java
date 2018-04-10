@@ -53,7 +53,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                 int numPeers = getNumPeers();
 
                 resolveDataServers();
-                getReportsDownloader().setTestNum(testProfile.getTestExecutionNumber());
+                getReportsDownloader().getOrganizer().getTracker().setCurrentTest(testProfile.getTestExecutionNumber());
 
                 testProfile.apply(getMaestro());
                 testProcessor.resetNotifications();

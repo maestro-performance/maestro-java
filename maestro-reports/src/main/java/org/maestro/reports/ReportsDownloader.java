@@ -20,6 +20,9 @@ import org.maestro.common.URLUtils;
 import org.maestro.contrib.utils.Downloader;
 import org.maestro.contrib.utils.resource.exceptions.ResourceExchangeException;
 import org.apache.http.HttpStatus;
+import org.maestro.reports.organizer.DefaultOrganizer;
+import org.maestro.reports.organizer.Organizer;
+import org.maestro.reports.organizer.TestTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,28 +43,30 @@ public class ReportsDownloader {
 
     private Map<String, ReportResolver> resolverMap = new HashMap<>();
 
-    private final String baseDir;
-    private String reportTypeDir;
-    private int testNum;
+    private final Organizer organizer;
 
     /**
      * Constructor
      * @param baseDir
      */
     public ReportsDownloader(final String baseDir) {
-        this.baseDir = baseDir;
+        this.organizer = new DefaultOrganizer(baseDir);
 
         resolverMap.put(SENDER_HOST_TYPE, new SenderReportResolver());
         resolverMap.put(RECEIVER_HOST_TYPE, new ReceiverReportResolver());
         resolverMap.put(INSPECTOR_HOST_TYPE, new InspectorReportResolver());
     }
 
-    public void setTestNum(int testNum) {
-        this.testNum = testNum;
+    public ReportsDownloader(final Organizer organizer) {
+        this.organizer = organizer;
+
+        resolverMap.put(SENDER_HOST_TYPE, new SenderReportResolver());
+        resolverMap.put(RECEIVER_HOST_TYPE, new ReceiverReportResolver());
+        resolverMap.put(INSPECTOR_HOST_TYPE, new InspectorReportResolver());
     }
 
-    public void setReportResultTypeDir(final String reportTypeDir) {
-        this.reportTypeDir = reportTypeDir;
+    public Organizer getOrganizer() {
+        return organizer;
     }
 
     /**
@@ -74,16 +79,16 @@ public class ReportsDownloader {
     }
 
 
-    private String buildDir(final String address, final String hostType) {
-        String host = URLUtils.getHostnameFromURL(address);
-
-        // <basedir>/sender/failed/0/
-        return baseDir + File.separator + hostType + File.separator + reportTypeDir + File.separator +
-                Integer.toString(testNum) + File.separator + host;
-    }
+//    private String buildDir(final String address, final String hostType) {
+//        String host = URLUtils.getHostnameFromURL(address);
+//
+//        // <basedir>/sender/failed/0/
+//        return baseDir + File.separator + hostType + File.separator + reportTypeDir + File.separator +
+//                Integer.toString(testNum) + File.separator + host;
+//    }
 
     private void downloadReport(final String targetURL, final String hostType) throws ResourceExchangeException {
-        final String destinationDir = buildDir(targetURL, hostType);
+        final String destinationDir = organizer.organize(targetURL, hostType);
 
         if (logger.isDebugEnabled()) {
             logger.debug("Downloading file {} to {}", targetURL, destinationDir);
