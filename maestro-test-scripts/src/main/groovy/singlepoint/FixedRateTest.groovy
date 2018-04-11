@@ -48,7 +48,7 @@ package singlepoint
 import org.maestro.client.Maestro
 import org.maestro.reports.ReportsDownloader
 import org.maestro.tests.rate.FixedRateTestExecutor
-import org.maestro.tests.rate.FixedRateTestProfile
+import org.maestro.tests.rate.singlepoint.FixedRateTestProfile
 import org.maestro.common.LogConfigurator
 import org.maestro.common.duration.TestDurationBuilder
 

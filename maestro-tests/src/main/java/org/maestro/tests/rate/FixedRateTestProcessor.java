@@ -18,6 +18,7 @@ package org.maestro.tests.rate;
 
 import org.maestro.reports.ReportsDownloader;
 import org.maestro.tests.AbstractTestProcessor;
+import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,7 +36,7 @@ public class FixedRateTestProcessor extends AbstractTestProcessor {
     public FixedRateTestProcessor(FixedRateTestProfile testProfile, ReportsDownloader reportsDownloader) {
         super(testProfile, reportsDownloader);
 
-        setFlushWaitSeconds(AbstractTestProcessor.DEFAULT_WAIT_TIME * testProfile.parallelCount);
+        setFlushWaitSeconds(AbstractTestProcessor.DEFAULT_WAIT_TIME * testProfile.getParallelCount());
     }
 
     public boolean isSuccessful() {

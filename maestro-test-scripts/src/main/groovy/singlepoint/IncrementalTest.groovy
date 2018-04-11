@@ -49,9 +49,8 @@ import org.maestro.client.Maestro
 import org.maestro.reports.ReportsDownloader
 import org.maestro.tests.incremental.IncrementalTestExecutor
 import org.maestro.tests.incremental.IncrementalTestProfile
-import org.maestro.tests.singlepoint.SimpleTestProfile
+import org.maestro.tests.incremental.singlepoint.SimpleTestProfile
 import org.maestro.common.LogConfigurator
-import org.maestro.common.content.MessageSize
 import org.maestro.common.duration.TestDurationBuilder
 
 maestroURL = System.getenv("MAESTRO_BROKER")

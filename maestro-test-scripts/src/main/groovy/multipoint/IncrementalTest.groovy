@@ -51,7 +51,7 @@ import org.maestro.reports.ReportsDownloader
 import org.maestro.tests.MultiPointProfile
 import org.maestro.tests.incremental.IncrementalTestExecutor
 import org.maestro.tests.incremental.IncrementalTestProfile
-import org.maestro.tests.multipoint.SimpleTestProfile
+import org.maestro.tests.incremental.multipoint.SimpleTestProfile
 import org.maestro.common.LogConfigurator
 import org.maestro.common.content.MessageSize
 import org.maestro.common.duration.TestDurationBuilder

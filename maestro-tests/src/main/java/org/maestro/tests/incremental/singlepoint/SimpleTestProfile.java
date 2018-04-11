@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.maestro.tests.singlepoint;
+package org.maestro.tests.incremental.singlepoint;
 
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.client.Maestro;
