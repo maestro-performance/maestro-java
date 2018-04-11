@@ -59,13 +59,6 @@ public class ReportGeneratorTest {
                 "senderd-rate_rate.png", "test.properties"), ignoreList);
     }
 
-    private void validateInspectorReport(File baseDir, final List<String> ignoreList) {
-        validateReportFile(baseDir, Arrays.asList("favicon.png", "index.html", "broker-jvm-inspector_tenured_memory.png",
-                "broker-jvm-inspector_memory.png", "broker-jvm-inspector_pm_memory.png",
-                "broker-jvm-inspector_survivor_memory.png", "broker-jvm-inspector_queue_data.png",
-                "broker-jvm-inspector_eden_memory.png", "broker.properties",
-                "test.properties"), ignoreList);
-    }
 
     private void validateDirectoryContents(File baseDir, final List<String> ignoreList) {
         if (baseDir.getParentFile().getParentFile().getName().equals("receiver")) {
@@ -76,11 +69,6 @@ public class ReportGeneratorTest {
             if (baseDir.getParentFile().getParentFile().getName().equals("sender")) {
                 validateSenderReport(new File(baseDir, HOST_01), ignoreList);
                 validateSenderReport(new File(baseDir, HOST_02), ignoreList);
-            }
-            else {
-                if (baseDir.getParentFile().getParentFile().getName().equals("inspector")) {
-                    validateInspectorReport(new File(baseDir, HOST_03), ignoreList);
-                }
             }
         }
 
@@ -133,7 +121,7 @@ public class ReportGeneratorTest {
         assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
 
         validateRoleDirectoryStructure(new File(path),
-                Arrays.asList("inspector", "receiver", "sender"), Arrays.asList());
+                Arrays.asList("receiver", "sender"), Arrays.asList());
     }
 
     /**
@@ -151,7 +139,7 @@ public class ReportGeneratorTest {
         assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
 
         validateRoleDirectoryStructure(new File(path),
-                Arrays.asList("inspector", "receiver", "sender"),
+                Arrays.asList("receiver", "sender"),
                 Arrays.asList("receiverd-latency_90.png", "receiverd-latency_99.png", "receiverd-latency_all.png"));
     }
 
