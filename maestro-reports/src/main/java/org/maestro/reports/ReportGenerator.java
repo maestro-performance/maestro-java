@@ -43,7 +43,6 @@ public class ReportGenerator {
     // Probably this is not the best way to do what I want (to be able to create different types of
     // plotter objects) but it gives the flexibility I need now.
     // TODO: clean up this
-    private PlotterWrapperFactory<BmicPlotterWrapper> bmicPlotterWrapperFactory = new BmicPlotterWrapperFactory();
     private PlotterWrapperFactory<HdrPlotterWrapper> hdrPlotterWrapperFactory = new HdrPlotterWrapperFactory();
     private PlotterWrapperFactory<RatePlotterWrapper> ratePlotterWrapperFactory = new RatePlotterWrapperFactory();
 
@@ -65,14 +64,7 @@ public class ReportGenerator {
 
                 plotter.plot(reportFile.getSourceFile());
             } else {
-                if (reportFile instanceof BmicReportFile) {
-                    BmicPlotterWrapper plotter = bmicPlotterWrapperFactory.newPlotterWrapper();
-
-                    plotter.plot(reportFile.getSourceFile());
-                }
-                else {
-                    throw new Exception("Invalid report file for: " + reportFile.getSourceFile());
-                }
+                throw new Exception("Invalid report file for: " + reportFile.getSourceFile());
             }
         }
         catch (Throwable t) {
@@ -167,11 +159,6 @@ public class ReportGenerator {
 
     public List<ReportFileProcessor> getPostProcessors() {
         return postProcessors;
-    }
-
-    @SuppressWarnings("unused")
-    public void setBmicPlotterWrapperFactory(PlotterWrapperFactory<BmicPlotterWrapper> bmicPlotterWrapperFactory) {
-        this.bmicPlotterWrapperFactory = bmicPlotterWrapperFactory;
     }
 
     public void setHdrPlotterWrapperFactory(PlotterWrapperFactory<HdrPlotterWrapper> hdrPlotterWrapperFactory) {
