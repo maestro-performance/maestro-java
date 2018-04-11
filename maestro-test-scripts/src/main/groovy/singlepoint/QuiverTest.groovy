@@ -42,9 +42,7 @@ import net.orpiske.qdp.plot.renderer.IndexRenderer
 import org.maestro.tests.flex.FlexibleTestExecutor
 import org.maestro.tests.flex.singlepoint.FlexibleTestProfile
 
-import static net.orpiske.qdp.plot.renderer.EasyRender.renderIndexPage
-import static net.orpiske.qdp.plot.renderer.EasyRender.renderReceiverPage
-import static net.orpiske.qdp.plot.renderer.EasyRender.renderSenderPage
+import static net.orpiske.qdp.plot.renderer.EasyRender.*
 
 /**
  * This test executes tests via Maestro Agent using Quiver (https://github.com/ssorj/quiver/)
