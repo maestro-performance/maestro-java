@@ -5,7 +5,7 @@ ENV MAESTRO_WORKER_VERSION ${MAESTRO_WORKER_VERSION:-1.2.0}
 LABEL MAESTRO_VERSION=${MAESTRO_WORKER_VERSION}
 ENV GROOVY_VERSION 2.4.13
 
-RUN yum install -y java-1.8.0-openjdk unzip zip which
+RUN yum install -y java-1.8.0-openjdk unzip zip which ntp
 ENV JAVA_HOME /etc/alternatives/jre
 
 RUN mkdir -p /opt/groovy/
