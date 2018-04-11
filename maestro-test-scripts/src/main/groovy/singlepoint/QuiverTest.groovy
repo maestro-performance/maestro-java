@@ -31,18 +31,16 @@ package singlepoint
 @Grab(group='net.orpiske', module='quiver-data-plotter', version='1.0.0')
 
 import org.maestro.client.Maestro
-import org.maestro.client.notes.TestFailedNotification
 import org.maestro.common.LogConfigurator
-import org.maestro.common.exceptions.MaestroException
 import org.maestro.reports.AbstractReportResolver
 import org.maestro.reports.ReportsDownloader
 import org.maestro.reports.organizer.DefaultOrganizer
-import org.maestro.tests.AbstractTestExecutor
-import org.maestro.tests.AbstractTestProcessor
 import org.maestro.tests.AbstractTestProfile
 
 import net.orpiske.qdp.main.QuiverReportWalker
 import net.orpiske.qdp.plot.renderer.IndexRenderer
+import org.maestro.tests.flex.FlexibleTestExecutor
+import org.maestro.tests.flex.singlepoint.FlexibleTestProfile
 
 import static net.orpiske.qdp.plot.renderer.EasyRender.renderIndexPage
 import static net.orpiske.qdp.plot.renderer.EasyRender.renderReceiverPage
@@ -51,123 +49,17 @@ import static net.orpiske.qdp.plot.renderer.EasyRender.renderSenderPage
 /**
  * This test executes tests via Maestro Agent using Quiver (https://github.com/ssorj/quiver/)
  */
-class QuiverExecutor extends AbstractTestExecutor {
-    /**
-     * The simple processor for Maestro responses
-     */
-    class QuiverTestProcessor extends AbstractTestProcessor {
-        private boolean successful = true
-
-        QuiverTestProcessor(final AbstractTestProfile testProfile, final ReportsDownloader reportsDownloader) {
-            super(testProfile, reportsDownloader)
-        }
-
-        @Override
-        protected void processNotifyFail(TestFailedNotification note) {
-            super.processNotifyFail(note)
-            successful = false
-        }
-
-        boolean isSuccessful() {
-            return successful
-        }
-    }
-
+class QuiverExecutor extends FlexibleTestExecutor {
     private Maestro maestro
 
-    private QuiverTestProcessor testProcessor
-    private ReportsDownloader reportsDownloader
-    private AbstractTestProfile testProfile;
-
     QuiverExecutor(Maestro maestro, ReportsDownloader reportsDownloader, AbstractTestProfile testProfile) {
-        super(maestro, reportsDownloader)
+        super(maestro, reportsDownloader, testProfile)
 
-        this.maestro = maestro
-        this.reportsDownloader = reportsDownloader
-        this.testProfile = testProfile;
-
-        testProcessor = new QuiverTestProcessor(testProfile, reportsDownloader)
-    }
-
-
-    /**
-     * These two methods are NO-OP in this case because there are no multiple iterations,
-     * therefore cool down period is not required/used
-     */
-    long getCoolDownPeriod() {
-        return 0
-    }
-
-    void setCoolDownPeriod(long period) {
-        // NO-OP
+        this.maestro = maestro;
     }
 
     void startServices() {
         maestro.userCommand(0, "rhea")
-    }
-
-    /**
-     * Test execution logic
-     * @return
-     */
-    boolean run() {
-        try {
-            int repeat = 2
-
-            // Clean up the topic
-            println "Cleaning up the topic"
-            maestro.collect();
-
-            println "Collecting the number of peers"
-            int numPeers = getNumPeers();
-
-            println "Resolving data servers"
-            resolveDataServers();
-            processReplies(testProcessor, repeat, numPeers);
-
-            getReportsDownloader().getOrganizer().getTracker().setCurrentTest(testProfile.getTestExecutionNumber());
-
-            println "Applying the test profile"
-            testProfile.apply(maestro)
-
-            testProcessor.resetNotifications()
-
-            println "Starting the services"
-            startServices()
-
-            println "Processing the replies"
-            processReplies(testProcessor, repeat, numPeers)
-
-            println "Waiting a while for the Quiver test is running"
-            Thread.sleep(80000)
-
-            println "Processing the notifications"
-            processNotifications(testProcessor, repeat * 2, numPeers);
-        }
-        finally {
-            maestro.stopAgent()
-        }
-
-        return testProcessor.isSuccessful()
-    }
-}
-
-class QuiverTestProfile extends AbstractTestProfile {
-    private String sourceURL;
-    private String brokerURL;
-
-    void setSourceURL(final String sourceURL) {
-        this.sourceURL = sourceURL;
-    }
-
-    void setBrokerURL(String brokerURL) {
-        this.brokerURL = brokerURL
-    }
-
-    @Override
-    void apply(Maestro maestro) throws MaestroException {
-        maestro.setBroker(this.brokerURL);
-        maestro.sourceRequest(sourceURL, null)
     }
 }
 
@@ -259,7 +151,7 @@ ReportsDownloader reportsDownloader = new ReportsDownloader(new QuiverOrganizer(
 reportsDownloader.addReportResolver("agent", new QuiverReportResolver())
 
 println "Creating the profile"
-QuiverTestProfile testProfile = new QuiverTestProfile();
+FlexibleTestProfile testProfile = new FlexibleTestProfile();
 
 testProfile.setBrokerURL(brokerURL)
 testProfile.setSourceURL(sourceURL)
