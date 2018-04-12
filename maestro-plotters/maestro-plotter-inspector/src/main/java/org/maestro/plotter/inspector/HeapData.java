@@ -17,16 +17,17 @@
 package org.maestro.plotter.inspector;
 
 import org.maestro.plotter.common.ReportData;
+import org.maestro.plotter.common.statistics.Statistics;
+import org.maestro.plotter.common.statistics.StatisticsBuilder;
 
 import java.util.*;
 
-// TODO: lots of duplicated code here that can be removed
-
 /**
- * Bmic data container
+ * Heap data container
  */
 public class HeapData implements ReportData {
     private Set<HeapRecord> heapRecordSet = new TreeSet<>();
+    private Statistics statistics = null;
 
     public void add(HeapRecord record) {
         heapRecordSet.add(record);
@@ -44,5 +45,19 @@ public class HeapData implements ReportData {
         return heapRecordSet.size();
     }
 
+    public Statistics usedStatistics() {
+        if (statistics == null) {
+            statistics = StatisticsBuilder.of(heapRecordSet.stream().mapToDouble(HeapRecord::getUsed));
+        }
 
+        return statistics;
+    }
+
+    public Statistics committedStatistics() {
+        if (statistics == null) {
+            statistics = StatisticsBuilder.of(heapRecordSet.stream().mapToDouble(HeapRecord::getCommitted));
+        }
+
+        return statistics;
+    }
 }

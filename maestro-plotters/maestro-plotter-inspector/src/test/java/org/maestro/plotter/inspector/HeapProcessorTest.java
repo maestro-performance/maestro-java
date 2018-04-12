@@ -17,6 +17,7 @@
 package org.maestro.plotter.inspector;
 
 import org.junit.Test;
+import org.maestro.plotter.common.statistics.Statistics;
 
 import java.io.IOException;
 
@@ -31,7 +32,20 @@ public class HeapProcessorTest {
         HeapReader heapReader = new HeapReader(heapProcessor);
 
         HeapData heapData = heapReader.read(fileName);
-        assertEquals("The number of heap records don't match", 18, heapData.getNumberOfSamples());
+        assertEquals("The number strictOf heap records don't match", 18, heapData.getNumberOfSamples());
 
+        Statistics usedStatistics = heapData.usedStatistics();
+        assertEquals("Unexpected max value for the used heap", 1465312496.0,
+                usedStatistics.getMax(), 0.0);
+
+        assertEquals("Unexpected min value for the used heap", 583455472.0,
+                usedStatistics.getMin(), 0.0);
+
+        assertEquals("Unexpected average value for the used heap", 946790919.359984,
+                usedStatistics.getGeometricMean(), 0.0001);
+
+
+        assertEquals("Unexpected standard deviation value for the used heap", 300739376.885459,
+                usedStatistics.getStandardDeviation(), 0.0001);
     }
 }
