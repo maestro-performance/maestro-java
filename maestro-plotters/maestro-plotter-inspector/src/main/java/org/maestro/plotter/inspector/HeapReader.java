@@ -25,8 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Reader;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 public class HeapReader extends CsvReader<HeapData> {
     private static final Logger logger = LoggerFactory.getLogger(HeapReader.class);
