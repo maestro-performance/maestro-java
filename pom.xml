@@ -75,6 +75,7 @@
     <modules>
         <module>maestro-common</module>
         <module>maestro-contrib</module>
+        <module>maestro-plotters</module>
         <module>maestro-reports</module>
         <module>maestro-client</module>
         <module>maestro-cli</module>
