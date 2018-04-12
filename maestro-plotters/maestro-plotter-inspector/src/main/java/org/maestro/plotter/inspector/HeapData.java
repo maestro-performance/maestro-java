@@ -27,7 +27,9 @@ import java.util.*;
  */
 public class HeapData implements ReportData {
     private Set<HeapRecord> heapRecordSet = new TreeSet<>();
-    private Statistics statistics = null;
+    private Statistics usedStatistics = null;
+    private Statistics committedStatistics = null;
+
 
     public void add(HeapRecord record) {
         heapRecordSet.add(record);
@@ -45,19 +47,28 @@ public class HeapData implements ReportData {
         return heapRecordSet.size();
     }
 
+    /**
+     * Get the statistics for the used heap
+     * @return A Statistics object for the heap usage
+     */
     public Statistics usedStatistics() {
-        if (statistics == null) {
-            statistics = StatisticsBuilder.of(heapRecordSet.stream().mapToDouble(HeapRecord::getUsed));
+        if (usedStatistics == null) {
+            usedStatistics = StatisticsBuilder.of(heapRecordSet.stream().mapToDouble(HeapRecord::getUsed));
         }
 
-        return statistics;
+        return usedStatistics;
     }
 
+
+    /**
+     * Get the statistics for the committed heap
+     * @return A Statistics object for the committed usage
+     */
     public Statistics committedStatistics() {
-        if (statistics == null) {
-            statistics = StatisticsBuilder.of(heapRecordSet.stream().mapToDouble(HeapRecord::getCommitted));
+        if (committedStatistics == null) {
+            committedStatistics = StatisticsBuilder.of(heapRecordSet.stream().mapToDouble(HeapRecord::getCommitted));
         }
 
-        return statistics;
+        return committedStatistics;
     }
 }

@@ -44,8 +44,20 @@ public class HeapProcessorTest {
         assertEquals("Unexpected average value for the used heap", 946790919.359984,
                 usedStatistics.getGeometricMean(), 0.0001);
 
-
         assertEquals("Unexpected standard deviation value for the used heap", 300739376.885459,
                 usedStatistics.getStandardDeviation(), 0.0001);
+
+        Statistics committedStatistics = heapData.committedStatistics();
+        assertEquals("Unexpected max value for the committed heap", 1738539008.0000,
+                committedStatistics.getMax(), 0.0);
+
+        assertEquals("Unexpected min value for the committed heap", 1738539008.0000,
+                committedStatistics.getMin(), 0.0);
+
+        assertEquals("Unexpected average value for the committed heap", 1738539008.0000,
+                committedStatistics.getGeometricMean(), 0.0001);
+
+        assertEquals("Unexpected standard deviation value for the committed heap", 0,
+                committedStatistics.getStandardDeviation(), 0.0001);
     }
 }
