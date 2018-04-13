@@ -17,7 +17,6 @@
 package org.maestro.plotter.common.readers;
 
 import org.apache.commons.io.IOUtils;
-import org.maestro.plotter.common.ReportData;
 import org.maestro.plotter.common.ReportReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

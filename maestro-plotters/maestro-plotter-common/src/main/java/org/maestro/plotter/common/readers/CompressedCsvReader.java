@@ -21,7 +21,10 @@ import org.maestro.plotter.common.ReportData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.zip.GZIPInputStream;
 
 public abstract class CompressedCsvReader<T extends ReportData> extends CsvReader<T>  {
