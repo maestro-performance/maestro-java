@@ -43,6 +43,97 @@ public class CommonMemoryData<T extends CommonMemoryRecord> implements ReportDat
         return list;
     }
 
+    /**
+     * Get the used memory records
+     * @param scale the scale to use (ie.: to convert from bytes to kilobytes). Default = 1
+     * @return the used memory records
+     */
+    public List<Long> getUsed(long scale) {
+        List<Long> list = new ArrayList<>(recordSet.size());
+
+        recordSet.stream().forEach(item->list.add(item.getUsed() / scale));
+
+        return list;
+    }
+
+
+    /**
+     * Get the used memory records
+     * @return the used memory records
+     */
+    public List<Long> getUsed() {
+        return getUsed(1);
+    }
+
+
+
+    /**
+     * Get the committed memory records
+     * @param scale the scale to use (ie.: to convert from bytes to kilobytes). Default = 1
+     * @return the committed memory records
+     */
+    public List<Long> getCommitted(long scale) {
+        List<Long> list = new ArrayList<>(recordSet.size());
+
+        recordSet.stream().forEach(item->list.add(item.getCommitted() / scale));
+
+        return list;
+    }
+
+
+    /**
+     * Get the committed memory records
+     * @return the committed memory records
+     */
+    public List<Long> getCommitted() {
+        return getCommitted(1);
+    }
+
+
+    /**
+     * Get the initial memory records
+     * @param scale the scale to use (ie.: to convert from bytes to kilobytes). Default = 1
+     * @return the initial memory records
+     */
+    public List<Long> getInitial(long scale) {
+        List<Long> list = new ArrayList<>(recordSet.size());
+
+        recordSet.stream().forEach(item->list.add(item.getInitial() / scale));
+
+        return list;
+    }
+
+
+    /**
+     * Get the initial memory records
+     * @return the initial memory records
+     */
+    public List<Long> getInitial() {
+        return getInitial(1);
+    }
+
+    /**
+     * Get the max memory records
+     * @param scale the scale to use (ie.: to convert from bytes to kilobytes). Default = 1
+     * @return the max memory records
+     */
+    public List<Long> getMax(long scale) {
+        List<Long> list = new ArrayList<>(recordSet.size());
+
+        recordSet.stream().forEach(item->list.add(item.getMax() / scale));
+
+        return list;
+    }
+
+
+    /**
+     * Get the max memory records
+     * @return the max memory records
+     */
+    public List<Long> getMax() {
+        return getMax(1);
+    }
+
     public int getNumberOfSamples() {
         return recordSet.size();
     }
