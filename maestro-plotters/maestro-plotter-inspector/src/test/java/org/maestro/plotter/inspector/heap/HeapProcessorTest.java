@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.maestro.plotter.inspector;
+package org.maestro.plotter.inspector.heap;
 
 import org.junit.Test;
 import org.maestro.plotter.common.statistics.Statistics;
@@ -26,7 +26,7 @@ import static org.junit.Assert.assertEquals;
 public class HeapProcessorTest {
     @Test
     public void testBasicFile() throws IOException {
-        String fileName = this.getClass().getResource("heap.csv").getPath();
+        String fileName = this.getClass().getResource("/data-ok/heap.csv").getPath();
 
         HeapProcessor heapProcessor = new HeapProcessor();
         HeapReader heapReader = new HeapReader(heapProcessor);

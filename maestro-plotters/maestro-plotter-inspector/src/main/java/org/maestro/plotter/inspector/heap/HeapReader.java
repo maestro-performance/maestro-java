@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.maestro.plotter.inspector;
+package org.maestro.plotter.inspector.heap;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;

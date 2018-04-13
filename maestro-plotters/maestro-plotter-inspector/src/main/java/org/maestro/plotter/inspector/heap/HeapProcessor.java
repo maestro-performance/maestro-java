@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.maestro.plotter.inspector;
+package org.maestro.plotter.inspector.heap;
 
 import org.maestro.plotter.common.RecordProcessor;
 
