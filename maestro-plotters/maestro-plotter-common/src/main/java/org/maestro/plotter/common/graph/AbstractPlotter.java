@@ -17,6 +17,8 @@
 package org.maestro.plotter.common.graph;
 
 
+import org.knowm.xchart.BitmapEncoder;
+import org.knowm.xchart.internal.chartpart.Chart;
 import org.maestro.plotter.common.ReportData;
 import org.maestro.plotter.common.exceptions.EmptyDataSet;
 import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
@@ -121,5 +123,9 @@ public abstract class AbstractPlotter<T extends ReportData> {
         getChartProperties().setyTitle(yTitle);
     }
 
-    abstract public void plot(final T reportData, final File outputDir) throws IOException, EmptyDataSet, IncompatibleDataSet;
+    protected void encode(Chart chart, File outputFile) throws IOException {
+        BitmapEncoder.saveBitmap(chart, outputFile.getPath(), BitmapEncoder.BitmapFormat.PNG);
+    }
+
+    abstract public void plot(final T reportData, final File outputFile) throws IOException, EmptyDataSet, IncompatibleDataSet;
 }

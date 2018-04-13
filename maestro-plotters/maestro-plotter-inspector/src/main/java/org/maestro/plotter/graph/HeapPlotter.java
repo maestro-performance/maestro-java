@@ -37,7 +37,7 @@ import java.util.List;
 public class HeapPlotter extends DefaultHistogramPlotter<HeapData> {
 
     @Override
-    public void plot(final HeapData reportData, final File outputDir) throws IOException, EmptyDataSet, IncompatibleDataSet {
+    public void plot(final HeapData reportData, final File outputFile) throws IOException, EmptyDataSet, IncompatibleDataSet {
         updateChart("", "",  "", "Megabytes");
 
         // Create Chart
@@ -76,8 +76,6 @@ public class HeapPlotter extends DefaultHistogramPlotter<HeapData> {
         max.setMarker(SeriesMarkers.NONE);
         max.setLineStyle(SeriesLines.SOLID);
 
-        File outputFile = new File(outputDir, "heap_memory.png");
-
-        BitmapEncoder.saveBitmap(chart, outputFile.getPath(), BitmapEncoder.BitmapFormat.PNG);
+        encode(chart, outputFile);
     }
 }
