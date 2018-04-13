@@ -42,7 +42,7 @@ public class HeapPlotterTest {
         HeapPlotter plotter = new HeapPlotter();
 
         File outputFile = new File(sourceFile.getParentFile(), "heap_memory.png");
-        plotter.plot(heapData, sourceFile.getParentFile());
+        plotter.plot(heapData, outputFile);
 
         assertTrue("The output file does not exist: " + outputFile.getPath(), outputFile.exists());
 

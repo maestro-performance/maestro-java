@@ -1,0 +1,56 @@
+/*
+ * Copyright 2018 Otavio R. Piske <angusyoung@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.maestro.plotter.graph;
+
+import org.maestro.plotter.common.exceptions.EmptyDataSet;
+import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
+import org.maestro.plotter.inspector.memoryareas.MemoryAreasData;
+import org.maestro.plotter.inspector.memoryareas.MemoryAreasDataSet;
+
+import java.io.File;
+import java.io.IOException;
+import java.util.Map;
+
+public class MemoryAreasPlotter extends CommonMemoryPlotter<MemoryAreasData> {
+
+    @Override
+    public void plot(final MemoryAreasData reportData, final File outputFile) throws IOException, EmptyDataSet, IncompatibleDataSet {
+        super.plot(reportData, outputFile);
+    }
+
+    public static String friendlyName(final String areaName) {
+        return areaName.replace(" ", "_").toLowerCase() + ".png";
+    }
+
+    public void plot(final MemoryAreasData reportData, final File outputDir, final String areaName) {
+        try {
+            plot(reportData, new File(outputDir, friendlyName(areaName)));
+        } catch (IOException e) {
+            e.printStackTrace();
+        } catch (EmptyDataSet emptyDataSet) {
+            emptyDataSet.printStackTrace();
+        } catch (IncompatibleDataSet incompatibleDataSet) {
+            incompatibleDataSet.printStackTrace();
+        }
+    }
+
+    public void plot(final MemoryAreasDataSet dataSet, final File outputDir) {
+        Map<String, MemoryAreasData> map = dataSet.getMap();
+
+        map.forEach((areaName, data) -> plot(data, outputDir, areaName));
+    }
+}

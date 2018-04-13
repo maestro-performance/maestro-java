@@ -16,66 +16,17 @@
 
 package org.maestro.plotter.graph;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
-import org.knowm.xchart.BitmapEncoder;
-import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYSeries;
-import org.knowm.xchart.style.colors.XChartSeriesColors;
-import org.knowm.xchart.style.lines.SeriesLines;
-import org.knowm.xchart.style.markers.SeriesMarkers;
 import org.maestro.plotter.common.exceptions.EmptyDataSet;
 import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
-import org.maestro.plotter.common.graph.DefaultHistogramPlotter;
 import org.maestro.plotter.inspector.heap.HeapData;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
-import java.util.List;
 
-public class HeapPlotter extends DefaultHistogramPlotter<HeapData> {
+public class HeapPlotter extends CommonMemoryPlotter<HeapData> {
 
     @Override
     public void plot(final HeapData reportData, final File outputFile) throws IOException, EmptyDataSet, IncompatibleDataSet {
-        updateChart("", "",  "", "Megabytes");
-
-        // Create Chart
-        XYChart chart = buildCommonChart();
-
-
-        List<Long> scaledUsed = reportData.getUsed(FileUtils.ONE_MB);
-        validateDataSet(reportData.getPeriods(), scaledUsed);
-
-        // Series
-        XYSeries used = chart.addSeries("Used", reportData.getPeriods(), scaledUsed);
-
-        used.setLineColor(XChartSeriesColors.BLUE);
-        used.setMarkerColor(Color.LIGHT_GRAY);
-        used.setMarker(SeriesMarkers.NONE);
-        used.setLineStyle(SeriesLines.SOLID);
-
-        List<Long> scaledCommited = reportData.getCommitted(FileUtils.ONE_MB);
-
-        // Series
-        XYSeries committed = chart.addSeries("Committed", reportData.getPeriods(), scaledCommited);
-
-        committed.setLineColor(XChartSeriesColors.GREEN);
-        committed.setMarkerColor(Color.LIGHT_GRAY);
-        committed.setMarker(SeriesMarkers.NONE);
-        used.setLineStyle(SeriesLines.SOLID);
-
-
-        List<Long> scaledMax = reportData.getMax(FileUtils.ONE_MB);
-
-        // Series
-        XYSeries max = chart.addSeries("Max", reportData.getPeriods(), scaledMax);
-
-        max.setLineColor(XChartSeriesColors.RED);
-        max.setMarkerColor(Color.LIGHT_GRAY);
-        max.setMarker(SeriesMarkers.NONE);
-        max.setLineStyle(SeriesLines.SOLID);
-
-        encode(chart, outputFile);
+        super.plot(reportData, outputFile);
     }
 }
