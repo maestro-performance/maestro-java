@@ -14,8 +14,12 @@
  * limitations under the License.
  */
 
-package org.maestro.plotter.inspector.exceptions;
+package org.maestro.plotter.common.exceptions;
 
+
+/**
+ * Empty data set exception
+ */
 public class EmptyDataSet extends Exception {
     public EmptyDataSet() {
         super();
