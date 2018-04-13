@@ -16,59 +16,11 @@
 
 package org.maestro.plotter.inspector.heap;
 
-import org.maestro.plotter.common.ReportData;
-import org.maestro.plotter.common.statistics.Statistics;
-import org.maestro.plotter.common.statistics.StatisticsBuilder;
-
-import java.util.*;
+import org.maestro.plotter.inspector.common.CommonMemoryData;
 
 /**
  * Heap data container
  */
-public class HeapData implements ReportData {
-    private Set<HeapRecord> heapRecordSet = new TreeSet<>();
-    private Statistics usedStatistics = null;
-    private Statistics committedStatistics = null;
+public class HeapData extends CommonMemoryData<HeapRecord> {
 
-
-    public void add(HeapRecord record) {
-        heapRecordSet.add(record);
-    }
-
-    public List<Date> getPeriods() {
-        List<Date> list = new ArrayList<>(heapRecordSet.size());
-
-        heapRecordSet.stream().forEach(item->list.add(Date.from(item.getTimestamp())));
-
-        return list;
-    }
-
-    public int getNumberOfSamples() {
-        return heapRecordSet.size();
-    }
-
-    /**
-     * Get the statistics for the used heap
-     * @return A Statistics object for the heap usage
-     */
-    public Statistics usedStatistics() {
-        if (usedStatistics == null) {
-            usedStatistics = StatisticsBuilder.of(heapRecordSet.stream().mapToDouble(HeapRecord::getUsed));
-        }
-
-        return usedStatistics;
-    }
-
-
-    /**
-     * Get the statistics for the committed heap
-     * @return A Statistics object for the committed usage
-     */
-    public Statistics committedStatistics() {
-        if (committedStatistics == null) {
-            committedStatistics = StatisticsBuilder.of(heapRecordSet.stream().mapToDouble(HeapRecord::getCommitted));
-        }
-
-        return committedStatistics;
-    }
 }

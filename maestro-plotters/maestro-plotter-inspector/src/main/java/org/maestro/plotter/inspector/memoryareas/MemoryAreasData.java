@@ -14,11 +14,14 @@
  * limitations under the License.
  */
 
-package org.maestro.plotter.inspector.heap;
+package org.maestro.plotter.inspector.memoryareas;
 
-import org.maestro.plotter.inspector.common.CommonMemoryRecord;
+import org.maestro.plotter.inspector.common.CommonMemoryData;
 
-public class HeapRecord extends CommonMemoryRecord {
+
+/**
+ * Memory areas data container
+ */
+public class MemoryAreasData extends CommonMemoryData<MemoryAreasRecord> {
 
 }
-

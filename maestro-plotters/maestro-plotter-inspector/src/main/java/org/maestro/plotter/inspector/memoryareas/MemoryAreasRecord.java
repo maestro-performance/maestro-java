@@ -14,11 +14,12 @@
  * limitations under the License.
  */
 
-package org.maestro.plotter.inspector.heap;
+package org.maestro.plotter.inspector.memoryareas;
 
 import org.maestro.plotter.inspector.common.CommonMemoryRecord;
 
-public class HeapRecord extends CommonMemoryRecord {
-
-}
+/**
+ * Records for the JVM memory areas
+ */
+public class MemoryAreasRecord extends CommonMemoryRecord { }
 

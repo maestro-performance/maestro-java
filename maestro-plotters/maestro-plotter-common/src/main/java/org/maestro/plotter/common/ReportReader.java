@@ -19,7 +19,7 @@ package org.maestro.plotter.common;
 import java.io.File;
 import java.io.IOException;
 
-public interface ReportReader<T extends ReportData> {
+public interface ReportReader<T> {
     T read(final File file) throws IOException;
 
     default T read(String filename) throws IOException {

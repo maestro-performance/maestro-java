@@ -24,7 +24,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
-public abstract class CsvReader<T extends ReportData> implements ReportReader<T> {
+public abstract class CsvReader<T> implements ReportReader<T> {
     private static final Logger logger = LoggerFactory.getLogger(CsvReader.class);
 
     protected abstract T readReader(final Reader reader) throws IOException;
