@@ -46,6 +46,11 @@ public class Statistics {
         return summaryStatistics.getMax();
     }
 
+
+    /**
+     * Get the minimum recorded value in the data set
+     * @return the minimum recorded value
+     */
     public double getMin() {
         return summaryStatistics.getMin();
     }
