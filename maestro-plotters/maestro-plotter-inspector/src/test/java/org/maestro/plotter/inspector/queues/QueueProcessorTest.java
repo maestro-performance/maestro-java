@@ -18,24 +18,25 @@ package org.maestro.plotter.inspector.queues;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.maestro.plotter.common.properties.PropertyWriter;
 import org.maestro.plotter.common.statistics.Statistics;
 
+import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class QueueProcessorTest {
+    private final String fileName = this.getClass().getResource("/data-ok/queues.csv").getPath();
     private QueueDataSet dataSet;
 
     @Before
     public void setUp() throws Exception {
-        String fileName = this.getClass().getResource("/data-ok/queues.csv").getPath();
-
         QueueProcessor queueProcessor = new QueueProcessor();
         QueueReader queueReader = new QueueReader(queueProcessor);
 
         dataSet = queueReader.read(fileName);
-
     }
 
     @Test
@@ -85,5 +86,17 @@ public class QueueProcessorTest {
 
         assertEquals("Unexpected consumer standard deviation value for the queue " + queueName, 0,
                 consumerStatistics.getStandardDeviation(), 0.0001);
+    }
+
+
+    @Test
+    public void testProperties() throws IOException {
+        File sourceFile = new File(fileName);
+        File outputFile = new File(sourceFile.getParentFile(), QueueData.DEFAULT_FILENAME);
+
+        PropertyWriter propertyWriter = new PropertyWriter();
+
+        propertyWriter.write(dataSet, outputFile);
+        assertTrue("The output file does not exist", outputFile.exists());
     }
 }

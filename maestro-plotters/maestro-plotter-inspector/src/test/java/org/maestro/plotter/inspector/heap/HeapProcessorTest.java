@@ -75,9 +75,11 @@ public class HeapProcessorTest {
     @Test
     public void testProperties() throws IOException {
         File sourceFile = new File(fileName);
-        File outputFile = new File(sourceFile.getParentFile(), "unittest.properties");
+        File outputFile = new File(sourceFile.getParentFile(), HeapData.DEFAULT_FILENAME);
 
-        PropertyWriter.write(heapData, outputFile);
+        PropertyWriter propertyWriter = new PropertyWriter();
+
+        propertyWriter.write(heapData, outputFile);
         assertTrue("The output file does not exist", outputFile.exists());
     }
 }

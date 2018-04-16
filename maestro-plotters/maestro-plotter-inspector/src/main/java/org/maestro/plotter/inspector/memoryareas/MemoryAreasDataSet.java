@@ -16,13 +16,19 @@
 
 package org.maestro.plotter.inspector.memoryareas;
 
+import org.maestro.plotter.common.properties.annotations.PropertyName;
+import org.maestro.plotter.common.properties.annotations.PropertyProvider;
+
 import java.util.HashMap;
 import java.util.Map;
 
 /**
  * The data set for the multiple possible JVM memory areas
  */
+@PropertyName(name="jvmMemory")
 public class MemoryAreasDataSet {
+    public static final String DEFAULT_FILENAME = "memory-areas.properties";
+
     private Map<String, MemoryAreasData> map = new HashMap<>();
 
     /**
@@ -45,6 +51,7 @@ public class MemoryAreasDataSet {
      * Get all records
      * @return
      */
+    @PropertyProvider(name="")
     public Map<String, MemoryAreasData> getMap() {
         return map;
     }

@@ -33,14 +33,18 @@ public class PropertyWriterTest {
 
     @Test
     public void testEmptyBean() throws IOException {
-        PropertyWriter.write(new Object(), dummy);
+        PropertyWriter propertyWriter = new PropertyWriter();
+
+        propertyWriter.write(new Object(), dummy);
 
         // no-throw == success
     }
 
     @Test
     public void testLocalEmptyBean() throws IOException  {
-        PropertyWriter.write(new ReportData() {
+        PropertyWriter propertyWriter = new PropertyWriter();
+
+        propertyWriter.write(new ReportData() {
             @Override
             public List<Date> getPeriods() {
                 return null;

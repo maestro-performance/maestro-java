@@ -24,5 +24,5 @@ import org.maestro.plotter.inspector.common.CommonMemoryData;
  */
 @PropertyName(name="heap")
 public class HeapData extends CommonMemoryData<HeapRecord> {
-
+    public static final String DEFAULT_FILENAME = "heap.properties";
 }

@@ -17,6 +17,8 @@
 package org.maestro.plotter.inspector.queues;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.maestro.plotter.common.properties.annotations.PropertyName;
+import org.maestro.plotter.common.properties.annotations.PropertyProvider;
 import org.maestro.plotter.common.statistics.Statistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -25,8 +27,10 @@ import java.time.Instant;
 import java.util.*;
 
 /**
- * The data set for the multiple queues
+ * The data set for the multiple queues. By default, won't save properties for this since it generates
+ * far too much data in a format that is hard to parse (due to the different queue names possible).
  */
+@PropertyName(name="queue-")
 public class QueueDataSet {
     private static final Logger logger = LoggerFactory.getLogger(QueueDataSet.class);
     private Map<String, QueueData> map = new HashMap<>();
@@ -51,6 +55,7 @@ public class QueueDataSet {
      * Get all records
      * @return
      */
+    @PropertyProvider(name="")
     public Map<String, QueueData> getMap() {
         return map;
     }

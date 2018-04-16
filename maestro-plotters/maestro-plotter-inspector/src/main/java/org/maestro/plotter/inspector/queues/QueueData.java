@@ -31,6 +31,8 @@ import java.util.*;
  */
 @PropertyName(name="queue")
 public class QueueData implements ReportData {
+    public static final String DEFAULT_FILENAME = "queue.properties";
+
     private Set<QueuesRecord> recordSet = new TreeSet<>();
     private Statistics countStatistics = null;
     private Statistics consumerStatistics = null;
@@ -70,7 +72,7 @@ public class QueueData implements ReportData {
      * Get the statistics for the message count
      * @return A Statistics object for the message count
      */
-    @PropertyProvider(name="count")
+    @PropertyProvider(name="-count")
     public Statistics countStatistics() {
         if (countStatistics == null) {
             countStatistics = StatisticsBuilder.of(recordSet.stream().mapToDouble(QueuesRecord::getCount));
@@ -84,7 +86,7 @@ public class QueueData implements ReportData {
      * Get the statistics for the consumer count
      * @return A Statistics object for the consumer count
      */
-    @PropertyProvider(name="consumer")
+    @PropertyProvider(name="-consumer")
     public Statistics consumerStatistics() {
         if (consumerStatistics == null) {
             consumerStatistics = StatisticsBuilder.of(recordSet.stream().mapToDouble(QueuesRecord::getConsumers));
@@ -105,7 +107,7 @@ public class QueueData implements ReportData {
         return addedStatistics;
     }
 
-    @PropertyProvider(name="addedCount")
+    @PropertyProvider(name="-addedCount")
     public double getAddedCount() {
         return addedStatistics().getMax();
     }
@@ -122,7 +124,7 @@ public class QueueData implements ReportData {
         return expiredStatistics;
     }
 
-    @PropertyProvider(name="expiredCount")
+    @PropertyProvider(name="-expiredCount")
     public double getExpiredCount() {
         return expiredStatistics().getMax();
     }

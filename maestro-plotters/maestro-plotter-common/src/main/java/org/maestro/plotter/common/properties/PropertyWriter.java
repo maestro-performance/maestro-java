@@ -20,7 +20,6 @@ import org.maestro.common.StringUtils;
 import org.maestro.plotter.common.ReportData;
 import org.maestro.plotter.common.properties.annotations.PropertyName;
 import org.maestro.plotter.common.properties.annotations.PropertyProvider;
-import org.maestro.plotter.common.statistics.Statistics;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +28,8 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
+import java.util.Collection;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -36,35 +37,23 @@ import java.util.Properties;
  */
 public class PropertyWriter<T extends ReportData> {
     private static final Logger logger = LoggerFactory.getLogger(PropertyWriter.class);
+    private PropertyConverter converter = new DefaultConverter();
 
-    private PropertyWriter() {}
 
-    /**
-     * Dump the data as a property file (if properly annotated)
-     * @param data the data to save
-     * @param outputFile the output file
-     * @throws IOException if unable to save
-     */
-    public static void write(final Object data, final File outputFile) throws IOException {
-        logger.trace("Writing properties to {}", outputFile.getPath());
-
-        if (data == null) {
-            logger.warn("Cannot dump properties for a null bean");
-            return;
+    private boolean canHandle(Object object) {
+        if (Number.class.isAssignableFrom(object.getClass())) {
+            return true;
         }
 
-        Properties prop = new Properties();
-
-        PropertyName propertyNameAnnotation = data.getClass().getAnnotation(PropertyName.class);
-        if (propertyNameAnnotation == null) {
-            logger.error("Trying to dump the properties for a class {} but it is not properly annotated",
-                    data.getClass());
-
-            return;
+        if (object instanceof String) {
+            return true;
         }
-        String classPropertyName = propertyNameAnnotation.name();
-        logger.error("Inspecting the properties for {} on {}",classPropertyName, data.getClass());
 
+
+       return false;
+    }
+
+    private void saveProperties(Object data, Properties prop, final String propertyName) throws IOException {
         Method[] methods = data.getClass().getMethods();
 
         for (Method method : methods) {
@@ -75,15 +64,22 @@ public class PropertyWriter<T extends ReportData> {
                     logger.debug("Obtained: " + ret);
 
                     PropertyProvider methodProperty = method.getAnnotation(PropertyProvider.class);
-                    if (ret instanceof Statistics) {
-                        Statistics statistics = (Statistics) ret;
-                        String basePropertyName = classPropertyName
-                                + StringUtils.capitalize(methodProperty.name());
 
-                        prop.setProperty(basePropertyName + "Max", Double.toString(statistics.getMax()));
-                        prop.setProperty(basePropertyName + "Min", Double.toString(statistics.getMin()));
-                        prop.setProperty(basePropertyName + "GeometricMean", Double.toString(statistics.getGeometricMean()));
-                        prop.setProperty(basePropertyName + "StandardDeviation", Double.toString(statistics.getStandardDeviation()));
+                    String newPropertyName = propertyName + StringUtils.capitalize(methodProperty.name());
+
+                    if (canHandle(ret)) {
+                        converter.write(prop, newPropertyName, ret);
+                    }
+                    else {
+                        if (ret instanceof Map) {
+                            Map<?, ?> map = (Map<?, ?>) ret;
+
+                            map.forEach((key, value) -> mapIterator(prop, newPropertyName, (String) key, value));
+                        }
+                        else {
+                            saveProperties(ret, prop, newPropertyName);
+                        }
+
                     }
 
                 } catch (IllegalAccessException e) {
@@ -94,10 +90,50 @@ public class PropertyWriter<T extends ReportData> {
             }
         }
 
+
+    }
+
+    private void mapIterator(Properties prop, String newPropertyName, String key, Object value) {
+        String sanitizedName = StringUtils.capitalize(key).replace(" ", "");
+        String combinedName = newPropertyName + sanitizedName;
+
+        try {
+            saveProperties(value, prop, combinedName);
+        } catch (IOException e) {
+            logger.error("Unable to save property {}: {}", combinedName, e);
+            return;
+        }
+    }
+
+    /**
+     * Dump the data as a property file (if properly annotated)
+     * @param data the data to save
+     * @param outputFile the output file
+     * @throws IOException if unable to save
+     */
+    public void write(final Object data, final File outputFile) throws IOException {
+        logger.trace("Writing properties to {}", outputFile.getPath());
+
+        if (data == null) {
+            logger.warn("Cannot dump properties for a null bean");
+            return;
+        }
+
+        PropertyName propertyNameAnnotation = data.getClass().getAnnotation(PropertyName.class);
+        if (propertyNameAnnotation == null) {
+            logger.error("Trying to dump the properties for a class {} but it is not properly annotated",
+                    data.getClass());
+
+            return;
+        }
+        logger.error("Inspecting the properties for {} on {}", propertyNameAnnotation.name(), data.getClass());
+
+        Properties prop = new Properties();
+
+        saveProperties(data, prop, propertyNameAnnotation.name());
+
         try (FileOutputStream fos = new FileOutputStream(outputFile)) {
             prop.store(fos, "maestro-plotter");
         }
     }
-
-
 }

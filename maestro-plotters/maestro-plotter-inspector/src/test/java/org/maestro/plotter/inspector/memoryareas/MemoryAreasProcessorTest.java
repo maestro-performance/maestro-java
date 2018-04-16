@@ -18,19 +18,21 @@ package org.maestro.plotter.inspector.memoryareas;
 
 import org.junit.Before;
 import org.junit.Test;
+import org.maestro.plotter.common.properties.PropertyWriter;
 import org.maestro.plotter.common.statistics.Statistics;
 
+import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class MemoryAreasProcessorTest {
+    private String fileName = this.getClass().getResource("/data-ok/memory-areas.csv").getPath();
     private MemoryAreasDataSet dataSet;
 
     @Before
     public void setUp() throws Exception {
-        String fileName = this.getClass().getResource("/data-ok/memory-areas.csv").getPath();
-
         MemoryAreasProcessor memoryAreasProcessor = new MemoryAreasProcessor();
         MemoryAreasReader memoryAreasReader = new MemoryAreasReader(memoryAreasProcessor);
 
@@ -227,5 +229,17 @@ public class MemoryAreasProcessorTest {
 
         assertEquals("Unexpected standard deviation value for the committed " + areaName, 0,
                 committedStatistics.getStandardDeviation(), 0.0001);
+    }
+
+
+    @Test
+    public void testProperties() throws IOException {
+        File sourceFile = new File(fileName);
+        File outputFile = new File(sourceFile.getParentFile(), MemoryAreasDataSet.DEFAULT_FILENAME);
+
+        PropertyWriter propertyWriter = new PropertyWriter();
+
+        propertyWriter.write(dataSet, outputFile);
+        assertTrue("The output file does not exist", outputFile.exists());
     }
 }
