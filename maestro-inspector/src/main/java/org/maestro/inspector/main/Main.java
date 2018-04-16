@@ -130,17 +130,11 @@ public class Main {
 
         try {
             MaestroDataServer dataServer = new MaestroDataServer(logDir, host);
-
-            MaestroWorkerExecutor executor;
             AbstractMaestroPeer<?> maestroPeer;
+            MaestroWorkerExecutor executor;
 
-            @SuppressWarnings("unchecked")
-            Class<MaestroInspector> clazz = (Class<MaestroInspector>) Class.forName(inspector);
-            MaestroInspector inspector = clazz.newInstance();
+            maestroPeer = new InspectorManager(maestroUrl, host, dataServer, logDir);
 
-            inspector.setBaseLogDir(logDir);
-
-            maestroPeer = new InspectorManager(maestroUrl, host, dataServer, inspector);
             executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
             executor.start(MaestroTopics.MAESTRO_INSPECTOR_TOPICS);
@@ -149,12 +143,6 @@ public class Main {
             System.out.println("Finished execution ...");
         } catch (MaestroException e) {
             System.err.println(e.getMessage());
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
-            e.printStackTrace();
-        } catch (IllegalAccessException e) {
-            e.printStackTrace();
-        } catch (InstantiationException e) {
             e.printStackTrace();
         }
 

@@ -189,7 +189,7 @@ public interface MaestroRequester {
      * Sends a start inspector request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    void startInspector() throws MaestroConnectionException;
+    void startInspector(final String value) throws MaestroConnectionException;
 
 
     /**

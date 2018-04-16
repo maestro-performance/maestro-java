@@ -127,7 +127,7 @@ public class MaestroDeserializer {
                 return new StopSender();
             }
             case MAESTRO_NOTE_START_INSPECTOR: {
-                return new StartInspector();
+                return new StartInspector(unpacker);
             }
             case MAESTRO_NOTE_STOP_INSPECTOR: {
                 return new StopInspector();

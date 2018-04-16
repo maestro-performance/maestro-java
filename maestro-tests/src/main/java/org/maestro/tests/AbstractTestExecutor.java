@@ -57,7 +57,6 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      */
     protected void startServices() throws MaestroConnectionException {
         maestro.startReceiver();
-        maestro.startInspector();
         maestro.startSender();
     }
 

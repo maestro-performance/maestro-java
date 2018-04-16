@@ -332,8 +332,10 @@ public final class Maestro implements MaestroRequester {
      * Sends a start inspector request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void startInspector() throws MaestroConnectionException {
+    public void startInspector(final String value) throws MaestroConnectionException {
         StartInspector maestroNote = new StartInspector();
+
+        maestroNote.set(value);
 
         maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, maestroNote);
     }

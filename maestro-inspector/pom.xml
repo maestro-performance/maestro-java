@@ -50,6 +50,12 @@
             <artifactId>maestro-activemq-inspectors</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-amqp-inspectors</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
     <build>

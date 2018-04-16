@@ -16,7 +16,10 @@
 
 package org.maestro.inspector.base;
 
-import org.maestro.client.notes.*;
+import org.maestro.client.notes.MaestroInspectorEventListener;
+import org.maestro.client.notes.SetRequest;
+import org.maestro.client.notes.StartInspector;
+import org.maestro.client.notes.StopInspector;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.worker.base.MaestroWorkerManager;
@@ -24,8 +27,10 @@ import org.maestro.worker.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
 
 public class InspectorManager extends MaestroWorkerManager implements MaestroInspectorEventListener {
     private static final Logger logger = LoggerFactory.getLogger(InspectorManager.class);
@@ -33,15 +38,26 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
     private Thread inspectorThread;
     private InspectorContainer inspectorContainer;
     private MaestroInspector inspector;
+    private File logDir;
+    private HashMap<String, String> inspectorMap = new HashMap<>();
 
-    public InspectorManager(final String maestroURL, final String host, final MaestroDataServer dataServer,
-                            final MaestroInspector inspector) throws MaestroException
+    public InspectorManager(final String maestroURL, final String host, final MaestroDataServer dataServer, final File logDir) throws MaestroException
     {
         super(maestroURL, INSPECTOR_ROLE, host, dataServer);
 
-        this.inspector = inspector;
-        this.inspector.setEndpoint(getClient());
-        inspectorContainer = new InspectorContainer(inspector);
+        this.logDir = logDir;
+
+        inspectorMap.put("InterconnectInspector", "org.maestro.inspector.amqp.InterconnectInspector");
+        inspectorMap.put("ArtemisInspector", "org.maestro.inspector.activemq.ArtemisInspector");
+    }
+
+    private void createInspector(final String inspectorType) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+        @SuppressWarnings("unchecked")
+        Class<MaestroInspector> clazz = (Class<MaestroInspector>) Class.forName(inspectorType);
+
+        inspector = clazz.newInstance();
+        inspector.setEndpoint(getClient());
+        inspector.setBaseLogDir(logDir);
     }
 
     @Override
@@ -49,9 +65,16 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         logger.debug("Start inspector request received");
 
         try {
+            createInspector(inspectorMap.get(note.getPayload()));
+
             inspector.setDuration(getWorkerOptions().getDuration());
+
+            inspectorContainer = new InspectorContainer(inspector);
+
             inspectorThread = new Thread(inspectorContainer);
             inspectorThread.start();
+
+            getClient().replyOk();
         }
         catch (Throwable t) {
             logger.error("Unable to start inspector: {}", t.getMessage(), t);
@@ -102,3 +125,4 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         }
     }
 }
+

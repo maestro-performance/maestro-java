@@ -17,10 +17,39 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageBufferPacker;
+import org.msgpack.core.MessageUnpacker;
+
+import java.io.IOException;
 
 public class StartInspector extends MaestroRequest<MaestroInspectorEventListener> {
+    private String payload;
+
     public StartInspector() {
         super(MaestroCommand.MAESTRO_NOTE_START_INSPECTOR);
+    }
+
+    public StartInspector(MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_START_INSPECTOR);
+
+        this.payload = unpacker.unpackString();
+    }
+
+    public void set(final String payload) {
+        this.payload = payload;
+    }
+
+    public String getPayload() {
+        return payload;
+    }
+
+    @Override
+    protected MessageBufferPacker pack() throws IOException {
+        MessageBufferPacker packer = super.pack();
+
+        packer.packString(this.payload);
+
+        return packer;
     }
 
     @Override
@@ -30,6 +59,8 @@ public class StartInspector extends MaestroRequest<MaestroInspectorEventListener
 
     @Override
     public String toString() {
-        return "StartInspector{} " + super.toString();
+        return "StartInspector{" +
+                "payload="+ payload +
+                "} " + super.toString();
     }
 }
