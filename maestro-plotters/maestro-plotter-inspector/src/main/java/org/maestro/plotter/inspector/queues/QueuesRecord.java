@@ -16,13 +16,15 @@
 
 package org.maestro.plotter.inspector.queues;
 
+import org.maestro.plotter.common.InstantRecord;
+
 import java.time.Instant;
 import java.util.Objects;
 
 /**
  * Records for the queue information
  */
-public class QueuesRecord implements Comparable<QueuesRecord> {
+public class QueuesRecord implements Comparable<QueuesRecord>, InstantRecord {
     private Instant timestamp;
     private String name;
     private long added;

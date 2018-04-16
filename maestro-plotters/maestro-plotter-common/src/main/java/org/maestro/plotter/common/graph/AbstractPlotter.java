@@ -18,11 +18,16 @@ package org.maestro.plotter.common.graph;
 
 
 import org.knowm.xchart.BitmapEncoder;
+import org.knowm.xchart.XYChart;
+import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.internal.chartpart.Chart;
+import org.knowm.xchart.style.Styler;
+import org.knowm.xchart.style.colors.ChartColor;
 import org.maestro.plotter.common.ReportData;
 import org.maestro.plotter.common.exceptions.EmptyDataSet;
 import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
 
+import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.List;
@@ -30,7 +35,7 @@ import java.util.List;
 /**
  * A base class for HDR plotters
  */
-public abstract class AbstractPlotter<T extends ReportData> {
+public abstract class AbstractPlotter<T> {
     private int outputWidth = 1200;
     private int outputHeight = 700;
     private boolean plotGridLinesVisible = true;
@@ -125,6 +130,44 @@ public abstract class AbstractPlotter<T extends ReportData> {
 
     protected void encode(Chart chart, File outputFile) throws IOException {
         BitmapEncoder.saveBitmap(chart, outputFile.getPath(), BitmapEncoder.BitmapFormat.PNG);
+    }
+
+    protected XYChart baseChart() {
+
+        // Create Chart
+        XYChart chart = new XYChartBuilder()
+                .width(getOutputWidth())
+                .height(getOutputHeight())
+                .title(getChartProperties().getTitle())
+                .xAxisTitle(getChartProperties().getxTitle())
+                .yAxisTitle(getChartProperties().getyTitle())
+                .theme(Styler.ChartTheme.Matlab)
+                .build();
+
+        chart.getStyler().setPlotBackgroundColor(ChartColor.getAWTColor(ChartColor.WHITE));
+        chart.getStyler().setChartBackgroundColor(Color.WHITE);
+        chart.getStyler().setChartTitleBoxBackgroundColor(new Color(0, 222, 0));
+
+        chart.getStyler().setPlotGridLinesVisible(isPlotGridLinesVisible());
+        chart.getStyler().setXAxisLabelRotation(45);
+
+        chart.getStyler().setAxisTickMarkLength(15);
+        chart.getStyler().setPlotMargin(0);
+        chart.getStyler().setPlotContentSize(.95);
+        chart.getStyler().setDatePattern("yyyy-MM-dd HH:mm:ss");
+
+        Font defaultFont = new Font("Verdana", Font.PLAIN, 12);
+
+        chart.getStyler().setBaseFont(defaultFont);
+        chart.getStyler().setChartTitleFont(defaultFont.deriveFont(Font.BOLD).deriveFont(14));
+        chart.getStyler().setLegendFont(defaultFont);
+        chart.getStyler().setAxisTitleFont(defaultFont);
+        chart.getStyler().setAxisTickLabelsFont(defaultFont.deriveFont(10));
+
+        chart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideS);
+        chart.getStyler().setLegendLayout(Styler.LegendLayout.Vertical);
+
+        return chart;
     }
 
     abstract public void plot(final T reportData, final File outputFile) throws IOException, EmptyDataSet, IncompatibleDataSet;

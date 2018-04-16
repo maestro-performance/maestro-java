@@ -14,19 +14,17 @@
  * limitations under the License.
  */
 
-package org.maestro.plotter.common.graph;
+package org.maestro.plotter.common;
 
-import org.knowm.xchart.XYChart;
-import org.maestro.plotter.common.ReportData;
+import java.time.Instant;
 
 /**
- * A default histogram plotter
- * @param <T>
+ * An arbitrary record read from a point in time
  */
-public abstract class DefaultHistogramPlotter<T extends ReportData> extends AbstractPlotter<T> {
-
-    protected XYChart createChart() {
-        return baseChart();
-    }
-
+public interface InstantRecord {
+    /**
+     * Get the time when the record was read
+     * @return
+     */
+    Instant getTimestamp();
 }

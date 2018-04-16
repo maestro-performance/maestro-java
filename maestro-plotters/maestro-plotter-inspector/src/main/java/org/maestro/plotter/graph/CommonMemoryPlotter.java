@@ -39,7 +39,7 @@ class CommonMemoryPlotter<T extends CommonMemoryData<?>> extends DefaultHistogra
         updateChart("", "",  "", "Megabytes");
 
         // Create Chart
-        XYChart chart = buildCommonChart();
+        XYChart chart = createChart();
 
 
         List<Long> scaledUsed = reportData.getUsed(FileUtils.ONE_MB);

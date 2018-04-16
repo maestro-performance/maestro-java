@@ -24,7 +24,7 @@ import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 public class Statistics {
     private SummaryStatistics summaryStatistics;
 
-    Statistics(SummaryStatistics summaryStatistics) {
+    public Statistics(SummaryStatistics summaryStatistics) {
         this.summaryStatistics = summaryStatistics;
 
     }
@@ -35,6 +35,14 @@ public class Statistics {
      */
     public double getGeometricMean() {
          return summaryStatistics.getGeometricMean();
+    }
+
+    /**
+     * Get the mean for the data set
+     * @return the mean
+     */
+    public double getMean() {
+        return summaryStatistics.getMean();
     }
 
 

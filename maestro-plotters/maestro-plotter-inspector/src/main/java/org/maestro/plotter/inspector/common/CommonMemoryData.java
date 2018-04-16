@@ -43,6 +43,11 @@ public class CommonMemoryData<T extends CommonMemoryRecord> implements ReportDat
         return list;
     }
 
+    @Override
+    public Set<T> getRecordSet() {
+        return new TreeSet<>(recordSet);
+    }
+
     /**
      * Get the used memory records
      * @param scale the scale to use (ie.: to convert from bytes to kilobytes). Default = 1

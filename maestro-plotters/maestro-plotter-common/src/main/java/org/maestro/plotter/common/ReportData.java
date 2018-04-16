@@ -18,7 +18,9 @@ package org.maestro.plotter.common;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 
 public interface ReportData {
     List<Date> getPeriods();
+    Set<? extends InstantRecord> getRecordSet();
 }

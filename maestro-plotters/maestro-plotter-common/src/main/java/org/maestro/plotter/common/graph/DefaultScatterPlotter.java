@@ -17,16 +17,21 @@
 package org.maestro.plotter.common.graph;
 
 import org.knowm.xchart.XYChart;
-import org.maestro.plotter.common.ReportData;
+import org.knowm.xchart.XYSeries;
+
 
 /**
- * A default histogram plotter
+ * A default scatter plotter
  * @param <T>
  */
-public abstract class DefaultHistogramPlotter<T extends ReportData> extends AbstractPlotter<T> {
+public abstract class DefaultScatterPlotter<T> extends AbstractPlotter<T> {
 
     protected XYChart createChart() {
-        return baseChart();
-    }
 
+        XYChart ret = baseChart();
+
+        ret.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
+        ret.getStyler().setMarkerSize(16);
+        return ret;
+    }
 }

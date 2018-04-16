@@ -20,6 +20,7 @@ import org.maestro.plotter.common.ReportData;
 import org.maestro.plotter.common.statistics.Statistics;
 import org.maestro.plotter.common.statistics.StatisticsBuilder;
 
+import java.time.Instant;
 import java.util.*;
 
 
@@ -46,6 +47,13 @@ public class QueueData implements ReportData {
         return list;
     }
 
+    public Set<QueuesRecord> getRecordSet() {
+        return new TreeSet<>(recordSet);
+    }
+
+    public QueuesRecord getAt(final Instant instant) {
+        return recordSet.stream().findFirst().filter(record -> record.getTimestamp().equals(instant)).orElse(null);
+    }
 
     /**
      * Number of records

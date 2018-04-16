@@ -17,10 +17,12 @@
 package org.maestro.plotter.inspector.common;
 
 
+import org.maestro.plotter.common.InstantRecord;
+
 import java.time.Instant;
 import java.util.Objects;
 
-public class CommonMemoryRecord implements Comparable<CommonMemoryRecord> {
+public class CommonMemoryRecord implements Comparable<CommonMemoryRecord>, InstantRecord {
     private Instant timestamp;
     private String name;
     private long initial;

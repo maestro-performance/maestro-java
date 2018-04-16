@@ -16,13 +16,19 @@
 
 package org.maestro.plotter.inspector.queues;
 
-import java.util.HashMap;
-import java.util.Map;
+import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.maestro.plotter.common.statistics.Statistics;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.time.Instant;
+import java.util.*;
 
 /**
  * The data set for the multiple queues
  */
 public class QueueDataSet {
+    private static final Logger logger = LoggerFactory.getLogger(QueueDataSet.class);
     private Map<String, QueueData> map = new HashMap<>();
 
     /**
@@ -47,5 +53,37 @@ public class QueueDataSet {
      */
     public Map<String, QueueData> getMap() {
         return map;
+    }
+
+
+    private void doCalc(Map<Instant, SummaryStatistics> calcMap, final String key, final QueueData data) {
+        logger.trace("Processing record at instant for queue {}", key);
+
+        Set<QueuesRecord> queuesRecords = data.getRecordSet();
+
+        for (QueuesRecord record : queuesRecords) {
+            SummaryStatistics summaryStatistics = calcMap.get(record.getTimestamp());
+            if (summaryStatistics == null) {
+                summaryStatistics = new SummaryStatistics();
+            }
+
+            summaryStatistics.addValue(record.getCount());
+            calcMap.put(record.getTimestamp(), summaryStatistics);
+        }
+    }
+
+    /**
+     * Gets the aggregated statistics for the set on a per period basis. Do not confuse
+     * with the statistics returned on a per-queue basis.
+     * @return
+     */
+    public Map<Date, Statistics> getStatistics() {
+        Map<Instant, SummaryStatistics> calcMap = new HashMap<>();
+        map.forEach((key, value) -> doCalc(calcMap, key, value));
+
+        Map<Date, Statistics> ret = new TreeMap<>();
+        calcMap.forEach((key, value) -> ret.put(Date.from(key), new Statistics(value)));
+
+        return ret;
     }
 }
