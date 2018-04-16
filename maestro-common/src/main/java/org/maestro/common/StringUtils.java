@@ -14,15 +14,25 @@
  * limitations under the License.
  */
 
-package org.maestro.plotter.inspector.heap;
+package org.maestro.common;
 
-import org.maestro.plotter.common.properties.annotations.PropertyName;
-import org.maestro.plotter.inspector.common.CommonMemoryData;
 
 /**
- * Heap data container
+ * Generic string utilities
  */
-@PropertyName(name="heap")
-public class HeapData extends CommonMemoryData<HeapRecord> {
+public class StringUtils {
 
+    /**
+     * Capitalize the first letter of a string (ie.: username -> Username)
+     * @param string the string to capitalize
+     * @return the capitalized string
+     */
+    public static String capitalize(final String string) {
+        if (string != null && string.length() >= 2) {
+            return string.substring(0, 1).toUpperCase() + string.substring(1);
+        }
+        else {
+            return string;
+        }
+    }
 }

@@ -16,22 +16,33 @@
 
 package org.maestro.plotter.inspector.heap;
 
+import org.junit.Before;
 import org.junit.Test;
+import org.maestro.plotter.common.properties.PropertyWriter;
 import org.maestro.plotter.common.statistics.Statistics;
 
+import java.io.File;
 import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class HeapProcessorTest {
-    @Test
-    public void testBasicFile() throws IOException {
-        String fileName = this.getClass().getResource("/data-ok/heap.csv").getPath();
+    private String fileName = this.getClass().getResource("/data-ok/heap.csv").getPath();
+    private HeapData heapData;
 
+
+    @Before
+    public void setUp() throws Exception {
         HeapProcessor heapProcessor = new HeapProcessor();
         HeapReader heapReader = new HeapReader(heapProcessor);
 
-        HeapData heapData = heapReader.read(fileName);
+        heapData = heapReader.read(fileName);
+    }
+
+    @Test
+    public void testBasicFile() throws IOException {
+
         assertEquals("The number strictOf heap records don't match", 18, heapData.getNumberOfSamples());
 
         Statistics usedStatistics = heapData.usedStatistics();
@@ -59,5 +70,14 @@ public class HeapProcessorTest {
 
         assertEquals("Unexpected standard deviation value for the committed heap", 0,
                 committedStatistics.getStandardDeviation(), 0.0001);
+    }
+
+    @Test
+    public void testProperties() throws IOException {
+        File sourceFile = new File(fileName);
+        File outputFile = new File(sourceFile.getParentFile(), "unittest.properties");
+
+        PropertyWriter.write(heapData, outputFile);
+        assertTrue("The output file does not exist", outputFile.exists());
     }
 }

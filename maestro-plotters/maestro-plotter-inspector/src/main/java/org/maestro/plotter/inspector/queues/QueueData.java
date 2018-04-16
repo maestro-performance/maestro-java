@@ -17,6 +17,8 @@
 package org.maestro.plotter.inspector.queues;
 
 import org.maestro.plotter.common.ReportData;
+import org.maestro.plotter.common.properties.annotations.PropertyName;
+import org.maestro.plotter.common.properties.annotations.PropertyProvider;
 import org.maestro.plotter.common.statistics.Statistics;
 import org.maestro.plotter.common.statistics.StatisticsBuilder;
 
@@ -27,6 +29,7 @@ import java.util.*;
 /**
  * Queue counters data
  */
+@PropertyName(name="queue")
 public class QueueData implements ReportData {
     private Set<QueuesRecord> recordSet = new TreeSet<>();
     private Statistics countStatistics = null;
@@ -67,6 +70,7 @@ public class QueueData implements ReportData {
      * Get the statistics for the message count
      * @return A Statistics object for the message count
      */
+    @PropertyProvider(name="count")
     public Statistics countStatistics() {
         if (countStatistics == null) {
             countStatistics = StatisticsBuilder.of(recordSet.stream().mapToDouble(QueuesRecord::getCount));
@@ -80,6 +84,7 @@ public class QueueData implements ReportData {
      * Get the statistics for the consumer count
      * @return A Statistics object for the consumer count
      */
+    @PropertyProvider(name="consumer")
     public Statistics consumerStatistics() {
         if (consumerStatistics == null) {
             consumerStatistics = StatisticsBuilder.of(recordSet.stream().mapToDouble(QueuesRecord::getConsumers));
@@ -100,6 +105,7 @@ public class QueueData implements ReportData {
         return addedStatistics;
     }
 
+    @PropertyProvider(name="addedCount")
     public double getAddedCount() {
         return addedStatistics().getMax();
     }
@@ -116,7 +122,7 @@ public class QueueData implements ReportData {
         return expiredStatistics;
     }
 
-
+    @PropertyProvider(name="expiredCount")
     public double getExpiredCount() {
         return expiredStatistics().getMax();
     }

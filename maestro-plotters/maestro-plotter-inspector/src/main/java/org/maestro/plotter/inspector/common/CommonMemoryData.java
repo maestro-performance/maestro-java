@@ -17,6 +17,7 @@
 package org.maestro.plotter.inspector.common;
 
 import org.maestro.plotter.common.ReportData;
+import org.maestro.plotter.common.properties.annotations.PropertyProvider;
 import org.maestro.plotter.common.statistics.Statistics;
 import org.maestro.plotter.common.statistics.StatisticsBuilder;
 
@@ -147,6 +148,7 @@ public class CommonMemoryData<T extends CommonMemoryRecord> implements ReportDat
      * Get the statistics for the used heap
      * @return A Statistics object for the heap usage
      */
+    @PropertyProvider(name="used")
     public Statistics usedStatistics() {
         if (usedStatistics == null) {
             usedStatistics = StatisticsBuilder.of(recordSet.stream().mapToDouble(CommonMemoryRecord::getUsed));
@@ -160,6 +162,7 @@ public class CommonMemoryData<T extends CommonMemoryRecord> implements ReportDat
      * Get the statistics for the committed heap
      * @return A Statistics object for the committed usage
      */
+    @PropertyProvider(name="committed")
     public Statistics committedStatistics() {
         if (committedStatistics == null) {
             committedStatistics = StatisticsBuilder.of(recordSet.stream().mapToDouble(CommonMemoryRecord::getCommitted));

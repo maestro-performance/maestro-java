@@ -17,10 +17,13 @@
 package org.maestro.plotter.common.statistics;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.maestro.plotter.common.properties.annotations.PropertyName;
+import org.maestro.plotter.common.properties.annotations.PropertyProvider;
 
 /**
  * A container for report statistics
  */
+@PropertyName(name="")
 public class Statistics {
     private SummaryStatistics summaryStatistics;
 
@@ -33,6 +36,7 @@ public class Statistics {
      * Get the geometric mean for the data set
      * @return the geometric mean
      */
+    @PropertyProvider(name="geometricMean")
     public double getGeometricMean() {
          return summaryStatistics.getGeometricMean();
     }
@@ -41,6 +45,7 @@ public class Statistics {
      * Get the mean for the data set
      * @return the mean
      */
+    @PropertyProvider(name="mean")
     public double getMean() {
         return summaryStatistics.getMean();
     }
@@ -50,6 +55,7 @@ public class Statistics {
      * Get the max recorded value in the data set
      * @return the max recorded value
      */
+    @PropertyProvider(name="max")
     public double getMax() {
         return summaryStatistics.getMax();
     }
@@ -59,6 +65,7 @@ public class Statistics {
      * Get the minimum recorded value in the data set
      * @return the minimum recorded value
      */
+    @PropertyProvider(name="min")
     public double getMin() {
         return summaryStatistics.getMin();
     }
@@ -68,6 +75,7 @@ public class Statistics {
      * Get the standard deviation for the data set
      * @return the standard deviation for the data set
      */
+    @PropertyProvider(name="standardDeviation")
     public double getStandardDeviation() {
         return summaryStatistics.getStandardDeviation();
     }

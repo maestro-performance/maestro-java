@@ -14,15 +14,15 @@
  * limitations under the License.
  */
 
-package org.maestro.plotter.inspector.heap;
+package org.maestro.plotter.common.properties.annotations;
 
-import org.maestro.plotter.common.properties.annotations.PropertyName;
-import org.maestro.plotter.inspector.common.CommonMemoryData;
+import java.lang.annotation.ElementType;
+import java.lang.annotation.Retention;
+import java.lang.annotation.RetentionPolicy;
+import java.lang.annotation.Target;
 
-/**
- * Heap data container
- */
-@PropertyName(name="heap")
-public class HeapData extends CommonMemoryData<HeapRecord> {
-
+@Retention(RetentionPolicy.RUNTIME)
+@Target({ElementType.METHOD})
+public @interface PropertyProvider {
+    String name();
 }
