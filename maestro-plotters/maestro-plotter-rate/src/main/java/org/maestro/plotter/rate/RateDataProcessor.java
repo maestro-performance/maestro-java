@@ -29,15 +29,15 @@ import java.util.Map;
 public class RateDataProcessor implements RecordProcessor {
     private static final Logger logger = LoggerFactory.getLogger(RateDataProcessor.class);
 
+    private static final SimpleDateFormat formatter;
     private Map<String, RateRecord> cache = new HashMap<>();
-    private SimpleDateFormat formatter;
     private long errorCount = 0;
 
-
-    public RateDataProcessor() {
+    static {
         // 2017-08-05 10:38:23.934129
         formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     }
+
 
     @Override
     public void process(String... records) throws Exception {
@@ -64,6 +64,10 @@ public class RateDataProcessor implements RecordProcessor {
                 rateRecord.setCount(i);
             }
         } catch (ParseException e) {
+            logger.warn("Error parsing record with values ata {}: {}", ata, e.getMessage());
+            errorCount++;
+        }
+        catch (Exception e) {
             logger.warn("Error parsing record with values ata {}: {}", ata, e.getMessage());
             errorCount++;
         }
