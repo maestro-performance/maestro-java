@@ -16,8 +16,10 @@
 
 package org.maestro.reports;
 
+import org.maestro.common.test.InspectorProperties;
+
 public class InspectorReportResolver extends AbstractReportResolver {
-    private static final String[] FILES = { "heap.csv", "inspector.properties", "memory-areas.csv", "queues.csv"};
+    private static final String[] FILES = { "heap.csv", InspectorProperties.FILENAME, "memory-areas.csv", "queues.csv"};
 
     public InspectorReportResolver() {
         super(FILES);

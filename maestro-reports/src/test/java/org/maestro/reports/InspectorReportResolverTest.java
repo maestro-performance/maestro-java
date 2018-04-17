@@ -17,6 +17,7 @@
 package org.maestro.reports;
 
 import org.junit.Test;
+import org.maestro.common.test.InspectorProperties;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class InspectorReportResolverTest {
         assertEquals("The sender rate file does not match the expected sender rate file",
                 BASE_URL + "/logs/tests/lastSuccessful/heap.csv", successFiles.get(0));
         assertEquals("The test properties file does not match the expected file",
-                BASE_URL + "/logs/tests/lastSuccessful/inspector.properties", successFiles.get(1));
+                BASE_URL + "/logs/tests/lastSuccessful/" + InspectorProperties.FILENAME, successFiles.get(1));
         assertEquals("The memory area file does not match the expected file",
                 BASE_URL + "/logs/tests/lastSuccessful/memory-areas.csv", successFiles.get(2));
         assertEquals("The memory area file does not match the expected file",
@@ -52,7 +53,7 @@ public class InspectorReportResolverTest {
         assertEquals("The sender rate file does not match the expected sender rate file",
                 BASE_URL + "/logs/tests/lastFailed/heap.csv", failedFiles.get(0));
         assertEquals("The test properties file does not match the expected file",
-                BASE_URL + "/logs/tests/lastFailed/inspector.properties", failedFiles.get(1));
+                BASE_URL + "/logs/tests/lastFailed/" + InspectorProperties.FILENAME, failedFiles.get(1));
         assertEquals("The memory area file does not match the expected file",
                 BASE_URL + "/logs/tests/lastFailed/memory-areas.csv", failedFiles.get(2));
         assertEquals("The memory area file does not match the expected file",

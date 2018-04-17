@@ -16,6 +16,7 @@
 
 package org.maestro.reports.node;
 
+import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.test.TestProperties;
 import org.maestro.reports.files.ReportDirInfo;
 import org.slf4j.Logger;
@@ -44,7 +45,7 @@ public class NodeContextBuilder {
         context.put("reportDirInfo", reportDirInfo);
 
         loadProperties(new File(reportDirInfo.getReportDir(), TestProperties.FILENAME), context);
-        loadProperties(new File(reportDirInfo.getReportDir(),"inspector.properties"), context);
+        loadProperties(new File(reportDirInfo.getReportDir(), InspectorProperties.FILENAME), context);
         loadProperties(new File(reportDirInfo.getReportDir(),"broker.properties"), context);
         loadProperties(new File(reportDirInfo.getReportDir(),"rate.properties"), context);
 

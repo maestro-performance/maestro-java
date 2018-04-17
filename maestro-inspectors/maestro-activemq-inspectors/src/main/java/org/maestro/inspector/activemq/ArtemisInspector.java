@@ -182,7 +182,7 @@ public class ArtemisInspector implements MaestroInspector {
         ProductInfo productInfo = artemisDataReader.productInformation();
         productInfoWriter.write(null, productInfo);
 
-        File propertiesFile = new File(logDir, "inspector.properties");
+        File propertiesFile = new File(logDir, InspectorProperties.FILENAME);
         inspectorProperties.write(propertiesFile);
     }
 

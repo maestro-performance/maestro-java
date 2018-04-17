@@ -30,6 +30,8 @@ import java.util.Properties;
  */
 @SuppressWarnings("ALL")
 public class InspectorProperties implements MaestroTestProperties {
+    public static String FILENAME = "inspector.properties";
+
     private static final Logger logger = LoggerFactory.getLogger(InspectorProperties.class);
 
     private String jvmName;

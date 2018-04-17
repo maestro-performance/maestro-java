@@ -67,7 +67,7 @@ public class ReportDirInfo {
             testProperties.load(testPropertiesFile);
         }
         else {
-            testPropertiesFile = new File(reportDir, "inspector.properties");
+            testPropertiesFile = new File(reportDir, InspectorProperties.FILENAME);
 
             testProperties = new InspectorProperties();
             testProperties.load(testPropertiesFile);
