@@ -40,9 +40,17 @@ public class DefaultConverter implements PropertyConverter {
 
             return;
         }
+
         if (object instanceof Double) {
             Double value = (Double) object;
             prop.setProperty(propertyName, Double.toString(value));
+
+            return;
+        }
+
+        if (object instanceof Long) {
+            Long value = (Long) object;
+            prop.setProperty(propertyName, Long.toString(value));
 
             return;
         }
