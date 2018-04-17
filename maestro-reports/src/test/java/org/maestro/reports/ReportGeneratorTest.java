@@ -20,6 +20,7 @@ import org.junit.Ignore;
 import org.maestro.common.LogConfigurator;
 import org.junit.Before;
 import org.junit.Test;
+import org.maestro.common.test.TestProperties;
 
 import java.io.File;
 import java.util.Arrays;
@@ -51,12 +52,12 @@ public class ReportGeneratorTest {
     private void validateReceiverReport(File baseDir, final List<String> ignoreList) {
         validateReportFile(baseDir, Arrays.asList("favicon.png", "index.html", "rate.properties",
                 "rate.png", "receiverd-latency_90.png", "receiverd-latency_99.png",
-                "receiverd-latency_all.png", "test.properties"), ignoreList);
+                "receiverd-latency_all.png", TestProperties.FILENAME), ignoreList);
     }
 
     private void validateSenderReport(File baseDir, final List<String> ignoreList) {
         validateReportFile(baseDir, Arrays.asList("favicon.png", "index.html", "rate.properties",
-                "rate.png", "test.properties"), ignoreList);
+                "rate.png", TestProperties.FILENAME), ignoreList);
     }
 
     private void validateInspectorReport(File baseDir, final List<String> ignoreList) {

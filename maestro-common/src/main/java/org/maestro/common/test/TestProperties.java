@@ -35,6 +35,8 @@ import java.util.Properties;
  */
 @SuppressWarnings("unused")
 public class TestProperties implements MaestroTestProperties {
+    public static String FILENAME = "test.properties";
+    
     private static final Logger logger = LoggerFactory.getLogger(TestProperties.class);
 
     private String brokerUri;

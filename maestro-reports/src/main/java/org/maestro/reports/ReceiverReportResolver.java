@@ -16,8 +16,10 @@
 
 package org.maestro.reports;
 
+import org.maestro.common.test.TestProperties;
+
 public class ReceiverReportResolver extends AbstractReportResolver {
-    private static final String[] FILES = { "receiverd-rate.csv.gz", "test.properties", "receiverd-latency.hdr"};
+    private static final String[] FILES = { "receiverd-rate.csv.gz", TestProperties.FILENAME, "receiverd-latency.hdr"};
 
     public ReceiverReportResolver() {
         super(FILES);

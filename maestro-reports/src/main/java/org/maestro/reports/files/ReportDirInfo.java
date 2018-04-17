@@ -59,8 +59,8 @@ public class ReportDirInfo {
         resultTypeString = FilenameUtils.getBaseName(resultType.getName());
 
         this.nodeType = FilenameUtils.getBaseName(resultType.getParentFile().getName());
-        
-        File testPropertiesFile = new File(reportDir, "test.properties");
+
+        File testPropertiesFile = new File(reportDir, TestProperties.FILENAME);
 
         if (testPropertiesFile.exists()) {
             testProperties = new TestProperties();

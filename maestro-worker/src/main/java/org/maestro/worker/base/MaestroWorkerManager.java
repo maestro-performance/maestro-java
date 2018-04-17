@@ -209,7 +209,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         testProperties.setApiName("JMS");
         testProperties.setApiVersion("1.1");
 
-        testProperties.write(new File(testLogDir, "test.properties"));
+        testProperties.write(new File(testLogDir, TestProperties.FILENAME));
     }
 
     @Override

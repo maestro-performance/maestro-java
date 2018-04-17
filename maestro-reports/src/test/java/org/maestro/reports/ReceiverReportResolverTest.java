@@ -17,6 +17,7 @@
 package org.maestro.reports;
 
 import org.junit.Test;
+import org.maestro.common.test.TestProperties;
 
 import java.util.List;
 
@@ -35,7 +36,7 @@ public class ReceiverReportResolverTest {
         assertEquals("The sender rate file does not match the expected sender rate file",
                 BASE_URL + "/logs/tests/lastSuccessful/receiverd-rate.csv.gz", successFiles.get(0));
         assertEquals("The test properties file does not match the expected file",
-                BASE_URL + "/logs/tests/lastSuccessful/test.properties", successFiles.get(1));
+                BASE_URL + "/logs/tests/lastSuccessful/" + TestProperties.FILENAME, successFiles.get(1));
         assertEquals("The HDR file does not match the expected file",
                 BASE_URL + "/logs/tests/lastSuccessful/receiverd-latency.hdr", successFiles.get(2));
     }
@@ -50,7 +51,7 @@ public class ReceiverReportResolverTest {
         assertEquals("The sender rate file does not match the expected sender rate file",
                 BASE_URL + "/logs/tests/lastFailed/receiverd-rate.csv.gz", failedFiles.get(0));
         assertEquals("The test properties file does not match the expected file",
-                BASE_URL + "/logs/tests/lastFailed/test.properties", failedFiles.get(1));
+                BASE_URL + "/logs/tests/lastFailed/" + TestProperties.FILENAME, failedFiles.get(1));
         assertEquals("The HDR file does not match the expected file",
                 BASE_URL + "/logs/tests/lastFailed/receiverd-latency.hdr", failedFiles.get(2));
     }
