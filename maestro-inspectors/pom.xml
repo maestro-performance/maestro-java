@@ -30,7 +30,6 @@
 
     <modules>
         <module>maestro-activemq-inspectors</module>
-        <module>maestro-amqp-inspectors</module>
     </modules>
 
 </project>
