@@ -17,7 +17,7 @@
 package org.maestro.reports;
 
 import org.maestro.common.Constants;
-import org.maestro.reports.files.BmicReportFile;
+import org.maestro.reports.files.InspectorReportFile;
 import org.maestro.reports.files.HdrHistogramReportFile;
 import org.maestro.reports.files.MptReportFile;
 import org.maestro.reports.files.ReportFile;
@@ -60,7 +60,7 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
 
     private void plotInspector(File file) {
         String normalizedName = file.getPath().replace(initialPath, "");
-        files.add(new BmicReportFile(file, new File(normalizedName)));
+        files.add(new InspectorReportFile(file, new File(normalizedName)));
 
     }
 
