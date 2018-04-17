@@ -78,7 +78,7 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
         }
 
         if (Constants.FILE_EXTENSION_MPT_COMPRESSED.equals(ext)) {
-            if (!file.getName().contains(Constants.FILE_HINT_INSPECTOR)) {
+            if (!file.getPath().contains(Constants.FILE_HINT_INSPECTOR)) {
                 processMaestroReport(file);
 
                 return;
@@ -87,11 +87,11 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
 
 
         if (Constants.FILE_EXTENSION_INSPECTOR_REPORT.equals(ext)) {
-            if (file.getName().contains(Constants.FILE_HINT_INSPECTOR)) {
+             if (file.getPath().contains(Constants.FILE_HINT_INSPECTOR)) {
                 processInspectorFile(file);
 
                 return;
-            }
+             }
         }
 
         logger.trace("Unknown file type for {}", file.getPath());

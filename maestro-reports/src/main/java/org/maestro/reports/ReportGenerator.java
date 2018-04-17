@@ -118,7 +118,7 @@ public class ReportGenerator {
         final List<ReportFile> fileList = processor.generate(baseDir);
         logger.info("There are {} files to be processed", fileList.size());
 
-        fileList.parallelStream()
+        fileList.stream()
                 .filter(item -> isMaestroReport(item))
                 .forEach(this::plotMptReportFile);
 

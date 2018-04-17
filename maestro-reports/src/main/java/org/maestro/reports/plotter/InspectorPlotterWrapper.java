@@ -17,10 +17,12 @@
 package org.maestro.reports.plotter;
 
 import org.maestro.plotter.common.BasicPlotter;
-import org.maestro.plotter.graph.HeapPlotter;
-import org.maestro.plotter.graph.MemoryAreasPlotter;
-import org.maestro.plotter.graph.QueuePlotter;
+import org.maestro.plotter.common.properties.PropertyWriter;
+import org.maestro.plotter.inspector.graph.HeapPlotter;
+import org.maestro.plotter.inspector.graph.MemoryAreasPlotter;
+import org.maestro.plotter.inspector.graph.QueuePlotter;
 import org.maestro.plotter.inspector.heap.HeapReader;
+import org.maestro.plotter.inspector.memoryareas.MemoryAreasDataSet;
 import org.maestro.plotter.inspector.memoryareas.MemoryAreasReader;
 import org.maestro.plotter.inspector.queues.QueueReader;
 import org.slf4j.Logger;
@@ -35,8 +37,9 @@ public class InspectorPlotterWrapper implements PlotterWrapper {
         BasicPlotter<HeapReader, HeapPlotter> basicPlotter = new BasicPlotter<>(new HeapReader(), new HeapPlotter());
 
         File outputFile = new File(file.getParentFile(), HeapPlotter.DEFAULT_FILENAME);
+        File propertiesFile = new File(file.getParentFile(), "heap.properties");
         try {
-            basicPlotter.plot(file, outputFile);
+            basicPlotter.plot(file, outputFile, propertiesFile);
         } catch (Exception e) {
             logger.error("Unable to plot file {}: {}", file.getPath(), e.getMessage(), e);
             return false;
@@ -49,7 +52,15 @@ public class InspectorPlotterWrapper implements PlotterWrapper {
                 new MemoryAreasPlotter());
 
         try {
-            basicPlotter.plot(file, file.getParentFile());
+            MemoryAreasReader reader = new MemoryAreasReader();
+            MemoryAreasDataSet dataSet = reader.read(file);
+
+            MemoryAreasPlotter plotter = new MemoryAreasPlotter();
+            plotter.plot(dataSet, file.getParentFile());
+
+            File propertiesFile = new File(file.getParentFile(), "memory.properties");
+            PropertyWriter propertyWriter = new PropertyWriter();
+            propertyWriter.write(dataSet, propertiesFile);
         } catch (Exception e) {
             logger.error("Unable to plot file {}: {}", file.getPath(), e.getMessage(), e);
             return false;
@@ -63,7 +74,9 @@ public class InspectorPlotterWrapper implements PlotterWrapper {
                 new QueuePlotter());
 
         try {
-            basicPlotter.plot(file, file.getParentFile());
+            File outputFile = new File(file.getParentFile(), "queues.png");
+
+            basicPlotter.plot(file, outputFile, null);
         } catch (Exception e) {
             logger.error("Unable to plot file {}: {}", file.getPath(), e.getMessage(), e);
             return false;

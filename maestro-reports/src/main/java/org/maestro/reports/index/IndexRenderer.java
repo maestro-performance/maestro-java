@@ -81,6 +81,8 @@ public class IndexRenderer extends AbstractRenderer {
 
 
     public void copyResources(File path) throws IOException {
+        super.copyResources(path, "/org/maestro/reports/favicon.png", "favicon.png");
+
         File jarPath = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 
         try {
@@ -95,11 +97,11 @@ public class IndexRenderer extends AbstractRenderer {
             }
         }
         catch (FileNotFoundException e) {
-            String tmp = this.getClass().getResource("/org/maestro/reports/modern/").getPath();
+            String tmp = this.getClass().getResource("/org/maestro/reports/modern/resources").getPath();
             File sourceDir = new File(tmp);
 
             logger.debug("Copying directory {} to {}", sourceDir, path);
-            FileUtils.copyDirectory(sourceDir, path);
+            FileUtils.copyDirectory(sourceDir, new File(path, "resources"));
         }
     }
 }

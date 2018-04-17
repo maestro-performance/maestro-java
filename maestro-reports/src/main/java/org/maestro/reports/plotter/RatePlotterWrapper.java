@@ -18,6 +18,7 @@ package org.maestro.reports.plotter;
 
 import org.maestro.plotter.common.BasicPlotter;
 import org.maestro.plotter.rate.DefaultRateReader;
+import org.maestro.plotter.rate.RateData;
 import org.maestro.plotter.rate.RateDataProcessor;
 import org.maestro.plotter.rate.graph.RatePlotter;
 import org.slf4j.Logger;
@@ -37,7 +38,10 @@ public class RatePlotterWrapper implements PlotterWrapper {
         BasicPlotter<DefaultRateReader, RatePlotter> basicPlotter = new BasicPlotter<>(rateReader, new RatePlotter());
 
         try {
-            basicPlotter.plot(file, file.getParentFile());
+            File propertiesFile = new File(file.getParentFile(), "rate.properties");
+            File outputFile = new File(file.getParentFile(), "rate.png");
+
+            basicPlotter.plot(file, outputFile, propertiesFile);
         } catch (Exception e) {
             logger.error("Unable to plot file {}: {}", file.getPath(), e.getMessage(), e);
             return false;

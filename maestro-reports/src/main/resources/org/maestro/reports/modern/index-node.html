@@ -212,7 +212,7 @@
                         <h3 id="lat-all-range">Percentile Distribution</h3>
 
 
-                        {% set rcvLatFilename = nodeType + "d-latency_all.png" %}
+                        {% set rcvLatFilename = "rate.png" %}
                         {% set rcvLatFilenameExists = rcvLatFilename|fe(reportDirInfo.reportDir) %}
 
                         {% if rcvLatFilenameExists %}
@@ -284,7 +284,7 @@
                 <div class="row">
                     <div>
                         <h2 id="rate">Rate</h2>
-                        {% set rateFilename = nodeType + "d-rate_rate.png" %}
+                        {% set rateFilename = "rate.png" %}
                         {% set rateFilenameExists = rateFilename|fe(reportDirInfo.reportDir) %}
 
                         {% if rateFilenameExists %}
@@ -358,36 +358,130 @@
 
                 {% if nodeType == "inspector" %}
                 <div class="row">
+                    {% set queueFileName = "queue.png" %}
+                    {% set queueFileNameExists = queueFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if queueFileNameExists %}
+
                     <div>
-                        <h2 id="queue-size">Broker Queue Size</h2>
+                        <h2 id="queue-size">Queue Size</h2>
                         <p></p>
-                        <img class="img-responsive" src="broker-jvm-{{nodeType}}_queue_data.png"  />
+                        <img class="img-responsive" src="{{ queueFileName }}"  />
                     </div>
+                    
+                    {% endif %}
+
+                    {% set heapFileName = "heap.png" %}
+                    {% set heapFileNameExists = heapFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if heapFileNameExists %}
                     <div>
-                        <h2 id="system-memory">System Memory</h2>
+
+                        <h2 id="heap-memory">Heap Memory</h2>
                         <p></p>
-                        <img class="img-responsive" src="broker-jvm-{{nodeType}}_memory.png"  />
+                        <img class="img-responsive" src="{{ heapFileName }}"  />
                     </div>
+
+                    {% endif %}
+
+                    {% set g1EdenFileName = "g1_eden_space.png" %}
+                    {% set g1EdenFileNameExists = g1EdenFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if g1EdenFileNameExists %}
                     <div>
-                        <h2 id="eden-memory">Eden Memory</h2>
+
+                        <h2 id="eden-memory">G1: Eden Space</h2>
                         <p></p>
-                        <img class="img-responsive" src="broker-jvm-{{nodeType}}_eden_memory.png"  />
+                        <img class="img-responsive" src="{{ g1EdenFileName }}"  />
                     </div>
+
+                    {% endif %}
+
+                    {% set g1OldFileName = "g1_old_gen.png" %}
+                    {% set g1OldFileNameExists = g1OldFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if g1OldFileNameExists %}
                     <div>
-                        <h2 id="tenured-memory">Tenured Memory</h2>
+
+                        <h2 id="old-memory">G1: Old Generation</h2>
                         <p></p>
-                        <img src="broker-jvm-{{nodeType}}_tenured_memory.png"  />
+                        <img class="img-responsive" src="{{ g1OldFileName }}"  />
                     </div>
+
+                    {% endif %}
+
+                    {% set g1SurvivorFileName = "g1_survivor_gen.png" %}
+                    {% set g1SurvivorFileNameExists = g1SurvivorFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if g1SurvivorFileNameExists %}
                     <div>
-                        <h2 id="survivor-memory">Survivor Memory</h2>
+
+                        <h2 id="survivor-memory">G1: Survivor Space</h2>
                         <p></p>
-                        <img class="img-responsive" src="broker-jvm-{{nodeType}}_survivor_memory.png"  />
+                        <img class="img-responsive" src="{{ g1SurvivorFileName }}"  />
                     </div>
+
+                    {% endif %}
+
+                    {% set metaspaceFileName = "metaspace.png" %}
+                    {% set metaspaceFileNameExists = metaspaceFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if metaspaceFileNameExists %}
+
                     <div>
-                        <h2 id="pm-memory">Permgen/Metaspace Memory</h2>
+                        <h2 id="metaspace-size">Metaspace Size</h2>
                         <p></p>
-                        <img class="img-responsive" src="broker-jvm-{{nodeType}}_pm_memory.png"  />
+                        <img class="img-responsive" src="{{ metaspaceFileName }}"  />
                     </div>
+
+                    {% endif %}
+
+                    {% set codeCacheFileName = "code_cache.png" %}
+                    {% set codeCacheFileNameExists = codeCacheFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if codeCacheFileNameExists %}
+
+                    <div>
+                        <h2 id="code_cache-size">Code Cache Size</h2>
+                        <p></p>
+                        <img class="img-responsive" src="{{ codeCacheFileName }}"  />
+                    </div>
+
+                    {% endif %}
+
+                    {% set compressedClassSpaceFileName = "compressedClassSpace.png" %}
+                    {% set compressedClassSpaceFileNameExists = compressedClassSpaceFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if compressedClassSpaceFileNameExists %}
+
+                    <div>
+                        <h2 id="compressedClassSpace-size">Compressed Class Space Size</h2>
+                        <p></p>
+                        <img class="img-responsive" src="{{ compressedClassSpaceFileName }}"  />
+                    </div>
+
+                    {% endif %}
+
+                    <!--<div>-->
+                        <!--<h2 id="eden-memory">Eden Memory</h2>-->
+                        <!--<p></p>-->
+                        <!--<img class="img-responsive" src="broker-jvm-{{nodeType}}_eden_memory.png"  />-->
+                    <!--</div>-->
+                    <!--<div>-->
+                        <!--<h2 id="tenured-memory">Tenured Memory</h2>-->
+                        <!--<p></p>-->
+                        <!--<img src="broker-jvm-{{nodeType}}_tenured_memory.png"  />-->
+                    <!--</div>-->
+                    <!--<div>-->
+                        <!--<h2 id="survivor-memory">Survivor Memory</h2>-->
+                        <!--<p></p>-->
+                        <!--<img class="img-responsive" src="broker-jvm-{{nodeType}}_survivor_memory.png"  />-->
+                    <!--</div>-->
+                    <!--<div>-->
+                        <!--<h2 id="pm-memory">Permgen/Metaspace Memory</h2>-->
+                        <!--<p></p>-->
+                        <!--<img class="img-responsive" src="broker-jvm-{{nodeType}}_pm_memory.png"  />-->
+                    <!--</div>-->
                 </div>
                 {% endif %}
             </div>
