@@ -18,6 +18,7 @@ package org.maestro.reports.files;
 
 import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.test.MaestroTestProperties;
+import org.maestro.common.test.MaestroTestPropertiesBuilder;
 import org.maestro.common.test.TestProperties;
 import org.apache.commons.io.FilenameUtils;
 
@@ -60,18 +61,7 @@ public class ReportDirInfo {
 
         this.nodeType = FilenameUtils.getBaseName(resultType.getParentFile().getName());
 
-        File testPropertiesFile = new File(reportDir, TestProperties.FILENAME);
-
-        if (testPropertiesFile.exists()) {
-            testProperties = new TestProperties();
-            testProperties.load(testPropertiesFile);
-        }
-        else {
-            testPropertiesFile = new File(reportDir, InspectorProperties.FILENAME);
-
-            testProperties = new InspectorProperties();
-            testProperties.load(testPropertiesFile);
-        }
+        testProperties = MaestroTestPropertiesBuilder.build(reportDir);
     }
 
 
