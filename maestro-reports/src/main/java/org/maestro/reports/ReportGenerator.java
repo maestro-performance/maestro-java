@@ -42,9 +42,7 @@ public class ReportGenerator {
 
     // Probably this is not the best way to do what I want (to be able to create different types of
     // plotter objects) but it gives the flexibility I need now.
-    // TODO: clean up this
-    private PlotterWrapperFactory<HdrPlotterWrapper> hdrPlotterWrapperFactory = new HdrPlotterWrapperFactory();
-    private PlotterWrapperFactory<RatePlotterWrapper> ratePlotterWrapperFactory = new RatePlotterWrapperFactory();
+    private PlotterWrapperRegistry registry = new PlotterWrapperRegistry();
 
     private final IndexRenderer indexRenderer = new IndexRenderer();
     private final NodeReportRenderer reportRenderer = new NodeReportRenderer();
@@ -59,13 +57,10 @@ public class ReportGenerator {
         logger.debug("Will report file {} on thread {}", reportFile, Thread.currentThread().getId());
 
         try {
-            if (reportFile instanceof MptReportFile) {
-                RatePlotterWrapper plotter = ratePlotterWrapperFactory.newPlotterWrapper();
+            logger.info("Plotting maestro data from {}", reportFile);
+            PlotterWrapper plotterWrapper = registry.getWrapper(reportFile.getClass());
 
-                plotter.plot(reportFile.getSourceFile());
-            } else {
-                throw new Exception("Invalid report file for: " + reportFile.getSourceFile());
-            }
+            plotterWrapper.plot(reportFile.getSourceFile());
         }
         catch (Throwable t) {
             logger.error("Unable to plot file {}: {}", reportFile.getSourceFile(), t.getMessage(), t);
@@ -79,9 +74,9 @@ public class ReportGenerator {
             if (reportFile instanceof HdrHistogramReportFile) {
                 logger.info("Plotting latency from {}", reportFile);
 
-                HdrPlotterWrapper plotter = hdrPlotterWrapperFactory.newPlotterWrapper();
+                PlotterWrapper plotterWrapper = registry.getWrapper(reportFile.getClass());
 
-                plotter.plot(reportFile.getSourceFile());
+                plotterWrapper.plot(reportFile.getSourceFile());
             } else {
                 throw new Exception("Invalid report file for: " + reportFile.getSourceFile());
             }
@@ -159,14 +154,5 @@ public class ReportGenerator {
 
     public List<ReportFileProcessor> getPostProcessors() {
         return postProcessors;
-    }
-
-    public void setHdrPlotterWrapperFactory(PlotterWrapperFactory<HdrPlotterWrapper> hdrPlotterWrapperFactory) {
-        this.hdrPlotterWrapperFactory = hdrPlotterWrapperFactory;
-    }
-
-    @SuppressWarnings("unused")
-    public void setRatePlotterWrapperFactory(PlotterWrapperFactory<RatePlotterWrapper> ratePlotterWrapperFactory) {
-        this.ratePlotterWrapperFactory = ratePlotterWrapperFactory;
     }
 }

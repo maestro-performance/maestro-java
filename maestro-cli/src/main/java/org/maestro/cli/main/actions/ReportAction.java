@@ -106,7 +106,7 @@ public class ReportAction extends Action {
                 reportGenerator.getPostProcessors().add(new DiskCleaner());
             }
 
-            reportGenerator.setHdrPlotterWrapperFactory(hdrPlotterWrapperFactory);
+//            reportGenerator.setHdrPlotterWrapperFactory(hdrPlotterWrapperFactory);
             reportGenerator.generate();
             System.out.println("Report generated successfully");
             return 0;

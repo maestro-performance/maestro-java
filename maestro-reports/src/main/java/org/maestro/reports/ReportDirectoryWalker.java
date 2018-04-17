@@ -17,8 +17,8 @@
 package org.maestro.reports;
 
 import org.maestro.common.Constants;
+import org.maestro.reports.files.HdrHistogramReportFile;
 import org.maestro.reports.files.InspectorReportFile;
-import org.maestro.reports.files.processHdrReport;
 import org.maestro.reports.files.MptReportFile;
 import org.maestro.reports.files.ReportFile;
 import org.apache.commons.io.DirectoryWalker;
@@ -48,9 +48,9 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
         this.initialPath = initialPath;
     }
 
-    private void plotHdr(File file) {
+    private void processHistogramReport(File file) {
         String normalizedName = file.getPath().replace(initialPath, "");
-        files.add(new processHdrReport(file, new File(normalizedName)));
+        files.add(new HdrHistogramReportFile(file, new File(normalizedName)));
     }
 
     private void processMaestroReport(File file) {
@@ -72,17 +72,29 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
         String ext = FilenameUtils.getExtension(file.getName());
 
         if (Constants.FILE_EXTENSION_HDR_HISTOGRAM.equals(ext)) {
-            plotHdr(file);
+            processHistogramReport(file);
+
+            return;
         }
 
         if (Constants.FILE_EXTENSION_MPT_COMPRESSED.equals(ext)) {
             if (!file.getName().contains(Constants.FILE_HINT_INSPECTOR)) {
                 processMaestroReport(file);
-            }
-            else {
-                processInspectorFile(file);
+
+                return;
             }
         }
+
+
+        if (Constants.FILE_EXTENSION_INSPECTOR_REPORT.equals(ext)) {
+            if (file.getName().contains(Constants.FILE_HINT_INSPECTOR)) {
+                processInspectorFile(file);
+
+                return;
+            }
+        }
+
+        logger.trace("Unknown file type for {}", file.getPath());
     }
 
     @SuppressWarnings("unchecked")
@@ -94,7 +106,7 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
 
         try {
            if (reportsDir.exists()) {
-                walk(reportsDir, new ArrayList<ReportFile>());
+                walk(reportsDir, new ArrayList<>());
             }
             else {
                 logger.error("The reports directory does not exist: {}", reportsDir.getPath());

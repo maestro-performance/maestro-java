@@ -16,6 +16,7 @@
 
 package org.maestro.reports.plotter;
 
+@Deprecated
 public class RatePlotterWrapperFactory implements PlotterWrapperFactory<RatePlotterWrapper> {
     @Override
     public RatePlotterWrapper newPlotterWrapper() {

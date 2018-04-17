@@ -16,6 +16,7 @@
 
 package org.maestro.reports.plotter;
 
+@Deprecated
 public interface PlotterWrapperFactory<T> {
     T newPlotterWrapper();
 }

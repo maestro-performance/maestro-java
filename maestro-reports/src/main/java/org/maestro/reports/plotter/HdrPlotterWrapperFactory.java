@@ -16,6 +16,7 @@
 
 package org.maestro.reports.plotter;
 
+@Deprecated
 public class HdrPlotterWrapperFactory implements PlotterWrapperFactory<HdrPlotterWrapper> {
     @Override
     public HdrPlotterWrapper newPlotterWrapper() {

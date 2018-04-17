@@ -52,9 +52,14 @@ public final class Constants {
     public static final String FILE_EXTENSION_HDR_HISTOGRAM = "hdr";
 
     /**
-     * File extension for MPT and BMIC compressed rate files
+     * File extension for Maestro compressed rate files
      */
     public static final String FILE_EXTENSION_MPT_COMPRESSED = "gz";
+
+    /**
+     * File extension for Maestro inspector uncompressed files
+     */
+    public static final String FILE_EXTENSION_INSPECTOR_REPORT = "csv";
 
     /**
      * File hint for inspector files
