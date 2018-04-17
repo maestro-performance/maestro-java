@@ -17,23 +17,13 @@
 package org.maestro.plotter.inspector.graph;
 
 import org.apache.commons.compress.utils.Lists;
-import org.apache.commons.io.FileUtils;
 import org.knowm.xchart.XYChart;
-import org.knowm.xchart.XYSeries;
-import org.knowm.xchart.style.colors.XChartSeriesColors;
-import org.knowm.xchart.style.lines.SeriesLines;
-import org.knowm.xchart.style.markers.SeriesMarkers;
 import org.maestro.plotter.common.exceptions.EmptyDataSet;
 import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
-import org.maestro.plotter.common.graph.DefaultHistogramPlotter;
 import org.maestro.plotter.common.graph.DefaultScatterPlotter;
 import org.maestro.plotter.common.statistics.Statistics;
-import org.maestro.plotter.inspector.memoryareas.MemoryAreasData;
-import org.maestro.plotter.inspector.memoryareas.MemoryAreasDataSet;
-import org.maestro.plotter.inspector.queues.QueueData;
 import org.maestro.plotter.inspector.queues.QueueDataSet;
 
-import java.awt.*;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;

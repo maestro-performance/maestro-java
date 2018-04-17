@@ -17,7 +17,6 @@
 package org.maestro.plotter.common.properties;
 
 import org.maestro.common.StringUtils;
-import org.maestro.plotter.common.ReportData;
 import org.maestro.plotter.common.properties.annotations.PropertyName;
 import org.maestro.plotter.common.properties.annotations.PropertyProvider;
 import org.slf4j.Logger;
@@ -52,14 +51,14 @@ public class PropertyWriter {
        return false;
     }
 
-    private void saveProperties(Object data, Properties prop, final String propertyName) throws IOException {
+    private void saveProperties(Object data, Properties prop, final String propertyName) {
         Method[] methods = data.getClass().getMethods();
 
         for (Method method : methods) {
 
             if (method.isAnnotationPresent(PropertyProvider.class)) {
                 try {
-                    Object ret = method.invoke(data, null);
+                    Object ret = method.invoke(data);
 
                     if (logger.isDebugEnabled()) {
                         logger.debug("Obtained: {} ", ret);
@@ -101,8 +100,8 @@ public class PropertyWriter {
 
         try {
             saveProperties(value, prop, combinedName);
-        } catch (IOException e) {
-            logger.error("Unable to save property {}: {}", combinedName, e);
+        } catch (Throwable t) {
+            logger.error("Unable to save property {}: {}", combinedName, t);
             return;
         }
     }

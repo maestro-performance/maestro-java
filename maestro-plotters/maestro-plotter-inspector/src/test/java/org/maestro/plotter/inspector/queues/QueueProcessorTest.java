@@ -40,7 +40,7 @@ public class QueueProcessorTest {
     }
 
     @Test
-    public void testRecordCount() throws IOException {
+    public void testRecordCount() {
         assertEquals("The number of queue records don't match", 7, dataSet.getMap().size());
 
         assertEquals("The added count of messages for the queue records don't match", 21403875, dataSet.getMap()

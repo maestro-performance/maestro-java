@@ -39,12 +39,8 @@ public class MemoryAreasPlotter extends CommonMemoryPlotter<MemoryAreasData> {
     public void plot(final MemoryAreasData reportData, final File outputDir, final String areaName) {
         try {
             plot(reportData, new File(outputDir, friendlyName(areaName)));
-        } catch (IOException e) {
+        } catch (IOException | IncompatibleDataSet | EmptyDataSet e) {
             e.printStackTrace();
-        } catch (EmptyDataSet emptyDataSet) {
-            emptyDataSet.printStackTrace();
-        } catch (IncompatibleDataSet incompatibleDataSet) {
-            incompatibleDataSet.printStackTrace();
         }
     }
 

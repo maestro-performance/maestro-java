@@ -41,7 +41,7 @@ public class MemoryAreasProcessorTest {
     }
 
     @Test
-    public void testRecordCount() throws IOException {
+    public void testRecordCount() {
         assertEquals("The number strictOf heap records don't match", 6, dataSet.getMap().size());
     }
 

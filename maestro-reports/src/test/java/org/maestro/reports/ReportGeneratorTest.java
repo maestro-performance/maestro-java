@@ -119,7 +119,7 @@ public class ReportGeneratorTest {
         }
     }
 
-    @Test
+    @Test(timeout = 65000)
     public void testGenerate() {
         String path = this.getClass().getResource("/data-ok").getPath();
 
@@ -137,7 +137,7 @@ public class ReportGeneratorTest {
     /**
      * Ensures that the report is generated even if critical information is missing
      */
-    @Test
+    @Test(timeout = 65000)
     public void testGenerateMissingLatency() {
         String path = this.getClass().getResource("/data-missing-latency").getPath();
 
@@ -156,7 +156,7 @@ public class ReportGeneratorTest {
     /**
      * Ensures that the report is generated even if critical information is missing
      */
-    @Test
+    @Test(timeout = 20000)
     public void testGenerateEmptyRateRecords() {
         String path = this.getClass().getResource("/data-empty-sender-rate-records").getPath();
 
@@ -173,7 +173,7 @@ public class ReportGeneratorTest {
     }
 
 
-    @Test
+    @Test(timeout = 20000)
     public void testInspectorOnly() {
         String path = this.getClass().getResource("/data-ok").getPath();
 

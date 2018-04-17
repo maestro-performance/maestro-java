@@ -39,7 +39,7 @@ public class CommonMemoryData<T extends CommonMemoryRecord> implements ReportDat
     public List<Date> getPeriods() {
         List<Date> list = new ArrayList<>(recordSet.size());
 
-        recordSet.stream().forEach(item->list.add(Date.from(item.getTimestamp())));
+        recordSet.forEach(item->list.add(Date.from(item.getTimestamp())));
 
         return list;
     }
@@ -57,7 +57,7 @@ public class CommonMemoryData<T extends CommonMemoryRecord> implements ReportDat
     public List<Long> getUsed(long scale) {
         List<Long> list = new ArrayList<>(recordSet.size());
 
-        recordSet.stream().forEach(item->list.add(item.getUsed() / scale));
+        recordSet.forEach(item->list.add(item.getUsed() / scale));
 
         return list;
     }
@@ -81,7 +81,7 @@ public class CommonMemoryData<T extends CommonMemoryRecord> implements ReportDat
     public List<Long> getCommitted(long scale) {
         List<Long> list = new ArrayList<>(recordSet.size());
 
-        recordSet.stream().forEach(item->list.add(item.getCommitted() / scale));
+        recordSet.forEach(item->list.add(item.getCommitted() / scale));
 
         return list;
     }
@@ -104,7 +104,7 @@ public class CommonMemoryData<T extends CommonMemoryRecord> implements ReportDat
     public List<Long> getInitial(long scale) {
         List<Long> list = new ArrayList<>(recordSet.size());
 
-        recordSet.stream().forEach(item->list.add(item.getInitial() / scale));
+        recordSet.forEach(item->list.add(item.getInitial() / scale));
 
         return list;
     }
@@ -126,7 +126,7 @@ public class CommonMemoryData<T extends CommonMemoryRecord> implements ReportDat
     public List<Long> getMax(long scale) {
         List<Long> list = new ArrayList<>(recordSet.size());
 
-        recordSet.stream().forEach(item->list.add(item.getMax() / scale));
+        recordSet.forEach(item->list.add(item.getMax() / scale));
 
         return list;
     }

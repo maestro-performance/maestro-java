@@ -17,15 +17,9 @@
 package org.maestro.plotter.common.statistics;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-import org.maestro.plotter.common.InstantRecord;
-import org.maestro.plotter.common.ReportData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
-import java.util.Map;
-import java.util.Set;
-import java.util.function.DoubleSupplier;
 import java.util.stream.DoubleStream;
 
 /**

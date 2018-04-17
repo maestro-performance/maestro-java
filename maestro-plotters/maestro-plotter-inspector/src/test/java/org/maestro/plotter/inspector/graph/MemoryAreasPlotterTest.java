@@ -30,7 +30,7 @@ import static junit.framework.TestCase.assertTrue;
 
 public class MemoryAreasPlotterTest {
     @Test
-    public void testPlot() throws IOException, EmptyDataSet, IncompatibleDataSet {
+    public void testPlot() throws IOException {
         String fileName = this.getClass().getResource("/data-ok/memory-areas.csv").getPath();
 
         MemoryAreasProcessor memoryAreaProcessor = new MemoryAreasProcessor();

@@ -41,7 +41,7 @@ public class HeapProcessorTest {
     }
 
     @Test
-    public void testBasicFile() throws IOException {
+    public void testBasicFile() {
 
         assertEquals("The number strictOf heap records don't match", 18, heapData.getNumberOfSamples());
 

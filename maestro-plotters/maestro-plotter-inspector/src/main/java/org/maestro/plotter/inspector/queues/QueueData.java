@@ -47,7 +47,7 @@ public class QueueData implements ReportData {
     public List<Date> getPeriods() {
         List<Date> list = new ArrayList<>(recordSet.size());
 
-        recordSet.stream().forEach(item->list.add(Date.from(item.getTimestamp())));
+        recordSet.forEach(item->list.add(Date.from(item.getTimestamp())));
 
         return list;
     }
