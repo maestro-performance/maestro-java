@@ -18,7 +18,7 @@ package org.maestro.reports;
 
 import org.maestro.common.Constants;
 import org.maestro.reports.files.InspectorReportFile;
-import org.maestro.reports.files.HdrHistogramReportFile;
+import org.maestro.reports.files.processHdrReport;
 import org.maestro.reports.files.MptReportFile;
 import org.maestro.reports.files.ReportFile;
 import org.apache.commons.io.DirectoryWalker;
@@ -50,15 +50,15 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
 
     private void plotHdr(File file) {
         String normalizedName = file.getPath().replace(initialPath, "");
-        files.add(new HdrHistogramReportFile(file, new File(normalizedName)));
+        files.add(new processHdrReport(file, new File(normalizedName)));
     }
 
-    private void plotRate(File file) {
+    private void processMaestroReport(File file) {
         String normalizedName = file.getPath().replace(initialPath, "");
         files.add(new MptReportFile(file, new File(normalizedName)));
     }
 
-    private void plotInspector(File file) {
+    private void processInspectorFile(File file) {
         String normalizedName = file.getPath().replace(initialPath, "");
         files.add(new InspectorReportFile(file, new File(normalizedName)));
 
@@ -77,10 +77,10 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
 
         if (Constants.FILE_EXTENSION_MPT_COMPRESSED.equals(ext)) {
             if (!file.getName().contains(Constants.FILE_HINT_INSPECTOR)) {
-                plotRate(file);
+                processMaestroReport(file);
             }
             else {
-                plotInspector(file);
+                processInspectorFile(file);
             }
         }
     }
