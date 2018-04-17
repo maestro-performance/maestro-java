@@ -59,9 +59,7 @@ public class ReportDirInfo {
         resultTypeString = FilenameUtils.getBaseName(resultType.getName());
 
         this.nodeType = FilenameUtils.getBaseName(resultType.getParentFile().getName());
-
-
-
+        
         File testPropertiesFile = new File(reportDir, "test.properties");
 
         if (testPropertiesFile.exists()) {
@@ -74,50 +72,8 @@ public class ReportDirInfo {
             testProperties = new InspectorProperties();
             testProperties.load(testPropertiesFile);
         }
-
-
     }
 
-// TODO: this needs to be moved
-//    public String getBrokerUri() {
-//        return testProperties.getBrokerUri();
-//    }
-//
-//    public String getDurationType() {
-//        return testProperties.getDurationType();
-//    }
-//
-//    public String getApiName() {
-//        return testProperties.getApiName();
-//    }
-//
-//    public String getApiVersion() {
-//        return testProperties.getApiVersion();
-//    }
-//
-//    public long getDuration() {
-//        return testProperties.getDuration();
-//    }
-
-//    public long getMessageSize() {
-//        return testProperties.getMessageSize();
-//    }
-//
-//    public int getRate() {
-//        return testProperties.getRate();
-//    }
-//
-//    public int getParallelCount() {
-//        return testProperties.getParallelCount();
-//    }
-//
-//    public boolean isVariableSize() {
-//        return testProperties.isVariableSize();
-//    }
-//
-//    public int getFcl() {
-//        return testProperties.getFcl();
-//    }
 
     public String getReportDir() {
         return reportDir.getPath();
