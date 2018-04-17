@@ -28,14 +28,13 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Collection;
 import java.util.Map;
 import java.util.Properties;
 
 /**
  * Writes rate data properties to a file
  */
-public class PropertyWriter<T extends ReportData> {
+public class PropertyWriter {
     private static final Logger logger = LoggerFactory.getLogger(PropertyWriter.class);
     private PropertyConverter converter = new DefaultConverter();
 
