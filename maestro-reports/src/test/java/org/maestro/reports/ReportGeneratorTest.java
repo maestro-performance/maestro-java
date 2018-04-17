@@ -60,6 +60,10 @@ public class ReportGeneratorTest {
                 "senderd-rate_rate.png", "test.properties"), ignoreList);
     }
 
+    private void validateInspectorReport(File baseDir, final List<String> ignoreList) {
+        validateReportFile(baseDir, Arrays.asList("favicon.png", "index.html", "heap.png", "queues.png"), ignoreList);
+    }
+
 
     private void validateDirectoryContents(File baseDir, final List<String> ignoreList) {
         if (baseDir.getParentFile().getParentFile().getName().equals("receiver")) {
@@ -70,6 +74,11 @@ public class ReportGeneratorTest {
             if (baseDir.getParentFile().getParentFile().getName().equals("sender")) {
                 validateSenderReport(new File(baseDir, HOST_01), ignoreList);
                 validateSenderReport(new File(baseDir, HOST_02), ignoreList);
+            }
+            else {
+                if (baseDir.getParentFile().getParentFile().getName().equals("inspector")) {
+                    validateInspectorReport(new File(baseDir, HOST_03), ignoreList);
+                }
             }
         }
 
@@ -110,6 +119,7 @@ public class ReportGeneratorTest {
         }
     }
 
+    @Ignore
     @Test
     public void testGenerate() {
         String path = this.getClass().getResource("/data-ok").getPath();
@@ -128,6 +138,7 @@ public class ReportGeneratorTest {
     /**
      * Ensures that the report is generated even if critical information is missing
      */
+    @Ignore
     @Test
     public void testGenerateMissingLatency() {
         String path = this.getClass().getResource("/data-missing-latency").getPath();
@@ -147,6 +158,7 @@ public class ReportGeneratorTest {
     /**
      * Ensures that the report is generated even if critical information is missing
      */
+    @Ignore
     @Test
     public void testGenerateEmptyRateRecords() {
         String path = this.getClass().getResource("/data-empty-sender-rate-records").getPath();
@@ -161,5 +173,21 @@ public class ReportGeneratorTest {
         validateRoleDirectoryStructure(new File(path),
                 Arrays.asList("sender"),
                 Arrays.asList("rate.properties"));
+    }
+
+
+    @Test
+    public void testInspectorOnly() {
+        String path = this.getClass().getResource("/data-ok").getPath();
+
+        ReportGenerator reportGenerator = new ReportGenerator(path);
+
+        reportGenerator.generate();
+
+        File indexFile = new File(path, "index.html");
+        assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
+
+        validateRoleDirectoryStructure(new File(path),
+                Arrays.asList("inspector"), Arrays.asList());
     }
 }
