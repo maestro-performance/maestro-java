@@ -47,24 +47,24 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
         this.initialPath = initialPath;
     }
 
-    private void processHistogramReport(File file) {
+    private void processHistogramReport(final File file) {
         String normalizedName = file.getPath().replace(initialPath, "");
         files.add(new HdrHistogramReportFile(file, new File(normalizedName)));
     }
 
-    private void processMaestroReport(File file) {
+    private void processMaestroReport(final File file) {
         String normalizedName = file.getPath().replace(initialPath, "");
         files.add(new MptReportFile(file, new File(normalizedName)));
     }
 
-    private void processInspectorFile(File file) {
+    private void processInspectorFile(final File file) {
         String normalizedName = file.getPath().replace(initialPath, "");
         files.add(new InspectorReportFile(file, new File(normalizedName)));
 
     }
 
     @Override
-    protected void handleFile(File file, int depth, Collection<ReportFile> results)
+    protected void handleFile(final File file, int depth, Collection<ReportFile> results)
 
     {
         logger.debug("Processing file {}", file.getPath());
