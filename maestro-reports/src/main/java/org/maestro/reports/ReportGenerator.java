@@ -119,7 +119,7 @@ public class ReportGenerator {
         logger.info("There are {} files to be processed", fileList.size());
 
         fileList.parallelStream()
-                .filter(item -> item.getSourceFile().getName().endsWith("csv.gz"))
+                .filter(item -> isMaestroReport(item))
                 .forEach(this::plotMptReportFile);
 
         // NOTE: this one is not thread-safe. This may have something to do
@@ -146,6 +146,18 @@ public class ReportGenerator {
 
         // Step 6: execute the post-processors
         postProcessors.forEach(item -> item.process(fileList));
+    }
+
+    private boolean isMaestroReport(ReportFile item) {
+        String[] maestroFilesExt = { "csv.gz", "csv"};
+
+        for (String maestroFileExt : maestroFilesExt) {
+            if (item.getSourceFile().getName().endsWith(maestroFileExt)) {
+                return true;
+            }
+        }
+
+        return false;
     }
 
     public List<ReportFileProcessor> getPreProcessors() {
