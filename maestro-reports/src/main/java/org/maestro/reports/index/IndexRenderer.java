@@ -16,15 +16,16 @@
 
 package org.maestro.reports.index;
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.maestro.reports.AbstractRenderer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
+import java.io.*;
+import java.util.Arrays;
 import java.util.Enumeration;
+import java.util.List;
 import java.util.Map;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
@@ -35,6 +36,7 @@ public class IndexRenderer extends AbstractRenderer {
     private static final Logger logger = LoggerFactory.getLogger(IndexRenderer.class);
 
     private static final int BUFFER_SIZE = 4096;
+    private List<String> filteredResources = Arrays.asList("resources");
 
     public IndexRenderer() {
         super();
@@ -45,42 +47,59 @@ public class IndexRenderer extends AbstractRenderer {
         return super.render("/org/maestro/reports/modern/index-main.html", context);
     }
 
+    protected void zipCopying(ZipEntry entry, JarFile jarFile, File path, String name) throws IOException {
+
+        // Skip those files which filtered subfolder
+        for (String filteredResource : filteredResources) {
+            if (!name.contains(filteredResource)) {
+                return;
+            }
+        }
+
+        logger.debug("Building destination path with {} and {}", path.getPath(), name);
+        String destPath = path.getPath() + File.separator + name;
+
+        if(entry.isDirectory()){
+            File file = new File(destPath);
+            file.mkdirs();
+        }
+        else{
+            logger.debug("Copying file {} to {}", entry.getName(), destPath);
+            try(InputStream inputStream = jarFile.getInputStream(entry);
+                FileOutputStream outputStream = new FileOutputStream(destPath);
+            ){
+                IOUtils.copy(inputStream, outputStream);
+            }
+        }
+    }
+
+    protected void zipCopying(ZipEntry entry, JarFile jarFile, File path) throws IOException {
+        String name = entry.getName().replace("org/maestro/reports/modern/", "");
+
+        zipCopying(entry, jarFile, path, name);
+    }
+
+
     public void copyResources(File path) throws IOException {
-        super.copyResources(path, "/org/maestro/reports/favicon.png", "favicon.png");
-
         File jarPath = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
-        JarFile jarFile = new JarFile(jarPath);
 
-        Enumeration<JarEntry> entries = jarFile.entries();
+        try {
+            JarFile jarFile = new JarFile(jarPath);
 
-        while(entries.hasMoreElements()){
-            ZipEntry entry = entries.nextElement();
+            Enumeration<JarEntry> entries = jarFile.entries();
 
-            String name = entry.getName().replace("org/maestro/reports/modern/", "");
+            while(entries.hasMoreElements()){
+                ZipEntry entry = entries.nextElement();
 
-            // Skip those files which aren't in resources subfolder
-            if(!name.contains("resources")) {
-                continue;
+                zipCopying(entry, jarFile, path);
             }
+        }
+        catch (FileNotFoundException e) {
+            String tmp = this.getClass().getResource("/org/maestro/reports/modern/").getPath();
+            File sourceDir = new File(tmp);
 
-            String destPath = path.getPath() + File.separator + name;
-
-            if(entry.isDirectory()){
-                File file = new File(destPath);
-                file.mkdirs();
-            }
-            else{
-                try(InputStream inputStream = jarFile.getInputStream(entry);
-                    FileOutputStream outputStream = new FileOutputStream(destPath);
-                ){
-                    final byte[] buffer = new byte[BUFFER_SIZE];
-
-                    int nextCount;
-                    while ((nextCount = inputStream.read(buffer)) >= 0) {
-                        outputStream.write(buffer, 0, nextCount);
-                    }
-                }
-            }
+            logger.debug("Copying directory {} to {}", sourceDir, path);
+            FileUtils.copyDirectory(sourceDir, path);
         }
     }
 }
