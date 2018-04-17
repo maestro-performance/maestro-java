@@ -43,6 +43,7 @@ public class NodeContextBuilder {
         context.put("reportDirInfo", reportDirInfo);
 
         loadProperties(new File(reportDirInfo.getReportDir(),"test.properties"), context);
+        loadProperties(new File(reportDirInfo.getReportDir(),"inspector.properties"), context);
         loadProperties(new File(reportDirInfo.getReportDir(),"broker.properties"), context);
         loadProperties(new File(reportDirInfo.getReportDir(),"rate.properties"), context);
 

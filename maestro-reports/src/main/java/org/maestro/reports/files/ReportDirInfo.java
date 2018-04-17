@@ -16,6 +16,8 @@
 
 package org.maestro.reports.files;
 
+import org.maestro.common.test.InspectorProperties;
+import org.maestro.common.test.MaestroTestProperties;
 import org.maestro.common.test.TestProperties;
 import org.apache.commons.io.FilenameUtils;
 
@@ -33,7 +35,7 @@ public class ReportDirInfo {
 
     private final String resultTypeString;
 
-    private final TestProperties testProperties;
+    private final MaestroTestProperties testProperties;
 
     /**
      * Holds information about the report directory and its structure. It is used
@@ -58,50 +60,64 @@ public class ReportDirInfo {
 
         this.nodeType = FilenameUtils.getBaseName(resultType.getParentFile().getName());
 
-        testProperties = new TestProperties();
 
-        testProperties.load(new File(reportDir, "test.properties"));
+
+        File testPropertiesFile = new File(reportDir, "test.properties");
+
+        if (testPropertiesFile.exists()) {
+            testProperties = new TestProperties();
+            testProperties.load(testPropertiesFile);
+        }
+        else {
+            testPropertiesFile = new File(reportDir, "inspector.properties");
+
+            testProperties = new InspectorProperties();
+            testProperties.load(testPropertiesFile);
+        }
+
+
     }
 
-    public String getBrokerUri() {
-        return testProperties.getBrokerUri();
-    }
+// TODO: this needs to be moved
+//    public String getBrokerUri() {
+//        return testProperties.getBrokerUri();
+//    }
+//
+//    public String getDurationType() {
+//        return testProperties.getDurationType();
+//    }
+//
+//    public String getApiName() {
+//        return testProperties.getApiName();
+//    }
+//
+//    public String getApiVersion() {
+//        return testProperties.getApiVersion();
+//    }
+//
+//    public long getDuration() {
+//        return testProperties.getDuration();
+//    }
 
-    public String getDurationType() {
-        return testProperties.getDurationType();
-    }
-
-    public String getApiName() {
-        return testProperties.getApiName();
-    }
-
-    public String getApiVersion() {
-        return testProperties.getApiVersion();
-    }
-
-    public long getDuration() {
-        return testProperties.getDuration();
-    }
-
-    public long getMessageSize() {
-        return testProperties.getMessageSize();
-    }
-
-    public int getRate() {
-        return testProperties.getRate();
-    }
-
-    public int getParallelCount() {
-        return testProperties.getParallelCount();
-    }
-
-    public boolean isVariableSize() {
-        return testProperties.isVariableSize();
-    }
-
-    public int getFcl() {
-        return testProperties.getFcl();
-    }
+//    public long getMessageSize() {
+//        return testProperties.getMessageSize();
+//    }
+//
+//    public int getRate() {
+//        return testProperties.getRate();
+//    }
+//
+//    public int getParallelCount() {
+//        return testProperties.getParallelCount();
+//    }
+//
+//    public boolean isVariableSize() {
+//        return testProperties.isVariableSize();
+//    }
+//
+//    public int getFcl() {
+//        return testProperties.getFcl();
+//    }
 
     public String getReportDir() {
         return reportDir.getPath();
