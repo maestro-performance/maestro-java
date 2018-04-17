@@ -43,13 +43,15 @@ public class BasicPlotter<Y extends ReportReader, K extends AbstractPlotter> {
      * @throws EmptyDataSet
      * @throws IncompatibleDataSet
      */
-    public void plot(final File filename, final File outputFile) throws IOException, EmptyDataSet, IncompatibleDataSet {
+    public void plot(final File filename, final File outputFile, final File propertiesFile) throws IOException, EmptyDataSet, IncompatibleDataSet {
         Object data = reader.read(filename);
 
         plotter.plot(data, outputFile);
 
-        PropertyWriter propertyWriter = new PropertyWriter();
-        propertyWriter.write(data, outputFile);
+        if (propertiesFile != null) {
+            PropertyWriter propertyWriter = new PropertyWriter();
+            propertyWriter.write(data, propertiesFile);
+        }
     }
 
 }
