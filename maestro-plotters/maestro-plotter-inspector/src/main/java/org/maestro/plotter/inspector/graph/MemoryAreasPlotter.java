@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.maestro.plotter.graph;
+package org.maestro.plotter.inspector.graph;
 
 import org.maestro.plotter.common.exceptions.EmptyDataSet;
 import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
