@@ -48,11 +48,18 @@ public class LogConfigurator {
     private static void configureTrace(Properties properties) {
         properties.setProperty("log4j.rootLogger", "DEBUG, stdout");
         properties.setProperty("log4j.logger.org.maestro", "TRACE, stdout");
+
+        properties.setProperty(
+                "log4j.appender.stdout.layout.ConversionPattern",
+                "%d{HH:mm:ss,SSS} %C.%M:%L [%p] %m%n");
     }
 
     private static void configureDebug(Properties properties) {
         properties.setProperty("log4j.rootLogger", "INFO, stdout");
         properties.setProperty("log4j.logger.org.maestro", "DEBUG, stdout");
+        properties.setProperty(
+                "log4j.appender.stdout.layout.ConversionPattern",
+                "%d{HH:mm:ss,SSS} %C.%M:%L [%p] %m%n");
     }
 
     private static void configureVerbose(Properties properties) {
