@@ -149,63 +149,6 @@
                 {% if nodeType == "receiver" %}
                 <div class="row">
                     <h2 id="lat-main">Latency</h2>
-                    <h3 id="lat-all-summary">Summary</h3>
-                    <table class="table table-striped table-bordered table-hover" id="latency-summary-table">
-                        <thead>
-                            <tr>
-                                <th>Metric</th>
-                                <th>Value</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            <!--
-                            The numbers come straight from the latency.properties file which is generated  by
-                            HDR Histogram Plotter library. They are stored with nanosecond precision, that is why they
-                            are divided by 1000 here
-                            -->
-                            <tr>
-                                <td>Total Count </td>
-                                <td>{{ latencyTotalCount | round(0) }} messages</td>
-                            </tr>
-                            <tr>
-                                <td>Max Latency</td>
-                                <td>{{ (latencyMaxValue / 1000)| round(4) }} μs</td>
-                            </tr>
-                            <tr>
-                                <td>Mean Latency</td>
-                                <td>{{ (latencyMean / 1000) | round(4) }} μs</td>
-                            </tr>
-                            <tr>
-                                <td>Standard Deviation</td>
-                                <td>{{ (latencyStdDeviation / 1000) | round(4) }}</td>
-                            </tr>
-                            <tr>
-                                <td>99.99ᵗʰ Percentile</td>
-                                <td>{{ ( latency9999th / 1000)| round(4) }} μs</td>
-                            </tr>
-                            <tr>
-                                <td>99.9ᵗʰ Percentile</td>
-                                <td>{{ ( latency999th / 1000)| round(4) }} μs</td>
-                            </tr>
-                            <tr>
-                                <td>99ᵗʰ Percentile</td>
-                                <td>{{ ( latency99th / 1000) | round(4) }} μs</td>
-                            </tr>
-                            <tr>
-                                <td>95ᵗʰ Percentile</td>
-                                <td>{{ ( latency95th / 1000) | round(4) }} μs</td>
-                            </tr>
-                            <tr>
-                                <td>90ᵗʰ Percentile</td>
-                                <td>{{ ( latency90th / 1000) | round(4) }} μs</td>
-                            </tr>
-                            <tr>
-                                <td>50ᵗʰ Percentile</td>
-                                <td>{{ ( latency50th / 1000) | round(4) }} μs</td>
-                            </tr>
-                        </tbody>
-                    </table>
-
                     <div>
                         <h3 id="lat-all-range">Percentile Distribution</h3>
 
@@ -261,6 +204,63 @@
                         {% endif %}
                     </div>
 
+                    <h3 id="lat-all-summary">Summary</h3>
+                    <table class="table table-striped table-bordered table-hover" id="latency-summary-table">
+                        <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <!--
+                        The numbers come straight from the latency.properties file which is generated  by
+                        HDR Histogram Plotter library. They are stored with nanosecond precision, that is why they
+                        are divided by 1000 here
+                        -->
+                        <tr>
+                            <td>Total Count </td>
+                            <td>{{ latencyTotalCount | round(0) }} messages</td>
+                        </tr>
+                        <tr>
+                            <td>Max Latency</td>
+                            <td>{{ (latencyMaxValue / 1000)| round(4) }} μs</td>
+                        </tr>
+                        <tr>
+                            <td>Mean Latency</td>
+                            <td>{{ (latencyMean / 1000) | round(4) }} μs</td>
+                        </tr>
+                        <tr>
+                            <td>Standard Deviation</td>
+                            <td>{{ (latencyStdDeviation / 1000) | round(4) }}</td>
+                        </tr>
+                        <tr>
+                            <td>99.99ᵗʰ Percentile</td>
+                            <td>{{ ( latency9999th / 1000)| round(4) }} μs</td>
+                        </tr>
+                        <tr>
+                            <td>99.9ᵗʰ Percentile</td>
+                            <td>{{ ( latency999th / 1000)| round(4) }} μs</td>
+                        </tr>
+                        <tr>
+                            <td>99ᵗʰ Percentile</td>
+                            <td>{{ ( latency99th / 1000) | round(4) }} μs</td>
+                        </tr>
+                        <tr>
+                            <td>95ᵗʰ Percentile</td>
+                            <td>{{ ( latency95th / 1000) | round(4) }} μs</td>
+                        </tr>
+                        <tr>
+                            <td>90ᵗʰ Percentile</td>
+                            <td>{{ ( latency90th / 1000) | round(4) }} μs</td>
+                        </tr>
+                        <tr>
+                            <td>50ᵗʰ Percentile</td>
+                            <td>{{ ( latency50th / 1000) | round(4) }} μs</td>
+                        </tr>
+                        </tbody>
+                    </table>
+
                     <div>
                         {% set rcvSourceLatFilename = nodeType + "d-latency.csv" %}
                         {% set rcvSourceLatFilenameExists = rcvSourceLatFilename|fe(reportDirInfo.reportDir) %}
@@ -274,6 +274,8 @@
 
                         {% endif %}
                     </div>
+
+
                 </div>
                 {% endif %}
 
@@ -287,49 +289,49 @@
 
                         {% if rateFilenameExists %}
 
+                        <h3 id="rate-distribution">Distribution Over Time</h3>
+                        <img class="img-responsive" src="{{rateFilename}}" />
+
                         <h3 id="rate-summary">Summary</h3>
                         <table class="table table-striped table-bordered table-hover" id="latency-table">
                             <thead>
-                                <tr>
-                                    <th>Metric</th>
-                                    <th>Value</th>
-                                </tr>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Value</th>
+                            </tr>
                             </thead>
                             <tbody>
-                                <tr>
-                                    <td>Maximum Rate</td>
-                                    <td>{{ rateMax | round(6) }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Minimum Rate</td>
-                                    <td>{{ rateMin | round(6) }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Rate Samples</td>
-                                    <td>{{ rateSamples | round(0) }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Geometric Mean</td>
-                                    <td>{{ rateGeometricMean | round(6) }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Standard Deviation</td>
-                                    <td>{{ rateStandardDeviation | round(6) }}</td>
-                                </tr>
-                                <tr>
-                                    <td>Rate Error Count</td>
-                                    <td>{{ rateErrorCount}}</td>
-                                </tr>
+                            <tr>
+                                <td>Maximum Rate</td>
+                                <td>{{ rateMax | round(6) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Minimum Rate</td>
+                                <td>{{ rateMin | round(6) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Rate Samples</td>
+                                <td>{{ rateSamples | round(0) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Geometric Mean</td>
+                                <td>{{ rateGeometricMean | round(6) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Standard Deviation</td>
+                                <td>{{ rateStandardDeviation | round(6) }}</td>
+                            </tr>
+                            <tr>
+                                <td>Rate Error Count</td>
+                                <td>{{ rateErrorCount}}</td>
+                            </tr>
 
-                                <tr>
-                                    <td>Skipped Rate Records</td>
-                                    <td>{{ rateSkipCount }}</td>
-                                </tr>
+                            <tr>
+                                <td>Skipped Rate Records</td>
+                                <td>{{ rateSkipCount }}</td>
+                            </tr>
                             </tbody>
                         </table>
-
-                        <h3 id="rate-distribution">Distribution Over Time</h3>
-                        <img class="img-responsive" src="{{rateFilename}}" />
                         {% else %}
                         <div class="alert alert-danger">
                             <span class="pficon pficon-error-circle-o"></span>
