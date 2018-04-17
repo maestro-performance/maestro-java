@@ -16,10 +16,10 @@
 
 package org.maestro.reports;
 
+import org.junit.Ignore;
 import org.maestro.common.LogConfigurator;
 import org.junit.Before;
 import org.junit.Test;
-import org.maestro.reports.ReportGenerator;
 
 import java.io.File;
 import java.util.Arrays;
@@ -27,6 +27,7 @@ import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
+@Ignore
 public class ReportGeneratorTest {
     private static final String HOST_01 = "fake-01.host.com";
     private static final String HOST_02 = "fake-02.host.com";
