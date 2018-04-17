@@ -126,7 +126,10 @@ public class PropertyWriter<T extends ReportData> {
 
             return;
         }
-        logger.error("Inspecting the properties for {} on {}", propertyNameAnnotation.name(), data.getClass());
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Inspecting the properties for {} on {}", propertyNameAnnotation.name(), data.getClass());
+        }
 
         Properties prop = new Properties();
 
