@@ -54,6 +54,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-plotter-rate</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.hubspot.jinjava</groupId>
             <artifactId>jinjava</artifactId>
             <version>2.3.4</version>
@@ -64,12 +70,6 @@
             <groupId>net.orpiske</groupId>
             <artifactId>hdr-histogram-plotter</artifactId>
             <version>1.2.4</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.orpiske</groupId>
-            <artifactId>mpt-data-plotter</artifactId>
-            <version>1.2.1</version>
         </dependency>
 
         <!-- Junit (for tests only) -->
