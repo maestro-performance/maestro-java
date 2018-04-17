@@ -27,7 +27,6 @@ import java.util.List;
 
 import static org.junit.Assert.assertTrue;
 
-@Ignore
 public class ReportGeneratorTest {
     private static final String HOST_01 = "fake-01.host.com";
     private static final String HOST_02 = "fake-02.host.com";
@@ -51,13 +50,13 @@ public class ReportGeneratorTest {
 
     private void validateReceiverReport(File baseDir, final List<String> ignoreList) {
         validateReportFile(baseDir, Arrays.asList("favicon.png", "index.html", "rate.properties",
-                "receiverd-rate_rate.png", "receiverd-latency_90.png", "receiverd-latency_99.png",
+                "rate.png", "receiverd-latency_90.png", "receiverd-latency_99.png",
                 "receiverd-latency_all.png", "test.properties"), ignoreList);
     }
 
     private void validateSenderReport(File baseDir, final List<String> ignoreList) {
         validateReportFile(baseDir, Arrays.asList("favicon.png", "index.html", "rate.properties",
-                "senderd-rate_rate.png", "test.properties"), ignoreList);
+                "rate.png", "test.properties"), ignoreList);
     }
 
     private void validateInspectorReport(File baseDir, final List<String> ignoreList) {
@@ -119,7 +118,6 @@ public class ReportGeneratorTest {
         }
     }
 
-    @Ignore
     @Test
     public void testGenerate() {
         String path = this.getClass().getResource("/data-ok").getPath();
@@ -132,13 +130,12 @@ public class ReportGeneratorTest {
         assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
 
         validateRoleDirectoryStructure(new File(path),
-                Arrays.asList("receiver", "sender"), Arrays.asList());
+                Arrays.asList("receiver", "sender", "inspector"), Arrays.asList());
     }
 
     /**
      * Ensures that the report is generated even if critical information is missing
      */
-    @Ignore
     @Test
     public void testGenerateMissingLatency() {
         String path = this.getClass().getResource("/data-missing-latency").getPath();
@@ -158,7 +155,6 @@ public class ReportGeneratorTest {
     /**
      * Ensures that the report is generated even if critical information is missing
      */
-    @Ignore
     @Test
     public void testGenerateEmptyRateRecords() {
         String path = this.getClass().getResource("/data-empty-sender-rate-records").getPath();
