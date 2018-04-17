@@ -41,7 +41,6 @@ public class MemoryAreasPlotterTest {
         File sourceFile = new File(fileName);
         MemoryAreasPlotter plotter = new MemoryAreasPlotter();
 
-
         plotter.plot(memoryAreaDataSet, sourceFile.getParentFile());
 
         for (String areaName : memoryAreaDataSet.getMap().keySet()) {

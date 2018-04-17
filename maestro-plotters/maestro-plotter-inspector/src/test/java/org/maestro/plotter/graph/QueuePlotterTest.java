@@ -42,7 +42,7 @@ public class QueuePlotterTest {
         File sourceFile = new File(fileName);
         QueuePlotter plotter = new QueuePlotter();
 
-        File outputFile = new File(sourceFile.getParentFile(), QueuePlotter.friendlyName("queues"));
+        File outputFile = new File(sourceFile.getParentFile(), QueuePlotter.DEFAULT_FILENAME);
         plotter.plot(dataSet, outputFile);
 
         assertTrue("The output plotted file does not exist", outputFile.exists());

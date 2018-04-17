@@ -42,10 +42,7 @@ import java.util.List;
 import java.util.Map;
 
 public class QueuePlotter extends DefaultScatterPlotter<QueueDataSet> {
-
-    public static String friendlyName(final String areaName) {
-        return areaName.replace(" ", "_").toLowerCase() + ".png";
-    }
+    public static final String DEFAULT_FILENAME = "queues.png";
 
     @Override
     public void plot(final QueueDataSet dataSet, final File outputFile) throws IOException, EmptyDataSet, IncompatibleDataSet {

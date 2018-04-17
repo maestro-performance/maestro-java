@@ -24,6 +24,7 @@ import java.io.File;
 import java.io.IOException;
 
 public class HeapPlotter extends CommonMemoryPlotter<HeapData> {
+    public static final String DEFAULT_FILENAME = "heap.png";
 
     @Override
     public void plot(final HeapData reportData, final File outputFile) throws IOException, EmptyDataSet, IncompatibleDataSet {
