@@ -121,7 +121,7 @@ public class MaestroExporter {
 
 
     public int run(int port) throws MaestroConnectionException, IOException {
-        logger.info("Exporting metrics on 0.0.0.0:" + port);
+        logger.info("Exporting metrics on 0.0.0.0:{}", port);
 
         HTTPServer server = null;
 

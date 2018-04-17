@@ -71,7 +71,7 @@ public abstract class AbstractRenderer {
             }
             jinjava.setResourceLocator(cr);
         } catch (FileNotFoundException e) {
-            logger.warn("Unable to find the current working directory: " + e.getMessage(), e);
+            logger.warn("Unable to find the current working directory: {}", e.getMessage(), e);
         }
     }
 

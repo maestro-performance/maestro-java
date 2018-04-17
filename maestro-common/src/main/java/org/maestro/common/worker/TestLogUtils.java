@@ -69,7 +69,7 @@ public class TestLogUtils {
         try {
             FileUtils.deleteDirectory(lastLink);
         } catch (IOException e) {
-            logger.warn("Unable to delete last link: " + e.getMessage());
+            logger.warn("Unable to delete last link: {}", e.getMessage());
         }
     }
 
@@ -85,7 +85,7 @@ public class TestLogUtils {
             logger.trace("Updating the 'last' link");
             Files.createSymbolicLink(lastLink, target);
         } catch (IOException e) {
-            logger.trace("Symbolic link creation error: " + e.getMessage(), e);
+            logger.trace("Symbolic link creation error: {}", e.getMessage(), e);
         }
 
         if (failed) {
@@ -96,7 +96,7 @@ public class TestLogUtils {
                 logger.trace("Updating the 'lastFailed' link");
                 Files.createSymbolicLink(lastFailedLink, target);
             } catch (IOException e) {
-                logger.trace("Symbolic link creation error: " + e.getMessage(), e);
+                logger.trace("Symbolic link creation error: {}", e.getMessage(), e);
             }
         }
         else {
@@ -107,7 +107,7 @@ public class TestLogUtils {
                 logger.trace("Updating the 'lastSuccessful' link");
                 Files.createSymbolicLink(lastSuccessfulLink, target);
             } catch (IOException e) {
-                logger.trace("Symbolic link creation error: " + e.getMessage(), e);
+                logger.trace("Symbolic link creation error: {}", e.getMessage(), e);
             }
         }
     }

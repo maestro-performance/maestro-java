@@ -96,7 +96,7 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     protected void processNotifySuccess(TestSuccessfulNotification note) {
         logger.info("Test successful on {} after {} executions", note.getName(),
                 testProfile.getTestExecutionNumber());
-        logger.info("Test parameters used: " + testProfile.toString());
+        logger.info("Test parameters used: {}", testProfile.toString());
 
         String type = NodeUtils.getTypeFromName(note.getName());
         String host = dataServers.get(note.getName());

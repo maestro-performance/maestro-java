@@ -149,15 +149,15 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
 
         try {
             final T note = deserializer.deserialize(payload);
-            logger.trace("Message type: " + note.getClass());
+            logger.trace("Message type: {}", note.getClass());
 
             noteArrived(note);
         } catch (MalformedNoteException e) {
-            logger.error("Invalid message type: " + e.getMessage(), e);
+            logger.error("Invalid message type: {}", e.getMessage(), e);
         } catch (IOException e) {
-            logger.error("I/O error: " + e.getMessage(), e);
+            logger.error("I/O error: {}", e.getMessage(), e);
         } catch (Exception e) {
-            logger.error("Unhandled exception: " + e.getMessage(), e);
+            logger.error("Unhandled exception: {}", e.getMessage(), e);
         }
     }
 

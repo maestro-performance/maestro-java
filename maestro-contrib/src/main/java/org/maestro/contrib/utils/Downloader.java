@@ -96,7 +96,7 @@ public class Downloader {
 					throw new IOException("Unable to delete existing file " + fullName);
 				}
 			} else {
-				logger.info("Destination file " + fullName + " already exists");
+				logger.info("Destination file {} already exists", fullName);
 			}
 		}
 		return outputFile;
@@ -118,8 +118,7 @@ public class Downloader {
 			copy(resource, output);
 			long lastModified = resource.getResourceInfo().getLastModified();
 			if (!outputFile.setLastModified(lastModified)) {
-				logger.info("Unable to set the last modified date for " +
-						outputFile.getPath());
+				logger.info("Unable to set the last modified date for {}", outputFile.getPath());
 			}
 		} finally {
 
@@ -160,7 +159,7 @@ public class Downloader {
 					saveDownload(outputFile, resource);
 
 					if (logger.isDebugEnabled()) {
-						logger.debug("Downloaded " + outputFile.getPath());
+						logger.debug("Downloaded {}", outputFile.getPath());
 					}
 				}
 			} finally {
@@ -177,7 +176,7 @@ public class Downloader {
 			throw new ResourceExchangeException("Invalid URI: " + url, url, e);
 		} catch (Exception e) {
 			if (outputFile != null) {
-				logger.debug("Removing file " + outputFile.getPath());
+				logger.debug("Removing file {}", outputFile.getPath());
 				outputFile.delete();
 			}
 

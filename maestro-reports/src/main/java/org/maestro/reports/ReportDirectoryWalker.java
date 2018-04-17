@@ -110,7 +110,7 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
                 logger.error("The reports directory does not exist: {}", reportsDir.getPath());
             }
         } catch (IOException e) {
-            logger.error("Unable to walk the whole directory: " + e.getMessage(), e);
+            logger.error("Unable to walk the whole directory: {}", e.getMessage(), e);
             logger.error("Returning a partial list of all the reports due to errors");
         }
 

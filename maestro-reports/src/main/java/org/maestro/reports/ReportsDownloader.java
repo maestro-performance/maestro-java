@@ -79,14 +79,6 @@ public class ReportsDownloader {
     }
 
 
-//    private String buildDir(final String address, final String hostType) {
-//        String host = URLUtils.getHostnameFromURL(address);
-//
-//        // <basedir>/sender/failed/0/
-//        return baseDir + File.separator + hostType + File.separator + reportTypeDir + File.separator +
-//                Integer.toString(testNum) + File.separator + host;
-//    }
-
     private void downloadReport(final String targetURL, final String hostType) throws ResourceExchangeException {
         final String destinationDir = organizer.organize(targetURL, hostType);
 
@@ -167,7 +159,7 @@ public class ReportsDownloader {
                 logger.warn("Resource {} not found at {} ", e.getUrl(), host );
             }
             else {
-                logger.error("Unable to download files from " + e.getUrl());
+                logger.error("Unable to download files from {}", e.getUrl());
             }
         }
     }

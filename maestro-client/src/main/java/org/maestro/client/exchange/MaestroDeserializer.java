@@ -93,7 +93,7 @@ public class MaestroDeserializer {
                 logger.warn("Unexpected maestro command for a response: {}", tmpCommand);
             }
             default: {
-                logger.error("Type unknown: " + command.getClass());
+                logger.error("Type unknown: {}", command.getClass());
                 throw new MalformedNoteException("Invalid response command: " + tmpCommand);
             }
         }
