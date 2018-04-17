@@ -61,7 +61,10 @@ public class PropertyWriter<T extends ReportData> {
             if (method.isAnnotationPresent(PropertyProvider.class)) {
                 try {
                     Object ret = method.invoke(data, null);
-                    logger.debug("Obtained: " + ret);
+
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Obtained: {} ", ret);
+                    }
 
                     PropertyProvider methodProperty = method.getAnnotation(PropertyProvider.class);
 
