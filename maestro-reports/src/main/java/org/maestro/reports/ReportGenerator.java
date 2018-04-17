@@ -54,7 +54,9 @@ public class ReportGenerator {
     }
 
     private void plotMptReportFile(final ReportFile reportFile) {
-        logger.debug("Will report file {} on thread {}", reportFile, Thread.currentThread().getId());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Will report file {} on thread {}", reportFile, Thread.currentThread().getId());
+        }
 
         try {
             logger.info("Plotting maestro data from {}", reportFile);
@@ -68,7 +70,9 @@ public class ReportGenerator {
     }
 
     private void plotLatencyReportFile(final ReportFile reportFile) {
-        logger.debug("Will report file {} on thread {}", reportFile, Thread.currentThread().getId());
+        if (logger.isDebugEnabled()) {
+            logger.debug("Will report file {} on thread {}", reportFile, Thread.currentThread().getId());
+        }
 
         try {
             if (reportFile instanceof HdrHistogramReportFile) {
@@ -118,7 +122,7 @@ public class ReportGenerator {
         final List<ReportFile> fileList = processor.generate(baseDir);
         logger.info("There are {} files to be processed", fileList.size());
 
-        fileList.stream()
+        fileList.parallelStream()
                 .filter(item -> isMaestroReport(item))
                 .forEach(this::plotMptReportFile);
 
