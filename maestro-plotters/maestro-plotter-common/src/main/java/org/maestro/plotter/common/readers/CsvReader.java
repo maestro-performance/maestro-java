@@ -43,7 +43,6 @@ public abstract class CsvReader<T> implements ReportReader<T> {
 
     public T read(final File filename) throws IOException {
         InputStream fileStream = null;
-        Reader in = null;
 
         logger.debug("Reading file {}", filename);
 
@@ -53,7 +52,6 @@ public abstract class CsvReader<T> implements ReportReader<T> {
             return readStream(fileStream);
         }
         finally {
-            IOUtils.closeQuietly(in);
             IOUtils.closeQuietly(fileStream);
         }
     }
