@@ -104,17 +104,18 @@
                                 {% if nodeType == "inspector" %}
                                 <tr>
                                     <td>Messaging System</td>
-                                    <td>{{ productName }} {{ productVersion }}</td>
+                                    <td>{{ productName | default('Undefined') }} {{ productVersion }}</td>
                                 </tr>
                                 <tr>
                                     <td>System Report</td>
-                                    <td>{{ jvmName }} {{ jvmVersion }} - {{ jvmPackageVersion }}</td>
+                                    <td>{{ jvmName }} {{ jvmVersion }} {{ jvmPackageVersion }}</td>
                                 </tr>
                                 <tr>
                                     <td>Operating System</td>
                                     <td>{{ operatingSystemName }} - {{ operatingSystemVersion }}</td>
                                 </tr>
-                                {% endif %}
+                                {% else %}
+
                                 <tr>
                                     <td>Message Size</td>
                                     <td>{{ messageSize }} bytes {% if variableSize == 1 %} (+/- 5% variation) {% endif %} </td>
@@ -124,12 +125,8 @@
                                     <td>{{ protocol | default('AMQP') }} </td>
                                 </tr>
                                 <tr>
-                                    <td>API Name</td>
-                                    <td>{{ apiName }} </td>
-                                </tr>
-                                <tr>
-                                    <td>API Version</td>
-                                    <td>{{ apiVersion }}</td>
+                                    <td>Client API</td>
+                                    <td>{{ apiName }} {{ apiVersion }} </td>
                                 </tr>
                                 <tr>
                                     <td>Test Duration</td>
@@ -143,6 +140,7 @@
                                     <td>Limit Destinations</td>
                                     <td>{{ limitDestinations | default('1') }}</td>
                                 </tr>
+                                {% endif %}
                             </tbody>
                         </table>
                     </div>
