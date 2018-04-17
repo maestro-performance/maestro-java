@@ -39,7 +39,6 @@ import java.util.List;
 final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
     private static final Logger logger = LoggerFactory.getLogger(ReportDirectoryWalker.class);
 
-
     private final String initialPath;
 
     private final List<ReportFile> files = new LinkedList<>();
@@ -106,7 +105,7 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
 
         try {
            if (reportsDir.exists()) {
-                walk(reportsDir, new ArrayList<>());
+                walk(reportsDir, files);
             }
             else {
                 logger.error("The reports directory does not exist: {}", reportsDir.getPath());
