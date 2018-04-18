@@ -29,10 +29,10 @@ import java.io.File;
 public class RatePlotterWrapper implements PlotterWrapper {
     private static final Logger logger = LoggerFactory.getLogger(RatePlotterWrapper.class);
 
-    private final DefaultRateReader rateReader = new DefaultRateReader(new RateDataProcessor());
-
     @Override
     public boolean plot(final File file) throws MaestroException {
+        final DefaultRateReader rateReader = new DefaultRateReader(new RateDataProcessor());
+
         logger.debug("Plotting Maestro compressed file {}", file.getPath());
 
         BasicPlotter<DefaultRateReader, RatePlotter> basicPlotter = new BasicPlotter<>(rateReader, new RatePlotter());
