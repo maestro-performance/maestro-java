@@ -22,6 +22,8 @@ import org.knowm.xchart.style.colors.XChartSeriesColors;
 import org.knowm.xchart.style.lines.SeriesLines;
 import org.knowm.xchart.style.markers.SeriesMarkers;
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.plotter.common.exceptions.EmptyDataSet;
+import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
 import org.maestro.plotter.common.graph.DefaultHistogramPlotter;
 import org.maestro.plotter.rate.RateData;
 

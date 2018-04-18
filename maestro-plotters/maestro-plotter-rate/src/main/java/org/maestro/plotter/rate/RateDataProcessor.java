@@ -29,15 +29,8 @@ import java.util.Map;
 public class RateDataProcessor implements RecordProcessor {
     private static final Logger logger = LoggerFactory.getLogger(RateDataProcessor.class);
 
-    private static final SimpleDateFormat formatter;
     private Map<String, RateRecord> cache = new HashMap<>();
     private long errorCount = 0;
-
-    static {
-        // 2017-08-05 10:38:23.934129
-        formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-    }
-
 
     @Override
     public void process(String... records) throws Exception {
@@ -52,6 +45,8 @@ public class RateDataProcessor implements RecordProcessor {
             RateRecord rateRecord = cache.get(period);
 
             if (rateRecord == null) {
+                final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
                 Instant ataDate = formatter.parse(ata).toInstant();
 
                 rateRecord = new RateRecord(ataDate, 1);
