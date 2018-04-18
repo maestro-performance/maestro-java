@@ -26,7 +26,9 @@ import java.io.File;
 import java.util.Arrays;
 import java.util.List;
 
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
 public class ReportGeneratorTest {
     private static final String HOST_01 = "fake-01.host.com";
@@ -125,13 +127,19 @@ public class ReportGeneratorTest {
 
         ReportGenerator reportGenerator = new ReportGenerator(path);
 
-        reportGenerator.generate();
+        try {
+            reportGenerator.generate();
 
-        File indexFile = new File(path, "index.html");
-        assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
+            File indexFile = new File(path, "index.html");
+            assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
 
-        validateRoleDirectoryStructure(new File(path),
-                Arrays.asList("receiver", "sender", "inspector"), Arrays.asList());
+            validateRoleDirectoryStructure(new File(path),
+                    Arrays.asList("receiver", "sender", "inspector"), Arrays.asList());
+        } catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            fail();
+        }
     }
 
     /**
@@ -143,21 +151,28 @@ public class ReportGeneratorTest {
 
         ReportGenerator reportGenerator = new ReportGenerator(path);
 
-        reportGenerator.generate();
+        try {
+            reportGenerator.generate();
 
-        File indexFile = new File(path, "index.html");
-        assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
+            File indexFile = new File(path, "index.html");
+            assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
 
-        validateRoleDirectoryStructure(new File(path),
-                Arrays.asList("receiver", "sender"),
-                Arrays.asList("receiverd-latency_90.png", "receiverd-latency_99.png", "receiverd-latency_all.png"));
+            validateRoleDirectoryStructure(new File(path),
+                    Arrays.asList("receiver", "sender"),
+                    Arrays.asList("receiverd-latency_90.png", "receiverd-latency_99.png", "receiverd-latency_all.png"));
+        }
+        catch (Exception e) {
+            System.err.println(e.getMessage());
+            e.printStackTrace();
+            fail();
+        }
     }
 
     /**
-     * Ensures that the report is generated even if critical information is missing
+     * Ensures proper handling of invalid reports (ie.: empty reports marked as successful)
      */
     @Test(timeout = 20000, expected = EmptyDataSet.class)
-    public void testGenerateEmptyRateRecords() {
+    public void testInvalidReport() {
         String path = this.getClass().getResource("/data-empty-sender-rate-records").getPath();
 
         ReportGenerator reportGenerator = new ReportGenerator(path);
@@ -168,7 +183,7 @@ public class ReportGeneratorTest {
         catch (Exception e) {
             if (e instanceof EmptyDataSet) {
                 File indexFile = new File(path, "index.html");
-                assertTrue("Index file does not exist: " + indexFile, !indexFile.exists());
+                assertFalse("Index file does not exist: " + indexFile, indexFile.exists());
             }
 
             throw e;
