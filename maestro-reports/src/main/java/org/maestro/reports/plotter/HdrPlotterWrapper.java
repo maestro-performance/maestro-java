@@ -32,15 +32,14 @@ public class HdrPlotterWrapper implements PlotterWrapper {
     private static final Logger logger = LoggerFactory.getLogger(HdrPlotterWrapper.class);
     private static final String DEFAULT_UNIT_RATE = "1000";
 
-    private final HdrLogProcessorWrapper processorWrapper;
-    private final HdrReader reader = new HdrReader();
+    private String unitRate;
 
     public HdrPlotterWrapper() {
         this(DEFAULT_UNIT_RATE);
     }
 
     public HdrPlotterWrapper(final String unitRate) {
-         processorWrapper = new HdrLogProcessorWrapper(unitRate);
+        this.unitRate = unitRate;
     }
 
     @Override
@@ -48,6 +47,8 @@ public class HdrPlotterWrapper implements PlotterWrapper {
         logger.debug("Plotting HDR file {}", file.getPath());
 
         try {
+            final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
+
             if (!file.exists()) {
                 throw new IOException("File " + file.getPath() + " does not exist");
             }
@@ -55,6 +56,7 @@ public class HdrPlotterWrapper implements PlotterWrapper {
             String csvFile = processorWrapper.convertLog(file.getPath());
 
             // CSV Reader
+            final HdrReader reader = new HdrReader();
             HdrData hdrData = reader.read(csvFile);
 
             // HdrPlotterWrapper
