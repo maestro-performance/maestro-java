@@ -40,26 +40,24 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
 
     private final String initialPath;
 
-    private final List<ReportFile> files = new LinkedList<>();
-
     public ReportDirectoryWalker(String initialPath) {
         this.initialPath = initialPath;
     }
 
-    private void processHistogramReport(final File file) {
+    private void processHistogramReport(final File file, Collection<ReportFile> results) {
         String normalizedName = file.getPath().replace(initialPath, "");
-        files.add(new HdrHistogramReportFile(file, new File(normalizedName)));
+        results.add(new HdrHistogramReportFile(file, new File(normalizedName)));
     }
 
-    private void processMaestroReport(final File file) {
+    private void processMaestroReport(final File file, Collection<ReportFile> results) {
         String normalizedName = file.getPath().replace(initialPath, "");
-        files.add(new MptReportFile(file, new File(normalizedName)));
+        results.add(new MptReportFile(file, new File(normalizedName)));
     }
 
-    private void processInspectorFile(final File file) {
+    private void processInspectorFile(final File file, Collection<ReportFile> results) {
         String normalizedName = file.getPath().replace(initialPath, "");
-        files.add(new InspectorReportFile(file, new File(normalizedName)));
 
+        results.add(new InspectorReportFile(file, new File(normalizedName)));
     }
 
     @Override
@@ -70,14 +68,14 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
         String ext = FilenameUtils.getExtension(file.getName());
 
         if (Constants.FILE_EXTENSION_HDR_HISTOGRAM.equals(ext)) {
-            processHistogramReport(file);
+            processHistogramReport(file, results);
 
             return;
         }
 
         if (Constants.FILE_EXTENSION_MPT_COMPRESSED.equals(ext)) {
             if (!file.getPath().contains(Constants.FILE_HINT_INSPECTOR)) {
-                processMaestroReport(file);
+                processMaestroReport(file, results);
 
                 return;
             }
@@ -86,7 +84,7 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
 
         if (Constants.FILE_EXTENSION_INSPECTOR_REPORT.equals(ext)) {
              if (file.getPath().contains(Constants.FILE_HINT_INSPECTOR)) {
-                processInspectorFile(file);
+                processInspectorFile(file, results);
 
                 return;
              }
@@ -95,8 +93,8 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
         logger.trace("Unknown file type for {}", file.getPath());
     }
 
-    @SuppressWarnings("unchecked")
     List<ReportFile> generate(final File reportsDir) {
+        List<ReportFile> files = new LinkedList<>();
 
         if (logger.isDebugEnabled()) {
             logger.debug("Processing downloaded reports on {}", reportsDir.getName());
