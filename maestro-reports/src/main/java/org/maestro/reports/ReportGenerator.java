@@ -18,7 +18,8 @@ package org.maestro.reports;
 
 
 import org.apache.commons.io.FileUtils;
-import org.maestro.reports.files.HdrHistogramReportFile;
+import org.maestro.plotter.common.exceptions.EmptyDataSet;
+import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
 import org.maestro.reports.files.ReportDirInfo;
 import org.maestro.reports.files.ReportFile;
 import org.maestro.reports.index.IndexRenderer;
@@ -56,40 +57,22 @@ public class ReportGenerator {
         this.path = path;
     }
 
-    private void plotMptReportFile(final ReportFile reportFile) {
+    private void plotReportFile(final ReportFile reportFile) {
         if (logger.isDebugEnabled()) {
             logger.debug("Will report file {} on thread {}", reportFile, Thread.currentThread().getId());
         }
 
-//        try {
-            logger.info("Plotting maestro data from {}", reportFile);
-            PlotterWrapper plotterWrapper = registry.getWrapper(reportFile.getClass());
-
-            plotterWrapper.plot(reportFile.getSourceFile());
-//        }
-//        catch (Throwable t) {
-//            logger.error("Unable to plot file {}: {}", reportFile.getSourceFile(), t.getMessage(), t);
-//        }
-    }
-
-    private void plotLatencyReportFile(final ReportFile reportFile) {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Will report file {} on thread {}", reportFile, Thread.currentThread().getId());
-        }
+        logger.info("Plotting maestro data from {}", reportFile);
+        PlotterWrapper plotterWrapper = registry.getWrapper(reportFile.getClass());
 
         try {
-            if (reportFile instanceof HdrHistogramReportFile) {
-                logger.info("Plotting latency from {}", reportFile);
-
-                PlotterWrapper plotterWrapper = registry.getWrapper(reportFile.getClass());
-
-                plotterWrapper.plot(reportFile.getSourceFile());
-            } else {
-                throw new Exception("Invalid report file for: " + reportFile.getSourceFile());
-            }
+            plotterWrapper.plot(reportFile.getSourceFile());
         }
-        catch (Throwable t) {
-            logger.error("Unable to plot file {}: {}", reportFile.getSourceFile(), t.getMessage(), t);
+        catch (EmptyDataSet | IncompatibleDataSet e) {
+            if (reportFile.isTestSuccessful()) {
+                logger.error("File {} contains invalid data for a successful test", reportFile);
+                throw e;
+            }
         }
     }
 
@@ -125,16 +108,9 @@ public class ReportGenerator {
         final List<ReportFile> fileList = processor.generate(baseDir);
         logger.info("There are {} files to be processed", fileList.size());
 
-        fileList.stream()
+        fileList.parallelStream()
                 .filter(item -> isMaestroReport(item))
-                .forEach(this::plotMptReportFile);
-
-        // NOTE: this one is not thread-safe. This may have something to do
-        // with capturing the console and so on.
-        // TODO: find a better way to handle this
-        fileList.stream()
-                .filter(item -> item.getSourceFile().getName().endsWith("hdr"))
-                .forEach(this::plotLatencyReportFile);
+                .forEach(this::plotReportFile);
 
 
         // Step 2: execute the pre-processors
@@ -156,7 +132,7 @@ public class ReportGenerator {
     }
 
     private boolean isMaestroReport(ReportFile item) {
-        String[] maestroFilesExt = { "csv.gz", "csv"};
+        String[] maestroFilesExt = { "csv.gz", "csv", "hdr"};
 
         for (String maestroFileExt : maestroFilesExt) {
             if (item.getSourceFile().getName().endsWith(maestroFileExt)) {
