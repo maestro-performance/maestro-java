@@ -52,8 +52,6 @@ public class MemoryAreasReader extends CsvReader<MemoryAreasDataSet> {
                 .withQuoteMode(QuoteMode.NON_NUMERIC)
                 .parse(reader);
 
-
-
         for (CSVRecord record : records) {
             try {
                 memoryAreasProcessor.process(record.get(0), record.get(1), record.get(2), record.get(3), record.get(4),

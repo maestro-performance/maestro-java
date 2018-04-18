@@ -25,7 +25,6 @@ import java.util.Date;
  * The processor for the recorded queue data
  */
 public class QueueProcessor implements RecordProcessor {
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final QueueDataSet queueDataSet = new QueueDataSet();
 
     public QueueDataSet getQueueDataSet() {
@@ -35,6 +34,8 @@ public class QueueProcessor implements RecordProcessor {
     // Timestamp,Name,MessagesAdded,MessageCount,MessagesAcknowledged,MessagesExpired,ConsumerCount
     @Override
     public void process(String... records) throws Exception {
+        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         Date timeStamp = formatter.parse(records[0]);
         QueuesRecord queuesRecord = new QueuesRecord();
         queuesRecord.setTimestamp(timeStamp.toInstant());

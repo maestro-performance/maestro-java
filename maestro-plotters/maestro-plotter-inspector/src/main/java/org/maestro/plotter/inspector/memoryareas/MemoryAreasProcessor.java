@@ -25,7 +25,6 @@ import java.util.Date;
  * The processor for JVM memory areas
  */
 public class MemoryAreasProcessor implements RecordProcessor {
-    private static final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
     private final MemoryAreasDataSet memoryAreasDataSet = new MemoryAreasDataSet();
 
     public MemoryAreasDataSet getMemoryAreasDataSet() {
@@ -35,6 +34,8 @@ public class MemoryAreasProcessor implements RecordProcessor {
     //// Timestamp,Name,Initial,Max,Committed,Used
     @Override
     public void process(String... records) throws Exception {
+        final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         Date timeStamp = formatter.parse(records[0]);
         MemoryAreasRecord memoryAreasRecord = new MemoryAreasRecord();
         memoryAreasRecord.setTimestamp(timeStamp.toInstant());
