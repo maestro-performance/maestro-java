@@ -31,10 +31,19 @@ import java.util.stream.Collectors;
  */
 @PropertyName(name="rate")
 public class RateData implements ReportData {
-    private Set<RateRecord> recordSet = new TreeSet<>();
+    final private Set<RateRecord> recordSet;
     private Statistics statistics;
     private long errorCount;
     private long skipCount = 0;
+
+
+    public RateData() {
+        recordSet = new TreeSet<>();
+    }
+
+    RateData(final Set<RateRecord> other) {
+        this.recordSet = other;
+    }
 
     public void add(RateRecord rateRecord) {
         recordSet.add(rateRecord);

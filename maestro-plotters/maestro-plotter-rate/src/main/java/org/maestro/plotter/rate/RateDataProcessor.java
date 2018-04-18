@@ -25,6 +25,8 @@ import java.text.SimpleDateFormat;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Set;
+import java.util.TreeSet;
 
 public class RateDataProcessor implements RecordProcessor {
     private static final Logger logger = LoggerFactory.getLogger(RateDataProcessor.class);
@@ -69,9 +71,8 @@ public class RateDataProcessor implements RecordProcessor {
     }
 
     public RateData getRateData() {
-        RateData rateData = new RateData();
-
-        cache.forEach((ratePeriod, rateRecord)-> rateData.add(rateRecord));
+        Set<RateRecord> ret = new TreeSet<>(cache.values());
+        RateData rateData = new RateData(ret);
 
         rateData.setErrorCount(errorCount);
         return rateData;
