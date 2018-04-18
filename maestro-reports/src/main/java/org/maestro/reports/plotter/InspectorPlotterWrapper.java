@@ -16,6 +16,7 @@
 
 package org.maestro.reports.plotter;
 
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.common.BasicPlotter;
 import org.maestro.plotter.common.properties.PropertyWriter;
 import org.maestro.plotter.inspector.graph.HeapPlotter;
@@ -29,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 
 public class InspectorPlotterWrapper implements PlotterWrapper {
     private static final Logger logger = LoggerFactory.getLogger(InspectorPlotterWrapper.class);
@@ -41,8 +43,8 @@ public class InspectorPlotterWrapper implements PlotterWrapper {
         try {
             basicPlotter.plot(file, outputFile, propertiesFile);
         } catch (Exception e) {
-            logger.error("Unable to plot file {}: {}", file.getPath(), e.getMessage(), e);
-            return false;
+            handlePlotException(file, e);
+            throw e;
         }
         return true;
     }
@@ -61,9 +63,12 @@ public class InspectorPlotterWrapper implements PlotterWrapper {
             File propertiesFile = new File(file.getParentFile(), "memory.properties");
             PropertyWriter propertyWriter = new PropertyWriter();
             propertyWriter.write(dataSet, propertiesFile);
+        } catch (IOException e) {
+            handlePlotException(file, e);
+            throw new MaestroException(e);
         } catch (Exception e) {
-            logger.error("Unable to plot file {}: {}", file.getPath(), e.getMessage(), e);
-            return false;
+            handlePlotException(file, e);
+            throw e;
         }
 
         return true;
@@ -78,8 +83,8 @@ public class InspectorPlotterWrapper implements PlotterWrapper {
 
             basicPlotter.plot(file, outputFile, null);
         } catch (Exception e) {
-            logger.error("Unable to plot file {}: {}", file.getPath(), e.getMessage(), e);
-            return false;
+            handlePlotException(file, e);
+            throw e;
         }
 
         return true;
@@ -87,6 +92,7 @@ public class InspectorPlotterWrapper implements PlotterWrapper {
 
     @Override
     public boolean plot(final File file) {
+        logger.info("Plotting Maestro Inspector report file {}", file.getPath());
         boolean ret = false;
 
         switch (file.getName()) {
