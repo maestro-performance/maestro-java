@@ -44,7 +44,7 @@ public class HdrPlotterWrapper implements PlotterWrapper {
     }
 
     @Override
-    public boolean plot(final File file) {
+    public synchronized boolean plot(final File file) {
         logger.debug("Plotting HDR file {}", file.getPath());
 
         try {
