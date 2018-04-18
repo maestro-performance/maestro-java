@@ -114,7 +114,6 @@ public final class WorkerLatencyWriter implements Runnable {
         //the first sleep will be a very long one :)
         this.reportingIntervalMs = TimeUnit.DAYS.toMillis(365);
         this.reportIntervalLatencies = false;
-        this.latencyEvaluator = latencyEvaluator;
     }
 
     public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers,
