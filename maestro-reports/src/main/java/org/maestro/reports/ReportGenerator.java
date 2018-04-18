@@ -17,13 +17,16 @@
 package org.maestro.reports;
 
 
-import org.maestro.reports.files.*;
+import org.apache.commons.io.FileUtils;
+import org.maestro.reports.files.HdrHistogramReportFile;
+import org.maestro.reports.files.ReportDirInfo;
+import org.maestro.reports.files.ReportFile;
 import org.maestro.reports.index.IndexRenderer;
 import org.maestro.reports.node.NodeContextBuilder;
 import org.maestro.reports.node.NodeReportRenderer;
-import org.maestro.reports.plotter.*;
+import org.maestro.reports.plotter.PlotterWrapper;
+import org.maestro.reports.plotter.PlotterWrapperRegistry;
 import org.maestro.reports.processors.ReportFileProcessor;
-import org.apache.commons.io.FileUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,15 +61,15 @@ public class ReportGenerator {
             logger.debug("Will report file {} on thread {}", reportFile, Thread.currentThread().getId());
         }
 
-        try {
+//        try {
             logger.info("Plotting maestro data from {}", reportFile);
             PlotterWrapper plotterWrapper = registry.getWrapper(reportFile.getClass());
 
             plotterWrapper.plot(reportFile.getSourceFile());
-        }
-        catch (Throwable t) {
-            logger.error("Unable to plot file {}: {}", reportFile.getSourceFile(), t.getMessage(), t);
-        }
+//        }
+//        catch (Throwable t) {
+//            logger.error("Unable to plot file {}: {}", reportFile.getSourceFile(), t.getMessage(), t);
+//        }
     }
 
     private void plotLatencyReportFile(final ReportFile reportFile) {
@@ -122,7 +125,7 @@ public class ReportGenerator {
         final List<ReportFile> fileList = processor.generate(baseDir);
         logger.info("There are {} files to be processed", fileList.size());
 
-        fileList.parallelStream()
+        fileList.stream()
                 .filter(item -> isMaestroReport(item))
                 .forEach(this::plotMptReportFile);
 

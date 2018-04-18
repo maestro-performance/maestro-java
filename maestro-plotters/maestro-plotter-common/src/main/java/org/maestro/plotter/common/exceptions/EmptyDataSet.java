@@ -17,10 +17,12 @@
 package org.maestro.plotter.common.exceptions;
 
 
+import org.maestro.common.exceptions.MaestroException;
+
 /**
  * Empty data set exception
  */
-public class EmptyDataSet extends Exception {
+public class EmptyDataSet extends MaestroException {
     public EmptyDataSet() {
         super();
     }

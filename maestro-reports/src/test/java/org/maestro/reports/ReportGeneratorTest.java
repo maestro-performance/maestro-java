@@ -16,11 +16,11 @@
 
 package org.maestro.reports;
 
-import org.junit.Ignore;
-import org.maestro.common.LogConfigurator;
 import org.junit.Before;
 import org.junit.Test;
+import org.maestro.common.LogConfigurator;
 import org.maestro.common.test.TestProperties;
+import org.maestro.plotter.common.exceptions.EmptyDataSet;
 
 import java.io.File;
 import java.util.Arrays;
@@ -156,20 +156,25 @@ public class ReportGeneratorTest {
     /**
      * Ensures that the report is generated even if critical information is missing
      */
-    @Test(timeout = 20000)
+    @Test(timeout = 20000, expected = EmptyDataSet.class)
     public void testGenerateEmptyRateRecords() {
         String path = this.getClass().getResource("/data-empty-sender-rate-records").getPath();
 
         ReportGenerator reportGenerator = new ReportGenerator(path);
 
-        reportGenerator.generate();
+        try {
+            reportGenerator.generate();
+        }
+        catch (Exception e) {
+            if (e instanceof EmptyDataSet) {
+                File indexFile = new File(path, "index.html");
+                assertTrue("Index file does not exist: " + indexFile, !indexFile.exists());
+            }
 
-        File indexFile = new File(path, "index.html");
-        assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
+            throw e;
+        }
 
-        validateRoleDirectoryStructure(new File(path),
-                Arrays.asList("sender"),
-                Arrays.asList("rate.properties"));
+
     }
 
 

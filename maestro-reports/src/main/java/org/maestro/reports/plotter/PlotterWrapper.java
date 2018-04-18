@@ -16,6 +16,7 @@
 
 package org.maestro.reports.plotter;
 
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.files.MptReportFile;
 import org.maestro.reports.files.ReportFile;
 import org.slf4j.Logger;
@@ -25,7 +26,7 @@ import java.io.File;
 import java.util.Properties;
 
 public interface PlotterWrapper {
-    boolean plot(final File file);
+    boolean plot(final File file) throws MaestroException;
 
     default void handlePlotException(final File file, final Throwable t) {
         Logger logger = LoggerFactory.getLogger(PlotterWrapper.class);

@@ -18,14 +18,12 @@ package org.maestro.plotter.inspector.graph;
 
 import org.apache.commons.compress.utils.Lists;
 import org.knowm.xchart.XYChart;
-import org.maestro.plotter.common.exceptions.EmptyDataSet;
-import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.common.graph.DefaultScatterPlotter;
 import org.maestro.plotter.common.statistics.Statistics;
 import org.maestro.plotter.inspector.queues.QueueDataSet;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -35,7 +33,7 @@ public class QueuePlotter extends DefaultScatterPlotter<QueueDataSet> {
     public static final String DEFAULT_FILENAME = "queues.png";
 
     @Override
-    public void plot(final QueueDataSet dataSet, final File outputFile) throws IOException, EmptyDataSet, IncompatibleDataSet {
+    public void plot(final QueueDataSet dataSet, final File outputFile) throws MaestroException {
         final Map<Date, Statistics> stats = dataSet.getStatistics();
 
         final List<Date> periods = Lists.newArrayList(stats.keySet().iterator());

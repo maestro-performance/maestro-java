@@ -17,10 +17,12 @@
 package org.maestro.plotter.common.exceptions;
 
 
+import org.maestro.common.exceptions.MaestroException;
+
 /**
  * Incompatible data set exception
  */
-public class IncompatibleDataSet extends Exception {
+public class IncompatibleDataSet extends MaestroException {
     public IncompatibleDataSet() {
         super();
     }

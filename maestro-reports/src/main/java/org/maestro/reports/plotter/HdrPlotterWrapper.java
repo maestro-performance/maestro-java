@@ -21,6 +21,7 @@ import net.orpiske.hhp.plot.HdrLogProcessorWrapper;
 import net.orpiske.hhp.plot.HdrPropertyWriter;
 import net.orpiske.hhp.plot.HdrReader;
 import org.apache.commons.io.FilenameUtils;
+import org.maestro.common.exceptions.MaestroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -71,10 +72,9 @@ public class HdrPlotterWrapper implements PlotterWrapper {
 
             return true;
         }
-        catch (Throwable t) {
+        catch (Exception t) {
             handlePlotException(file, t);
+            throw new MaestroException(t);
         }
-
-        return false;
     }
 }

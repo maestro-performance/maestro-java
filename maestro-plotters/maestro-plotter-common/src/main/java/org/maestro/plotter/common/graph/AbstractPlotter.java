@@ -23,6 +23,7 @@ import org.knowm.xchart.XYChartBuilder;
 import org.knowm.xchart.internal.chartpart.Chart;
 import org.knowm.xchart.style.Styler;
 import org.knowm.xchart.style.colors.ChartColor;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.common.exceptions.EmptyDataSet;
 import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
 
@@ -127,8 +128,13 @@ public abstract class AbstractPlotter<T> {
         getChartProperties().setyTitle(yTitle);
     }
 
-    protected void encode(Chart chart, File outputFile) throws IOException {
-        BitmapEncoder.saveBitmap(chart, outputFile.getPath(), BitmapEncoder.BitmapFormat.PNG);
+    protected void encode(Chart chart, File outputFile) {
+        try {
+            BitmapEncoder.saveBitmap(chart, outputFile.getPath(), BitmapEncoder.BitmapFormat.PNG);
+        }
+        catch (IOException e) {
+            throw new MaestroException(e);
+        }
     }
 
     protected XYChart baseChart() {
@@ -169,5 +175,5 @@ public abstract class AbstractPlotter<T> {
         return chart;
     }
 
-    abstract public void plot(final T reportData, final File outputFile) throws IOException, EmptyDataSet, IncompatibleDataSet;
+    abstract public void plot(final T reportData, final File outputFile) throws MaestroException;
 }

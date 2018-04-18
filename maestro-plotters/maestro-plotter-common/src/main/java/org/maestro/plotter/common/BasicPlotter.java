@@ -16,6 +16,7 @@
 
 package org.maestro.plotter.common;
 
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.common.exceptions.EmptyDataSet;
 import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
 import org.maestro.plotter.common.graph.AbstractPlotter;
@@ -43,15 +44,21 @@ public class BasicPlotter<Y extends ReportReader, K extends AbstractPlotter> {
      * @throws EmptyDataSet
      * @throws IncompatibleDataSet
      */
-    public void plot(final File filename, final File outputFile, final File propertiesFile) throws IOException, EmptyDataSet, IncompatibleDataSet {
-        Object data = reader.read(filename);
+    public void plot(final File filename, final File outputFile, final File propertiesFile) throws MaestroException {
+        try {
+            Object data = reader.read(filename);
 
-        plotter.plot(data, outputFile);
+            plotter.plot(data, outputFile);
 
-        if (propertiesFile != null) {
-            PropertyWriter propertyWriter = new PropertyWriter();
-            propertyWriter.write(data, propertiesFile);
+            if (propertiesFile != null) {
+                PropertyWriter propertyWriter = new PropertyWriter();
+                propertyWriter.write(data, propertiesFile);
+            }
+        } catch (IOException e) {
+            throw new MaestroException(e);
         }
+
+
     }
 
 }

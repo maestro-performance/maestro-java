@@ -16,18 +16,16 @@
 
 package org.maestro.plotter.inspector.graph;
 
-import org.maestro.plotter.common.exceptions.EmptyDataSet;
-import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.inspector.heap.HeapData;
 
 import java.io.File;
-import java.io.IOException;
 
 public class HeapPlotter extends CommonMemoryPlotter<HeapData> {
     public static final String DEFAULT_FILENAME = "heap.png";
 
     @Override
-    public void plot(final HeapData reportData, final File outputFile) throws IOException, EmptyDataSet, IncompatibleDataSet {
+    public void plot(final HeapData reportData, final File outputFile) throws MaestroException {
         super.plot(reportData, outputFile);
     }
 }

@@ -16,9 +16,9 @@
 
 package org.maestro.reports.plotter;
 
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.common.BasicPlotter;
 import org.maestro.plotter.rate.DefaultRateReader;
-import org.maestro.plotter.rate.RateData;
 import org.maestro.plotter.rate.RateDataProcessor;
 import org.maestro.plotter.rate.graph.RatePlotter;
 import org.slf4j.Logger;
@@ -32,20 +32,15 @@ public class RatePlotterWrapper implements PlotterWrapper {
     private final DefaultRateReader rateReader = new DefaultRateReader(new RateDataProcessor());
 
     @Override
-    public boolean plot(final File file) {
+    public boolean plot(final File file) throws MaestroException {
         logger.debug("Plotting Maestro compressed file {}", file.getPath());
 
         BasicPlotter<DefaultRateReader, RatePlotter> basicPlotter = new BasicPlotter<>(rateReader, new RatePlotter());
 
-        try {
-            File propertiesFile = new File(file.getParentFile(), "rate.properties");
-            File outputFile = new File(file.getParentFile(), "rate.png");
+        File propertiesFile = new File(file.getParentFile(), "rate.properties");
+        File outputFile = new File(file.getParentFile(), "rate.png");
 
-            basicPlotter.plot(file, outputFile, propertiesFile);
-        } catch (Exception e) {
-            logger.error("Unable to plot file {}: {}", file.getPath(), e.getMessage(), e);
-            return false;
-        }
+        basicPlotter.plot(file, outputFile, propertiesFile);
 
         return true;
     }

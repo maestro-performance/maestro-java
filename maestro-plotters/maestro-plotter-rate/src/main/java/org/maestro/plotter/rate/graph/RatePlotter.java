@@ -21,20 +21,18 @@ import org.knowm.xchart.XYSeries;
 import org.knowm.xchart.style.colors.XChartSeriesColors;
 import org.knowm.xchart.style.lines.SeriesLines;
 import org.knowm.xchart.style.markers.SeriesMarkers;
-import org.maestro.plotter.common.exceptions.EmptyDataSet;
-import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.common.graph.DefaultHistogramPlotter;
 import org.maestro.plotter.rate.RateData;
 
 import java.awt.*;
 import java.io.File;
-import java.io.IOException;
 import java.util.List;
 
 public class RatePlotter extends DefaultHistogramPlotter<RateData> {
 
     @Override
-    public void plot(RateData reportData, File outputFile) throws IOException, EmptyDataSet, IncompatibleDataSet {
+    public void plot(RateData reportData, File outputFile) throws MaestroException {
         updateChart("", "",  "", "Messages p/ Second");
 
         // Create Chart

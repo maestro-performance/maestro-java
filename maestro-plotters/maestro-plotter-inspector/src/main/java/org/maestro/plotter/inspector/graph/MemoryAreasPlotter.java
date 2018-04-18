@@ -16,19 +16,17 @@
 
 package org.maestro.plotter.inspector.graph;
 
-import org.maestro.plotter.common.exceptions.EmptyDataSet;
-import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.inspector.memoryareas.MemoryAreasData;
 import org.maestro.plotter.inspector.memoryareas.MemoryAreasDataSet;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 
 public class MemoryAreasPlotter extends CommonMemoryPlotter<MemoryAreasData> {
 
     @Override
-    public void plot(final MemoryAreasData reportData, final File outputFile) throws IOException, EmptyDataSet, IncompatibleDataSet {
+    public void plot(final MemoryAreasData reportData, final File outputFile) throws MaestroException {
         super.plot(reportData, outputFile);
     }
 
@@ -37,11 +35,7 @@ public class MemoryAreasPlotter extends CommonMemoryPlotter<MemoryAreasData> {
     }
 
     public void plot(final MemoryAreasData reportData, final File outputDir, final String areaName) {
-        try {
-            plot(reportData, new File(outputDir, friendlyName(areaName)));
-        } catch (IOException | IncompatibleDataSet | EmptyDataSet e) {
-            e.printStackTrace();
-        }
+        plot(reportData, new File(outputDir, friendlyName(areaName)));
     }
 
     public void plot(final MemoryAreasDataSet dataSet, final File outputDir) {
