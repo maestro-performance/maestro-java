@@ -65,8 +65,8 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
 
         try {
             inspector.setUrl(url);
-        } catch (MalformedURLException e) {
-            logger.error("Unable to parse management interface URL {}: {}", url, e.getMessage(), e);
+        } catch (MaestroException e) {
+            logger.error("Unable to set the management interface URL {}: {}", url, e.getMessage(), e);
             getClient().replyInternalError();
         }
     }

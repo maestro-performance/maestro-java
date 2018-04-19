@@ -23,6 +23,7 @@ import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.common.inspector.types.*;
 import org.maestro.common.test.InspectorProperties;
@@ -62,25 +63,28 @@ public class ArtemisInspector implements MaestroInspector {
 
     }
 
-    public void setUrl(final String value) throws MalformedURLException {
-        URL url = new URL(value);
+    public void setUrl(final String value) {
+        try {
+            URL url = new URL(value);
 
-        /*
-         * Jolokia client does not handle well the userinfo part of the URL ... that's
-         * why it reformats the URL without it.
-         */
-        String newUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/" + url.getPath();
-        this.setUrl(newUrl);
+            /*
+             * Jolokia client does not handle well the userinfo part of the URL ... that's
+             * why it reformats the URL without it.
+             */
+            this.url = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/" + url.getPath();
 
-        String userInfo = url.getUserInfo();
-        if (userInfo != null) {
-            String[] parts = userInfo.split(":");
-            String username = parts[0];
-            this.setUser(username);
+            String userInfo = url.getUserInfo();
+            if (userInfo != null) {
+                String[] parts = userInfo.split(":");
+                String username = parts[0];
+                this.setUser(username);
 
-            if (parts.length == 2) {
-                this.setPassword(parts[1]);
+                if (parts.length == 2) {
+                    this.setPassword(parts[1]);
+                }
             }
+        } catch (MalformedURLException e) {
+            throw new MaestroException("Unable to set the management interface URL", e);
         }
     }
 

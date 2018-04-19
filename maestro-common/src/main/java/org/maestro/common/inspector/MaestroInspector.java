@@ -25,7 +25,7 @@ import java.net.MalformedURLException;
 
 public interface MaestroInspector extends TestDuration.TestProgress {
 
-    void setUrl(String url) throws MalformedURLException;
+    void setUrl(String url);
 
     void setUser(String user);
 
