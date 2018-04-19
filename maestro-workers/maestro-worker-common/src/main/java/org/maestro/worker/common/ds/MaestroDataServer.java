@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.InetAddress;
+import java.net.URL;
 import java.net.UnknownHostException;
 
 public class MaestroDataServer implements Runnable {
@@ -88,7 +89,15 @@ public class MaestroDataServer implements Runnable {
         logger.debug("Serving files from location {} on context {}", location, contextPath);
 
         ResourceHandler resourceHandler = new ResourceHandler();
-        resourceHandler.setStylesheet(this.getClass().getResource("jetty-dir.css").getPath());
+
+        URL resource = this.getClass().getResource("jetty-dir.css");
+        if (resource != null) {
+            resourceHandler.setStylesheet(resource.getPath());
+        }
+        else {
+            logger.warn("Unable to find the CSS resource for the data server");
+        }
+
 
         ContextHandler context = new ContextHandler();
         context.setContextPath(contextPath);
