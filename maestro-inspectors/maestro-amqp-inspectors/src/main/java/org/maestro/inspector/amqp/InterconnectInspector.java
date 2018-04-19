@@ -96,7 +96,7 @@ public class InterconnectInspector implements MaestroInspector {
         Map<String, List<String>> parsedMap = new HashMap<String, List<String>>();
 
         ArrayList attributeNames = (ArrayList) map.get("attributeNames");
-        ArrayList<ArrayList> results = (ArrayList<ArrayList>) map.get("results");
+        ArrayList<ArrayList> results = (ArrayList<ArrayList>) map.get("results");  // TODO: try .values() [Collection inf] instead
 
         for (Object attributeName : attributeNames) {
             ArrayList<String> tempResults = new ArrayList<>();
@@ -108,45 +108,6 @@ public class InterconnectInspector implements MaestroInspector {
         }
 
         return parsedMap;
-    }
-
-    public static void main(String[] args) throws Exception {
-        InterconnectInspector inspector = new InterconnectInspector();
-
-        inspector.setUrl("amqp://localhost:5672");
-        inspector.connect();
-
-        InterconnectReadData readData = new InterconnectReadData(inspector.session,
-                inspector.tempDest,
-                inspector.responseConsumer,
-                inspector.messageProducer);
-
-        Message receivedMessage;
-
-        String item = "router";
-        readData.sendRequest(item);
-
-        receivedMessage = readData.collectResponse();
-
-//                    Map map = receivedMessage.getBody(LinkedHashMap.class);
-//
-//                    Map newMap = parseReceivedMessage(map);
-//
-//                    for (Object name: newMap.keySet()){
-//                        String key = name.toString();
-//                        String value = Arrays.toString(((ArrayList) newMap.get(name)).toArray());
-//                        System.out.println("NewItem: " + key + " " + value);
-//
-//                    }
-
-        if (receivedMessage != null) {
-            System.out.println(receivedMessage.getStringProperty("statusCode"));
-            System.out.println("Msg about: \\\"" + item + "\\\" arrived at: " + "???");
-        }
-
-        inspector.closeConnection();
-
-
     }
 
     @Override
@@ -172,43 +133,15 @@ public class InterconnectInspector implements MaestroInspector {
                     responseConsumer,
                     messageProducer);
 
-
-//            -g, --general         Show General Router Stats  -  router
-//            -c, --connections     Show Connections           - connector
-//            -l, --links           Show Router Links           - router.link
-//                    -n, --nodes           Show Router Nodes       - router.node
-//                    -a, --address         Show Router Addresses   - router.address
-//                    -m, --memory          Show Router Memory Stats    - allocator
-//            --autolinks           Show Auto Links                     -config.autoLink
-//                    --linkroutes          Show Link Routes            - config.linkRoute
-//
-
-
-//            if (receivedMessage != null){
-//                System.out.println("Msg arrived");
-//
-//                Map map = receivedMessage.getBody(LinkedHashMap.class);
-//
-//
-            //                Map newMap = parseReceivedMessage(map);
-//
-//                for (Object name: newMap.keySet()){
-//                    String key = name.toString();
-//                    String value = Arrays.toString(((ArrayList) newMap.get(name)).toArray());
-//                    System.out.println("NewItem: " + key + " " + value);
-//
-//                }
-//                System.out.println("text that is not 1");
-//            }
             Message receivedMessage;
 
             String[] elements = {
                     "router",
-//                    "connection",
-//                    "router.link",
-//                    "router.node",
-//                    "router.address",
-//                    "allocator",
+                    "connection",
+                    "router.link",
+                    "router.node",
+                    "router.address",
+                    "allocator",
 //                    "config.autoLink",
 //                    "config.linkRoute"
             };
@@ -221,17 +154,6 @@ public class InterconnectInspector implements MaestroInspector {
                     readData.sendRequest(item);
 
                     receivedMessage = readData.collectResponse();
-
-//                    Map map = receivedMessage.getBody(LinkedHashMap.class);
-//
-//                    Map newMap = parseReceivedMessage(map);
-//
-//                    for (Object name: newMap.keySet()){
-//                        String key = name.toString();
-//                        String value = Arrays.toString(((ArrayList) newMap.get(name)).toArray());
-//                        System.out.println("NewItem: " + key + " " + value);
-//
-//                    }
 
                     if (receivedMessage != null) {
                         System.out.println(receivedMessage.getStringProperty("statusCode"));
@@ -258,6 +180,19 @@ public class InterconnectInspector implements MaestroInspector {
         } finally {
             startedEpochMillis = Long.MIN_VALUE;
             closeConnection();
+        }
+    }
+
+    private void printOutput(Message message) throws JMSException {
+        Map map = message.getBody(LinkedHashMap.class);
+
+        Map newMap = parseReceivedMessage(map);
+
+        for (Object name: newMap.keySet()){
+            String key = name.toString();
+            String value = Arrays.toString(((ArrayList) newMap.get(name)).toArray());
+            System.out.println("NewItem: " + key + " " + value);
+
         }
     }
 
