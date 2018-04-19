@@ -113,7 +113,7 @@
 
         <dependency>
             <groupId>org.maestro</groupId>
-            <artifactId>maestro-worker</artifactId>
+            <artifactId>maestro-worker-common</artifactId>
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
