@@ -18,8 +18,8 @@ package org.maestro.exporter.collectors;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
-import org.maestro.common.NodeUtils;
 import org.maestro.client.notes.PingResponse;
+import org.maestro.common.NodeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -16,10 +16,10 @@
 
 package org.maestro.common;
 
-import org.maestro.common.duration.DurationUtils;
-import org.maestro.common.exceptions.DurationParseException;
 import org.junit.Assert;
 import org.junit.Test;
+import org.maestro.common.duration.DurationUtils;
+import org.maestro.common.exceptions.DurationParseException;
 
 
 public class DurationUtilsTest {

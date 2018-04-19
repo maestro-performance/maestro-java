@@ -16,8 +16,8 @@
 
 package org.maestro.reports.files;
 
-import org.maestro.reports.node.NodeType;
 import org.apache.commons.io.FilenameUtils;
+import org.maestro.reports.node.NodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

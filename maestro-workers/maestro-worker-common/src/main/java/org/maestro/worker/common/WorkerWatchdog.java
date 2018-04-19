@@ -17,8 +17,8 @@
 package org.maestro.worker.common;
 
 import org.maestro.common.client.MaestroReceiver;
-import org.maestro.common.worker.WorkerStateInfo;
 import org.maestro.common.evaluators.Evaluator;
+import org.maestro.common.worker.WorkerStateInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

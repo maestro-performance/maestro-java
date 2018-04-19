@@ -16,14 +16,14 @@
 package org.maestro.contrib.utils;
 
 
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.io.IOUtils;
 import org.maestro.contrib.utils.net.URLUtils;
 import org.maestro.contrib.utils.resource.HttpResourceExchange;
 import org.maestro.contrib.utils.resource.Resource;
 import org.maestro.contrib.utils.resource.ResourceExchange;
 import org.maestro.contrib.utils.resource.ResourceInfo;
 import org.maestro.contrib.utils.resource.exceptions.ResourceExchangeException;
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

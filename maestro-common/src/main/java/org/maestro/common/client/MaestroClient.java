@@ -18,8 +18,8 @@ package org.maestro.common.client;
 
 
 import org.maestro.common.client.exceptions.MalformedNoteException;
-import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.exceptions.MaestroConnectionException;
 
 /**
  * A generic Maestro client that can be used for publishing or receiving messages (usually for publishing)

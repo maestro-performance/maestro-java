@@ -29,9 +29,7 @@ import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
-import static org.junit.Assert.fail;
+import static org.junit.Assert.*;
 
 public class SenderOutOfOrderRateProcessorTest extends CommonRateProcessorTest {
     private final String fileName = this.getClass().getResource("/data-out-of-order/out-of-order-01.csv.gz").getPath();

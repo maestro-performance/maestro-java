@@ -16,15 +16,15 @@
 
 package org.maestro.worker.main;
 
+import org.apache.commons.cli.*;
 import org.maestro.client.exchange.AbstractMaestroPeer;
+import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.NetworkUtils;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.MaestroWorker;
-import org.maestro.client.exchange.MaestroTopics;
-import org.apache.commons.cli.*;
 import org.maestro.worker.common.ConcurrentWorkerManager;
 import org.maestro.worker.common.VoidWorkerManager;
 import org.maestro.worker.common.ds.MaestroDataServer;

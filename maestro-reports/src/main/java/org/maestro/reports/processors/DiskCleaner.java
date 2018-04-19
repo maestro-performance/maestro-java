@@ -16,10 +16,10 @@
 
 package org.maestro.reports.processors;
 
-import org.maestro.common.Constants;
-import org.maestro.reports.files.ReportFile;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
+import org.maestro.common.Constants;
+import org.maestro.reports.files.ReportFile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

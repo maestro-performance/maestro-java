@@ -16,11 +16,11 @@
 
 package org.maestro.cli.main.actions;
 
+import org.apache.commons.cli.*;
 import org.maestro.reports.ReportGenerator;
 import org.maestro.reports.plotter.HdrPlotterWrapper;
 import org.maestro.reports.plotter.PlotterWrapperFactory;
 import org.maestro.reports.processors.DiskCleaner;
-import org.apache.commons.cli.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

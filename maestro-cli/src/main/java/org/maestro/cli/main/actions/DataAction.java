@@ -16,8 +16,8 @@
 
 package org.maestro.cli.main.actions;
 
-import org.maestro.cli.data.rate.RateToHistogram;
 import org.apache.commons.cli.*;
+import org.maestro.cli.data.rate.RateToHistogram;
 
 import java.io.*;
 

@@ -15,7 +15,6 @@
  */
 package org.maestro.contrib.utils.resource;
 
-import org.maestro.contrib.utils.resource.exceptions.ResourceExchangeException;
 import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.methods.HttpGet;
@@ -24,6 +23,7 @@ import org.apache.http.conn.params.ConnRoutePNames;
 import org.apache.http.impl.client.AbstractHttpClient;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
+import org.maestro.contrib.utils.resource.exceptions.ResourceExchangeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

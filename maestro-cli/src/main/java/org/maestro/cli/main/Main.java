@@ -20,7 +20,6 @@ import org.maestro.cli.main.actions.*;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 
-
 import static java.util.Arrays.copyOfRange;
 
 public class Main {

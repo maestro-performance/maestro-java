@@ -17,13 +17,13 @@
 package org.maestro.client;
 
 import org.maestro.client.exchange.MaestroMqttClient;
+import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.notes.*;
+import org.maestro.client.notes.InternalError;
 import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
 import org.maestro.common.exceptions.MaestroException;
-import org.maestro.client.exchange.MaestroTopics;
-import org.maestro.client.notes.*;
-import org.maestro.client.notes.InternalError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

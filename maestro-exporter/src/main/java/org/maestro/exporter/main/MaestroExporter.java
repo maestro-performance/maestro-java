@@ -19,6 +19,7 @@ package org.maestro.exporter.main;
 
 import io.prometheus.client.Counter;
 import io.prometheus.client.exporter.HTTPServer;
+import org.maestro.client.Maestro;
 import org.maestro.client.notes.*;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
@@ -27,12 +28,11 @@ import org.maestro.exporter.collectors.ConnectionCount;
 import org.maestro.exporter.collectors.MessageCount;
 import org.maestro.exporter.collectors.PingInfo;
 import org.maestro.exporter.collectors.RateCount;
-import org.maestro.client.Maestro;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 import java.io.IOException;
+import java.util.List;
 
 
 public class MaestroExporter {

@@ -22,7 +22,7 @@ import org.maestro.inspector.activemq.JolokiaConverter;
 
 import java.util.List;
 
-import static org.maestro.inspector.activemq.JolokiaUtils.*;
+import static org.maestro.inspector.activemq.JolokiaUtils.getLong;
 
 public class JVMMemoryConverter implements JolokiaConverter {
     private final List<JVMMemoryInfo> jvmMemoryInfos;

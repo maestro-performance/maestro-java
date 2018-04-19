@@ -16,8 +16,8 @@
 
 package org.maestro.tests.incremental.singlepoint;
 
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.client.Maestro;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.SinglePointProfile;
 import org.maestro.tests.incremental.IncrementalTestProfile;
 import org.slf4j.Logger;

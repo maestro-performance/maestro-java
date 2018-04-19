@@ -16,15 +16,15 @@
 
 package org.maestro.worker.common;
 
+import org.junit.Assert;
+import org.junit.Rule;
+import org.junit.Test;
+import org.junit.rules.TemporaryFolder;
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
 import org.maestro.common.worker.*;
 import org.maestro.common.writers.OneToOneWorkerChannel;
 import org.maestro.common.writers.RateWriter;
-import org.junit.Assert;
-import org.junit.Rule;
-import org.junit.Test;
-import org.junit.rules.TemporaryFolder;
 
 import java.io.File;
 import java.io.IOException;

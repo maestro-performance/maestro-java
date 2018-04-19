@@ -17,7 +17,6 @@
 package org.maestro.plotter.rate;
 
 
-
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.QuoteMode;
@@ -25,7 +24,8 @@ import org.maestro.plotter.common.readers.CompressedCsvReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.*;
+import java.io.IOException;
+import java.io.Reader;
 
 /**
  * A reader for the rate information

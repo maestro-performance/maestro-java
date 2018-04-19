@@ -16,10 +16,10 @@
 
 package org.maestro.worker.tests.support.runner;
 
-import org.maestro.common.worker.MaestroWorker;
-import org.maestro.client.exchange.MaestroTopics;
-import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 import org.apache.commons.io.FileUtils;
+import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.common.worker.MaestroWorker;
+import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
 import java.io.File;
 import java.net.URL;

@@ -16,8 +16,8 @@
 
 package org.maestro.cli.main.actions;
 
-import org.maestro.reports.ReportsDownloader;
 import org.apache.commons.cli.*;
+import org.maestro.reports.ReportsDownloader;
 
 public class DownloadAction extends Action {
     private CommandLine cmdLine;

@@ -16,10 +16,6 @@
 
 package org.maestro.worker.common;
 
-import org.maestro.common.worker.MaestroReceiverWorker;
-import org.maestro.common.worker.MaestroWorker;
-import org.maestro.common.worker.WorkerOptions;
-import org.maestro.common.worker.WorkerStateInfo;
 import org.HdrHistogram.EncodableHistogram;
 import org.HdrHistogram.Histogram;
 import org.HdrHistogram.HistogramLogReader;
@@ -28,6 +24,10 @@ import org.junit.Assert;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
+import org.maestro.common.worker.MaestroReceiverWorker;
+import org.maestro.common.worker.MaestroWorker;
+import org.maestro.common.worker.WorkerOptions;
+import org.maestro.common.worker.WorkerStateInfo;
 
 import java.io.File;
 import java.io.IOException;

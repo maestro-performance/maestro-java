@@ -16,11 +16,9 @@
 
 package org.maestro.reports.files;
 
-import org.maestro.common.test.InspectorProperties;
+import org.apache.commons.io.FilenameUtils;
 import org.maestro.common.test.MaestroTestProperties;
 import org.maestro.common.test.MaestroTestPropertiesBuilder;
-import org.maestro.common.test.TestProperties;
-import org.apache.commons.io.FilenameUtils;
 
 import java.io.File;
 import java.io.IOException;

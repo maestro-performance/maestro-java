@@ -17,12 +17,12 @@
 package org.maestro.worker.tests.support.runner;
 
 import net.orpiske.jms.test.runner.JmsTestRunner;
+import org.junit.runner.notification.RunNotifier;
+import org.junit.runners.model.InitializationError;
 import org.maestro.client.Maestro;
 import org.maestro.worker.tests.support.annotations.MaestroPeer;
 import org.maestro.worker.tests.support.annotations.ReceivingPeer;
 import org.maestro.worker.tests.support.annotations.SendingPeer;
-import org.junit.runner.notification.RunNotifier;
-import org.junit.runners.model.InitializationError;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

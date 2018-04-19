@@ -17,8 +17,6 @@
 package org.maestro.plotter.inspector.graph;
 
 import org.junit.Test;
-import org.maestro.plotter.common.exceptions.EmptyDataSet;
-import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
 import org.maestro.plotter.inspector.memoryareas.MemoryAreasDataSet;
 import org.maestro.plotter.inspector.memoryareas.MemoryAreasProcessor;
 import org.maestro.plotter.inspector.memoryareas.MemoryAreasReader;

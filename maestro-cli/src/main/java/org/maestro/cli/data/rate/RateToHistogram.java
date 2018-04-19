@@ -17,12 +17,12 @@
 
 package org.maestro.cli.data.rate;
 
-import org.maestro.common.writers.RateWriter;
 import org.HdrHistogram.Histogram;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.QuoteMode;
 import org.apache.commons.io.IOUtils;
+import org.maestro.common.writers.RateWriter;
 
 import java.io.*;
 import java.time.LocalDateTime;

@@ -16,9 +16,9 @@
 
 package org.maestro.common.worker;
 
+import org.HdrHistogram.Histogram;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.writers.OneToOneWorkerChannel;
-import org.HdrHistogram.Histogram;
 
 /**
  * A common interface for any type of Maestro worker.

@@ -16,11 +16,11 @@
 
 package org.maestro.worker.common;
 
+import org.HdrHistogram.Histogram;
 import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.worker.MaestroReceiverWorker;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.writers.LatencyWriter;
-import org.HdrHistogram.Histogram;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

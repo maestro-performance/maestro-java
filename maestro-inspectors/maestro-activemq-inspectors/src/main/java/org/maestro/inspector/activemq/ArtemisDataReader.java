@@ -22,17 +22,20 @@ import org.jolokia.client.request.J4pReadRequest;
 import org.jolokia.client.request.J4pReadResponse;
 import org.json.simple.JSONObject;
 import org.maestro.common.inspector.types.*;
-import org.maestro.inspector.activemq.converter.MapConverter;
 import org.maestro.inspector.activemq.converter.JVMMemoryConverter;
+import org.maestro.inspector.activemq.converter.MapConverter;
 import org.maestro.inspector.activemq.converter.QueueInfoConverter;
 import org.maestro.inspector.activemq.types.ArtemisProductInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.management.MalformedObjectNameException;
-import java.util.*;
+import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.Map;
 
-import static org.maestro.inspector.activemq.JolokiaUtils.*;
+import static org.maestro.inspector.activemq.JolokiaUtils.getLong;
 
 public class ArtemisDataReader {
     private static final Logger logger = LoggerFactory.getLogger(ArtemisDataReader.class);

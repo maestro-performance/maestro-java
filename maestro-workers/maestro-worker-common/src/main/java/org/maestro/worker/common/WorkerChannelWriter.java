@@ -16,13 +16,13 @@
 
 package org.maestro.worker.common;
 
+import org.agrona.concurrent.IdleStrategy;
+import org.agrona.concurrent.SleepingIdleStrategy;
 import org.maestro.common.worker.MaestroReceiverWorker;
 import org.maestro.common.worker.MaestroSenderWorker;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.writers.OneToOneWorkerChannel;
 import org.maestro.common.writers.RateWriter;
-import org.agrona.concurrent.IdleStrategy;
-import org.agrona.concurrent.SleepingIdleStrategy;
 
 import java.io.File;
 import java.io.IOException;

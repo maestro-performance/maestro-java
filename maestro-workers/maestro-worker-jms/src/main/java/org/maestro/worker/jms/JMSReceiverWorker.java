@@ -16,6 +16,8 @@
 
 package org.maestro.worker.jms;
 
+import org.HdrHistogram.Histogram;
+import org.HdrHistogram.SingleWriterRecorder;
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
 import org.maestro.common.duration.TestDuration;
@@ -26,8 +28,6 @@ import org.maestro.common.worker.MaestroReceiverWorker;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.common.worker.WorkerStateInfo;
 import org.maestro.common.writers.OneToOneWorkerChannel;
-import org.HdrHistogram.Histogram;
-import org.HdrHistogram.SingleWriterRecorder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

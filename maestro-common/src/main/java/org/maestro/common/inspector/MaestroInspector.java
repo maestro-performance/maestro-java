@@ -21,7 +21,6 @@ import org.maestro.common.duration.TestDuration;
 import org.maestro.common.exceptions.DurationParseException;
 
 import java.io.File;
-import java.net.MalformedURLException;
 
 public interface MaestroInspector extends TestDuration.TestProgress {
 

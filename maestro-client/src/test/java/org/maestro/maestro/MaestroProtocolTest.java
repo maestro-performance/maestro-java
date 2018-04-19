@@ -16,16 +16,16 @@
 
 package org.maestro.maestro;
 
-import org.maestro.client.exchange.MaestroDeserializer;
 import org.junit.Test;
+import org.maestro.client.exchange.MaestroDeserializer;
 import org.maestro.client.notes.*;
 import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.MaestroNoteType;
 
-import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
 
 public class MaestroProtocolTest {
 

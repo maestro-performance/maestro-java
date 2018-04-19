@@ -16,10 +16,10 @@
 
 package org.maestro.tests;
 
-import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.client.Maestro;
-import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.client.notes.PingResponse;
+import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.reports.ReportsDownloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

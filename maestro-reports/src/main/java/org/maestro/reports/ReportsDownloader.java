@@ -16,17 +16,14 @@
 
 package org.maestro.reports;
 
-import org.maestro.common.URLUtils;
+import org.apache.http.HttpStatus;
 import org.maestro.contrib.utils.Downloader;
 import org.maestro.contrib.utils.resource.exceptions.ResourceExchangeException;
-import org.apache.http.HttpStatus;
 import org.maestro.reports.organizer.DefaultOrganizer;
 import org.maestro.reports.organizer.Organizer;
-import org.maestro.reports.organizer.TestTracker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;

@@ -16,7 +16,6 @@
 
 package org.maestro.worker.common;
 
-import org.maestro.client.notes.*;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.common.ds.MaestroDataServer;
 

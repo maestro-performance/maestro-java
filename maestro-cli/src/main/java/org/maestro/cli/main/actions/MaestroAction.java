@@ -15,10 +15,10 @@
  */
 package org.maestro.cli.main.actions;
 
-import org.maestro.common.exceptions.MaestroException;
+import org.apache.commons.cli.*;
 import org.maestro.client.Maestro;
 import org.maestro.common.client.notes.MaestroNote;
-import org.apache.commons.cli.*;
+import org.maestro.common.exceptions.MaestroException;
 
 import java.util.List;
 
