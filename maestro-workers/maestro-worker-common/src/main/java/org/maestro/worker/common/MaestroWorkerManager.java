@@ -150,37 +150,37 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         logger.debug("Set request received");
 
         switch (note.getOption()) {
-//            case Option.MAESTRO_NOTE_OPT_SET_BROKER: {
-//                workerOptions.setBrokerURL(note.getValue());
-//                break;
-//            }
-//            case Option.MAESTRO_NOTE_OPT_SET_DURATION_TYPE: {
-//                workerOptions.setDuration(note.getValue());
-//                break;
-//            }
-//            case Option.MAESTRO_NOTE_OPT_SET_LOG_LEVEL: {
-//                workerOptions.setLogLevel(note.getValue());
-//                break;
-//            }
-//            case Option.MAESTRO_NOTE_OPT_SET_PARALLEL_COUNT: {
-//                workerOptions.setParallelCount(note.getValue());
-//                break;
-//            }
-//            case Option.MAESTRO_NOTE_OPT_SET_MESSAGE_SIZE: {
-//                workerOptions.setMessageSize(note.getValue());
-//                break;
-//            }
-//            case Option.MAESTRO_NOTE_OPT_SET_THROTTLE: {
-//                workerOptions.setThrottle(note.getValue());
-//                break;
-//            }
-//            case Option.MAESTRO_NOTE_OPT_SET_RATE: {
-//                workerOptions.setRate(note.getValue());
-//                break;
-//            }
-//            case Option.MAESTRO_NOTE_OPT_FCL: {
-//                workerOptions.setFcl(note.getValue());
-//            }
+            case MAESTRO_NOTE_OPT_SET_BROKER: {
+                workerOptions.setBrokerURL(note.getValue());
+                break;
+            }
+            case MAESTRO_NOTE_OPT_SET_DURATION_TYPE: {
+                workerOptions.setDuration(note.getValue());
+                break;
+            }
+            case MAESTRO_NOTE_OPT_SET_LOG_LEVEL: {
+                workerOptions.setLogLevel(note.getValue());
+                break;
+            }
+            case MAESTRO_NOTE_OPT_SET_PARALLEL_COUNT: {
+                workerOptions.setParallelCount(note.getValue());
+                break;
+            }
+            case MAESTRO_NOTE_OPT_SET_MESSAGE_SIZE: {
+                workerOptions.setMessageSize(note.getValue());
+                break;
+            }
+            case MAESTRO_NOTE_OPT_SET_THROTTLE: {
+                workerOptions.setThrottle(note.getValue());
+                break;
+            }
+            case MAESTRO_NOTE_OPT_SET_RATE: {
+                workerOptions.setRate(note.getValue());
+                break;
+            }
+            case MAESTRO_NOTE_OPT_FCL: {
+                workerOptions.setFcl(note.getValue());
+            }
         }
     }
 
@@ -236,18 +236,18 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     @Override
     public void handle(GetRequest note) {
         logger.info("A get request has arrived");
-//        switch (note.getOption()) {
-//            case GetOption.MAESTRO_NOTE_OPT_GET_DS: {
-//                String dataServerAddress = dataServer.getServerURL();
-//
-//                GetResponse response = new GetResponse();
-//
-//                response.setOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
-//                response.setValue(dataServerAddress);
-//
-//                client.getResponse(response);
-//            }
-//        }
+        switch (note.getOption()) {
+            case MAESTRO_NOTE_OPT_GET_DS: {
+                String dataServerAddress = dataServer.getServerURL();
+
+                GetResponse response = new GetResponse();
+
+                response.setOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
+                response.setValue(dataServerAddress);
+
+                client.getResponse(response);
+            }
+        }
 
     }
 }
