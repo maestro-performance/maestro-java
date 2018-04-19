@@ -22,14 +22,13 @@ import org.maestro.client.notes.StartInspector;
 import org.maestro.client.notes.StopInspector;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.inspector.MaestroInspector;
-import org.maestro.worker.common.ds.MaestroDataServer;
 import org.maestro.worker.common.MaestroWorkerManager;
+import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.HashMap;
 
 public class InspectorManager extends MaestroWorkerManager implements MaestroInspectorEventListener {
@@ -40,6 +39,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
     private MaestroInspector inspector;
     private File logDir;
     private HashMap<String, String> inspectorMap = new HashMap<>();
+    private String url;
 
     public InspectorManager(final String maestroURL, final String host, final MaestroDataServer dataServer, final File logDir) throws MaestroException
     {
@@ -51,6 +51,10 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         inspectorMap.put("ArtemisInspector", "org.maestro.inspector.activemq.ArtemisInspector");
     }
 
+    public void setUrl(String url) {
+        this.url = url;
+    }
+
     private void createInspector(final String inspectorType) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
         @SuppressWarnings("unchecked")
         Class<MaestroInspector> clazz = (Class<MaestroInspector>) Class.forName(inspectorType);
@@ -58,6 +62,13 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         inspector = clazz.newInstance();
         inspector.setEndpoint(getClient());
         inspector.setBaseLogDir(logDir);
+
+        try {
+            inspector.setUrl(url);
+        } catch (MalformedURLException e) {
+            logger.error("Unable to parse management interface URL {}: {}", url, e.getMessage(), e);
+            getClient().replyInternalError();
+        }
     }
 
     @Override
@@ -89,28 +100,11 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
 
         if (note.getOption() == SetRequest.Option.MAESTRO_NOTE_OPT_SET_MI) {
             String value = note.getValue();
-            try {
-                URL url = new URL(value);
 
-                /*
-                 * Jolokia client does not handle well the userinfo part of the URL ... that's
-                 * why it reformats the URL without it.
-                 */
-                String newUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/" + url.getPath();
-                inspector.setUrl(newUrl);
-
-                String userInfo = url.getUserInfo();
-                if (userInfo != null) {
-                    String[] parts = userInfo.split(":");
-                    String username = parts[0];
-                    inspector.setUser(username);
-
-                    if (parts.length == 2) {
-                        inspector.setPassword(parts[1]);
-                    }
-                }
-            } catch (MalformedURLException e) {
-                logger.error("Unable to parse management interface URL {}: {}", value, e.getMessage(), e);
+            if (value != null)
+                setUrl(value);
+            else {
+                logger.error("Unable to set management interface URL {}", value);
                 getClient().replyInternalError();
             }
         }

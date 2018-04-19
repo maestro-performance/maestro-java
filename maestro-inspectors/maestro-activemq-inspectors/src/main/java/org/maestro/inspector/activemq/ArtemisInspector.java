@@ -34,6 +34,8 @@ import org.slf4j.LoggerFactory;
 import javax.management.MalformedObjectNameException;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.time.LocalDateTime;
 import java.util.List;
 
@@ -60,8 +62,26 @@ public class ArtemisInspector implements MaestroInspector {
 
     }
 
-    public void setUrl(final String url) {
-        this.url = url;
+    public void setUrl(final String value) throws MalformedURLException {
+        URL url = new URL(value);
+
+        /*
+         * Jolokia client does not handle well the userinfo part of the URL ... that's
+         * why it reformats the URL without it.
+         */
+        String newUrl = url.getProtocol() + "://" + url.getHost() + ":" + url.getPort() + "/" + url.getPath();
+        this.setUrl(newUrl);
+
+        String userInfo = url.getUserInfo();
+        if (userInfo != null) {
+            String[] parts = userInfo.split(":");
+            String username = parts[0];
+            this.setUser(username);
+
+            if (parts.length == 2) {
+                this.setPassword(parts[1]);
+            }
+        }
     }
 
     public void setUser(final String user) {
