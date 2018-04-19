@@ -14,23 +14,20 @@
  * limitations under the License.
  */
 
-package org.maestro.worker.base;
+package org.maestro.worker.common;
 
-import org.maestro.common.worker.WorkerStateInfo;
+import org.maestro.client.notes.*;
+import org.maestro.common.exceptions.MaestroException;
+import org.maestro.worker.common.ds.MaestroDataServer;
 
+/**
+ * A worker manager that is void of workers. It is used for running a standalone data server.
+ */
+public class VoidWorkerManager extends MaestroWorkerManager {
 
-public class WorkerStateInfoUtil {
-
-    /**
-     * Utility to check if the workers exited cleanly or not
-     */
-    public static boolean isCleanExit(WorkerStateInfo wsi) {
-        if (wsi.getExitStatus() == WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS) {
-            return true;
-        }
-
-        return wsi.getExitStatus() == WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED;
-
+    public VoidWorkerManager(final String maestroURL, final String role, final String host,
+                             final MaestroDataServer dataServer) throws MaestroException
+    {
+        super(maestroURL, role, host, dataServer);
     }
-
 }

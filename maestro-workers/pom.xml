@@ -29,6 +29,7 @@
     <packaging>pom</packaging>
 
     <modules>
+        <module>maestro-worker-common</module>
         <module>maestro-worker-jms</module>
     </modules>
     

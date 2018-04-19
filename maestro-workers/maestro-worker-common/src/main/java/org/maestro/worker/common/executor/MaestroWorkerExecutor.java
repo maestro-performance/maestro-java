@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.maestro.worker.main;
+package org.maestro.worker.common.executor;
 
 import org.maestro.client.exchange.AbstractMaestroPeer;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.client.exchange.AbstractMaestroExecutor;
-import org.maestro.worker.base.ConcurrentWorkerManager;
-import org.maestro.worker.ds.MaestroDataServer;
+import org.maestro.worker.common.ConcurrentWorkerManager;
+import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

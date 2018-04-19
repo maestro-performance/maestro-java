@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.maestro.worker.ds;
+package org.maestro.worker.common.ds;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.eclipse.jetty.server.Handler;

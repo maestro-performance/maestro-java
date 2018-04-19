@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.maestro.worker.base;
+package org.maestro.worker.common;
 
 import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.evaluators.Evaluator;

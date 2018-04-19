@@ -31,8 +31,8 @@ import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
-import org.maestro.worker.base.MaestroWorkerManager;
-import org.maestro.worker.ds.MaestroDataServer;
+import org.maestro.worker.common.MaestroWorkerManager;
+import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

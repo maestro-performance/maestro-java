@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.maestro.worker.base;
+package org.maestro.worker.common;
 
 import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.worker.MaestroReceiverWorker;

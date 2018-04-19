@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.maestro.worker.base;
+package org.maestro.worker.common;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.notes.*;
@@ -24,7 +24,7 @@ import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.evaluators.SoftLatencyEvaluator;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.*;
-import org.maestro.worker.ds.MaestroDataServer;
+import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,7 +32,7 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.maestro.worker.base.WorkerStateInfoUtil.isCleanExit;
+import static org.maestro.worker.common.WorkerStateInfoUtil.isCleanExit;
 
 /**
  * A specialized worker manager that can manage concurrent test workers (ie.: senders/receivers)

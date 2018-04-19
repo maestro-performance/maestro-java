@@ -24,10 +24,9 @@ import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.NetworkUtils;
 import org.maestro.common.exceptions.MaestroException;
-import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.inspector.base.InspectorManager;
-import org.maestro.worker.ds.MaestroDataServer;
-import org.maestro.worker.main.MaestroWorkerExecutor;
+import org.maestro.worker.common.ds.MaestroDataServer;
+import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
 import java.io.File;
 import java.net.UnknownHostException;

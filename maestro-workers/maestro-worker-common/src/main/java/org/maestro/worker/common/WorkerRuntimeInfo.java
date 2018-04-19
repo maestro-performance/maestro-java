@@ -14,20 +14,14 @@
  * limitations under the License.
  */
 
-package org.maestro.worker.base;
+package org.maestro.worker.common;
 
-import org.maestro.client.notes.*;
-import org.maestro.common.exceptions.MaestroException;
-import org.maestro.worker.ds.MaestroDataServer;
+import org.maestro.common.worker.MaestroWorker;
 
 /**
- * A worker manager that is void of workers. It is used for running a standalone data server.
+ * Worker runtime information
  */
-public class VoidWorkerManager extends MaestroWorkerManager {
-
-    public VoidWorkerManager(final String maestroURL, final String role, final String host,
-                             final MaestroDataServer dataServer) throws MaestroException
-    {
-        super(maestroURL, role, host, dataServer);
-    }
+public class WorkerRuntimeInfo {
+    public Thread thread;
+    public MaestroWorker worker;
 }

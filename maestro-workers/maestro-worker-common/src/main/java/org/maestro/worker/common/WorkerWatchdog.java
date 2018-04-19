@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.maestro.worker.base;
+package org.maestro.worker.common;
 
 import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.worker.WorkerStateInfo;
@@ -27,7 +27,7 @@ import java.util.List;
 import java.util.Objects;
 import java.util.function.Consumer;
 
-import static org.maestro.worker.base.WorkerStateInfoUtil.isCleanExit;
+import static org.maestro.worker.common.WorkerStateInfoUtil.isCleanExit;
 
 /**
  * The watchdog inspects the active workers to check whether they are still active, completed their job

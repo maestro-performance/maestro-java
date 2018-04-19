@@ -22,8 +22,8 @@ import org.maestro.client.notes.StartInspector;
 import org.maestro.client.notes.StopInspector;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.inspector.MaestroInspector;
-import org.maestro.worker.base.MaestroWorkerManager;
-import org.maestro.worker.ds.MaestroDataServer;
+import org.maestro.worker.common.ds.MaestroDataServer;
+import org.maestro.worker.common.MaestroWorkerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

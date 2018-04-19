@@ -14,14 +14,23 @@
  * limitations under the License.
  */
 
-package org.maestro.worker.base;
+package org.maestro.worker.common;
 
-import org.maestro.common.worker.MaestroWorker;
+import org.maestro.common.worker.WorkerStateInfo;
 
-/**
- * Worker runtime information
- */
-public class WorkerRuntimeInfo {
-    public Thread thread;
-    public MaestroWorker worker;
+
+public class WorkerStateInfoUtil {
+
+    /**
+     * Utility to check if the workers exited cleanly or not
+     */
+    public static boolean isCleanExit(WorkerStateInfo wsi) {
+        if (wsi.getExitStatus() == WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS) {
+            return true;
+        }
+
+        return wsi.getExitStatus() == WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED;
+
+    }
+
 }

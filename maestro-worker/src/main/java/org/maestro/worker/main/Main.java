@@ -25,9 +25,10 @@ import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.client.exchange.MaestroTopics;
 import org.apache.commons.cli.*;
-import org.maestro.worker.base.ConcurrentWorkerManager;
-import org.maestro.worker.base.VoidWorkerManager;
-import org.maestro.worker.ds.MaestroDataServer;
+import org.maestro.worker.common.ConcurrentWorkerManager;
+import org.maestro.worker.common.VoidWorkerManager;
+import org.maestro.worker.common.ds.MaestroDataServer;
+import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
 import java.io.File;
 import java.net.UnknownHostException;
