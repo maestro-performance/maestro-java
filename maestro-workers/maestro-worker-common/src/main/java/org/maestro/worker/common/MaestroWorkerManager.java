@@ -185,7 +185,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     }
 
 
-    protected void writeTestProperties(final File testLogDir) throws IOException, URISyntaxException, DurationParseException {
+    protected void writeTestProperties(final File testLogDir) throws IOException, DurationParseException {
         TestProperties testProperties = new TestProperties();
 
         testProperties.setBrokerUri(workerOptions.getBrokerURL());
@@ -200,10 +200,19 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         testProperties.setRate(workerOptions.getRate());
         testProperties.setFcl(workerOptions.getFcl());
 
-        final URLQuery urlQuery = new URLQuery(workerOptions.getBrokerURL());
 
-        testProperties.setProtocol(urlQuery.getString("protocol", "AMQP"));
-        testProperties.setLimitDestinations(urlQuery.getInteger("limitDestinations", 1));
+        final URLQuery urlQuery;
+        try {
+            urlQuery = new URLQuery(workerOptions.getBrokerURL());
+
+            testProperties.setProtocol(urlQuery.getString("protocol", "AMQP"));
+            testProperties.setLimitDestinations(urlQuery.getInteger("limitDestinations", 1));
+        } catch (URISyntaxException e) {
+            logger.warn("The URL provided by the front-end is invalid/non-parseable");
+
+            testProperties.setProtocol("undefined");
+            testProperties.setLimitDestinations(0);
+        }
 
         // TODO: collect this
         testProperties.setApiName("JMS");
