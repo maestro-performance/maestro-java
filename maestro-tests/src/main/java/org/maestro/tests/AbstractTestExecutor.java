@@ -61,6 +61,17 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     }
 
     /**
+     * Start connected peers
+     * @param inspectorName the name of the inspector to use
+     * @throws MaestroConnectionException
+     */
+    protected void startServices(final String inspectorName) throws MaestroConnectionException {
+        maestro.startInspector(inspectorName);
+        maestro.startReceiver();
+        maestro.startSender();
+    }
+
+    /**
      * Try to guess the number of connected peers
      * @return the number of connected peers (best guess)
      * @throws MaestroConnectionException

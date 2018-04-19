@@ -80,6 +80,7 @@ if (parallelCount == null) {
 }
 
 managementInterface = System.getenv("MANAGEMENT_INTERFACE");
+inspectorName = System.getenv("INSPECTOR_NAME");
 
 LogConfigurator.verbose()
 
@@ -97,15 +98,22 @@ testProfile.setMaximumLatency(20000)
 testProfile.setRate(Integer.parseInt(rate))
 testProfile.setParallelCount(Integer.parseInt(parallelCount))
 
-FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, reportsDownloader, testProfile)
 
 if (managementInterface != null) {
-    maestro.setManagementInterface(managementInterface)
+    if (inspectorName != null) {
+        testProfile.setInspectorName(inspectorName)
+        testProfile.setManagementInterface(managementInterface)
+    }
+    else {
+        println "A management interface was provided by no inspector name was given. Ignoring ..."
+    }
 }
 else {
     println "No management interface address was given"
 }
 
+
+FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, reportsDownloader, testProfile)
 if (!testExecutor.run()) {
     maestro.stop()
 

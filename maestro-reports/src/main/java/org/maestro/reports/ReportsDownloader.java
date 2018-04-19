@@ -83,10 +83,10 @@ public class ReportsDownloader {
         final String destinationDir = organizer.organize(targetURL, hostType);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Downloading file {} to {}", targetURL, destinationDir);
+            logger.debug("Downloading the {} report file {} to {}", hostType, targetURL, destinationDir);
         }
         else {
-            logger.info("Downloading file {}", targetURL);
+            logger.info("Downloading the {} report file {}", hostType, targetURL);
         }
 
         try {

@@ -32,14 +32,14 @@ public class FixedRateTestProfile extends AbstractTestProfile {
     protected int rate;
     protected int parallelCount;
     private String brokerURL;
+    private String managementInterface;
+    private String inspectorName;
 
     private int maximumLatency = 600;
     private TestDuration duration;
     private String messageSize;
 
-    public FixedRateTestProfile() {
-
-    }
+    public FixedRateTestProfile() {}
 
     public void setParallelCount(int parallelCount) {
         this.parallelCount = parallelCount;
@@ -71,7 +71,7 @@ public class FixedRateTestProfile extends AbstractTestProfile {
         return duration;
     }
 
-    public void setDuration(TestDuration duration) {
+    public void setDuration(final TestDuration duration) {
         this.duration = duration;
     }
 
@@ -87,8 +87,24 @@ public class FixedRateTestProfile extends AbstractTestProfile {
         return brokerURL;
     }
 
-    public void setBrokerURL(String brokerURL) {
+    public void setBrokerURL(final String brokerURL) {
         this.brokerURL = brokerURL;
+    }
+
+    public String getManagementInterface() {
+        return managementInterface;
+    }
+
+    public void setManagementInterface(final String managementInterface) {
+        this.managementInterface = managementInterface;
+    }
+
+    public String getInspectorName() {
+        return inspectorName;
+    }
+
+    public void setInspectorName(final String inspectorName) {
+        this.inspectorName = inspectorName;
     }
 
     @Override
@@ -110,6 +126,14 @@ public class FixedRateTestProfile extends AbstractTestProfile {
 
         logger.info("Setting message size to {}", getMessageSize());
         maestro.setMessageSize(getMessageSize());
+
+        if (getManagementInterface() != null) {
+            if (getInspectorName() != null) {
+                logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
+                        getInspectorName());
+                maestro.setManagementInterface(getManagementInterface());
+            }
+        }
     }
 
     @Override
