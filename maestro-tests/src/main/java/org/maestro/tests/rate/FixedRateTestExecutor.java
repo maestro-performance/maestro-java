@@ -62,7 +62,13 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             testProfile.apply(getMaestro());
             testProcessor.resetNotifications();
 
-            startServices();
+            if (testProfile.getInspectorName() != null) {
+                startServices(testProfile.getInspectorName());
+            }
+            else {
+                startServices();
+            }
+
             processNotifications(testProcessor, repeat, numPeers);
 
             if (testProcessor.isSuccessful()) {
