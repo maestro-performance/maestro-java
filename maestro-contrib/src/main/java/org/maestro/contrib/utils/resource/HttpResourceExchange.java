@@ -17,19 +17,17 @@ package org.maestro.contrib.utils.resource;
 
 import org.apache.http.*;
 import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.http.conn.params.ConnRoutePNames;
-import org.apache.http.impl.client.AbstractHttpClient;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.impl.conn.ProxySelectorRoutePlanner;
+import org.apache.http.impl.client.CloseableHttpClient;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.maestro.contrib.utils.resource.exceptions.ResourceExchangeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.net.ProxySelector;
 import java.net.URI;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -58,7 +56,7 @@ public class HttpResourceExchange implements ResourceExchange {
     }
 
 
-    private final AbstractHttpClient httpClient = new DefaultHttpClient();
+    private final CloseableHttpClient httpClient;
 
 
     /**
@@ -66,11 +64,9 @@ public class HttpResourceExchange implements ResourceExchange {
      * proxy information if available
      */
     public HttpResourceExchange() {
-        ProxySelectorRoutePlanner routePlanner = new ProxySelectorRoutePlanner(
-                httpClient.getConnectionManager().getSchemeRegistry(),
-                ProxySelector.getDefault());
-
-        httpClient.setRoutePlanner(routePlanner);
+        httpClient = HttpClientBuilder
+                .create()
+                .build();
     }
 
     /**
@@ -88,8 +84,13 @@ public class HttpResourceExchange implements ResourceExchange {
         if (proxy != null) {
             HttpHost proxyHost = new HttpHost(proxy, port);
 
-            httpClient.getParams().setParameter(
-                    ConnRoutePNames.DEFAULT_PROXY, proxyHost);
+            httpClient = HttpClientBuilder.create()
+                    .setProxy(proxyHost)
+                    .build();
+        }
+        else {
+            httpClient = HttpClientBuilder.create()
+                    .build();
         }
     }
 
@@ -157,9 +158,8 @@ public class HttpResourceExchange implements ResourceExchange {
      */
     public ResourceInfo info(URI uri) throws ResourceExchangeException {
         HttpHead httpHead = new HttpHead(uri);
-        HttpResponse response;
-        try {
-            response = httpClient.execute(httpHead);
+
+        try (CloseableHttpResponse response = httpClient.execute(httpHead)) {
 
             int statusCode = response.getStatusLine().getStatusCode();
 
@@ -204,6 +204,7 @@ public class HttpResourceExchange implements ResourceExchange {
             throw new ResourceExchangeException("I/O error: " + e.getMessage(), uri.toString(),
                     e);
         }
+
     }
 
     /*
@@ -212,11 +213,8 @@ public class HttpResourceExchange implements ResourceExchange {
      */
     public Resource<InputStream> get(URI uri) throws ResourceExchangeException {
         HttpGet httpget = new HttpGet(uri);
-        HttpResponse response;
-        try {
 
-            response = httpClient.execute(httpget);
-
+        try (CloseableHttpResponse response = httpClient.execute(httpget)) {
             int statusCode = response.getStatusLine().getStatusCode();
 
             if (statusCode == HttpStatus.SC_OK) {
@@ -273,7 +271,11 @@ public class HttpResourceExchange implements ResourceExchange {
      */
     public void release() {
         if (httpClient != null) {
-            httpClient.getConnectionManager().shutdown();
+            try {
+                httpClient.close();
+            } catch (IOException e) {
+                logger.debug("Failed to close HTTP resource");
+            }
         }
     }
 
