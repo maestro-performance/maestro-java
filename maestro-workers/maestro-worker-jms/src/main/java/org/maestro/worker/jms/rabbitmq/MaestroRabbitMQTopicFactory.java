@@ -23,6 +23,7 @@ import com.rabbitmq.jms.admin.RMQDestination;
  * RabbitMQ topic factory uses a different constructor signature. This
  * class abstracts it to make it compatible
  */
+@SuppressWarnings("serial")
 public class MaestroRabbitMQTopicFactory extends RMQDestination {
     public MaestroRabbitMQTopicFactory(final String queue) {
         super(queue, false, false);

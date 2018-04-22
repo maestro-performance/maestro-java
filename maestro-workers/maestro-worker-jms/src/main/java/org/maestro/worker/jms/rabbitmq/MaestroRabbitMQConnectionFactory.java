@@ -22,6 +22,7 @@ import com.rabbitmq.jms.admin.RMQConnectionFactory;
  * RabbitMQ connection factory uses a different constructor signature.
  * This class abstracts it to make it compatible
  */
+@SuppressWarnings("serial")
 public class MaestroRabbitMQConnectionFactory extends RMQConnectionFactory {
     public MaestroRabbitMQConnectionFactory(final String url) {
         super();
