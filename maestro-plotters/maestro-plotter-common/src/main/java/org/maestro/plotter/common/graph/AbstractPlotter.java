@@ -128,7 +128,7 @@ public abstract class AbstractPlotter<T> {
         getChartProperties().setyTitle(yTitle);
     }
 
-    protected void encode(Chart chart, File outputFile) {
+    protected void encode(Chart<?, ?> chart, File outputFile) {
         try {
             BitmapEncoder.saveBitmap(chart, outputFile.getPath(), BitmapEncoder.BitmapFormat.PNG);
         }

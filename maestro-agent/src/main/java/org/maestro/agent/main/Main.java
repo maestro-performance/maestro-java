@@ -20,6 +20,7 @@ import org.apache.commons.cli.*;
 import org.maestro.agent.base.MaestroAgent;
 import org.maestro.client.exchange.AbstractMaestroPeer;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.notes.MaestroEvent;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
@@ -125,7 +126,7 @@ public class Main {
             MaestroDataServer dataServer = new MaestroDataServer(logDir, host);
 
             MaestroWorkerExecutor executor;
-            AbstractMaestroPeer<?> maestroPeer;
+            AbstractMaestroPeer<MaestroEvent> maestroPeer;
 
             maestroPeer = new MaestroAgent(maestroUrl, "agent", host, dataServer);
             executor = new MaestroWorkerExecutor(maestroPeer, dataServer);

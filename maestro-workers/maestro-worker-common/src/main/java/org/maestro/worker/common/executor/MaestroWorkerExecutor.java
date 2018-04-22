@@ -18,6 +18,7 @@ package org.maestro.worker.common.executor;
 
 import org.maestro.client.exchange.AbstractMaestroExecutor;
 import org.maestro.client.exchange.AbstractMaestroPeer;
+import org.maestro.client.notes.MaestroEvent;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.worker.common.ConcurrentWorkerManager;
@@ -32,7 +33,7 @@ public class MaestroWorkerExecutor extends AbstractMaestroExecutor {
     private Thread dataServerThread;
 
 
-    public MaestroWorkerExecutor(final AbstractMaestroPeer maestroPeer, final MaestroDataServer dataServer) {
+    public MaestroWorkerExecutor(final AbstractMaestroPeer<MaestroEvent> maestroPeer, final MaestroDataServer dataServer) {
         super(maestroPeer);
 
         initDataServer(dataServer);

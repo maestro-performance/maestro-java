@@ -19,6 +19,7 @@ package org.maestro.inspector.main;
 import org.apache.commons.cli.*;
 import org.maestro.client.exchange.AbstractMaestroPeer;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.notes.MaestroEvent;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
@@ -129,7 +130,7 @@ public class Main {
 
         try {
             MaestroDataServer dataServer = new MaestroDataServer(logDir, host);
-            AbstractMaestroPeer<?> maestroPeer;
+            AbstractMaestroPeer<MaestroEvent> maestroPeer;
             MaestroWorkerExecutor executor;
 
             maestroPeer = new InspectorManager(maestroUrl, host, dataServer, logDir);
