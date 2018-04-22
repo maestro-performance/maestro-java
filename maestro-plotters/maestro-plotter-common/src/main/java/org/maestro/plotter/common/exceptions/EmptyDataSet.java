@@ -22,6 +22,7 @@ import org.maestro.common.exceptions.MaestroException;
 /**
  * Empty data set exception
  */
+@SuppressWarnings("serial")
 public class EmptyDataSet extends MaestroException {
     public EmptyDataSet() {
         super();

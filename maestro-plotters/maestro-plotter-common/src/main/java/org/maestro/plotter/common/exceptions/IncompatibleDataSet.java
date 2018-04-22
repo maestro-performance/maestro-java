@@ -22,6 +22,7 @@ import org.maestro.common.exceptions.MaestroException;
 /**
  * Incompatible data set exception
  */
+@SuppressWarnings("serial")
 public class IncompatibleDataSet extends MaestroException {
     public IncompatibleDataSet() {
         super();
