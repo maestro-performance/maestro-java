@@ -5,9 +5,10 @@ import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.inspector.MaestroInspector;
-import org.maestro.common.inspector.types.RouterLinkInfo;
+import org.maestro.common.inspector.types.ConnectionsInfo;
 import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.worker.TestLogUtils;
+import org.maestro.inspector.amqp.writers.ConnectionsInfoWriter;
 import org.maestro.inspector.amqp.writers.RouteLinkInfoWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -108,6 +109,7 @@ public class InterconnectInspector implements MaestroInspector {
         InspectorProperties inspectorProperties = new InspectorProperties();
 
         RouteLinkInfoWriter routerLinkInfoWriter = new RouteLinkInfoWriter(logDir, "routerLink");
+        ConnectionsInfoWriter connectionsInfoWriter = new ConnectionsInfoWriter(logDir, "connections");
 
         try {
             startedEpochMillis = System.currentTimeMillis();
@@ -131,8 +133,11 @@ public class InterconnectInspector implements MaestroInspector {
             while (duration.canContinue(this) && isRunning()) {
                 LocalDateTime now = LocalDateTime.now();
 
-//                printOutput(readData.collectRouterLinkInfo());
+
                 routerLinkInfoWriter.write(now, readData.collectRouterLinkInfo());
+                connectionsInfoWriter.write(now, readData.collectConnectionsInfo());
+
+//                printOutput(readData.collectConnectionsInfo());
 
                 Thread.sleep(5000);
             }
@@ -154,14 +159,15 @@ public class InterconnectInspector implements MaestroInspector {
             startedEpochMillis = Long.MIN_VALUE;
             closeConnection();
             routerLinkInfoWriter.close();
+            connectionsInfoWriter.close();
         }
     }
 
 //    @TODO Delete this, only support function
     @SuppressWarnings("unchecked")
-    private void printOutput(RouterLinkInfo info) throws JMSException {
+    private void printOutput(ConnectionsInfo info) throws JMSException {
 
-        List<Map<String, Object>> newList = info.getRouterLinkProperties();
+        List<Map<String, Object>> newList = info.getConnectionProperties();
 
         for (Map<String, Object> item: newList) {
             for (Map.Entry record : item.entrySet()) {

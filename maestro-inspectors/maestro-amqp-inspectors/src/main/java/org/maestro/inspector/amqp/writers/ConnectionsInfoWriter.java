@@ -2,7 +2,7 @@ package org.maestro.inspector.amqp.writers;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.maestro.common.inspector.types.RouterLinkInfo;
+import org.maestro.common.inspector.types.ConnectionsInfo;
 import org.maestro.common.writers.InspectorDataWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,23 +21,22 @@ import java.util.Map;
 /**
  * A router link information writer for AMQP Inspector.
  */
-public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>, AutoCloseable {
-    private static final Logger logger = LoggerFactory.getLogger(RouteLinkInfoWriter.class);
+public class ConnectionsInfoWriter implements InspectorDataWriter<ConnectionsInfo>, AutoCloseable {
+    private static final Logger logger = LoggerFactory.getLogger(ConnectionsInfoWriter.class);
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private BufferedWriter writer;
     private CSVPrinter csvPrinter;
 
-    public RouteLinkInfoWriter(final File logDir, final String name) throws IOException {
+    public ConnectionsInfoWriter(final File logDir, final String name) throws IOException {
         File outputFile = new File(logDir, name + ".csv");
 
         System.out.println(outputFile.getPath());
 
         writer = Files.newBufferedWriter(Paths.get(outputFile.getPath()), Charset.defaultCharset());
         csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-                .withHeader("Timestamp", "Name", "LinkType", "LinkDir", "Identity", "OperStatus",
-                        "DeliveryCount", "UndeliveredCount", "PresettledCount", "UnsettledCount",
-                        "DroppedPresettledCount", "ReleasedCount","ModifiedCount",
-                        "AcceptedCount", "RejectedCount", "Capacity"));
+                .withHeader("Timestamp", "Name", "Host", "Role", "Dir", "Opened", "Identity", "User",
+                        "sasl", "Encrypted", "sslProto", "sslCipher",
+                        "Tenant", "Authenticated", "Properties"));
     }
 
     /**
@@ -64,21 +63,23 @@ public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>,
     @SuppressWarnings("unchecked")
     private void write(final LocalDateTime now, final Object object) {
         if (object instanceof Map) {
-            final Map<String, Object> routerLinkInfo = (Map<String, Object>) object;
+            final Map<String, Object> ConnectionsInfo = (Map<String, Object>) object;
 
-            logger.debug("Router Link information: {}", routerLinkInfo);
+            logger.debug("Connections information: {}", ConnectionsInfo);
 
             try {
                 String timestamp = now.format(formatter);
 
+                System.out.println(ConnectionsInfo.get("name"));
+
                 csvPrinter.printRecord(timestamp,
-                        routerLinkInfo.get("linkName"), routerLinkInfo.get("linkDir"),
-                        routerLinkInfo.get("identity"), routerLinkInfo.get("operStatus"),
-                        routerLinkInfo.get("deliveryCount"), routerLinkInfo.get("undeliveredCount"),
-                        routerLinkInfo.get("presettledCount"), routerLinkInfo.get("unsettledCount"),
-                        routerLinkInfo.get("droppedPresettledCount"), routerLinkInfo.get("releasedCount"),
-                        routerLinkInfo.get("modifiedCount"), routerLinkInfo.get("acceptedCount"),
-                        routerLinkInfo.get("rejectedCount"), routerLinkInfo.get("capacity"));
+                        ConnectionsInfo.get("name"), ConnectionsInfo.get("host"),
+                        ConnectionsInfo.get("role"), ConnectionsInfo.get("dir"),
+                        ConnectionsInfo.get("opened"), ConnectionsInfo.get("identity"),
+                        ConnectionsInfo.get("user"), ConnectionsInfo.get("sasl"),
+                        ConnectionsInfo.get("isEncrypted"), ConnectionsInfo.get("sslProto"),
+                        ConnectionsInfo.get("sslCipher"), ConnectionsInfo.get("tenant"),
+                        ConnectionsInfo.get("isAuthenticated"), ConnectionsInfo.get("properties"));     // TODO: 4/24/18 parse properties for better formating
 
 
             } catch (IOException e) {
@@ -86,7 +87,7 @@ public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>,
             }
         }
         else {
-            logger.warn("Invalid value type for router link");
+            logger.warn("Invalid value type for connections");
         }
     }
 
@@ -97,11 +98,11 @@ public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>,
      */
     @SuppressWarnings("unchecked")
     @Override
-    public void write(final LocalDateTime now, final RouterLinkInfo data) {
-        logger.debug("Router link information: {}", data);
+    public void write(final LocalDateTime now, final ConnectionsInfo data) {
+        logger.debug("Connections information: {}", data);
 
-        List queueProperties = data.getRouterLinkProperties();
+        List connectionProperties = data.getConnectionProperties();
 
-        queueProperties.forEach(map -> write(now, map));
+        connectionProperties.forEach(map -> write(now, map));
     }
 }
