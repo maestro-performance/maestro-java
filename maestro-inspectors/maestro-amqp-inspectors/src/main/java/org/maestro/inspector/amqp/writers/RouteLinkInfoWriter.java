@@ -2,7 +2,6 @@ package org.maestro.inspector.amqp.writers;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.maestro.common.inspector.types.QueueInfo;
 import org.maestro.common.inspector.types.RouterLinkInfo;
 import org.maestro.common.writers.InspectorDataWriter;
 import org.slf4j.Logger;
@@ -16,11 +15,10 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class RouteLinkInfoWriter implements AutoCloseable {
+public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>, AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(RouteLinkInfoWriter.class);
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private BufferedWriter writer;
@@ -33,8 +31,10 @@ public class RouteLinkInfoWriter implements AutoCloseable {
 
         writer = Files.newBufferedWriter(Paths.get(outputFile.getPath()), Charset.defaultCharset());
         csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-                .withHeader("Timestamp", "Name", "MessagesAdded", "MessageCount", "MessagesAcknowledged",
-                        "MessagesExpired", "ConsumerCount"));
+                .withHeader("Timestamp", "Name", "LinkType", "LinkDir", "Identity", "OperStatus",
+                        "DeliveryCount", "UndeliveredCount", "PresettledCount", "UnsettledCount",
+                        "DroppedPresettledCount", "ReleasedCount","ModifiedCount",
+                        "AcceptedCount", "RejectedCount", "Capacity"));
     }
 
     @Override
@@ -50,10 +50,9 @@ public class RouteLinkInfoWriter implements AutoCloseable {
     }
 
 
+    @SuppressWarnings("unchecked")
     private void write(final LocalDateTime now, final Object object) {
         if (object instanceof Map) {
-//            final Map<String, Object> queueProperties = (Map<String, Object>) object;
-
             final Map<String, Object> routerLinkInfo = (Map<String, Object>) object;
 
             logger.debug("Router Link information: {}", routerLinkInfo);
@@ -61,13 +60,14 @@ public class RouteLinkInfoWriter implements AutoCloseable {
             try {
                 String timestamp = now.format(formatter);
 
-//                for (Map<Object, Object> item: routerLinkInfo) {
-//                }
-
                 csvPrinter.printRecord(timestamp,
-                        routerLinkInfo.get("linkName"), routerLinkInfo.get("capacity"),
-                        routerLinkInfo.get("acceptedCount"), routerLinkInfo.get("rejectedCount"),
-                        routerLinkInfo.get("linkType"), routerLinkInfo.get("deliveryCount"));
+                        routerLinkInfo.get("linkName"), routerLinkInfo.get("linkDir"),
+                        routerLinkInfo.get("identity"), routerLinkInfo.get("operStatus"),
+                        routerLinkInfo.get("deliveryCount"), routerLinkInfo.get("undeliveredCount"),
+                        routerLinkInfo.get("presettledCount"), routerLinkInfo.get("unsettledCount"),
+                        routerLinkInfo.get("droppedPresettledCount"), routerLinkInfo.get("releasedCount"),
+                        routerLinkInfo.get("modifiedCount"), routerLinkInfo.get("acceptedCount"),
+                        routerLinkInfo.get("rejectedCount"), routerLinkInfo.get("capacity"));
 
 
             } catch (IOException e) {
@@ -79,14 +79,13 @@ public class RouteLinkInfoWriter implements AutoCloseable {
         }
     }
 
-//    @Override
+    @SuppressWarnings("unchecked")
+    @Override
     public void write(final LocalDateTime now, final RouterLinkInfo data) {
         logger.debug("Queue information: {}", data);
 
         List queueProperties = data.getRouterLinkProperties();
 
         queueProperties.forEach(map -> write(now, map));
-
-//        queueProperties.forEach((key, value) -> write(now, key, value));
     }
 }

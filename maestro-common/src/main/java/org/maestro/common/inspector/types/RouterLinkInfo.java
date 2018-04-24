@@ -22,7 +22,7 @@ import java.util.Map;
 
 
 /**
- * A container for queue information
+ * A container for router link information
  */
 public class RouterLinkInfo implements InspectorType, RouterLinkInfoType {
     private final List<Map<String, Object>> routerLinkProperties;
@@ -37,7 +37,7 @@ public class RouterLinkInfo implements InspectorType, RouterLinkInfoType {
 
     @Override
     public String toString() {
-        return "QueueInfo{" +
+        return "RouterLinkInfo{" +
                 "productProperties=" + routerLinkProperties +
                 '}';
     }

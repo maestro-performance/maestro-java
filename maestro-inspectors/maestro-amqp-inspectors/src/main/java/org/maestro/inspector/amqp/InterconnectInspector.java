@@ -8,16 +8,16 @@ import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.common.inspector.types.RouterLinkInfo;
 import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.worker.TestLogUtils;
-import org.maestro.inspector.amqp.converter.RouterLinkInfoConverter;
+import org.maestro.inspector.amqp.converter.InterconnectInfoConverter;
 import org.maestro.inspector.amqp.writers.RouteLinkInfoWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import java.io.File;
-import java.net.MalformedURLException;
 import java.time.LocalDateTime;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
 
 public class InterconnectInspector implements MaestroInspector {
     private static final Logger logger = LoggerFactory.getLogger(InterconnectInspector.class);
@@ -100,7 +100,6 @@ public class InterconnectInspector implements MaestroInspector {
         File logDir = TestLogUtils.nextTestLogDir(this.baseLogDir);
         InspectorProperties inspectorProperties = new InspectorProperties();
 
-        RouterLinkInfoConverter convertor = new RouterLinkInfoConverter();
         RouteLinkInfoWriter routerLinkInfoWriter = new RouteLinkInfoWriter(logDir, "routerLink");
 
         try {
@@ -121,25 +120,12 @@ public class InterconnectInspector implements MaestroInspector {
                     responseConsumer,
                     messageProducer);
 
-            Message receivedMessage;
-
 
             while (duration.canContinue(this) && isRunning()) {
                 LocalDateTime now = LocalDateTime.now();
 
-                receivedMessage = readData.collectData("router.link");
-
-
-                if (receivedMessage != null) {
-                    System.out.println(receivedMessage.getStringProperty("statusCode"));
-
-                    Map receivedMap = receivedMessage.getBody(LinkedHashMap.class);
-
-                    RouterLinkInfo routerLinkInfo = convertor.parseReceivedMessage(receivedMap);
-
-                    routerLinkInfoWriter.write(now, routerLinkInfo);
-
-                }
+//                printOutput(readData.collectRouterLinkInfo());
+                routerLinkInfoWriter.write(now, readData.collectRouterLinkInfo());
 
                 Thread.sleep(5000);
             }
@@ -164,19 +150,17 @@ public class InterconnectInspector implements MaestroInspector {
         }
     }
 
-//    private void printOutput(Message message) throws JMSException {
-//        Map receivedMap = message.getBody(LinkedHashMap.class);
-//        RouterLinkInfoConverter convertor = new RouterLinkInfoConverter();
-//
-//        ArrayList<Map<Object, Object>> recordList = convertor.parseReceivedMessage(receivedMap);
-//
-//        for (Map<Object, Object> item: recordList) {
-//            for (Map.Entry record : item.entrySet()) {
-//                System.out.println("Key: " + record.getKey());
-//                System.out.println("Value: " + record.getValue());
-//            }
-//        }
-//    }
+    private void printOutput(RouterLinkInfo info) throws JMSException {
+
+        List<Map<String, Object>> newList = info.getRouterLinkProperties();
+
+        for (Map<String, Object> item: newList) {
+            for (Map.Entry record : item.entrySet()) {
+                System.out.println("Key: " + record.getKey());
+                System.out.println("Value: " + record.getValue());
+            }
+        }
+    }
 
     @Override
     public void stop() throws Exception {

@@ -2,12 +2,15 @@ package org.maestro.inspector.amqp;
 
 import org.apache.qpid.jms.message.JmsMessage;
 import org.apache.qpid.proton.amqp.Binary;
+import org.maestro.common.inspector.types.RouterLinkInfo;
+import org.maestro.inspector.amqp.converter.InterconnectInfoConverter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Map;
 
 
 public class InterconnectReadData {
@@ -27,21 +30,17 @@ public class InterconnectReadData {
         this.responseConsumer = responseConsumer;
     }
 
-    public Message collectData(String component) throws JMSException {
+    private Message collectData(String component) throws JMSException {
         requestProducer.send(createMessage(component));
 
         return collectResponse();
     }
 
-    public void sendRequest(Message message) throws JMSException {
-        requestProducer.send(message);
-    }
-
-    public Message collectResponse() throws JMSException {
+    private Message collectResponse() throws JMSException {
         return responseConsumer.receive(2000L);
     }
 
-    public Message createMessage(String component) throws JMSException {
+    private Message createMessage(String component) throws JMSException {
 
         System.out.println("org.apache.qpid.dispatch." + component);
 
@@ -65,24 +64,13 @@ public class InterconnectReadData {
         return message;
     }
 
-//    public QueueInfo collectRouterLink() {
-//        Message routerLinkInfo = null;
-//        try {
-//            routerLinkInfo = collectData("router.link");
-//
-//            Map<String, Object> queueProperties = new HashMap<>();
-//
-//            RouterLinkInfoConverter converter = new RouterLinkInfoConverter();
-//
-//            QueueInfoConverter jolokiaConverter = new QueueInfoConverter(queueProperties);
-//            jo.forEach((key, value) -> defaultJolokiaParser.parseQueueInfo(jolokiaConverter, key, value));
-//
-//
-//
-//        } catch (JMSException e) {
-//            e.printStackTrace();
-//        }
-//
-//        return new QueueInfo(queueProperties);
-//    }
+    @SuppressWarnings("unchecked")
+    RouterLinkInfo collectRouterLinkInfo() throws JMSException {
+
+        InterconnectInfoConverter convertor = new InterconnectInfoConverter();
+
+        Map receivedMessage = collectData("router.link").getBody(HashMap.class);
+
+        return new RouterLinkInfo(convertor.parseReceivedMessage(receivedMessage));
+    }
 }
