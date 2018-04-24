@@ -5,8 +5,11 @@ import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.inspector.MaestroInspector;
+import org.maestro.common.inspector.types.RouterLinkInfo;
 import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.worker.TestLogUtils;
+import org.maestro.inspector.amqp.converter.RouterLinkInfoConverter;
+import org.maestro.inspector.amqp.writers.RouteLinkInfoWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,28 +95,13 @@ public class InterconnectInspector implements MaestroInspector {
         connection.close();
     }
 
-    private Map parseReceivedMessage(Map map) {
-        Map<String, List<String>> parsedMap = new HashMap<String, List<String>>();
-
-        ArrayList attributeNames = (ArrayList) map.get("attributeNames");
-        ArrayList<ArrayList> results = (ArrayList<ArrayList>) map.get("results");  // TODO: try .values() [Collection inf] instead
-
-        for (Object attributeName : attributeNames) {
-            ArrayList<String> tempResults = new ArrayList<>();
-            for (ArrayList<String> result : results) {
-                tempResults.add(result.get(attributeNames.indexOf(attributeName)));
-            }
-
-            parsedMap.put((String) attributeName, tempResults);
-        }
-
-        return parsedMap;
-    }
-
     @Override
     public int start() throws Exception {
         File logDir = TestLogUtils.nextTestLogDir(this.baseLogDir);
         InspectorProperties inspectorProperties = new InspectorProperties();
+
+        RouterLinkInfoConverter convertor = new RouterLinkInfoConverter();
+        RouteLinkInfoWriter routerLinkInfoWriter = new RouteLinkInfoWriter(logDir, "routerLink");
 
         try {
             startedEpochMillis = System.currentTimeMillis();
@@ -135,30 +123,22 @@ public class InterconnectInspector implements MaestroInspector {
 
             Message receivedMessage;
 
-            String[] elements = {
-                    "router",
-                    "connection",
-                    "router.link",
-                    "router.node",
-                    "router.address",
-                    "allocator",
-//                    "config.autoLink",
-//                    "config.linkRoute"
-            };
 
             while (duration.canContinue(this) && isRunning()) {
                 LocalDateTime now = LocalDateTime.now();
 
-                for (String item :
-                        elements) {
-                    readData.sendRequest(item);
+                receivedMessage = readData.collectData("router.link");
 
-                    receivedMessage = readData.collectResponse();
 
-                    if (receivedMessage != null) {
-                        System.out.println(receivedMessage.getStringProperty("statusCode"));
-                        System.out.println("Msg about: \\\"" + item + "\\\" arrived at: " + now);
-                    }
+                if (receivedMessage != null) {
+                    System.out.println(receivedMessage.getStringProperty("statusCode"));
+
+                    Map receivedMap = receivedMessage.getBody(LinkedHashMap.class);
+
+                    RouterLinkInfo routerLinkInfo = convertor.parseReceivedMessage(receivedMap);
+
+                    routerLinkInfoWriter.write(now, routerLinkInfo);
+
                 }
 
                 Thread.sleep(5000);
@@ -180,21 +160,23 @@ public class InterconnectInspector implements MaestroInspector {
         } finally {
             startedEpochMillis = Long.MIN_VALUE;
             closeConnection();
+            routerLinkInfoWriter.close();
         }
     }
 
-    private void printOutput(Message message) throws JMSException {
-        Map map = message.getBody(LinkedHashMap.class);
-
-        Map newMap = parseReceivedMessage(map);
-
-        for (Object name: newMap.keySet()){
-            String key = name.toString();
-            String value = Arrays.toString(((ArrayList) newMap.get(name)).toArray());
-            System.out.println("NewItem: " + key + " " + value);
-
-        }
-    }
+//    private void printOutput(Message message) throws JMSException {
+//        Map receivedMap = message.getBody(LinkedHashMap.class);
+//        RouterLinkInfoConverter convertor = new RouterLinkInfoConverter();
+//
+//        ArrayList<Map<Object, Object>> recordList = convertor.parseReceivedMessage(receivedMap);
+//
+//        for (Map<Object, Object> item: recordList) {
+//            for (Map.Entry record : item.entrySet()) {
+//                System.out.println("Key: " + record.getKey());
+//                System.out.println("Value: " + record.getValue());
+//            }
+//        }
+//    }
 
     @Override
     public void stop() throws Exception {

@@ -27,9 +27,13 @@ public class InterconnectReadData {
         this.responseConsumer = responseConsumer;
     }
 
-    public void sendRequest(String component) throws JMSException {
-        Message message = createMessage(component);
+    public Message collectData(String component) throws JMSException {
+        requestProducer.send(createMessage(component));
 
+        return collectResponse();
+    }
+
+    public void sendRequest(Message message) throws JMSException {
         requestProducer.send(message);
     }
 
@@ -61,15 +65,24 @@ public class InterconnectReadData {
         return message;
     }
 
-    public Message collectRouterLink() {
-        Message message = null;
-        try {
-            sendRequest("router.link");
-            message = collectResponse();
-        } catch (JMSException e) {
-            e.printStackTrace();
-        }
-
-        return message;
-    }
+//    public QueueInfo collectRouterLink() {
+//        Message routerLinkInfo = null;
+//        try {
+//            routerLinkInfo = collectData("router.link");
+//
+//            Map<String, Object> queueProperties = new HashMap<>();
+//
+//            RouterLinkInfoConverter converter = new RouterLinkInfoConverter();
+//
+//            QueueInfoConverter jolokiaConverter = new QueueInfoConverter(queueProperties);
+//            jo.forEach((key, value) -> defaultJolokiaParser.parseQueueInfo(jolokiaConverter, key, value));
+//
+//
+//
+//        } catch (JMSException e) {
+//            e.printStackTrace();
+//        }
+//
+//        return new QueueInfo(queueProperties);
+//    }
 }
