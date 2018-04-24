@@ -446,7 +446,7 @@ public final class Maestro implements MaestroRequester {
     public void stopAgent() throws MaestroConnectionException {
         StopAgent maestroNote = new StopAgent();
 
-        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+        maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
     }
 
     /**
