@@ -2,8 +2,16 @@ package org.maestro.inspector.amqp.converter;
 
 import java.util.*;
 
+/**
+ * A converter for collected response
+ */
 public class InterconnectInfoConverter {
 
+    /**
+     * Parse received message body into better collection
+     * @param map collected data
+     * @return parsed into into list of hash maps
+     */
     @SuppressWarnings("unchecked")
     public List parseReceivedMessage(Map map) {
         List<Map<String, Object>> recordList = new ArrayList<>();

@@ -8,7 +8,6 @@ import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.common.inspector.types.RouterLinkInfo;
 import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.worker.TestLogUtils;
-import org.maestro.inspector.amqp.converter.InterconnectInfoConverter;
 import org.maestro.inspector.amqp.writers.RouteLinkInfoWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -19,6 +18,9 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A class for Interconnect inspector based on AMQP management
+ */
 public class InterconnectInspector implements MaestroInspector {
     private static final Logger logger = LoggerFactory.getLogger(InterconnectInspector.class);
     private long startedEpochMillis = Long.MIN_VALUE;
@@ -95,6 +97,11 @@ public class InterconnectInspector implements MaestroInspector {
         connection.close();
     }
 
+    /**
+     * Start inspector
+     * @return return code
+     * @throws Exception implementation specific
+     */
     @Override
     public int start() throws Exception {
         File logDir = TestLogUtils.nextTestLogDir(this.baseLogDir);
@@ -150,6 +157,8 @@ public class InterconnectInspector implements MaestroInspector {
         }
     }
 
+//    @TODO Delete this, only support function
+    @SuppressWarnings("unchecked")
     private void printOutput(RouterLinkInfo info) throws JMSException {
 
         List<Map<String, Object>> newList = info.getRouterLinkProperties();

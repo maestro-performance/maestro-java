@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 
+/**
+ * Class for read data about Interconnect
+ */
 public class InterconnectReadData {
     private static final Logger logger = LoggerFactory.getLogger(InterconnectReadData.class);
     private Session session;
@@ -30,19 +33,35 @@ public class InterconnectReadData {
         this.responseConsumer = responseConsumer;
     }
 
+    /**
+     * Collect data from Interconnect
+     * @param component string representation component name
+     * @return response collector
+     * @throws JMSException if it can't send or receive message
+     */
     private Message collectData(String component) throws JMSException {
         requestProducer.send(createMessage(component));
 
         return collectResponse();
     }
 
+    /**
+     * Collect response from Interconnect
+     * @return received message
+     * @throws JMSException if it can't receive response
+     */
     private Message collectResponse() throws JMSException {
         return responseConsumer.receive(2000L);
     }
 
+    /**
+     * Create request message
+     * @param component string representation component name
+     * @return created message
+     * @throws JMSException if unable to create message
+     */
     private Message createMessage(String component) throws JMSException {
-
-        System.out.println("org.apache.qpid.dispatch." + component);
+        logger.debug("Creating request message for: {}", component);
 
         Message message = session.createObjectMessage();
         message.setBooleanProperty("JMS_AMQP_TYPED_ENCODING", true);
@@ -50,27 +69,31 @@ public class InterconnectReadData {
         message.setStringProperty("name", "self");
         message.setStringProperty("operation", "QUERY");
         message.setStringProperty("type", "org.amqp.management");
-        Binary b = new Binary(("org.apache.qpid.dispatch." + component).getBytes());
+        Binary requestFor = new Binary(("org.apache.qpid.dispatch." + component).getBytes());
 
-        ((JmsMessage) message).getFacade().setProperty("entityType", b);
+        ((JmsMessage) message).getFacade().setProperty("entityType", requestFor);
 
-        HashMap<String,Object> map = new HashMap<String,Object>();
+        HashMap<String,Object> map = new HashMap<>();
         map.put("attributeNames", new ArrayList<>());
         ((ObjectMessage) message).setObject(map);
 
         message.setJMSReplyTo(destination);
-        message.setJMSCorrelationID("test");
 
         return message;
     }
 
+    /**
+     * Collect information about Router Links.
+     * @return parsed response
+     * @throws JMSException if it can't collect proper information
+     */
     @SuppressWarnings("unchecked")
     RouterLinkInfo collectRouterLinkInfo() throws JMSException {
 
-        InterconnectInfoConverter convertor = new InterconnectInfoConverter();
+        InterconnectInfoConverter converter = new InterconnectInfoConverter();
 
         Map receivedMessage = collectData("router.link").getBody(HashMap.class);
 
-        return new RouterLinkInfo(convertor.parseReceivedMessage(receivedMessage));
+        return new RouterLinkInfo(converter.parseReceivedMessage(receivedMessage));
     }
 }

@@ -18,6 +18,9 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A router link information writer for AMQP Inspector.
+ */
 public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>, AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(RouteLinkInfoWriter.class);
     private static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
@@ -37,6 +40,10 @@ public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>,
                         "AcceptedCount", "RejectedCount", "Capacity"));
     }
 
+    /**
+     * Close csv printer
+     * @throws Exception implementation specific
+     */
     @Override
     public void close() throws Exception {
         if (csvPrinter != null) {
@@ -49,7 +56,11 @@ public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>,
         }
     }
 
-
+    /**
+     * Write single record line into csv file
+     * @param now current time
+     * @param object one line record
+     */
     @SuppressWarnings("unchecked")
     private void write(final LocalDateTime now, final Object object) {
         if (object instanceof Map) {
@@ -79,6 +90,11 @@ public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>,
         }
     }
 
+    /**
+     * Write collected data
+     * @param now current time
+     * @param data data for print
+     */
     @SuppressWarnings("unchecked")
     @Override
     public void write(final LocalDateTime now, final RouterLinkInfo data) {
