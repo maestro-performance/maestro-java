@@ -62,8 +62,8 @@ class QuiverExecutor extends FlexibleTestExecutor {
 }
 
 class QuiverReportResolver extends AbstractReportResolver {
-    private static final String[] FILES = ["receiver-snapshots.csv", "receiver-transfers.csv.xz", "sender-summary.json",
-                          "receiver-summary.json", "sender-snapshots.csv", "sender-transfers.csv.xz"]
+    private static final String[] FILES = ["receiver-snapshots.csv", "receiver-transfers.csv.xz", "receiver-transfers.csv", "sender-summary.json",
+                          "receiver-summary.json", "sender-snapshots.csv", "sender-transfers.csv.xz", "sender-transfers.csv"]
 
     QuiverReportResolver() {
         super(FILES)
