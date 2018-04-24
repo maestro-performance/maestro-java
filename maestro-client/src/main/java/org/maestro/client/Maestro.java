@@ -494,7 +494,7 @@ public final class Maestro implements MaestroRequester {
      * @param retries number of retries
      * @return A list of serialized maestro replies or null if none
      */
-    public List<MaestroNote> collect(long wait, int retries) {
+    public List<MaestroNote> collect(long wait, long retries) {
         List<MaestroNote> replies;
 
         do {
@@ -522,7 +522,7 @@ public final class Maestro implements MaestroRequester {
      * @param expect The number of replies to expect.
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
-    public List<MaestroNote> collect(long wait, int retries, int expect) {
+    public List<MaestroNote> collect(long wait, long retries, int expect) {
         List<MaestroNote> replies = new LinkedList<>();
 
         do {
