@@ -86,11 +86,13 @@ public class ReportsDownloader {
             logger.info("Downloading the {} report file {}", hostType, targetURL);
         }
 
+
         try {
             Downloader.download(targetURL, destinationDir, true);
         }
         catch (ResourceExchangeException re) {
             if (re.getCode() == HttpStatus.SC_NOT_FOUND) {
+                logger.warn("Remote resource not found or not available yet");
                 try {
                     Thread.sleep(5000);
                 } catch (InterruptedException e) {
@@ -111,16 +113,20 @@ public class ReportsDownloader {
      * @param host the host to download the files from
      */
     public void downloadLastSuccessful(final String type, final String host) {
-        try {
-            ReportResolver reportResolver = resolverMap.get(type);
+        ReportResolver reportResolver = resolverMap.get(type);
 
-            List<String> files = reportResolver.getSuccessFiles(host);
-            for (String url : files) {
+        List<String> files = reportResolver.getSuccessFiles(host);
+        for (String url : files) {
+            try {
                 downloadReport(url, type);
+            } catch (ResourceExchangeException e) {
+                if (e.getCode() != HttpStatus.SC_NOT_FOUND) {
+                    logger.warn("Resource {} not found at {} ", e.getUrl(), host);
+                }
+                else {
+                    logger.error("Error: {}", e.getMessage(), e);
+                }
             }
-         }
-        catch (Exception e) {
-            logger.error("Error: {}", e.getMessage(), e);
         }
     }
 
@@ -130,33 +136,37 @@ public class ReportsDownloader {
      * @param host the host to download the files from
      */
     public void downloadLastFailed(final String type, final String host) {
-        try {
-            ReportResolver reportResolver = resolverMap.get(type);
+        ReportResolver reportResolver = resolverMap.get(type);
 
-            List<String> files = reportResolver.getFailedFiles(host);
-            for (String url : files) {
+        List<String> files = reportResolver.getFailedFiles(host);
+        for (String url : files) {
+            try {
                 downloadReport(url, type);
+            } catch (ResourceExchangeException e) {
+                if (e.getCode() == HttpStatus.SC_NOT_FOUND) {
+                    logger.warn("Resource {} not found at {} ", e.getUrl(), host);
+                }
+                else {
+                    logger.error("Error: {}", e.getMessage(), e);
+                }
             }
-        }
-        catch (Exception e) {
-            logger.error("Error: {}", e.getMessage(), e);
         }
     }
 
 
     private void downloadAny(final ReportResolver reportResolver, final String host, final String testNumber) {
-        try {
-            List<String> files = reportResolver.getTestFiles(host, testNumber);
-            for (String url : files) {
+        List<String> files = reportResolver.getTestFiles(host, testNumber);
+        for (String url : files) {
+            try {
                 downloadReport(url, SENDER_HOST_TYPE);
             }
-        }
-        catch (ResourceExchangeException e) {
-            if (e.getCode() != HttpStatus.SC_NOT_FOUND) {
-                logger.warn("Resource {} not found at {} ", e.getUrl(), host );
-            }
-            else {
-                logger.error("Unable to download files from {}", e.getUrl());
+            catch (ResourceExchangeException e) {
+                if (e.getCode() == HttpStatus.SC_NOT_FOUND) {
+                    logger.warn("Resource {} not found at {} ", e.getUrl(), host);
+                }
+                else {
+                    logger.error("Unable to download files from {}", e.getUrl());
+                }
             }
         }
     }
