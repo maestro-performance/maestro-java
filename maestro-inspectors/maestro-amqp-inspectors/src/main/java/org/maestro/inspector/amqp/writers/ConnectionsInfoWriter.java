@@ -71,7 +71,7 @@ public class ConnectionsInfoWriter implements InspectorDataWriter<ConnectionsInf
                 String timestamp = now.format(formatter);
 
                 csvPrinter.printRecord(timestamp,
-                        ConnectionsInfo.get("name"), ConnectionsInfo.get("host"),
+                        ConnectionsInfo.get("owningAddr"), ConnectionsInfo.get("host"),
                         ConnectionsInfo.get("role"), ConnectionsInfo.get("dir"),
                         ConnectionsInfo.get("opened"), ConnectionsInfo.get("identity"),
                         ConnectionsInfo.get("user"), ConnectionsInfo.get("sasl"),
