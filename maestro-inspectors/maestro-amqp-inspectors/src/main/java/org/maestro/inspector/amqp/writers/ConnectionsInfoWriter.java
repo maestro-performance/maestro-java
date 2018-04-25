@@ -70,8 +70,6 @@ public class ConnectionsInfoWriter implements InspectorDataWriter<ConnectionsInf
             try {
                 String timestamp = now.format(formatter);
 
-                System.out.println(ConnectionsInfo.get("name"));
-
                 csvPrinter.printRecord(timestamp,
                         ConnectionsInfo.get("name"), ConnectionsInfo.get("host"),
                         ConnectionsInfo.get("role"), ConnectionsInfo.get("dir"),
