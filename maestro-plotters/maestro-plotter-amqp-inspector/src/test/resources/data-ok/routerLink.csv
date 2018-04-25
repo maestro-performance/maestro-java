@@ -1,0 +1,19 @@
+Timestamp,Name,LinkType,LinkDir,Identity,OperStatus,DeliveryCount,UndeliveredCount,PresettledCount,UnsettledCount,DroppedPresettledCount,ReleasedCount,ModifiedCount,AcceptedCount,RejectedCount,Capacity
+2018-04-24 17:05:48,qpid-jms:sender:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1:1:$management,in,30,up,5,0,0,0,0,0,0,1,0,250
+2018-04-24 17:05:48,qpid-jms:temp-queue-creator:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1,in,31,up,66,0,0,0,0,0,0,0,0,250
+2018-04-24 17:05:48,qpid-jms:receiver:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1:1:amqp:/_$temp.JzCINTdmS5BLtaK,out,32,up,7,0,0,0,0,0,0,0,0,250
+2018-04-24 17:05:53,qpid-jms:sender:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1:1:$management,in,30,up,3,0,0,0,0,0,0,2,0,250
+2018-04-24 17:05:53,qpid-jms:temp-queue-creator:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1,in,31,up,0,8,0,0,0,0,0,0,0,250
+2018-04-24 17:05:53,qpid-jms:receiver:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1:1:amqp:/_$temp.JzCINTdmS5BLtaK,out,32,up,2,0,2,0,0,0,0,0,0,250
+2018-04-24 17:05:58,qpid-jms:sender:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1:1:$management,in,30,up,5,0,0,0,0,0,0,5,0,250
+2018-04-24 17:05:58,qpid-jms:temp-queue-creator:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1,in,31,up,2,0,0,0,0,0,0,0,0,250
+2018-04-24 17:05:58,qpid-jms:receiver:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1:1:amqp:/_$temp.JzCINTdmS5BLtaK,out,32,up,4,0,4,0,0,0,0,0,0,250
+2018-04-24 17:06:03,qpid-jms:sender:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1:1:$management,in,30,up,7,0,0,0,0,0,0,6,0,250
+2018-04-24 17:06:03,qpid-jms:temp-queue-creator:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1,in,31,up,4,0,0,0,0,0,0,0,0,250
+2018-04-24 17:06:03,qpid-jms:receiver:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1:1:amqp:/_$temp.JzCINTdmS5BLtaK,out,32,up,6,0,6,0,0,0,0,0,0,250
+2018-04-24 17:06:08,qpid-jms:sender:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1:1:$management,in,30,up,9,0,0,0,0,0,0,9,0,250
+2018-04-24 17:06:08,qpid-jms:temp-queue-creator:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1,in,31,up,4,0,0,0,0,0,0,0,0,250
+2018-04-24 17:06:08,qpid-jms:receiver:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1:1:amqp:/_$temp.JzCINTdmS5BLtaK,out,32,up,8,0,8,0,0,0,0,0,0,250
+2018-04-24 17:06:13,qpid-jms:sender:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1:1:$management,in,30,up,11,0,0,0,0,0,0,11,0,250
+2018-04-24 17:06:13,qpid-jms:temp-queue-creator:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1,in,31,up,0,0,0,0,0,0,0,0,0,250
+2018-04-24 17:06:13,qpid-jms:receiver:ID:538cc691-7b80-4e03-b05f-f05f6594869d:1:1:1:amqp:/_$temp.JzCINTdmS5BLtaK,out,32,up,10,0,10,0,0,0,0,0,0,250

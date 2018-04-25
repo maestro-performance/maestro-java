@@ -30,6 +30,7 @@
     <modules>
         <module>maestro-plotter-common</module>
         <module>maestro-plotter-inspector</module>
+        <module>maestro-plotter-amqp-inspector</module>
         <module>maestro-plotter-rate</module>
     </modules>
 
