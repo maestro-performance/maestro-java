@@ -5,6 +5,9 @@ import org.maestro.plotter.common.InstantRecord;
 import java.time.Instant;
 import java.util.Objects;
 
+/**
+ * A class represents single record from csv file
+ */
 public class RouterLinkRecord implements Comparable<RouterLinkRecord>, InstantRecord {
     private Instant timestamp;
     private String name;

@@ -14,9 +14,18 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
+/**
+ * A plotter for router link data
+ */
 public class RouterLinkPlotter extends DefaultScatterPlotter<RouterLinkDataSet> {
     public static final String DEFAULT_FILENAME = "routerLink.png";
 
+    /**
+     * Plotter
+     * @param dataSet collected data
+     * @param outputFile output file
+     * @throws MaestroException implementation specific
+     */
     @Override
     public void plot(final RouterLinkDataSet dataSet, final File outputFile) throws MaestroException {
         final Map<Date, Statistics> stats = dataSet.getStatistics();

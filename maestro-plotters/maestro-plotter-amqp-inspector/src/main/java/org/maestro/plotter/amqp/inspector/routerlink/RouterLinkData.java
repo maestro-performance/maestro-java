@@ -9,6 +9,9 @@ import org.maestro.plotter.common.statistics.StatisticsBuilder;
 import java.time.Instant;
 import java.util.*;
 
+/**
+ * A class represents data about router link
+ */
 @PropertyName(name="routerLink")
 public class RouterLinkData implements ReportData {
     public static final String DEFAULT_FILENAME = "routerLink.properties";
@@ -99,8 +102,8 @@ public class RouterLinkData implements ReportData {
     }
 
     /**
-     * Get the statistics for the expired messages
-     * @return A Statistics object for the expired messages
+     * Get the statistics for the released messages
+     * @return A Statistics object for the released messages
      */
     protected Statistics releasedStatistics() {
         if (releasedStatistics == null) {

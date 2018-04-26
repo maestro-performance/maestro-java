@@ -10,6 +10,9 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.Reader;
 
+/**
+ * A csv router link data reader
+ */
 public class RouterLinkReader extends CsvReader<RouterLinkDataSet> {
     private static final Logger logger = LoggerFactory.getLogger(RouterLinkReader.class);
 
@@ -23,6 +26,12 @@ public class RouterLinkReader extends CsvReader<RouterLinkDataSet> {
         this.routerLinkProcessor = routerLinkProcessor;
     }
 
+    /**
+     * Reader of csv file
+     * @param reader reader
+     * @return readed data
+     * @throws IOException implementation specific
+     */
     @Override
     protected RouterLinkDataSet readReader(Reader reader) throws IOException {
         Iterable<CSVRecord> records = CSVFormat.RFC4180

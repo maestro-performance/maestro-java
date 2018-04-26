@@ -5,6 +5,9 @@ import org.maestro.plotter.common.RecordProcessor;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
+/**
+ * A class for read data processor
+ */
 public class RouterLinkProcessor implements RecordProcessor {
     private final RouterLinkDataSet routerLinkDataSet = new RouterLinkDataSet();
 
@@ -14,6 +17,12 @@ public class RouterLinkProcessor implements RecordProcessor {
 
     // Timestamp,Name,LinkType,LinkDir,Identity,OperStatus,DeliveryCount,UndeliveredCount,PresettledCount,
     // UnsettledCount,DroppedPresettledCount,ReleasedCount,ModifiedCount,AcceptedCount,RejectedCount,Capacity
+
+    /**
+     * Method for process read data from csv
+     * @param records records from csv
+     * @throws Exception implementation specific
+     */
     @Override
     public void process(String... records) throws Exception {
         final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

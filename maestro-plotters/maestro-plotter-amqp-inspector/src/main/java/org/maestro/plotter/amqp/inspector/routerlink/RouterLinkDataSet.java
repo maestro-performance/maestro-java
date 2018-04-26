@@ -11,6 +11,9 @@ import org.slf4j.LoggerFactory;
 import java.time.Instant;
 import java.util.*;
 
+/**
+ * A class represents router link data set
+ */
 @PropertyName(name="routerLink-")
 public class RouterLinkDataSet {
     private static final Logger logger = LoggerFactory.getLogger(RouterLinkDataSet.class);
@@ -18,7 +21,7 @@ public class RouterLinkDataSet {
 
     /**
      * Add a record to the data set
-     * @param routerLinkRecord
+     * @param routerLinkRecord record
      */
     public void add(final RouterLinkRecord routerLinkRecord) {
         RouterLinkData routerLinkData = map.get(routerLinkRecord.getName());
@@ -34,7 +37,7 @@ public class RouterLinkDataSet {
 
     /**
      * Get all records
-     * @return
+     * @return map of records
      */
     @PropertyProvider(name="")
     public Map<String, RouterLinkData> getMap() {
@@ -61,7 +64,7 @@ public class RouterLinkDataSet {
     /**
      * Gets the aggregated statistics for the set on a per period basis. Do not confuse
      * with the statistics returned on a per-queue basis.
-     * @return
+     * @return statistics
      */
     public Map<Date, Statistics> getStatistics() {
         Map<Instant, SummaryStatistics> calcMap = new HashMap<>();
