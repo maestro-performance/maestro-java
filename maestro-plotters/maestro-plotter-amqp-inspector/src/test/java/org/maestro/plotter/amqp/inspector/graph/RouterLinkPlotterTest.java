@@ -17,10 +17,10 @@ public class RouterLinkPlotterTest {
     public void testPlot() throws IOException, EmptyDataSet, IncompatibleDataSet {
         String fileName = this.getClass().getResource("/data-ok/routerLink.csv").getPath();
 
-        RouterLinkProcessor heapProcessor = new RouterLinkProcessor();
-        RouterLinkReader heapReader = new RouterLinkReader(heapProcessor);
+        RouterLinkProcessor routerLinkProcessor = new RouterLinkProcessor();
+        RouterLinkReader routerLinkReader = new RouterLinkReader(routerLinkProcessor);
 
-        RouterLinkDataSet routerLinkDataSet = heapReader.read(fileName);
+        RouterLinkDataSet routerLinkDataSet = routerLinkReader.read(fileName);
 
         File sourceFile = new File(fileName);
         RouterLinkPlotter plotter = new RouterLinkPlotter();
