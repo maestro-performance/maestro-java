@@ -3,6 +3,7 @@ package org.maestro.inspector.amqp;
 import org.apache.qpid.jms.message.JmsMessage;
 import org.apache.qpid.proton.amqp.Binary;
 import org.maestro.common.inspector.types.ConnectionsInfo;
+import org.maestro.common.inspector.types.QDMemoryInfo;
 import org.maestro.common.inspector.types.RouterLinkInfo;
 import org.maestro.inspector.amqp.converter.InterconnectInfoConverter;
 import org.slf4j.Logger;
@@ -99,7 +100,7 @@ public class InterconnectReadData {
     }
 
     /**
-     * Collect information about Router Links.
+     * Collect information about Connections.
      * @return parsed response
      * @throws JMSException if it can't collect proper information
      */
@@ -111,5 +112,19 @@ public class InterconnectReadData {
         Map receivedMessage = collectData("connection").getBody(HashMap.class);
 
         return new ConnectionsInfo(converter.parseReceivedMessage(receivedMessage));
+    }
+
+    /**
+     * Collect information about used Memory.
+     * @return parsed response
+     * @throws JMSException if it can't collect proper information
+     */
+    @SuppressWarnings("unchecked")
+    QDMemoryInfo collectMemoryInfo() throws JMSException {
+        InterconnectInfoConverter converter = new InterconnectInfoConverter();
+
+        Map receivedMessage = collectData("allocator").getBody(HashMap.class);
+
+        return new QDMemoryInfo(converter.parseReceivedMessage(receivedMessage));
     }
 }

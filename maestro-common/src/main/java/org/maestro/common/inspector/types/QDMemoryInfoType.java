@@ -16,29 +16,16 @@
 
 package org.maestro.common.inspector.types;
 
-import java.util.Collections;
 import java.util.List;
-import java.util.Map;
 
 
 /**
- * A container for connections information
+ * Information about the memory in the SUT
  */
-public class ConnectionsInfo implements InspectorType, ConnectionsInfoType {
-    private final List<Map<String, Object>> connectionProperties;
-
-    public ConnectionsInfo(final List<Map<String, Object>> queueProperties) {
-        this.connectionProperties = Collections.unmodifiableList(queueProperties);
-    }
-
-    public List getConnectionProperties() {
-        return connectionProperties;
-    }
-
-    @Override
-    public String toString() {
-        return "ConnectionsInfo{" +
-                "productProperties=" + connectionProperties +
-                '}';
-    }
+public interface QDMemoryInfoType {
+    /**
+     * Get the memory properties
+     * @return
+     */
+    List getQDMemoryInfoProperties();
 }
