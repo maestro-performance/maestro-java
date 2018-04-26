@@ -29,6 +29,5 @@ public class RouterLinkPlotterTest {
         plotter.plot(routerLinkDataSet, outputFile);
 
         assertTrue("The output file does not exist: " + outputFile.getPath(), outputFile.exists());
-
     }
 }

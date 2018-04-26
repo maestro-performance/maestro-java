@@ -25,7 +25,6 @@ public class RouterLinkProcessorTest {
 
     @Test
     public void testRecordCount() {
-        System.err.println(dataSet.getMap().toString());
         assertEquals("The number of queue records don't match", 13, dataSet.getMap().size());
 
         assertEquals("The accepted count of messages for the queue records don't match", 818457, dataSet.getMap()
