@@ -24,17 +24,17 @@ public class RouterLinkProcessor implements RecordProcessor {
 
         routerLinkRecord.setName(records[1]);
 
-        routerLinkRecord.setDeliveryCount(Long.parseLong(records[6]));
-        routerLinkRecord.setUndeliveredCount(Long.parseLong(records[7]));
-        routerLinkRecord.setPresettledCount(Long.parseLong(records[8]));
-        routerLinkRecord.setUnsettledCount(Long.parseLong(records[9]));
-        routerLinkRecord.setDroppedPresettledCount(Long.parseLong(records[10]));
-        routerLinkRecord.setReleasedCount(Long.parseLong(records[11]));
-        routerLinkRecord.setModifiedCount(Long.parseLong(records[12]));
-        routerLinkRecord.setAcceptedCount(Long.parseLong(records[13]));
-        routerLinkRecord.setRejectedCount(Long.parseLong(records[14]));
+        routerLinkRecord.setDeliveryCount(Long.parseLong(records[5]));
+        routerLinkRecord.setUndeliveredCount(Long.parseLong(records[6]));
+        routerLinkRecord.setPresettledCount(Long.parseLong(records[7]));
+        routerLinkRecord.setUnsettledCount(Long.parseLong(records[8]));
+        routerLinkRecord.setDroppedPresettledCount(Long.parseLong(records[9]));
+        routerLinkRecord.setReleasedCount(Long.parseLong(records[10]));
+        routerLinkRecord.setModifiedCount(Long.parseLong(records[11]));
+        routerLinkRecord.setAcceptedCount(Long.parseLong(records[12]));
+        routerLinkRecord.setRejectedCount(Long.parseLong(records[13]));
+        routerLinkRecord.setCapacity(Long.parseLong(records[14]));
 
-//        routerLinkRecord.setCapacity(Long.parseLong(records[14]));
 
         routerLinkDataSet.add(routerLinkRecord);
     }

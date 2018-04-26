@@ -14,7 +14,6 @@ public class RouterLinkData implements ReportData {
     public static final String DEFAULT_FILENAME = "routerLink.properties";
 
     private Set<RouterLinkRecord> recordSet = new TreeSet<>();
-    private Statistics countStatistics = null;
     private Statistics deliveredStatistics = null;
     private Statistics undeliveredStatistics = null;
     private Statistics acceptedStatistics = null;
@@ -52,13 +51,17 @@ public class RouterLinkData implements ReportData {
      * Get the statistics for the delivered messages count
      * @return A Statistics object for the delivered messages count
      */
-    @PropertyProvider(name="-delivered")
-    public Statistics deliveredStatistics() {
+    protected Statistics deliveredStatistics() {
         if (deliveredStatistics == null) {
             deliveredStatistics = StatisticsBuilder.of(recordSet.stream().mapToDouble(RouterLinkRecord::getDeliveryCount));
         }
 
         return deliveredStatistics;
+    }
+
+    @PropertyProvider(name="-DeliveryCount")
+    public double getDeliveredCount() {
+        return deliveredStatistics().getMax();
     }
 
     /**
@@ -73,8 +76,8 @@ public class RouterLinkData implements ReportData {
         return undeliveredStatistics;
     }
 
-    @PropertyProvider(name="-undelivered")
-    public double getAddedCount() {
+    @PropertyProvider(name="-UndeliveredCount")
+    public double getUndeliveredCount() {
         return undeliveredStatistics().getMax();
     }
 
@@ -90,7 +93,7 @@ public class RouterLinkData implements ReportData {
         return acceptedStatistics;
     }
 
-    @PropertyProvider(name="-undelivered")
+    @PropertyProvider(name="-AcceptedCount")
     public double getAcceptedCount() {
         return acceptedStatistics().getMax();
     }
@@ -107,7 +110,7 @@ public class RouterLinkData implements ReportData {
         return releasedStatistics;
     }
 
-    @PropertyProvider(name="-expiredCount")
+    @PropertyProvider(name="-ReleasedCount")
     public double getReleasedCount() {
         return releasedStatistics().getMax();
     }

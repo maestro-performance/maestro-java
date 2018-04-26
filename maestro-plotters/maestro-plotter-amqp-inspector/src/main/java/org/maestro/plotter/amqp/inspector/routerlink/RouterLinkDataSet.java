@@ -53,7 +53,7 @@ public class RouterLinkDataSet {
                 summaryStatistics = new SummaryStatistics();
             }
 
-            summaryStatistics.addValue(record.getAcceptedCount());
+            summaryStatistics.addValue(record.getUnsettledCount());
             calcMap.put(record.getTimestamp(), summaryStatistics);
         }
     }
