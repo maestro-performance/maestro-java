@@ -14,7 +14,7 @@ import java.util.*;
  */
 @PropertyName(name="routerLink")
 public class GeneralInfoData implements ReportData {
-    public static final String DEFAULT_FILENAME = "routerLink.properties";
+    public static final String DEFAULT_FILENAME = "general.properties";
 
     private Set<GeneralInfoRecord> recordSet = new TreeSet<>();
     private Statistics addressesStatistics = null;
