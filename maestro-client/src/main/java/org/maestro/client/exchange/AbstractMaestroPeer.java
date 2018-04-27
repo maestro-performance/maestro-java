@@ -39,7 +39,7 @@ import java.util.UUID;
  *
  * TODO: configure LWT
  */
-public abstract class AbstractMaestroPeer<T extends MaestroNote> implements MqttCallback {
+public abstract class AbstractMaestroPeer<T extends MaestroNote> implements MqttCallbackExtended {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroPeer.class);
 
     private MqttClient inboundEndPoint;
@@ -90,6 +90,8 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
         logger.warn("Connection lost");
     }
 
+
+
     public boolean isConnected() {
         return inboundEndPoint.isConnected();
     }
@@ -100,22 +102,34 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     }
 
     public void connect() throws MaestroConnectionException {
-        logger.debug("Connecting to maestro");
+        logger.debug("Connecting to Maestro Broker");
         MqttConnectOptions connOpts = new MqttConnectOptions();
 
         connOpts.setCleanSession(true);
         connOpts.setKeepAliveInterval(15000);
+        connOpts.setAutomaticReconnect(true);
 
         try {
             inboundEndPoint.connect();
+            logger.debug("Connected to Maestro Broker");
         }
         catch (MqttException e) {
             throw new MaestroConnectionException("Unable to establish a connection to Maestro: " + e.getMessage(), e);
         }
     }
 
+    public void reconnect(final String[] topics) {
+        try {
+            connect();
+            subscribe(topics);
+        }
+        catch (MaestroConnectionException e) {
+            logger.warn("Unable to connect: {}", e.getMessage());
+        }
+    }
+
     public void disconnect() throws MaestroConnectionException {
-        logger.debug("Disconnecting from maestro");
+        logger.debug("Disconnecting from Maestro Broker");
 
         try {
             inboundEndPoint.disconnect();
@@ -161,6 +175,11 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
         }
     }
 
+
+    @Override
+    public void connectComplete(boolean reconnect, final String serverUri) {
+        logger.warn("Connection to {} completed (reconnect = {})", serverUri, reconnect);
+    }
 
     /**
      * The entry point for handling Maestro messages

@@ -28,6 +28,7 @@ public class AbstractMaestroExecutor implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroExecutor.class);
 
     private final AbstractMaestroPeer maestroPeer;
+    private String[] topics;
 
     /**
      * Constructor
@@ -53,7 +54,8 @@ public class AbstractMaestroExecutor implements Runnable {
      * @throws MaestroConnectionException if unable to connect to the broker and subscribe to the topics
      */
     public void start(final String[] topics) throws MaestroConnectionException {
-        logger.debug("Connecting the maestro broker");
+        logger.debug("Connecting the Maestro broker");
+        this.topics = topics;
 
         maestroPeer.connect();
         maestroPeer.subscribe(topics);
@@ -69,7 +71,7 @@ public class AbstractMaestroExecutor implements Runnable {
 
                 if (!maestroPeer.isConnected()) {
                     logger.error("Disconnected from the broker: reconnecting");
-                    maestroPeer.connect();
+                    maestroPeer.reconnect(this.topics);
                 }
 
                 Thread.sleep(10000);
