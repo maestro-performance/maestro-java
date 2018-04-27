@@ -25,7 +25,7 @@ import org.slf4j.LoggerFactory;
  * Provides an abstract interface that can be used to receive data from a Maestro broker.
  */
 public class AbstractMaestroExecutor implements Runnable {
-    private static final Logger logger = LoggerFactory.getLogger(MaestroCollectorExecutor.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroExecutor.class);
 
     private final AbstractMaestroPeer maestroPeer;
 
