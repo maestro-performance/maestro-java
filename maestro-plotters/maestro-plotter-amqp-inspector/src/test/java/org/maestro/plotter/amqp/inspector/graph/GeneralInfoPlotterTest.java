@@ -25,7 +25,7 @@ public class GeneralInfoPlotterTest {
         File sourceFile = new File(fileName);
         GeneralInfoPlotter plotter = new GeneralInfoPlotter();
 
-        File outputFile = new File(sourceFile.getParentFile(), GeneralInfoPlotter.DEFAULT_FILENAME);
+        File outputFile = sourceFile.getParentFile();
         plotter.plot(generalInfoDataSet, outputFile);
 
         assertTrue("The output file does not exist: " + outputFile.getPath(), outputFile.exists());
