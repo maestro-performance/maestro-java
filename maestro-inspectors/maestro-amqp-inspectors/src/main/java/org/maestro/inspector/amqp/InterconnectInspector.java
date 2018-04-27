@@ -5,10 +5,11 @@ import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.inspector.MaestroInspector;
-import org.maestro.common.inspector.types.QDMemoryInfo;
+import org.maestro.common.inspector.types.GeneralInfo;
 import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.inspector.amqp.writers.ConnectionsInfoWriter;
+import org.maestro.inspector.amqp.writers.GeneralInfoWriter;
 import org.maestro.inspector.amqp.writers.QDMemoryInfoWriter;
 import org.maestro.inspector.amqp.writers.RouteLinkInfoWriter;
 import org.slf4j.Logger;
@@ -112,6 +113,7 @@ public class InterconnectInspector implements MaestroInspector {
         RouteLinkInfoWriter routerLinkInfoWriter = new RouteLinkInfoWriter(logDir, "routerLink");
         ConnectionsInfoWriter connectionsInfoWriter = new ConnectionsInfoWriter(logDir, "connections");
         QDMemoryInfoWriter qdMemoryInfoWriter = new QDMemoryInfoWriter(logDir, "qdmemory");
+        GeneralInfoWriter generalInfoWriter = new GeneralInfoWriter(logDir, "general");
 
         try {
             startedEpochMillis = System.currentTimeMillis();
@@ -138,6 +140,9 @@ public class InterconnectInspector implements MaestroInspector {
                 routerLinkInfoWriter.write(now, readData.collectRouterLinkInfo());
                 connectionsInfoWriter.write(now, readData.collectConnectionsInfo());
                 qdMemoryInfoWriter.write(now, readData.collectMemoryInfo());
+                generalInfoWriter.write(now, readData.collectGeneralInfo());
+
+//                printOutput(readData.collectGeneralInfo());
 
                 Thread.sleep(5000);
             }
@@ -161,14 +166,15 @@ public class InterconnectInspector implements MaestroInspector {
             routerLinkInfoWriter.close();
             connectionsInfoWriter.close();
             qdMemoryInfoWriter.close();
+            generalInfoWriter.close();
         }
     }
 
 //    @TODO Delete this, only support function
     @SuppressWarnings("unchecked")
-    private void printOutput(QDMemoryInfo info) throws JMSException {
+    private void printOutput(GeneralInfo info) throws JMSException {
 
-        List<Map<String, Object>> newList = info.getQDMemoryInfoProperties();
+        List<Map<String, Object>> newList = info.getGeneralProperties();
 
         for (Map<String, Object> item: newList) {
             for (Map.Entry record : item.entrySet()) {
