@@ -29,6 +29,8 @@ import org.maestro.common.exceptions.MaestroException;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 /**
@@ -530,6 +532,40 @@ public final class Maestro implements MaestroRequester {
 
             if (collected != null) {
                 replies.addAll(collected);
+
+                if (hasReplies(replies) && replies.size() >= expect) {
+                    break;
+                }
+            }
+
+            try {
+                Thread.sleep(wait);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+            retries--;
+        } while (retries > 0);
+
+        return replies;
+    }
+
+
+    /**
+     * Collect replies up to a certain limit of retries/timeout
+     * @param wait how much time between each retry
+     * @param retries number of retries
+     * @param expect The number of replies to expect.
+     * @param predicate Returns only the messages matching the predicate
+     * @return A list of serialized maestro replies or null if none. May return less that expected.
+     */
+    public List<MaestroNote> collect(long wait, long retries, int expect, Predicate<? super MaestroNote> predicate) {
+        List<MaestroNote> replies = new LinkedList<>();
+
+        do {
+            List<MaestroNote> collected = collectorExecutor.collect();
+
+            if (collected != null) {
+                replies.addAll(collected.stream().filter(predicate).collect(Collectors.toList()));
 
                 if (hasReplies(replies) && replies.size() >= expect) {
                     break;

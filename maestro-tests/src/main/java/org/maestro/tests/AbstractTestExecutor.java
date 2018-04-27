@@ -17,6 +17,7 @@
 package org.maestro.tests;
 
 import org.maestro.client.Maestro;
+import org.maestro.client.notes.MaestroNotification;
 import org.maestro.client.notes.PingResponse;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
@@ -113,7 +114,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     }
 
     protected void processNotifications(final AbstractTestProcessor testProcessor, long repeat, int numPeers) {
-        List<MaestroNote> replies = getMaestro().collect(1000, repeat, numPeers);
+        List<MaestroNote> replies = getMaestro().collect(1000, repeat, numPeers, reply -> reply instanceof MaestroNotification);
 
         testProcessor.process(replies);
         logger.debug("Estimated time for test completion: {} secs", repeat);
