@@ -1,0 +1,7 @@
+Timestamp,Name,Host,Role,Dir,Opened,Identity,User,sasl,Encrypted,sslProto,sslCipher,Tenant,Authenticated,Properties
+2018-04-26 17:42:15,,172.17.0.1:40150,normal,in,true,36,anonymous,ANONYMOUS,false,,,,true,"{product=QpidJMS, version=0.26.0, platform=JVM: 1.8.0_162, 25.162-b12, Oracle Corporation, OS: Linux, 4.14.1-041401-generic, amd64}"
+2018-04-26 17:42:20,,172.17.0.1:40150,normal,in,true,36,anonymous,ANONYMOUS,false,,,,true,"{product=QpidJMS, version=0.26.0, platform=JVM: 1.8.0_162, 25.162-b12, Oracle Corporation, OS: Linux, 4.14.1-041401-generic, amd64}"
+2018-04-26 17:42:25,,172.17.0.1:40150,normal,in,true,36,anonymous,ANONYMOUS,false,,,,true,"{product=QpidJMS, version=0.26.0, platform=JVM: 1.8.0_162, 25.162-b12, Oracle Corporation, OS: Linux, 4.14.1-041401-generic, amd64}"
+2018-04-26 17:42:30,,172.17.0.1:40150,normal,in,true,36,anonymous,ANONYMOUS,false,,,,true,"{product=QpidJMS, version=0.26.0, platform=JVM: 1.8.0_162, 25.162-b12, Oracle Corporation, OS: Linux, 4.14.1-041401-generic, amd64}"
+2018-04-26 17:42:35,,172.17.0.1:40150,normal,in,true,36,anonymous,ANONYMOUS,false,,,,true,"{product=QpidJMS, version=0.26.0, platform=JVM: 1.8.0_162, 25.162-b12, Oracle Corporation, OS: Linux, 4.14.1-041401-generic, amd64}"
+2018-04-26 17:42:40,,172.17.0.1:40150,normal,in,true,36,anonymous,ANONYMOUS,false,,,,true,"{product=QpidJMS, version=0.26.0, platform=JVM: 1.8.0_162, 25.162-b12, Oracle Corporation, OS: Linux, 4.14.1-041401-generic, amd64}"
