@@ -10,12 +10,12 @@ import java.util.*;
 /**
  * A class represents data about router link
  */
-@PropertyName(name="routerLink")
+@PropertyName(name="connections")
 public class ConnectionsData implements ReportData {
-    public static final String DEFAULT_FILENAME = "routerLink.properties";
+    public static final String DEFAULT_FILENAME = "connections.properties";
 
     private Set<ConnectionsRecord> recordSet = new TreeSet<>();
-    private Statistics deliveredStatistics = null;
+    private Statistics properties = null;
 
     public void add(ConnectionsRecord record) {
         recordSet.add(record);

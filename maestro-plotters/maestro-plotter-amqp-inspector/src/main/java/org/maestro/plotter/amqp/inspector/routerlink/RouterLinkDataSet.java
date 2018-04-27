@@ -1,7 +1,11 @@
 package org.maestro.plotter.amqp.inspector.routerlink;
 
 
+import com.sun.org.apache.regexp.internal.RE;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.maestro.plotter.amqp.inspector.Utilities;
+import org.maestro.plotter.amqp.inspector.generalinfo.GeneralInfoData;
+import org.maestro.plotter.amqp.inspector.generalinfo.GeneralInfoRecord;
 import org.maestro.plotter.common.properties.annotations.PropertyName;
 import org.maestro.plotter.common.properties.annotations.PropertyProvider;
 import org.maestro.plotter.common.statistics.Statistics;
@@ -19,6 +23,11 @@ public class RouterLinkDataSet {
     private static final Logger logger = LoggerFactory.getLogger(RouterLinkDataSet.class);
     private Map<String, RouterLinkData> map = new HashMap<>();
 
+    private static final String DELIVERED = "delivered";
+    private static final String UNDELIVERED = "undelivered";
+    private static final String ACCEPTED = "accepted";
+    private static final String RELEASED = "released";
+
     /**
      * Add a record to the data set
      * @param routerLinkRecord record
@@ -34,7 +43,6 @@ public class RouterLinkDataSet {
         map.put(routerLinkRecord.getName(), routerLinkData);
     }
 
-
     /**
      * Get all records
      * @return map of records
@@ -45,19 +53,18 @@ public class RouterLinkDataSet {
     }
 
 
-    private void doCalc(Map<Instant, SummaryStatistics> calcMap, final String key, final RouterLinkData data) {
+    private void doCalc(Map<String, Map<Instant, SummaryStatistics>> calcMap, final String key, final RouterLinkData data) {
         logger.trace("Processing record at instant for queue {}", key);
 
         Set<RouterLinkRecord> routerLinkRecords = data.getRecordSet();
 
         for (RouterLinkRecord record : routerLinkRecords) {
-            SummaryStatistics summaryStatistics = calcMap.get(record.getTimestamp());
-            if (summaryStatistics == null) {
-                summaryStatistics = new SummaryStatistics();
-            }
+            Instant instant = record.getTimestamp();
 
-            summaryStatistics.addValue(record.getUnsettledCount());
-            calcMap.put(record.getTimestamp(), summaryStatistics);
+            Utilities.putStatisticsRecord(calcMap, record.getDeliveryCount(), DELIVERED, instant);
+            Utilities.putStatisticsRecord(calcMap, record.getUndeliveredCount(), UNDELIVERED, instant);
+            Utilities.putStatisticsRecord(calcMap, record.getAcceptedCount(), ACCEPTED, instant);
+            Utilities.putStatisticsRecord(calcMap, record.getReleasedCount(), RELEASED, instant);
         }
     }
 
@@ -66,12 +73,12 @@ public class RouterLinkDataSet {
      * with the statistics returned on a per-queue basis.
      * @return statistics
      */
-    public Map<Date, Statistics> getStatistics() {
-        Map<Instant, SummaryStatistics> calcMap = new HashMap<>();
+    public Map<String, Map<Date, Statistics>> getStatistics() {
+        Map<String, Map<Instant, SummaryStatistics>> calcMap = new HashMap<>();
         map.forEach((key, value) -> doCalc(calcMap, key, value));
 
-        Map<Date, Statistics> ret = new TreeMap<>();
-        calcMap.forEach((key, value) -> ret.put(Date.from(key), new Statistics(value)));
+        Map<String, Map<Date, Statistics>> ret = new TreeMap<>();
+        calcMap.forEach((key, value) -> ret.put(key, Utilities.reCastMap(value)));
 
         return ret;
     }

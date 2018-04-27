@@ -25,7 +25,7 @@ public class QDMemoryPlotterTest {
         File sourceFile = new File(fileName);
         QDMemoryPlotter plotter = new QDMemoryPlotter();
 
-        File outputFile = new File(sourceFile.getParentFile(), QDMemoryPlotter.DEFAULT_FILENAME);
+        File outputFile = sourceFile.getParentFile();
         plotter.plot(qdMemoryDataSet, outputFile);
 
         assertTrue("The output file does not exist: " + outputFile.getPath(), outputFile.exists());

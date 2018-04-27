@@ -25,7 +25,7 @@ public class RouterLinkPlotterTest {
         File sourceFile = new File(fileName);
         RouterLinkPlotter plotter = new RouterLinkPlotter();
 
-        File outputFile = new File(sourceFile.getParentFile(), RouterLinkPlotter.DEFAULT_FILENAME);
+        File outputFile = sourceFile.getParentFile();
         plotter.plot(routerLinkDataSet, outputFile);
 
         assertTrue("The output file does not exist: " + outputFile.getPath(), outputFile.exists());

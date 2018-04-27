@@ -2,6 +2,7 @@ package org.maestro.plotter.amqp.inspector.generalinfo;
 
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
+import org.maestro.plotter.amqp.inspector.Utilities;
 import org.maestro.plotter.common.properties.annotations.PropertyName;
 import org.maestro.plotter.common.properties.annotations.PropertyProvider;
 import org.maestro.plotter.common.statistics.Statistics;
@@ -56,60 +57,14 @@ public class GeneralInfoDataSet {
         Set<GeneralInfoRecord> generalInfoRecords = data.getRecordSet();
 
         for (GeneralInfoRecord record : generalInfoRecords) {
-            Map <Instant, SummaryStatistics> map = calcMap.get(ADDRESSCOUNT);
-            if (map == null){
-                map = new HashMap<>();
-            }
-            SummaryStatistics summaryStatistics = map.get(record.getTimestamp());
-            if (summaryStatistics == null) {
-                summaryStatistics = new SummaryStatistics();
-            }
+            Instant instant = record.getTimestamp();
 
-            summaryStatistics.addValue(record.getAddressCount());
-            map.put(record.getTimestamp(), summaryStatistics);
-            calcMap.put(ADDRESSCOUNT, map);
-
-            map = calcMap.get(CONNECTIONSCOUNT);
-            if (map == null){
-                map = new HashMap<>();
-            }
-            summaryStatistics = map.get(record.getTimestamp());
-            if (summaryStatistics == null) {
-                summaryStatistics = new SummaryStatistics();
-            }
-
-            summaryStatistics.addValue(record.getConnetionsCount());
-            map.put(record.getTimestamp(), summaryStatistics);
-            calcMap.put(CONNECTIONSCOUNT, map);
-
-            map = calcMap.get(LINKROUTESSTATISTICS);
-            if (map == null){
-                map = new HashMap<>();
-            }
-            summaryStatistics = map.get(record.getTimestamp());
-            if (summaryStatistics == null) {
-                summaryStatistics = new SummaryStatistics();
-            }
-
-            summaryStatistics.addValue(record.getLinkRoutersCount());
-            map.put(record.getTimestamp(), summaryStatistics);
-            calcMap.put(LINKROUTESSTATISTICS, map);
-
-            map = calcMap.get(AUTOLINKSTATISTICS);
-            if (map == null){
-                map = new HashMap<>();
-            }
-            summaryStatistics = map.get(record.getTimestamp());
-            if (summaryStatistics == null) {
-                summaryStatistics = new SummaryStatistics();
-            }
-
-            summaryStatistics.addValue(record.getAutoLinksCount());
-            map.put(record.getTimestamp(), summaryStatistics);
-            calcMap.put(AUTOLINKSTATISTICS, map);
+            Utilities.putStatisticsRecord(calcMap, record.getAddressCount(), ADDRESSCOUNT, instant);
+            Utilities.putStatisticsRecord(calcMap, record.getConnetionsCount(), CONNECTIONSCOUNT, instant);
+            Utilities.putStatisticsRecord(calcMap, record.getLinkRoutersCount(), LINKROUTESSTATISTICS, instant);
+            Utilities.putStatisticsRecord(calcMap, record.getAutoLinksCount(), AUTOLINKSTATISTICS, instant);
         }
     }
-
 
     /**
      * Gets the aggregated statistics for the set on a per period basis. Do not confuse
@@ -121,22 +76,8 @@ public class GeneralInfoDataSet {
         map.forEach((key, value) -> doCalc(calcMap, key, value));
 
         Map<String, Map<Date, Statistics>> ret = new TreeMap<>();
-        calcMap.forEach((key, value) -> ret.put(key, reCastMap(value)));
+        calcMap.forEach((key, value) -> ret.put(key, Utilities.reCastMap(value)));
 
         return ret;
-    }
-
-    /**
-     * Recast map for better evaluation by plotter.
-     * @param map map with timestamp and summary statistics
-     * @return map with date and statistics
-     */
-    private Map<Date, Statistics> reCastMap(Map<Instant, SummaryStatistics> map) {
-        Map<Date, Statistics> castedmap = new HashMap<>();
-        for (Map.Entry<Instant, SummaryStatistics> entry : map.entrySet())
-        {
-            castedmap.put(Date.from(entry.getKey()), new Statistics(entry.getValue()));
-        }
-        return castedmap;
     }
 }

@@ -16,8 +16,16 @@
 
 package org.maestro.plotter.common.graph;
 
+import org.apache.commons.compress.utils.Lists;
 import org.knowm.xchart.XYChart;
 import org.knowm.xchart.XYSeries;
+import org.maestro.plotter.common.statistics.Statistics;
+
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -25,6 +33,7 @@ import org.knowm.xchart.XYSeries;
  * @param <T>
  */
 public abstract class DefaultScatterPlotter<T> extends AbstractPlotter<T> {
+    protected static final String DEFAULT_FILENAME = "";
 
     protected XYChart createChart() {
 
@@ -33,5 +42,50 @@ public abstract class DefaultScatterPlotter<T> extends AbstractPlotter<T> {
         ret.getStyler().setDefaultSeriesRenderStyle(XYSeries.XYSeriesRenderStyle.Scatter);
         ret.getStyler().setMarkerSize(16);
         return ret;
+    }
+
+    protected void createChart(String yTitle, final File outputFile, Map<Date, Statistics> stats) {
+        final List<Date> periods = Lists.newArrayList(stats.keySet().iterator());
+
+        final List<List<Double>> data = getPlotData(periods, stats);
+
+        updateChart("", "",  "", yTitle);
+
+        // Create Chart
+        XYChart chart = createChart();
+
+        // Series
+        chart.addSeries("Mean", periods, data.get(0));
+
+        chart.addSeries("Max", periods, data.get(1));
+
+        chart.addSeries("Min", periods, data.get(2));
+
+
+        encode(chart, outputFile);
+    }
+
+    private List<List<Double>> getPlotData(List<Date> periods, Map<Date, Statistics> stats) {
+        final List<Double> means = new ArrayList<>();
+        stats.values().forEach(value -> means.add(value.getMean()));
+
+
+        validateDataSet(periods, means);
+
+        final List<Double> max = new ArrayList<>();
+        stats.values().forEach(value -> max.add(value.getMax()));
+
+        validateDataSet(periods, max);
+
+        final List<Double> min = new ArrayList<>();
+        stats.values().forEach(value -> min.add(value.getMin()));
+
+        validateDataSet(periods, min);
+
+        return new ArrayList<List<Double>>() {{
+            add(means);
+            add(max);
+            add(min);
+        }};
     }
 }

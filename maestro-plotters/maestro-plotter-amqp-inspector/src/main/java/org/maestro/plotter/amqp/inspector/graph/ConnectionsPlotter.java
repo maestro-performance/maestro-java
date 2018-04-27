@@ -6,7 +6,6 @@ import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.amqp.inspector.connections.ConnectionsData;
 import org.maestro.plotter.amqp.inspector.connections.ConnectionsDataSet;
 import org.maestro.plotter.common.graph.DefaultScatterPlotter;
-import org.maestro.plotter.common.statistics.Statistics;
 
 import java.io.File;
 import java.util.ArrayList;

@@ -1,67 +1,38 @@
 package org.maestro.plotter.amqp.inspector.graph;
 
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.amqp.inspector.routerlink.RouterLinkDataSet;
-import org.maestro.plotter.common.graph.DefaultScatterPlotter;
+import org.maestro.plotter.common.graph.AbstractInterconnectPlotter;
 import org.maestro.plotter.common.statistics.Statistics;
 
-import org.apache.commons.compress.utils.Lists;
-import org.knowm.xchart.XYChart;
-import org.maestro.common.exceptions.MaestroException;
-
 import java.io.File;
-import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 /**
  * A plotter for router link data
  */
-public class RouterLinkPlotter extends DefaultScatterPlotter<RouterLinkDataSet> {
-    public static final String DEFAULT_FILENAME = "routerLink.png";
+public class RouterLinkPlotter extends AbstractInterconnectPlotter<RouterLinkDataSet> {
+    public static final String DEFAULT_FILENAME = "routerLink_";
 
     /**
      * Plotter
      * @param dataSet collected data
-     * @param outputFile output file
+     * @param outputDir output file
      * @throws MaestroException implementation specific
      */
     @Override
-    public void plot(final RouterLinkDataSet dataSet, final File outputFile) throws MaestroException {
-        final Map<Date, Statistics> stats = dataSet.getStatistics();
+    public void plot(final RouterLinkDataSet dataSet, final File outputDir) throws MaestroException {
+        final Map<String, Map<Date, Statistics>> stats = dataSet.getStatistics();
 
-        final List<Date> periods = Lists.newArrayList(stats.keySet().iterator());
+        for (Map.Entry<String, Map<Date, Statistics>> entry : stats.entrySet())
+        {
+            plot(entry.getValue(), outputDir, entry.getKey());
+        }
+    }
 
-        final List<Double> means = new ArrayList<>();
-        stats.values().forEach(value -> means.add(value.getMean()));
-
-
-        validateDataSet(periods, means);
-
-        final List<Double> max = new ArrayList<>();
-        stats.values().forEach(value -> max.add(value.getMax()));
-
-        validateDataSet(periods, max);
-
-        final List<Double> min = new ArrayList<>();
-        stats.values().forEach(value -> min.add(value.getMin()));
-
-        validateDataSet(periods, min);
-
-        updateChart("", "",  "", "Messages");
-
-        // Create Chart
-        XYChart chart = createChart();
-
-        // Series
-        chart.addSeries("Mean", periods, means);
-
-        chart.addSeries("Max", periods, max);
-
-        chart.addSeries("Min", periods, min);
-
-
-
-        encode(chart, outputFile);
+    @Override
+    public String getDefaultName() {
+        return DEFAULT_FILENAME;
     }
 }
