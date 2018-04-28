@@ -157,6 +157,8 @@ testProfile.setSourceURL(sourceURL)
 println "Creating the executor"
 QuiverExecutor executor = new QuiverExecutor(maestro, reportsDownloader, testProfile)
 
+executor.setNotificationRetries(120)
+
 println "Running the test"
 if (!executor.run()) {
     maestro.stop()

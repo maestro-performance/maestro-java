@@ -35,6 +35,8 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
     private ReportsDownloader reportsDownloader;
     private AbstractTestProfile testProfile;
 
+    private int notificationRetries = 2;
+
 
     /**
      * Constructor
@@ -69,14 +71,16 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
 
     abstract public void startServices();
 
+    public void setNotificationRetries(int notificationRetries) {
+        this.notificationRetries = 2;
+    }
+
     /**
      * Test execution logic
      * @return
      */
     public boolean run() {
         try {
-            int repeat = 2;
-
             // Clean up the topic
             logger.debug("Cleaning up the topic");
             maestro.collect();
@@ -86,7 +90,7 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
 
             logger.info("Resolving data servers");
             resolveDataServers();
-            processReplies(testProcessor, repeat, numPeers);
+            processReplies(testProcessor, notificationRetries, numPeers);
 
             getReportsDownloader().getOrganizer().getTracker().setCurrentTest(testProfile.getTestExecutionNumber());
 
@@ -99,13 +103,10 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
             startServices();
 
             logger.info("Processing the replies");
-            processReplies(testProcessor, repeat, numPeers);
+            processReplies(testProcessor, notificationRetries, numPeers);
 
-            logger.info("Waiting a while for the Quiver test is running");
-            Thread.sleep(80000);
-
-            logger.info( "Processing the notifications");
-            processNotifications(testProcessor, repeat * 2, numPeers);
+            logger.info("Processing the notifications");
+            processNotifications(testProcessor, notificationRetries, numPeers);
         } catch (InterruptedException e) {
             logger.info("Test execution interrupted");
         } finally {
