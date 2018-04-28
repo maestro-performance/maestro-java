@@ -48,7 +48,9 @@ function start() {
         if [ $proc_count -eq 0 ] ; then
             esuccess
         fi
+
         echo -e "Maestro inspector started:$GREEN $pid $RESET"
+        ((proc_count++))
     done
 
     if [ $proc_count -eq 0 ] ; then
