@@ -52,6 +52,10 @@ function start() {
         echo -e "Maestro exporter started:$GREEN $pid $RESET"
         ((proc_count++))
     done
+
+    if [ $proc_count -eq 0 ] ; then
+        eerror "Maestro agent did not start successfully"
+    fi
 }
 
 function stop() {
