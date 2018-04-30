@@ -61,10 +61,8 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
     }
 
     @Override
-    protected void handleFile(final File file, int depth, Collection<ReportFile> results)
-
-    {
-        logger.debug("Processing file {}", file.getPath());
+    protected void handleFile(final File file, int depth, Collection<ReportFile> results) {
+        logger.trace("Processing file {}", file.getPath());
         String ext = FilenameUtils.getExtension(file.getName());
 
         if (Constants.FILE_EXTENSION_HDR_HISTOGRAM.equals(ext)) {
