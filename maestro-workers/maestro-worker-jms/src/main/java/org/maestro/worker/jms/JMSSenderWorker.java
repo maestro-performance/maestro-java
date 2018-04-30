@@ -154,7 +154,8 @@ public class JMSSenderWorker implements MaestroSenderWorker {
                         Thread.currentThread().getId(), intervalInNanos);
 
             } else if (this.rate == 0) {
-                logger.info("JMS Sender worker {} has started firing events with an unbounded rate.");
+                logger.info("JMS Sender worker {} has started firing events with an unbounded rate",
+                        Thread.currentThread().getId());
             }
             //it couldn't uses the Epoch in nanos because it could overflow pretty soon (less than 1 day)
             final long startFireEpochMicros = epochMicroClock.microTime();
