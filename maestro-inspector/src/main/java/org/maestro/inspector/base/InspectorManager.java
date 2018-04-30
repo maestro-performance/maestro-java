@@ -77,7 +77,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         try {
             createInspector(inspectorMap.get(note.getPayload()));
 
-            inspector.setDuration(getWorkerOptions().getDuration());
+            inspector.setWorkerOptions(getWorkerOptions());
 
             inspectorContainer = new InspectorContainer(inspector);
 

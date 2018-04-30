@@ -29,7 +29,7 @@ import java.util.Properties;
  * Test properties used/saved by inspectors
  */
 @SuppressWarnings("ALL")
-public class InspectorProperties implements MaestroTestProperties {
+public class InspectorProperties extends CommonProperties {
     public static String FILENAME = "inspector.properties";
 
     private static final Logger logger = LoggerFactory.getLogger(InspectorProperties.class);
@@ -67,6 +67,8 @@ public class InspectorProperties implements MaestroTestProperties {
 
             productName = prop.getProperty("productName");
             productVersion = prop.getProperty("productVersion");
+
+            super.load(prop);
         }
 
     }
@@ -97,6 +99,8 @@ public class InspectorProperties implements MaestroTestProperties {
         if (productVersion != null) {
             prop.setProperty("productVersion", productVersion);
         }
+
+        super.write(prop);
 
         try (FileOutputStream fos = new FileOutputStream(testProperties)) {
             prop.store(fos, "maestro");
@@ -190,7 +194,4 @@ public class InspectorProperties implements MaestroTestProperties {
     public void setProductVersion(String productVersion) {
         this.productVersion = productVersion;
     }
-
-
-
 }

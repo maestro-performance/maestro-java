@@ -38,4 +38,26 @@ public interface MaestroTestProperties {
      * @throws IOException If the file cannot be written
      */
     void write(File testProperties) throws IOException;
+
+    void setMessageSize(long messageSize);
+
+    void setMessageSize(final String messageSize);
+
+    long getMessageSize();
+
+    void setParallelCount(int parallelCount);
+
+    void setParallelCount(String parallelCount);
+
+    int getParallelCount();
+
+    void setVariableSize(boolean variableSize);
+
+    boolean isVariableSize();
+
+    void setRate(int rate);
+
+    void setRate(String rate);
+
+    int getRate();
 }

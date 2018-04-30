@@ -8,6 +8,7 @@ import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.common.inspector.types.GeneralInfo;
 import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.worker.TestLogUtils;
+import org.maestro.common.worker.WorkerOptions;
 import org.maestro.inspector.amqp.writers.ConnectionsInfoWriter;
 import org.maestro.inspector.amqp.writers.GeneralInfoWriter;
 import org.maestro.inspector.amqp.writers.QDMemoryInfoWriter;
@@ -62,8 +63,8 @@ public class InterconnectInspector implements MaestroInspector {
     }
 
     @Override
-    public void setDuration(String duration) throws DurationParseException {
-        this.duration = TestDurationBuilder.build(duration);
+    public void setWorkerOptions(final WorkerOptions workerOptions) throws DurationParseException {
+        this.duration = TestDurationBuilder.build(workerOptions.getDuration());
     }
 
     @Override
@@ -141,8 +142,6 @@ public class InterconnectInspector implements MaestroInspector {
                 connectionsInfoWriter.write(now, readData.collectConnectionsInfo());
                 qdMemoryInfoWriter.write(now, readData.collectMemoryInfo());
                 generalInfoWriter.write(now, readData.collectGeneralInfo());
-
-//                printOutput(readData.collectGeneralInfo());
 
                 Thread.sleep(5000);
             }

@@ -19,8 +19,11 @@ package org.maestro.common.inspector;
 import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.exceptions.DurationParseException;
+import org.maestro.common.test.MaestroTestProperties;
+import org.maestro.common.worker.WorkerOptions;
 
 import java.io.File;
+import java.util.Properties;
 
 public interface MaestroInspector extends TestDuration.TestProgress {
 
@@ -30,7 +33,16 @@ public interface MaestroInspector extends TestDuration.TestProgress {
 
     void setPassword(String password);
 
-    void setDuration(String duration) throws DurationParseException;
+    void setWorkerOptions(WorkerOptions workerOptions) throws DurationParseException;
+
+    default void setCommonProperties(MaestroTestProperties testProperties, WorkerOptions workerOptions) {
+        testProperties.setParallelCount(workerOptions.getParallelCount());
+
+        // Note: it already sets the variable size flag for variable message sizes
+        testProperties.setMessageSize(workerOptions.getMessageSize());
+
+        testProperties.setRate(workerOptions.getRate());
+    }
 
     void setBaseLogDir(File logDir);
 

@@ -28,6 +28,7 @@ import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.common.inspector.types.*;
 import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.worker.TestLogUtils;
+import org.maestro.common.worker.WorkerOptions;
 import org.maestro.inspector.activemq.writers.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -52,6 +53,7 @@ public class ArtemisInspector implements MaestroInspector {
     private String password;
     private File baseLogDir;
     private TestDuration duration;
+    private WorkerOptions workerOptions;
     private MaestroReceiver endpoint;
 
     private ArtemisDataReader artemisDataReader;
@@ -59,9 +61,7 @@ public class ArtemisInspector implements MaestroInspector {
 
 
 
-    public ArtemisInspector() {
-
-    }
+    public ArtemisInspector() {}
 
     public void setUrl(final String value) {
         try {
@@ -96,8 +96,10 @@ public class ArtemisInspector implements MaestroInspector {
         this.password = password;
     }
 
-    public void setDuration(final String duration) throws DurationParseException {
-        this.duration = TestDurationBuilder.build(duration);
+    public void setWorkerOptions(final WorkerOptions workerOptions) throws DurationParseException {
+        this.duration = TestDurationBuilder.build(workerOptions.getDuration());
+
+        this.workerOptions = workerOptions;
     }
 
     @Override
@@ -197,6 +199,8 @@ public class ArtemisInspector implements MaestroInspector {
     private void writeInspectorProperties(File logDir, InspectorProperties inspectorProperties,
                                           RuntimeInfoWriter runtimeInfoWriter, OSInfoWriter osInfoWriter,
                                           ProductInfoWriter productInfoWriter) throws MalformedObjectNameException, J4pException, IOException {
+        setCommonProperties(inspectorProperties, workerOptions);
+
         OSInfo osInfo = artemisDataReader.operatingSystem();
         osInfoWriter.write(null, osInfo);
 

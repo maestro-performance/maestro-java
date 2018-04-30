@@ -95,6 +95,22 @@ public class ReportDirInfo {
         this.testSuccessful = testSuccessful;
     }
 
+    public long getMessageSize() {
+        return testProperties.getMessageSize();
+    }
+
+    public int getRate() {
+        return testProperties.getRate();
+    }
+
+    public int getParallelCount() {
+        return testProperties.getParallelCount();
+    }
+
+    public boolean isVariableSize() {
+        return testProperties.isVariableSize();
+    }
+
     @Override
     public int hashCode() {
         return reportDir != null ? reportDir.hashCode() : 0;
