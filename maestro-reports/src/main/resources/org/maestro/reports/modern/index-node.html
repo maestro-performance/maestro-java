@@ -153,7 +153,7 @@
                         <h3 id="lat-all-range">Percentile Distribution</h3>
 
 
-                        {% set rcvLatFilename = "rate.png" %}
+                        {% set rcvLatFilename = nodeType + "d-latency_all.png" %}
                         {% set rcvLatFilenameExists = rcvLatFilename|fe(reportDirInfo.reportDir) %}
 
                         {% if rcvLatFilenameExists %}
