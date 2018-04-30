@@ -42,8 +42,12 @@ public class InterconnectInspector implements MaestroInspector {
     private MessageConsumer responseConsumer;
     private Destination tempDest;
 
-    public InterconnectInspector() {
+    private int interval;
 
+    private AbstractConfiguration config = ConfigurationWrapper.getConfig();
+
+    public InterconnectInspector() {
+        interval = config.getInteger("inspector.sleep.interval", 5000);
     }
 
     @Override
@@ -142,7 +146,7 @@ public class InterconnectInspector implements MaestroInspector {
                 qdMemoryInfoWriter.write(now, readData.collectMemoryInfo());
                 generalInfoWriter.write(now, readData.collectGeneralInfo());
 
-                Thread.sleep(5000);
+                Thread.sleep(interval);
             }
 
             TestLogUtils.createSymlinks(this.baseLogDir, false);

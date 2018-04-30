@@ -1,7 +1,9 @@
 package org.maestro.inspector.amqp;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.qpid.jms.message.JmsMessage;
 import org.apache.qpid.proton.amqp.Binary;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.inspector.types.ConnectionsInfo;
 import org.maestro.common.inspector.types.GeneralInfo;
 import org.maestro.common.inspector.types.QDMemoryInfo;
@@ -25,6 +27,8 @@ public class InterconnectReadData {
     private Destination destination;
     private MessageConsumer responseConsumer;
     private MessageProducer requestProducer;
+    private AbstractConfiguration config = ConfigurationWrapper.getConfig();
+    private long timeout;
 
     public InterconnectReadData(Session session,
                                 Destination destination,
@@ -34,6 +38,8 @@ public class InterconnectReadData {
         this.destination = destination;
         this.requestProducer = requestProducer;
         this.responseConsumer = responseConsumer;
+
+        timeout = config.getInteger("inspector.amqp.management.timeout", 2000);
     }
 
     /**
@@ -54,7 +60,7 @@ public class InterconnectReadData {
      * @throws JMSException if it can't receive response
      */
     private Message collectResponse() throws JMSException {
-        return responseConsumer.receive(2000L);
+        return responseConsumer.receive(timeout);
     }
 
     /**
