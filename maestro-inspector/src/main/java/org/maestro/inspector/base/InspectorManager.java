@@ -16,10 +16,7 @@
 
 package org.maestro.inspector.base;
 
-import org.maestro.client.notes.MaestroInspectorEventListener;
-import org.maestro.client.notes.SetRequest;
-import org.maestro.client.notes.StartInspector;
-import org.maestro.client.notes.StopInspector;
+import org.maestro.client.notes.*;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.worker.common.MaestroWorkerManager;
@@ -114,6 +111,16 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         logger.debug("Stop inspector request received");
 
         if (inspectorThread != null) {
+            inspectorThread.interrupt();
+        }
+    }
+
+    @Override
+    public void handle(TestFailedNotification note) {
+        super.handle(note);
+
+        if (inspectorThread != null) {
+            logger.debug("Stopping the inspection as a result of a test failure notification by one of the peers");
             inspectorThread.interrupt();
         }
     }

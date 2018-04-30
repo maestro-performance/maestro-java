@@ -338,4 +338,12 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
         getClient().statsResponse(statsResponse);
     }
+
+    @Override
+    public void handle(TestFailedNotification note) {
+        super.handle(note);
+
+        logger.debug("Stopping test execution after a peer reported a test failure");
+        container.stop();
+    }
 }
