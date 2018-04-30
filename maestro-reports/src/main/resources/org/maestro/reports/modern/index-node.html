@@ -461,6 +461,150 @@
                     </div>
 
                     {% endif %}
+
+                    {% set generalAddressFileName = "general_addresscount.png" %}
+                    {% set generalAddressFileNameExists = generalAddressFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if generalAddressFileNameExists %}
+                    <div>
+
+                        <h2 id="general-address-count">General Information - Address Count</h2>
+                        <p></p>
+                        <img class="img-responsive" src="{{ generalAddressFileName }}"  />
+                    </div>
+
+                    {% endif %}
+
+                    {% set generalConnectionsFileName = "general_connectionscount.png" %}
+                    {% set generalConnectionsFileNameExists = generalConnectionsFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if generalConnectionsFileNameExists %}
+                    <div>
+
+                        <h2 id="general-connections-count">General Information - Connections Count</h2>
+                        <p></p>
+                        <img class="img-responsive" src="{{ generalConnectionsFileName }}"  />
+                    </div>
+
+                    {% endif %}
+
+                    {% set generalLinkRoutesFileName = "general_linkroutesstatistics.png" %}
+                    {% set generalLinkRoutesFileNameExists = generalLinkRoutesFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if generalLinkRoutesFileNameExists %}
+                    <div>
+
+                        <h2 id="general-link-routes-count">General Information - Link Routes Statistics</h2>
+                        <p></p>
+                        <img class="img-responsive" src="{{ generalLinkRoutesFileName }}"  />
+                    </div>
+
+                    {% endif %}
+
+                    {% set generalAutoLinksFileName = "general_autolinksstatistics.png" %}
+                    {% set generalAutoLinksFileNameExists = generalAutoLinksFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if generalAutoLinksFileNameExists %}
+                    <div>
+
+                        <h2 id="general-auto-links-count">General Information - Auto Links Statistics</h2>
+                        <p></p>
+                        <img class="img-responsive" src="{{ generalAutoLinksFileName }}"  />
+                    </div>
+
+                    {% endif %}
+
+                    {% set routerLinkAcceptedFileName = "routerLink_accepted.png" %}
+                    {% set routerLinkAcceptedFileNameExists = routerLinkAcceptedFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if routerLinkAcceptedFileNameExists %}
+                    <div>
+
+                        <h2 id="general-accepted-messages-count">Router Link Information - Accepted Messages</h2>
+                        <p></p>
+                        <img class="img-responsive" src="{{ routerLinkAcceptedFileName }}"  />
+                    </div>
+
+                    {% endif %}
+
+                    {% set routerLinkDeliveredFileName = "routerLink_delivered.png" %}
+                    {% set routerLinkDeliveredFileNameExists = routerLinkDeliveredFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if routerLinkDeliveredFileNameExists %}
+                    <div>
+
+                        <h2 id="general-delivered-messages-count">Router Link Information - Delivered Messages</h2>
+                        <p></p>
+                        <img class="img-responsive" src="{{ routerLinkDeliveredFileName }}"  />
+                    </div>
+
+                    {% endif %}
+
+                    {% set routerLinkUndeliveredFileName = "routerLink_undelivered.png" %}
+                    {% set routerLinkUndeliveredFileNameExists = routerLinkUndeliveredFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if routerLinkUndeliveredFileNameExists %}
+                    <div>
+
+                        <h2 id="general-undelivered-messages-count">Router Link Information - Undelivered Messages</h2>
+                        <p></p>
+                        <img class="img-responsive" src="{{ routerLinkUndeliveredFileName }}"  />
+                    </div>
+
+                    {% endif %}
+
+                    {% set routerLinkReleasedFileName = "routerLink_undelivered.png" %}
+                    {% set routerLinkReleasedFileNameExists = routerLinkReleasedFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if routerLinkReleasedFileNameExists %}
+                    <div>
+
+                        <h2 id="general-released-messages-count">Router Link Information - Released Messages</h2>
+                        <p></p>
+                        <img class="img-responsive" src="{{ routerLinkReleasedFileName }}"  />
+                    </div>
+
+                    {% endif %}
+
+                    {% set memoryThreadsFileName = "qdmemory_heldbythreads.png" %}
+                    {% set memoryThreadsFileNameExists = memoryThreadsFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if memoryThreadsFileNameExists %}
+                    <div>
+
+                        <h2 id="general-memory-threads-count">Memory Information - Held by Threads</h2>
+                        <p></p>
+                        <img class="img-responsive" src="{{ memoryThreadsFileName }}"  />
+                    </div>
+
+                    {% endif %}
+
+                    {% set memoryMaxFileName = "qdmemory_totalallocfromheap.png" %}
+                    {% set memoryMaxFileNameExists = memoryMaxFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if memoryMaxFileNameExists %}
+                    <div>
+
+                        <h2 id="general-memory-max-count">Memory Information - Total Allocated</h2>
+                        <p></p>
+                        <img class="img-responsive" src="{{ memoryMaxFileName }}"  />
+                    </div>
+
+                    {% endif %}
+
+                    {% set memoryTypeSizeFileName = "qdmemory_typesize.png" %}
+                    {% set memoryTypeSizeFileNameExists = memoryTypeSizeFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if memoryTypeSizeFileNameExists %}
+                    <div>
+
+                        <h2 id="general-memory-type-size-count">Memory Information - Type Size</h2>
+                        <p></p>
+                        <img class="img-responsive" src="{{ memoryTypeSizeFileName }}"  />
+                    </div>
+
+                    {% endif %}
+
                 </div>
                 {% endif %}
             </div>
