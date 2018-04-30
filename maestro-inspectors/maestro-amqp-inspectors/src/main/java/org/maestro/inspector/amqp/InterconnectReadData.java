@@ -144,7 +144,7 @@ public class InterconnectReadData {
     GeneralInfo collectGeneralInfo() throws JMSException {
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
 
-        Map receivedMessage = collectData("routerStats").getBody(HashMap.class);
+        Map receivedMessage = collectData("router").getBody(HashMap.class);
 
         return new GeneralInfo(converter.parseReceivedMessage(receivedMessage));
     }
