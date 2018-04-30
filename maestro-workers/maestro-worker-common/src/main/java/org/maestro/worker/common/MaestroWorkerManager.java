@@ -101,14 +101,21 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     @Override
     protected final void noteArrived(MaestroEvent note) throws MaestroConnectionException {
-        logger.debug("Some message arrived: {}", note.toString());
+        if (logger.isTraceEnabled()) {
+            logger.trace("Some message arrived: {}", note.toString());
+        }
+
         note.notify(this);
     }
 
 
     @Override
     public void handle(final StatsRequest note) {
-        logger.debug("Stats request received");
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Stats request received");
+        }
+
         StatsResponse statsResponse = new StatsResponse();
 
         String parallelCount = workerOptions.getParallelCount();
@@ -133,13 +140,13 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     @Override
     public void handle(FlushRequest note) {
-        logger.debug("Flush request received");
+        logger.trace("Flush request received");
     }
 
 
     @Override
     public void handle(Halt note) {
-        logger.debug("Halt request received");
+        logger.trace("Halt request received");
 
         setRunning(false);
     }
@@ -147,7 +154,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     @Override
     public void handle(SetRequest note) {
-        logger.debug("Set request received");
+        logger.trace("Set request received");
 
         switch (note.getOption()) {
             case MAESTRO_NOTE_OPT_SET_BROKER: {
@@ -244,7 +251,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     @Override
     public void handle(GetRequest note) {
-        logger.info("A get request has arrived");
+        logger.trace("A get request has arrived");
         switch (note.getOption()) {
             case MAESTRO_NOTE_OPT_GET_DS: {
                 String dataServerAddress = dataServer.getServerURL();

@@ -61,7 +61,9 @@ public class JVMMemoryInfoWriter implements InspectorDataWriter<JVMMemoryInfo>, 
 
     @Override
     public void write(final LocalDateTime now, final JVMMemoryInfo data) {
-        logger.debug("{} Memory Usage: {}", data.getMemoryAreaName(), data);
+        if (logger.isTraceEnabled()) {
+            logger.trace("{} Memory Usage: {}", data.getMemoryAreaName(), data);
+        }
 
         try {
             String timestamp = now.format(formatter);

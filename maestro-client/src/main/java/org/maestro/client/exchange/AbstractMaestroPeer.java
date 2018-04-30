@@ -102,7 +102,7 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     }
 
     public void connect() throws MaestroConnectionException {
-        logger.debug("Connecting to Maestro Broker");
+        logger.info("Connecting to Maestro Broker");
         MqttConnectOptions connOpts = new MqttConnectOptions();
 
         connOpts.setCleanSession(true);

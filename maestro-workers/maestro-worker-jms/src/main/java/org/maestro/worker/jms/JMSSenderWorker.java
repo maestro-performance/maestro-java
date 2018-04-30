@@ -148,19 +148,21 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             final long intervalInNanos = this.rate > 0 ? (1_000_000_000L / rate) : 0;
             if (intervalInNanos > 0) {
 
-                // TODO: logger complains about rate as a parameter. Check.
-                logger.info("JMS Sender Worker {} has started firing events with an interval of {} ns and rate of "
-                                + rate + " msg/sec",
-                        Thread.currentThread().getId(), intervalInNanos);
+                if (logger.isDebugEnabled()) {
+                    logger.debug("JMS Sender Worker {} has started firing events with an interval of {} ns and rate of "
+                                    + rate + " msg/sec",
+                            Thread.currentThread().getId(), intervalInNanos);
+                }
 
             } else if (this.rate == 0) {
-                logger.info("JMS Sender worker {} has started firing events with an unbounded rate",
+                logger.debug("JMS Sender worker {} has started firing events with an unbounded rate",
                         Thread.currentThread().getId());
             }
             //it couldn't uses the Epoch in nanos because it could overflow pretty soon (less than 1 day)
             final long startFireEpochMicros = epochMicroClock.microTime();
             //to avoid accumulated approx errors on the expectedSendTimeEpochMillis calculations
             long elapsedIntervalsNanos = 0;
+
             long nextFireTime = System.nanoTime() + intervalInNanos;
             while (duration.canContinue(this) && isRunning()) {
                 if (intervalInNanos > 0) {

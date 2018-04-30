@@ -64,7 +64,7 @@ public class QueueInfoWriter implements InspectorDataWriter<QueueInfo>, AutoClos
     private void write(final LocalDateTime now, final String key, final Object object) {
         if (object instanceof Map) {
             final Map<String, Object> queueProperties = (Map<String, Object>) object;
-            logger.debug("Queue information: {}", queueProperties);
+            logger.trace("Queue information: {}", queueProperties);
 
             try {
                 String timestamp = now.format(formatter);
@@ -84,7 +84,7 @@ public class QueueInfoWriter implements InspectorDataWriter<QueueInfo>, AutoClos
 
     @Override
     public void write(final LocalDateTime now, final QueueInfo data) {
-        logger.debug("Queue information: {}", data);
+        logger.trace("Queue information: {}", data);
 
         Map<String, Object> queueProperties = data.getQueueProperties();
 

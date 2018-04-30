@@ -67,7 +67,7 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
         if (object instanceof Map) {
             final Map<String, Object> routerLinkInfo = (Map<String, Object>) object;
 
-            logger.debug("Router Link information: {}", routerLinkInfo);
+            logger.trace("Router Link information: {}", routerLinkInfo);
 
             try {
                 String timestamp = now.format(formatter);
@@ -103,7 +103,7 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
     @SuppressWarnings("unchecked")
     @Override
     public void write(final LocalDateTime now, final GeneralInfo data) {
-        logger.debug("Router link information: {}", data);
+        logger.trace("Router link information: {}", data);
 
         List queueProperties = data.getGeneralProperties();
 

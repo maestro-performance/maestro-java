@@ -55,8 +55,8 @@ public class ArtemisDataReader {
 
         JSONObject jo = response.getValue();
 
-        if (logger.isDebugEnabled()) {
-            logger.debug("JSON response: {}", jo.toString());
+        if (logger.isTraceEnabled()) {
+            logger.trace("json response: {}", jo.toString());
         }
         return jo;
     }

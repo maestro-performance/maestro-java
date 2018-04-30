@@ -35,7 +35,7 @@ public class OSInfoWriter implements InspectorDataWriter<OSInfo> {
 
     @Override
     public void write(final LocalDateTime now, final OSInfo data) {
-        logger.debug("Operating system: {}", data);
+        logger.trace("Operating system: {}", data);
 
         Map<String, Object> osProperties = data.getOsProperties();
 

@@ -50,7 +50,8 @@ public class DefaultJolokiaParser {
         String jolokiaPropertyName = "";
         if (key instanceof String) {
             String tmp = (String) key;
-            logger.debug("Checking property name/group {}", tmp);
+
+            logger.trace("Checking property name/group {}", tmp);
 
             Pattern pattern = Pattern.compile(".*name=(.*),.*");
             Matcher matcher = pattern.matcher(tmp);
@@ -58,7 +59,7 @@ public class DefaultJolokiaParser {
             if (matcher.matches()) {
                 jolokiaPropertyName = matcher.group(1);
 
-                logger.debug("Reading property name/group '{}'", jolokiaPropertyName);
+                logger.trace("Reading property name/group '{}'", jolokiaPropertyName);
             } else {
                 jolokiaPropertyName = tmp;
             }
@@ -101,7 +102,7 @@ public class DefaultJolokiaParser {
             String jolokiaPropertyName = "";
             if (key instanceof String) {
                 String tmp = (String) key;
-                logger.debug("Checking property name/group {}", tmp);
+                logger.trace("Checking property name/group {}", tmp);
 
                 Pattern pattern = Pattern.compile(".*address=(\".*\"),.*");
                 Matcher matcher = pattern.matcher(tmp);
@@ -109,7 +110,7 @@ public class DefaultJolokiaParser {
                 if (matcher.matches()) {
                     jolokiaPropertyName = matcher.group(1);
 
-                    logger.debug("Reading property name/group '{}'", jolokiaPropertyName);
+                    logger.trace("Reading property name/group '{}'", jolokiaPropertyName);
                 } else {
                     jolokiaPropertyName = tmp;
                 }

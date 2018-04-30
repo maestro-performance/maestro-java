@@ -255,7 +255,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(StartReceiver note) {
-        logger.debug("Start receiver request received");
+        logger.info("Start receiver request received");
 
         if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
             if (!doWorkerStart()) {
@@ -266,7 +266,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(StartSender note) {
-        logger.debug("Start sender request received");
+        logger.info("Start sender request received");
 
         if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
             if (!doWorkerStart()) {
@@ -277,7 +277,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(StopReceiver note) {
-        logger.debug("Stop receiver request received");
+        logger.info("Stop receiver request received");
 
         if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
             container.stop();
@@ -288,7 +288,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(StopSender note) {
-        logger.debug("Stop sender request received");
+        logger.info("Stop sender request received");
 
         if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
             container.stop();
@@ -300,7 +300,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(StatsRequest note) {
-        logger.debug("Stats request received");
+        logger.trace("Stats request received");
         StatsResponse statsResponse = new StatsResponse();
 
         String parallelCount = getWorkerOptions().getParallelCount();

@@ -64,7 +64,7 @@ public class QDMemoryInfoWriter implements InspectorDataWriter<QDMemoryInfo>, Au
         if (object instanceof Map) {
             final Map<String, Object> ConnectionsInfo = (Map<String, Object>) object;
 
-            logger.debug("Memory information: {}", ConnectionsInfo);
+            logger.trace("Memory information: {}", ConnectionsInfo);
 
             try {
                 String timestamp = now.format(formatter);
@@ -94,7 +94,7 @@ public class QDMemoryInfoWriter implements InspectorDataWriter<QDMemoryInfo>, Au
     @SuppressWarnings("unchecked")
     @Override
     public void write(final LocalDateTime now, final QDMemoryInfo data) {
-        logger.debug("Memory information: {}", data);
+        logger.trace("Memory information: {}", data);
 
         List connectionProperties = data.getQDMemoryInfoProperties();
 

@@ -36,7 +36,7 @@ public class RuntimeInfoWriter implements InspectorDataWriter<RuntimeInfo> {
 
     @Override
     public void write(final LocalDateTime now, final RuntimeInfo data) {
-        logger.debug("Runtime information: {}", data);
+        logger.trace("Runtime information: {}", data);
 
         Map<String, Object> runtimeProperties = data.getProperties();
         

@@ -65,7 +65,7 @@ public class ConnectionsInfoWriter implements InspectorDataWriter<ConnectionsInf
         if (object instanceof Map) {
             final Map<String, Object> ConnectionsInfo = (Map<String, Object>) object;
 
-            logger.debug("Connections information: {}", ConnectionsInfo);
+            logger.trace("Connections information: {}", ConnectionsInfo);
 
             try {
                 String timestamp = now.format(formatter);
@@ -97,7 +97,7 @@ public class ConnectionsInfoWriter implements InspectorDataWriter<ConnectionsInf
     @SuppressWarnings("unchecked")
     @Override
     public void write(final LocalDateTime now, final ConnectionsInfo data) {
-        logger.debug("Connections information: {}", data);
+        logger.trace("Connections information: {}", data);
 
         List connectionProperties = data.getConnectionProperties();
 
