@@ -60,8 +60,8 @@ public class PropertyWriter {
                 try {
                     Object ret = method.invoke(data);
 
-                    if (logger.isDebugEnabled()) {
-                        logger.debug("Obtained: {} ", ret);
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Obtained: {} ", ret);
                     }
 
                     PropertyProvider methodProperty = method.getAnnotation(PropertyProvider.class);

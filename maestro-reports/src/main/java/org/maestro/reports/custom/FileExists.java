@@ -38,7 +38,7 @@ public class FileExists implements Filter {
 
         File file = new File(strings[0] + File.separator + filename);
 
-        logger.debug("Checking whether the path {} exists", file.getPath());
+        logger.trace("Checking whether the path {} exists", file.getPath());
         return file.exists();
     }
 
