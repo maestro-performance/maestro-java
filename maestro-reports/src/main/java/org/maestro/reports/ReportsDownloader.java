@@ -86,25 +86,28 @@ public class ReportsDownloader {
             logger.info("Downloading the {} report file {}", hostType, targetURL);
         }
 
+        boolean downloaded = false;
+        int repeat = 10;
 
-        try {
-            Downloader.download(targetURL, destinationDir, true);
-        }
-        catch (ResourceExchangeException re) {
-            if (re.getCode() == HttpStatus.SC_NOT_FOUND) {
-                logger.warn("Remote resource not found or not available yet");
-                try {
-                    Thread.sleep(5000);
-                } catch (InterruptedException e) {
-                    e.printStackTrace();
-                }
-                // Maybe it's still flushing the data ... who knows. We can wait a bit and try again
+        do {
+
+            try {
                 Downloader.download(targetURL, destinationDir, true);
+                downloaded = true;
+            } catch (ResourceExchangeException re) {
+                if (re.getCode() == HttpStatus.SC_NOT_FOUND) {
+                    logger.warn("Remote resource not found or not available yet. Retrying in 5 seconds");
+                    try {
+                        Thread.sleep(5000);
+                        repeat--;
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    throw re;
+                }
             }
-            else {
-                throw re;
-            }
-        }
+        } while (!downloaded && repeat > 0);
     }
 
     /**
