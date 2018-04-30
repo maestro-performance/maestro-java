@@ -31,8 +31,6 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
     public GeneralInfoWriter(final File logDir, final String name) throws IOException {
         File outputFile = new File(logDir, name + ".csv");
 
-        System.out.println(outputFile.getPath());
-
         writer = Files.newBufferedWriter(Paths.get(outputFile.getPath()), Charset.defaultCharset());
         csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
                 .withHeader("Timestamp", "Name", "Version", "Mode", "LinkRoutes", "AutoLinks", "Links", "Nodes",

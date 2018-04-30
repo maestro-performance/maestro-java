@@ -30,8 +30,6 @@ public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>,
     public RouteLinkInfoWriter(final File logDir, final String name) throws IOException {
         File outputFile = new File(logDir, name + ".csv");
 
-        System.out.println(outputFile.getPath());
-
         writer = Files.newBufferedWriter(Paths.get(outputFile.getPath()), Charset.defaultCharset());
         csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
                 .withHeader("Timestamp", "Name", "LinkType", "LinkDir", "Identity", "OperStatus",

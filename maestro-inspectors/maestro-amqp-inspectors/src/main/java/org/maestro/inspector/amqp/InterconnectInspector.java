@@ -1,11 +1,12 @@
 package org.maestro.inspector.amqp;
 
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.inspector.MaestroInspector;
-import org.maestro.common.inspector.types.GeneralInfo;
 import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerOptions;
@@ -19,8 +20,6 @@ import org.slf4j.LoggerFactory;
 import javax.jms.*;
 import java.io.File;
 import java.time.LocalDateTime;
-import java.util.List;
-import java.util.Map;
 
 /**
  * A class for Interconnect inspector based on AMQP management
@@ -166,20 +165,6 @@ public class InterconnectInspector implements MaestroInspector {
             connectionsInfoWriter.close();
             qdMemoryInfoWriter.close();
             generalInfoWriter.close();
-        }
-    }
-
-//    @TODO Delete this, only support function
-    @SuppressWarnings("unchecked")
-    private void printOutput(GeneralInfo info) throws JMSException {
-
-        List<Map<String, Object>> newList = info.getGeneralProperties();
-
-        for (Map<String, Object> item: newList) {
-            for (Map.Entry record : item.entrySet()) {
-                System.out.println("Key: " + record.getKey());
-                System.out.println("Value: " + record.getValue());
-            }
         }
     }
 
