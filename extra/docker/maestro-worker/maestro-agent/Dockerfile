@@ -9,8 +9,8 @@ WORKDIR /root/build
 RUN git clone https://github.com/maestro-performance/maestro-java.git --branch devel
 RUN cd maestro-java && ./mvnw -DskipTests=true -PPackage clean package
 
-FROM centos:7 AS maestro-receiver
-ENV MAESTRO_WORKER_TYPE worker
+FROM centos:7 AS maestro-agent
+ENV MAESTRO_WORKER_TYPE agent
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 ARG MAESTRO_WORKER_VERSION
 ENV MAESTRO_WORKER_VERSION ${MAESTRO_WORKER_VERSION:-1.3.0-SNAPSHOT}
