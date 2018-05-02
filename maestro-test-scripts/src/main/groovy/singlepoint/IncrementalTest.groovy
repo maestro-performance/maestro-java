@@ -43,8 +43,10 @@ import net.orpiske.mpt.common.duration.TestDurationBuilder
 maestroURL = System.getenv("MAESTRO_BROKER")
 brokerURL = System.getenv("BROKER_URL")
 rate = System.getenv("RATE")
+messageSize = System.getenv("MESSAGE_SIZE")
 rateIncrement = System.getenv("RATE_INCREMENT")
 ceilingRate = System.getenv("CEILING_RATE")
+parallelCount = System.getenv("PARALLEL_COUNT")
 pcIncrement = System.getenv("PARALLEL_COUNT_INCREMENT")
 duration = System.getenv("TEST_DURATION")
 
@@ -59,14 +61,19 @@ ReportsDownloader reportsDownloader = new ReportsDownloader(args[0]);
 IncrementalTestProfile testProfile = new SimpleTestProfile();
 
 testProfile.setBrokerURL(brokerURL)
-testProfile.setInitialRate(500);
+
 testProfile.setDuration(TestDurationBuilder.build(duration))
-testProfile.setMessageSize(MessageSize.fixed(Long.parseLong(rate)))
+testProfile.setMessageSize(MessageSize.fixed(Long.parseLong(messageSize)))
+
 testProfile.setMaximumLatency(200)
+
+testProfile.setInitialRate(Integer.parseInt(rate));
 testProfile.setCeilingRate(Integer.parseInt(ceilingRate))
-testProfile.setParallelCountIncrement(Integer.parseInt(pcIncrement))
-testProfile.setCeilingParallelCount(1)
 testProfile.setRateIncrement(Integer.parseInt(rateIncrement))
+
+testProfile.setInitialParallelCount(Integer.parseInt(parallelCount))
+testProfile.setCeilingParallelCount(Integer.parseInt(parallelCount))
+testProfile.setParallelCountIncrement(Integer.parseInt(pcIncrement))
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
 
