@@ -63,10 +63,10 @@ testProfile.setInitialRate(500);
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(MessageSize.fixed(Long.parseLong(rate)))
 testProfile.setMaximumLatency(200)
-testProfile.setCeilingRate(Long.parseLong(ceilingRate))
-testProfile.setParallelCountIncrement(Long.parseLong(pcIncrement))
+testProfile.setCeilingRate(Integer.parseInt(ceilingRate))
+testProfile.setParallelCountIncrement(Integer.parseInt(pcIncrement))
 testProfile.setCeilingParallelCount(1)
-testProfile.setRateIncrement(Long.parseLong(rateIncrement))
+testProfile.setRateIncrement(Integer.parseInt(rateIncrement))
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
 
