@@ -42,6 +42,12 @@ import net.orpiske.mpt.common.duration.TestDurationBuilder
 
 maestroURL = System.getenv("MAESTRO_BROKER")
 brokerURL = System.getenv("BROKER_URL")
+rate = System.getenv("RATE")
+rateIncrement = System.getenv("RATE_INCREMENT")
+ceilingRate = System.getenv("CEILING_RATE")
+pcIncrement = System.getenv("PARALLEL_COUNT_INCREMENT")
+duration = System.getenv("TEST_DURATION")
+
 
 LogConfigurator.verbose()
 
@@ -54,12 +60,13 @@ IncrementalTestProfile testProfile = new SimpleTestProfile();
 
 testProfile.setBrokerURL(brokerURL)
 testProfile.setInitialRate(500);
-testProfile.setDuration(TestDurationBuilder.build("90s"));
-testProfile.setMessageSize(MessageSize.variable(256));
+testProfile.setDuration(TestDurationBuilder.build(duration))
+testProfile.setMessageSize(MessageSize.fixed(Long.parseLong(rate)))
 testProfile.setMaximumLatency(200)
-testProfile.setCeilingRate(600)
-testProfile.setParallelCountIncrement(1)
+testProfile.setCeilingRate(Long.parseLong(ceilingRate))
+testProfile.setParallelCountIncrement(Long.parseLong(pcIncrement))
 testProfile.setCeilingParallelCount(1)
+testProfile.setRateIncrement(Long.parseLong(rateIncrement))
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
 
