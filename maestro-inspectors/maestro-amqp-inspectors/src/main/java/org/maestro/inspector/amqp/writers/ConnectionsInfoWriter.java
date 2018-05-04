@@ -104,36 +104,4 @@ public class ConnectionsInfoWriter implements InspectorDataWriter<ConnectionsInf
 
         connectionProperties.forEach(map -> write(now, map));
     }
-
-    @SuppressWarnings("unchecked")
-    public void write(InspectorProperties inspectorProperties, final Object object) {
-        if (object instanceof ConnectionsInfo) {
-            final Map<String, Object> connectionsInfo = (Map) ((ConnectionsInfo) object).getConnectionProperties().iterator().next();
-
-            logger.trace("Connections information: {}", connectionsInfo);
-
-            Map properties = (Map) connectionsInfo.get("properties");
-
-
-            Pattern pattern = Pattern.compile("JVM: (.*)OS: (.*)");
-
-            Matcher matcher = pattern.matcher((String) properties.get("platform"));
-
-            if (matcher.find()){
-                String[] record = matcher.group(1).split("[,;] +");
-                inspectorProperties.setJvmName("JVM");
-                inspectorProperties.setJvmVersion(record[0]);
-
-                record = matcher.group(2).split("[,;] +");
-                inspectorProperties.setOperatingSystemName(record[0]);
-                inspectorProperties.setOperatingSystemVersion(record[1]);
-                inspectorProperties.setOperatingSystemArch(record[2]);
-            }
-        }
-        else {
-            logger.warn("Invalid value type for connections");
-            System.out.println(object.toString());
-            System.out.println(object.getClass());
-        }
-    }
 }

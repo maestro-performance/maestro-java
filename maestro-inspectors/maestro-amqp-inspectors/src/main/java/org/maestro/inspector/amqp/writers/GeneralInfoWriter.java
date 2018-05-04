@@ -3,7 +3,6 @@ package org.maestro.inspector.amqp.writers;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.maestro.common.inspector.types.GeneralInfo;
-import org.maestro.common.inspector.types.RouterLinkInfo;
 import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.writers.InspectorDataWriter;
 import org.slf4j.Logger;
@@ -111,10 +110,22 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
 
     @SuppressWarnings("unchecked")
     public void write(InspectorProperties inspectorProperties, final Object object){
-        if (object instanceof Map) {
-            final Map<String, Object> generalInfo = (Map<String, Object>) object;
+        if (object instanceof GeneralInfo) {
+            final Map<String, Object> generalInfo = (Map) ((GeneralInfo) object).getGeneralProperties().get(0);
 
             logger.trace("Router Link information: {}", generalInfo);
+
+            Runtime runtime = Runtime.getRuntime();
+
+            inspectorProperties.setSystemCpuCount(runtime.availableProcessors());
+            inspectorProperties.setSystemMemory(runtime.totalMemory());
+
+            inspectorProperties.setOperatingSystemName(System.getProperty("os.name"));
+            inspectorProperties.setOperatingSystemArch(System.getProperty("os.arch"));
+            inspectorProperties.setOperatingSystemVersion(System.getProperty("os.version"));
+
+            inspectorProperties.setJvmName(System.getProperty("java.vm.name"));
+            inspectorProperties.setJvmVersion(System.getProperty("java.specification.version"));
 
             inspectorProperties.setProductName("Interconnect");
             inspectorProperties.setProductVersion((String) generalInfo.get("version"));

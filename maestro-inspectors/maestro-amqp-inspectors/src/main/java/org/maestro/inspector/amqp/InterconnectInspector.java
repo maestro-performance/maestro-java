@@ -144,7 +144,7 @@ public class InterconnectInspector implements MaestroInspector {
                     responseConsumer,
                     messageProducer);
 
-            writeInspectorProperties(logDir, inspectorProperties, generalInfoWriter, connectionsInfoWriter);
+            writeInspectorProperties(logDir, inspectorProperties, generalInfoWriter);
 
 
             while (duration.canContinue(this) && isRunning()) {
@@ -182,12 +182,10 @@ public class InterconnectInspector implements MaestroInspector {
     }
 
     private void writeInspectorProperties(File logDir, InspectorProperties inspectorProperties,
-                                          GeneralInfoWriter generalInfoWriter,
-                                          ConnectionsInfoWriter connectionsInfoWriter) throws MalformedObjectNameException, IOException, JMSException {
+                                          GeneralInfoWriter generalInfoWriter) throws MalformedObjectNameException, IOException, JMSException {
         setCommonProperties(inspectorProperties, workerOptions);
 
         generalInfoWriter.write(inspectorProperties, interconnectReadData.collectGeneralInfo());
-        connectionsInfoWriter.write(inspectorProperties, interconnectReadData.collectConnectionsInfo());
 
         File propertiesFile = new File(logDir, InspectorProperties.FILENAME);
         inspectorProperties.write(propertiesFile);
