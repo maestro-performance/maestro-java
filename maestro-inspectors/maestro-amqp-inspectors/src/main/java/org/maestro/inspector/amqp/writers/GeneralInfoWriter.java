@@ -111,7 +111,6 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
 
     @SuppressWarnings("unchecked")
     public void write(InspectorProperties inspectorProperties, final Object object){
-        System.out.println("test");
         if (object instanceof Map) {
             final Map<String, Object> generalInfo = (Map<String, Object>) object;
 
