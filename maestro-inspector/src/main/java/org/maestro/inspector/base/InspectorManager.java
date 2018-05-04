@@ -112,6 +112,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
 
         if (inspectorThread != null) {
             inspectorThread.interrupt();
+            inspectorThread = null;
         }
     }
 
