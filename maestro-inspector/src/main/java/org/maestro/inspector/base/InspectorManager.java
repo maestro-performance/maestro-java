@@ -122,6 +122,18 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         if (inspectorThread != null) {
             logger.debug("Stopping the inspection as a result of a test failure notification by one of the peers");
             inspectorThread.interrupt();
+            inspectorThread = null;
+        }
+    }
+
+    @Override
+    public void handle(TestSuccessfulNotification note) {
+        super.handle(note);
+
+        if (inspectorThread != null) {
+            logger.debug("Stopping the inspection as a result of a test success notification by one of the peers");
+            inspectorThread.interrupt();
+            inspectorThread = null;
         }
     }
 }
