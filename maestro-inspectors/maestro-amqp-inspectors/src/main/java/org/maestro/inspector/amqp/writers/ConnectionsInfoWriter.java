@@ -3,6 +3,7 @@ package org.maestro.inspector.amqp.writers;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.maestro.common.inspector.types.ConnectionsInfo;
+import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.writers.InspectorDataWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +18,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 /**
  * A router link information writer for AMQP Inspector.
@@ -100,5 +103,37 @@ public class ConnectionsInfoWriter implements InspectorDataWriter<ConnectionsInf
         List connectionProperties = data.getConnectionProperties();
 
         connectionProperties.forEach(map -> write(now, map));
+    }
+
+    @SuppressWarnings("unchecked")
+    public void write(InspectorProperties inspectorProperties, final Object object) {
+        if (object instanceof ConnectionsInfo) {
+            final Map<String, Object> connectionsInfo = (Map) ((ConnectionsInfo) object).getConnectionProperties().iterator().next();
+
+            logger.trace("Connections information: {}", connectionsInfo);
+
+            Map properties = (Map) connectionsInfo.get("properties");
+
+
+            Pattern pattern = Pattern.compile("JVM: (.*)OS: (.*)");
+
+            Matcher matcher = pattern.matcher((String) properties.get("platform"));
+
+            if (matcher.find()){
+                String[] record = matcher.group(1).split("[,;] +");
+                inspectorProperties.setJvmName("JVM");
+                inspectorProperties.setJvmVersion(record[0]);
+
+                record = matcher.group(2).split("[,;] +");
+                inspectorProperties.setOperatingSystemName(record[0]);
+                inspectorProperties.setOperatingSystemVersion(record[1]);
+                inspectorProperties.setOperatingSystemArch(record[2]);
+            }
+        }
+        else {
+            logger.warn("Invalid value type for connections");
+            System.out.println(object.toString());
+            System.out.println(object.getClass());
+        }
     }
 }

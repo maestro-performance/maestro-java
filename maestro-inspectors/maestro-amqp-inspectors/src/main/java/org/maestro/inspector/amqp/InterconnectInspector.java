@@ -18,7 +18,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
+import javax.management.MalformedObjectNameException;
 import java.io.File;
+import java.io.IOException;
 import java.time.LocalDateTime;
 
 /**
@@ -41,6 +43,9 @@ public class InterconnectInspector implements MaestroInspector {
     private MessageProducer messageProducer;
     private MessageConsumer responseConsumer;
     private Destination tempDest;
+
+    private WorkerOptions workerOptions;
+    private InterconnectReadData interconnectReadData;
 
     private int interval;
 
@@ -68,6 +73,8 @@ public class InterconnectInspector implements MaestroInspector {
     @Override
     public void setWorkerOptions(final WorkerOptions workerOptions) throws DurationParseException {
         this.duration = TestDurationBuilder.build(workerOptions.getDuration());
+
+        this.workerOptions = workerOptions;
     }
 
     @Override
@@ -132,19 +139,21 @@ public class InterconnectInspector implements MaestroInspector {
 
             connect();
 
-            InterconnectReadData readData = new InterconnectReadData(session,
+            interconnectReadData = new InterconnectReadData(session,
                     tempDest,
                     responseConsumer,
                     messageProducer);
+
+            writeInspectorProperties(logDir, inspectorProperties, generalInfoWriter, connectionsInfoWriter);
 
 
             while (duration.canContinue(this) && isRunning()) {
                 LocalDateTime now = LocalDateTime.now();
 
-                routerLinkInfoWriter.write(now, readData.collectRouterLinkInfo());
-                connectionsInfoWriter.write(now, readData.collectConnectionsInfo());
-                qdMemoryInfoWriter.write(now, readData.collectMemoryInfo());
-                generalInfoWriter.write(now, readData.collectGeneralInfo());
+                routerLinkInfoWriter.write(now, interconnectReadData.collectRouterLinkInfo());
+                connectionsInfoWriter.write(now, interconnectReadData.collectConnectionsInfo());
+                qdMemoryInfoWriter.write(now, interconnectReadData.collectMemoryInfo());
+                generalInfoWriter.write(now, interconnectReadData.collectGeneralInfo());
 
                 Thread.sleep(interval);
             }
@@ -170,6 +179,18 @@ public class InterconnectInspector implements MaestroInspector {
             qdMemoryInfoWriter.close();
             generalInfoWriter.close();
         }
+    }
+
+    private void writeInspectorProperties(File logDir, InspectorProperties inspectorProperties,
+                                          GeneralInfoWriter generalInfoWriter,
+                                          ConnectionsInfoWriter connectionsInfoWriter) throws MalformedObjectNameException, IOException, JMSException {
+        setCommonProperties(inspectorProperties, workerOptions);
+
+        generalInfoWriter.write(inspectorProperties, interconnectReadData.collectGeneralInfo());
+        connectionsInfoWriter.write(inspectorProperties, interconnectReadData.collectConnectionsInfo());
+
+        File propertiesFile = new File(logDir, InspectorProperties.FILENAME);
+        inspectorProperties.write(propertiesFile);
     }
 
     @Override

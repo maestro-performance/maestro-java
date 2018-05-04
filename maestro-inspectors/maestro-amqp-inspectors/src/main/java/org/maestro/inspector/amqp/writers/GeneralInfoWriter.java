@@ -4,6 +4,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.maestro.common.inspector.types.GeneralInfo;
 import org.maestro.common.inspector.types.RouterLinkInfo;
+import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.writers.InspectorDataWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,7 +66,7 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
         if (object instanceof Map) {
             final Map<String, Object> routerLinkInfo = (Map<String, Object>) object;
 
-            logger.trace("Router Link information: {}", routerLinkInfo);
+            logger.trace("General information: {}", routerLinkInfo);
 
             try {
                 String timestamp = now.format(formatter);
@@ -89,7 +90,7 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
             }
         }
         else {
-            logger.warn("Invalid value type for router link");
+            logger.warn("Invalid value type for general info");
         }
     }
 
@@ -106,5 +107,22 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
         List queueProperties = data.getGeneralProperties();
 
         queueProperties.forEach(map -> write(now, map));
+    }
+
+    @SuppressWarnings("unchecked")
+    public void write(InspectorProperties inspectorProperties, final Object object){
+        System.out.println("test");
+        if (object instanceof Map) {
+            final Map<String, Object> generalInfo = (Map<String, Object>) object;
+
+            logger.trace("Router Link information: {}", generalInfo);
+
+            inspectorProperties.setProductName("Interconnect");
+            inspectorProperties.setProductVersion((String) generalInfo.get("version"));
+
+        }
+        else {
+            logger.warn("Invalid value type for general info");
+        }
     }
 }
