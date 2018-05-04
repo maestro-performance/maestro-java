@@ -24,5 +24,4 @@ public class InspectorReportResolver extends AbstractReportResolver {
     public InspectorReportResolver() {
         super(FILES);
     }
-
 }

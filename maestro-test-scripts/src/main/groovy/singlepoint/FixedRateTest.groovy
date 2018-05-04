@@ -31,6 +31,8 @@ package singlepoint
 
 
 import org.maestro.client.Maestro
+import org.maestro.reports.InspectorReportResolver
+import org.maestro.reports.InterconnectInspectorReportResolver
 import org.maestro.reports.ReportsDownloader
 import org.maestro.tests.rate.FixedRateTestExecutor
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile
@@ -103,6 +105,13 @@ if (managementInterface != null) {
     if (inspectorName != null) {
         testProfile.setInspectorName(inspectorName)
         testProfile.setManagementInterface(managementInterface)
+
+        if(inspectorName == "InterconnectInspector") {
+            reportsDownloader.addReportResolver("inspector", new InterconnectInspectorReportResolver())
+        }
+        else {
+            reportsDownloader.addReportResolver("inspector", new InspectorReportResolver())
+        }
     }
     else {
         println "A management interface was provided by no inspector name was given. Ignoring ..."

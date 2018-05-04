@@ -51,7 +51,6 @@ public class ReportsDownloader {
 
         resolverMap.put(SENDER_HOST_TYPE, new SenderReportResolver());
         resolverMap.put(RECEIVER_HOST_TYPE, new ReceiverReportResolver());
-        resolverMap.put(INSPECTOR_HOST_TYPE, new InspectorReportResolver());
     }
 
     public ReportsDownloader(final Organizer organizer) {
@@ -59,7 +58,6 @@ public class ReportsDownloader {
 
         resolverMap.put(SENDER_HOST_TYPE, new SenderReportResolver());
         resolverMap.put(RECEIVER_HOST_TYPE, new ReceiverReportResolver());
-        resolverMap.put(INSPECTOR_HOST_TYPE, new InspectorReportResolver());
     }
 
     public Organizer getOrganizer() {
