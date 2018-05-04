@@ -75,13 +75,7 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
                         routerLinkInfo.get("mode"), routerLinkInfo.get("linkRouteCount"),
                         routerLinkInfo.get("autoLinkCount"), routerLinkInfo.get("linkCount"),
                         routerLinkInfo.get("nodeCount"), routerLinkInfo.get("addrCount"),
-                        routerLinkInfo.get("connectionCount"), routerLinkInfo.get("presettledDeliveries"),
-                        routerLinkInfo.get("droppedPresettledDeliveries"), routerLinkInfo.get("acceptedDeliveries"),
-                        routerLinkInfo.get("rejectedDeliveries"), routerLinkInfo.get("releasedDeliveries"),
-                        routerLinkInfo.get("modifiedDeliveries"), routerLinkInfo.get("deliveriesIngress"),
-                        routerLinkInfo.get("deliveriesEgress"), routerLinkInfo.get("deliveriesTransit"),
-                        routerLinkInfo.get("deliveriesEgressRouteContainer"),
-                        routerLinkInfo.get("deliveriesIngressRouteContainer"));
+                        routerLinkInfo.get("connectionCount"));
 
 
             } catch (IOException e) {
