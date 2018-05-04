@@ -31,6 +31,7 @@ import java.util.Properties;
 @SuppressWarnings("ALL")
 public class InspectorProperties extends CommonProperties {
     public static String FILENAME = "inspector.properties";
+    public static int UNSET_INT = 0;
 
     private static final Logger logger = LoggerFactory.getLogger(InspectorProperties.class);
 
@@ -90,7 +91,9 @@ public class InspectorProperties extends CommonProperties {
         prop.setProperty("operatingSystemVersion", operatingSystemVersion);
         prop.setProperty("systemCpuCount", Long.toString(systemCpuCount));
         prop.setProperty("systemMemory", Long.toString(systemMemory));
-        prop.setProperty("systemSwap", Long.toString(systemSwap));
+        if (systemSwap != UNSET_INT) {
+            prop.setProperty("systemSwap", Long.toString(systemSwap));
+        }
 
         if (productName != null) {
             prop.setProperty("productName", productName);
