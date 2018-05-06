@@ -60,6 +60,10 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                 processReplies(testProcessor, repeat, numPeers);
 
                 testProfile.increment();
+                if (testProfile.isOverCeiling()) {
+                    break;
+                }
+
                 testProcessor.increaseFlushWaitSeconds();
 
                 logger.info("Sleeping for {} milliseconds to let the broker catch up", coolDownPeriod);
