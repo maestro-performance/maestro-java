@@ -50,6 +50,8 @@ public class InspectorProperties extends CommonProperties {
     public void load(final File testProperties) throws IOException {
         logger.trace("Reading properties from {}", testProperties.getPath());
 
+        String loadedSwap;
+
         Properties prop = new Properties();
 
         try (FileInputStream in = new FileInputStream(testProperties)) {
@@ -64,7 +66,9 @@ public class InspectorProperties extends CommonProperties {
 
             systemCpuCount = Integer.parseInt(prop.getProperty("systemCpuCount"));
             systemMemory = Long.parseLong(prop.getProperty("systemMemory"));
-            systemSwap = Long.parseLong(prop.getProperty("systemSwap"));
+
+            loadedSwap = prop.getProperty("systemSwap");
+            systemSwap = (loadedSwap != null) ? Long.parseLong(loadedSwap) : UNSET_INT;
 
             productName = prop.getProperty("productName");
             productVersion = prop.getProperty("productVersion");
