@@ -21,7 +21,7 @@
     <groupId>net.orpiske</groupId>
     <artifactId>maestro-java</artifactId>
     <packaging>pom</packaging>
-    <version>1.2.6</version>
+    <version>1.2.7-SNAPSHOT</version>
     <properties>
         <api.version.site>1.2</api.version.site>
     </properties>
@@ -42,7 +42,7 @@
     <scm>
         <developerConnection>scm:git:git@github.com:orpiske/maestro-java.git</developerConnection>
         <url>https://github.com/orpiske/maestro-java</url>
-        <tag>maestro-java-1.2.6</tag>
+        <tag>1.2.x</tag>
     </scm>
 
     <licenses>
