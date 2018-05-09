@@ -18,6 +18,8 @@ package org.maestro.tests;
 
 public abstract class AbstractTestProfile implements TestProfile {
     private int testExecutionNumber;
+    private String managementInterface;
+    private String inspectorName;
 
     public int getTestExecutionNumber() {
         return testExecutionNumber;
@@ -26,6 +28,22 @@ public abstract class AbstractTestProfile implements TestProfile {
 
     public void incrementTestExecutionNumber() {
         testExecutionNumber++;
+    }
+
+    public String getManagementInterface() {
+        return managementInterface;
+    }
+
+    public void setManagementInterface(final String managementInterface) {
+        this.managementInterface = managementInterface;
+    }
+
+    public String getInspectorName() {
+        return inspectorName;
+    }
+
+    public void setInspectorName(final String inspectorName) {
+        this.inspectorName = inspectorName;
     }
 
     @Override

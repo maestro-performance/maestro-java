@@ -32,8 +32,6 @@ public class FixedRateTestProfile extends AbstractTestProfile {
     protected int rate;
     protected int parallelCount;
     private String brokerURL;
-    private String managementInterface;
-    private String inspectorName;
 
     private int maximumLatency = 600;
     private TestDuration duration;
@@ -89,22 +87,6 @@ public class FixedRateTestProfile extends AbstractTestProfile {
 
     public void setBrokerURL(final String brokerURL) {
         this.brokerURL = brokerURL;
-    }
-
-    public String getManagementInterface() {
-        return managementInterface;
-    }
-
-    public void setManagementInterface(final String managementInterface) {
-        this.managementInterface = managementInterface;
-    }
-
-    public String getInspectorName() {
-        return inspectorName;
-    }
-
-    public void setInspectorName(final String inspectorName) {
-        this.inspectorName = inspectorName;
     }
 
     @Override

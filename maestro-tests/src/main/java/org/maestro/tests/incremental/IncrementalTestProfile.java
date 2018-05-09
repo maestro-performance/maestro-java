@@ -131,17 +131,25 @@ public abstract class IncrementalTestProfile extends AbstractTestProfile {
 
     abstract public void apply(Maestro maestro) throws MaestroException;
 
+    public boolean isOverCeiling() {
+        return (rate > ceilingRate && parallelCount >= ceilingParallelCount);
+    }
+
     public void increment() {
         rate += rateIncrement;
         incrementTestExecutionNumber();
 
-
         if (rate > ceilingRate) {
+            logger.info("Reached the virtual ceiling");
             parallelCount += parallelCountIncrement;
-            rate = initialRate;
 
-            logger.info("Reached the virtual ceiling. Increased number of parallel connections to: {}",
-                    parallelCount);
+            if (parallelCount == ceilingParallelCount) {
+                logger.info("Reached the virtual ceiling for the parallel count and the test is complete");
+            }
+            else {
+                 logger.info("Increased number of parallel connections to: {}", parallelCount);
+                rate = initialRate;
+            }
         }
 
         logger.info("Set target rate to {}", rate);

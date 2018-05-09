@@ -44,8 +44,6 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
     public boolean run() {
         try {
-            resolveDataServers();
-
             // Clean up the topic
             getMaestro().collect();
 
@@ -53,15 +51,26 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                 int numPeers = getNumPeers();
 
                 resolveDataServers();
+                processReplies(testProcessor, (int) repeat, numPeers);
+
                 getReportsDownloader().getOrganizer().getTracker().setCurrentTest(testProfile.getTestExecutionNumber());
 
                 testProfile.apply(getMaestro());
                 testProcessor.resetNotifications();
 
-                startServices();
+                if (testProfile.getInspectorName() != null) {
+                    startServices(testProfile.getInspectorName());
+                }
+                else {
+                    startServices();
+                }
                 processNotifications(testProcessor, repeat, numPeers);
 
                 testProfile.increment();
+                if (testProfile.isOverCeiling()) {
+                    break;
+                }
+
                 testProcessor.increaseFlushWaitSeconds();
 
                 logger.info("Sleeping for {} milliseconds to let the broker catch up", coolDownPeriod);
