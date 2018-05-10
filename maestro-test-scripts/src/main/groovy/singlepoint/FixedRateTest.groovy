@@ -43,7 +43,7 @@ if (maestroURL == null) {
 
 brokerURL = System.getenv("SEND_RECEIVE_URL")
 if (brokerURL == null) {
-    println "Error: the broker URL was not given"
+    println "Error: the send/receive URL was not given"
 
     System.exit(1)
 }
