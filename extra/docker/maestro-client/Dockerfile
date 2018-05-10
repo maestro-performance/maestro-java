@@ -7,14 +7,14 @@ RUN yum install -y java-1.8.0-openjdk-devel git which unzip zip ntp
 ENV JAVA_HOME /etc/alternatives/jre
 WORKDIR /root/build
 RUN git clone https://github.com/maestro-performance/maestro-java.git --branch devel
-RUN cd maestro-java && ./mvnw -PPackage clean package
+RUN cd maestro-java && ./mvnw -PPackage clean install
 
 FROM centos:7 as maestro-client
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 ARG MAESTRO_VERSION
 ENV MAESTRO_VERSION ${MAESTRO_VERSION:-1.3.0-SNAPSHOT}
 LABEL MAESTRO_VERSION=${MAESTRO_VERSION}
-ENV GROOVY_VERSION 2.4.14
+ENV GROOVY_VERSION 2.4.15
 
 RUN yum install -y java-1.8.0-openjdk unzip zip which ntp
 ENV JAVA_HOME /etc/alternatives/jre
@@ -30,6 +30,7 @@ WORKDIR ${MAESTRO_APP_ROOT}
 COPY --from=buildimg /root/build/maestro-java/maestro-cli/target/maestro-cli-${MAESTRO_VERSION}-bin.tar.gz .
 RUN mkdir maestro-cli && tar --strip-components=1 -xvf maestro-cli-${MAESTRO_VERSION}-bin.tar.gz -C maestro-cli
 RUN rm -f maestro-cli-${MAESTRO_VERSION}-bin.tar.gz
+COPY --from=buildimg /root/.m2 /root/.m2
 
 COPY --from=buildimg /root/build/maestro-java/maestro-test-scripts/target/maestro-test-scripts-${MAESTRO_VERSION}-bin.tar.gz .
 RUN mkdir maestro-test-scripts && tar --strip-components=1 -xvf maestro-test-scripts-${MAESTRO_VERSION}-bin.tar.gz -C maestro-test-scripts
