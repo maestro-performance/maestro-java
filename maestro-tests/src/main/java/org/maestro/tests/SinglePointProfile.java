@@ -17,6 +17,13 @@
 package org.maestro.tests;
 
 public interface SinglePointProfile {
+    @Deprecated
     String getBrokerURL();
+
+    @Deprecated
     void setBrokerURL(String brokerURL);
+
+    void setSendReceiveURL(final String url);
+
+    String getSendReceiveURL();
 }

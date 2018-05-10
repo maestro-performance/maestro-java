@@ -100,10 +100,10 @@ public class FixedRateMultipointTestProfile extends FixedRateTestProfile impleme
     @Override
     public void apply(Maestro maestro) throws MaestroException {
         for (EndPoint endPoint : endPoints) {
-            logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getBrokerURL());
+            logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getSendReceiveURL());
             logger.debug(" {} end point located at {}", endPoint.getName(), endPoint.getTopic());
 
-            maestro.setBroker(endPoint.getTopic(), endPoint.getBrokerURL());
+            maestro.setBroker(endPoint.getTopic(), endPoint.getSendReceiveURL());
         }
 
         logger.info("Setting rate to {}", getRate());

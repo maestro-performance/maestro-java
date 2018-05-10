@@ -46,11 +46,21 @@ public interface MultiPointProfile {
             this.name = name;
         }
 
+        @Deprecated
         public String getBrokerURL() {
+            return getSendReceiveURL();
+        }
+
+        @Deprecated
+        public void setBrokerURL(String brokerURL) {
+            setSendReceiverURL(brokerURL);
+        }
+
+        public String getSendReceiveURL() {
             return brokerURL;
         }
 
-        public void setBrokerURL(String brokerURL) {
+        public void setSendReceiverURL(final String brokerURL) {
             this.brokerURL = brokerURL;
         }
     }

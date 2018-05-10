@@ -31,8 +31,13 @@ public class FlexibleTestProfile extends AbstractTestProfile {
         this.sourceURL = sourceURL;
     }
 
-    void setBrokerURL(final String brokerURL) {
-        this.brokerURL = brokerURL;
+    @Deprecated
+    public void setBrokerURL(final String brokerURL) {
+        setSendReceiveURL(brokerURL);
+    }
+
+    public void setSendReceiveURL(final String url) {
+        this.brokerURL = url;
     }
 
     @Override

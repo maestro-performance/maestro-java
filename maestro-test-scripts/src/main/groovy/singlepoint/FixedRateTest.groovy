@@ -41,7 +41,7 @@ if (maestroURL == null) {
     System.exit(1)
 }
 
-brokerURL = System.getenv("BROKER_URL")
+brokerURL = System.getenv("SEND_RECEIVE_URL")
 if (brokerURL == null) {
     println "Error: the broker URL was not given"
 

@@ -65,7 +65,13 @@ class ShortTestExecutorCount implements TestExecutor {
         return brokerURL
     }
 
+
+    @Deprecated
     void setBrokerURL(String brokerURL) {
+        setSendReceiveURL(brokerURL)
+    }
+
+    void setSendReceiveURL(String brokerURL) {
         this.brokerURL = brokerURL
     }
 
@@ -161,7 +167,7 @@ class ShortTestExecutorCount implements TestExecutor {
  * Test setup.
  */
 maestroURL = System.getenv("MAESTRO_BROKER")
-brokerURL = System.getenv("BROKER_URL")
+brokerURL = System.getenv("SEND_RECEIVE_URL")
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)

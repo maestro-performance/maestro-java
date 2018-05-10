@@ -29,11 +29,21 @@ public class SimpleTestProfile extends IncrementalTestProfile implements SingleP
     private String brokerURL;
 
     public String getBrokerURL() {
-        return brokerURL;
+        return getSendReceiveURL();
     }
 
     public void setBrokerURL(String brokerURL) {
-        this.brokerURL = brokerURL;
+        setSendReceiveURL(brokerURL);
+    }
+
+    @Override
+    public void setSendReceiveURL(final String url) {
+        this.brokerURL = url;
+    }
+
+    @Override
+    public String getSendReceiveURL() {
+        return brokerURL;
     }
 
     public void apply(Maestro maestro) throws MaestroException {

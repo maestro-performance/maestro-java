@@ -46,7 +46,7 @@ public class SimpleTestProfile extends IncrementalTestProfile implements MultiPo
             logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getBrokerURL());
             logger.debug(" {} end point located at {}", endPoint.getName(), endPoint.getTopic());
 
-            maestro.setBroker(endPoint.getTopic(), endPoint.getBrokerURL());
+            maestro.setBroker(endPoint.getTopic(), endPoint.getSendReceiveURL());
         }
 
         logger.info("Setting rate to {}", getRate());

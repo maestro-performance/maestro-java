@@ -41,17 +41,17 @@ import org.maestro.common.duration.TestDurationBuilder
 
 
 maestroURL = System.getenv("MAESTRO_BROKER")
-brokerURL = System.getenv("BROKER_URL")
+brokerURL = System.getenv("SEND_RECEIVE_URL")
 duration = System.getenv("TEST_DURATION")
 steps = Integer.parseInt(System.getenv("STEPS"))
 
 
 messageSize = Long.parseLong(System.getenv("MESSAGE_SIZE"))
 
-combinedRate = Integer.parseInt(System.getenv("COMBINED_RATE"))
+combinedRate = Integer.parseInt(System.getenv("COMBINED_INITIAL_RATE"))
 combiniedCeilingRate = Integer.parseInt(System.getenv("COMBINED_CEILING_RATE"))
 
-parallelCount = Integer.parseInt(System.getenv("PARALLEL_COUNT"))
+parallelCount = Integer.parseInt(System.getenv("INITIAL_PARALLEL_COUNT"))
 ceilingParallelCount = Integer.parseInt(System.getenv("CEILING_PARALLEL_COUNT"))
 parallelCountIncrement = Integer.parseInt(System.getenv("PARALLEL_COUNT_INCREMENT"))
 

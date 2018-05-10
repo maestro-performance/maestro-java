@@ -20,13 +20,14 @@ import org.maestro.client.Maestro;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestProfile;
+import org.maestro.tests.SinglePointProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * A test profile for fixed rate tests
  */
-public class FixedRateTestProfile extends AbstractTestProfile {
+public class FixedRateTestProfile extends AbstractTestProfile implements SinglePointProfile {
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestProfile.class);
 
     protected int rate;
@@ -82,17 +83,27 @@ public class FixedRateTestProfile extends AbstractTestProfile {
     }
 
     public String getBrokerURL() {
-        return brokerURL;
+        return getSendReceiveURL();
     }
 
     public void setBrokerURL(final String brokerURL) {
-        this.brokerURL = brokerURL;
+        setSendReceiveURL(brokerURL);
+    }
+
+    @Override
+    public void setSendReceiveURL(String url) {
+        this.brokerURL = url;
+    }
+
+    @Override
+    public String getSendReceiveURL() {
+        return brokerURL;
     }
 
     @Override
     public void apply(Maestro maestro) throws MaestroException {
-        logger.info("Setting endpoint URL to {}", getBrokerURL());
-        maestro.setBroker(getBrokerURL());
+        logger.info("Setting endpoint URL to {}", getSendReceiveURL());
+        maestro.setBroker(getSendReceiveURL());
 
         logger.info("Setting rate to {}", getRate());
         maestro.setRate(rate);

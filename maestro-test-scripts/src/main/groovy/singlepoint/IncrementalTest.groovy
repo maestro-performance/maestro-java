@@ -34,7 +34,7 @@ import org.maestro.common.LogConfigurator
 import org.maestro.common.duration.TestDurationBuilder
 
 maestroURL = System.getenv("MAESTRO_BROKER")
-brokerURL = System.getenv("BROKER_URL")
+brokerURL = System.getenv("SEND_RECEIVE_URL")
 
 LogConfigurator.verbose()
 
