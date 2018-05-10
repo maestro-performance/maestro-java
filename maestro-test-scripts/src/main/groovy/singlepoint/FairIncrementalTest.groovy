@@ -79,7 +79,7 @@ testProfile.setBrokerURL(brokerURL)
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(MessageSize.fixed(messageSize))
 
-maxLatencyStr = System.getenv("MAX_LATENCY");
+maxLatencyStr = System.getenv("MAXIMUM_LATENCY");
 if (maxLatencyStr != null) {
     int maxLatency = Integer.parseInt(maxLatencyStr)
     testProfile.setMaximumLatency(maxLatency)
