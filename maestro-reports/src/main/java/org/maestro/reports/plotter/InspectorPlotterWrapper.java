@@ -17,6 +17,12 @@
 package org.maestro.reports.plotter;
 
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.plotter.amqp.inspector.generalinfo.GeneralInfoReader;
+import org.maestro.plotter.amqp.inspector.graph.GeneralInfoPlotter;
+import org.maestro.plotter.amqp.inspector.graph.QDMemoryPlotter;
+import org.maestro.plotter.amqp.inspector.graph.RouterLinkPlotter;
+import org.maestro.plotter.amqp.inspector.memory.QDMemoryReader;
+import org.maestro.plotter.amqp.inspector.routerlink.RouterLinkReader;
 import org.maestro.plotter.common.BasicPlotter;
 import org.maestro.plotter.common.properties.PropertyWriter;
 import org.maestro.plotter.inspector.graph.HeapPlotter;
@@ -90,6 +96,54 @@ public class InspectorPlotterWrapper implements PlotterWrapper {
         return true;
     }
 
+    private boolean plotGeneral(final File file) {
+        BasicPlotter<GeneralInfoReader, GeneralInfoPlotter> basicPlotter = new BasicPlotter<>(new GeneralInfoReader(),
+                new GeneralInfoPlotter());
+
+        try {
+            File outputFile = file.getParentFile();
+
+            basicPlotter.plot(file, outputFile, null);
+        } catch (Exception e) {
+            handlePlotException(file, e);
+            throw e;
+        }
+
+        return true;
+    }
+
+    private boolean plotQDMemory(final File file) {
+        BasicPlotter<QDMemoryReader, QDMemoryPlotter> basicPlotter = new BasicPlotter<>(new QDMemoryReader(),
+                new QDMemoryPlotter());
+
+        try {
+            File outputFile = file.getParentFile();
+
+            basicPlotter.plot(file, outputFile, null);
+        } catch (Exception e) {
+            handlePlotException(file, e);
+            throw e;
+        }
+
+        return true;
+    }
+
+    private boolean plotRouterLink(final File file) {
+        BasicPlotter<RouterLinkReader, RouterLinkPlotter> basicPlotter = new BasicPlotter<>(new RouterLinkReader(),
+                new RouterLinkPlotter());
+
+        try {
+            File outputFile = file.getParentFile();
+
+            basicPlotter.plot(file, outputFile, null);
+        } catch (Exception e) {
+            handlePlotException(file, e);
+            throw e;
+        }
+
+        return true;
+    }
+
     @Override
     public boolean plot(final File file) {
         logger.info("Plotting Maestro Inspector report file {}", file.getPath());
@@ -104,6 +158,15 @@ public class InspectorPlotterWrapper implements PlotterWrapper {
                 break;
             case "queues.csv":
                 ret = plotQueues(file);
+                break;
+            case "general.csv":
+                ret = plotGeneral(file);
+                break;
+            case "qdmemory.csv":
+                ret = plotQDMemory(file);
+                break;
+            case "routerLink.csv":
+                ret = plotRouterLink(file);
                 break;
         }
 
