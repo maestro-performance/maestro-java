@@ -35,7 +35,7 @@ public class QDMemoryProcessor implements RecordProcessor {
         qdMemoryRecord.setTypeSize(Long.parseLong(records[2]));
         qdMemoryRecord.setTransferBatchSize(Long.parseLong(records[3]));
         qdMemoryRecord.setLocalFreeListMax(Long.parseLong(records[4]));
-        qdMemoryRecord.setTotalFreeToHeap(Long.parseLong(records[5]));
+        qdMemoryRecord.setTotalAllocFromHeap(Long.parseLong(records[5]));
         qdMemoryRecord.setHeldByThreads(Long.parseLong(records[6]));
         qdMemoryRecord.setBatchesRebalancedToThreads(Long.parseLong(records[7]));
         qdMemoryRecord.setBatchesRebalancedToGlobal(Long.parseLong(records[8]));
