@@ -34,9 +34,7 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
         writer = Files.newBufferedWriter(Paths.get(outputFile.getPath()), Charset.defaultCharset());
         csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
                 .withHeader("Timestamp", "Name", "Version", "Mode", "LinkRoutes", "AutoLinks", "Links", "Nodes",
-                        "Addresses", "Connections", "PressettledCOunt","DroppedPresettledCount", "AcceptedCount",
-                        "RejectedCount", "ReleasedCount", "ModifiedCount", "IngressCount", "EngressCount",
-                        "TransitCount", "DelFromRouterContainer", "DelToRouterContainer"));
+                        "Addresses", "Connections"));
     }
 
     /**
