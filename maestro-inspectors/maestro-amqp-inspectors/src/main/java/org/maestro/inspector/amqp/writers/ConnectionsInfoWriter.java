@@ -32,7 +32,7 @@ public class ConnectionsInfoWriter implements InspectorDataWriter<ConnectionsInf
 
         writer = Files.newBufferedWriter(Paths.get(outputFile.getPath()), Charset.defaultCharset());
         csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-                .withHeader("Timestamp", "Name", "Host", "Role", "Dir", "Opened", "Identity", "User",
+                .withHeader("Timestamp", "Container", "Host", "Role", "Dir", "Opened", "Identity", "User",
                         "sasl", "Encrypted", "sslProto", "sslCipher",
                         "Tenant", "Authenticated", "Properties"));
     }
@@ -69,7 +69,7 @@ public class ConnectionsInfoWriter implements InspectorDataWriter<ConnectionsInf
                 String timestamp = now.format(formatter);
 
                 csvPrinter.printRecord(timestamp,
-                        ConnectionsInfo.get("owningAddr"), ConnectionsInfo.get("host"),
+                        ConnectionsInfo.get("container"), ConnectionsInfo.get("host"),
                         ConnectionsInfo.get("role"), ConnectionsInfo.get("dir"),
                         ConnectionsInfo.get("opened"), ConnectionsInfo.get("identity"),
                         ConnectionsInfo.get("user"), ConnectionsInfo.get("sasl"),
