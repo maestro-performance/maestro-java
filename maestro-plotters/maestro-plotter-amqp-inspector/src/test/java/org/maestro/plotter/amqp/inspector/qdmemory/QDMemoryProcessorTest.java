@@ -34,7 +34,7 @@ public class QDMemoryProcessorTest {
         assertEquals("The held by threads memory for the queue records don't match", 96, dataSet.getMap()
                 .get("qd_log_entry_t").getHeldByThreads(), 0);
 
-        assertEquals("The total alloc from heap for the queue records don't match", 0, dataSet.getMap()
+        assertEquals("The total alloc from heap for the queue records don't match", 96, dataSet.getMap()
                 .get("qd_log_entry_t").getTotalAllocFromHeap(), 0);
 
         assertEquals("The type size for the queue records don't match", 2112, dataSet.getMap()
@@ -46,13 +46,13 @@ public class QDMemoryProcessorTest {
         String recordName = "qd_log_entry_t";
 
         Statistics totalAlocatedStats = dataSet.getMap().get(recordName).totalAllocFromHeapStatistics();
-        assertEquals("Unexpected consumer max value for the queue " + recordName, 0,
+        assertEquals("Unexpected consumer max value for the queue " + recordName, 96,
                 totalAlocatedStats.getMax(), 0.0);
 
-        assertEquals("Unexpected consumer min value for the queue " + recordName, 0,
+        assertEquals("Unexpected consumer min value for the queue " + recordName, 96,
                 totalAlocatedStats.getMin(), 0.0);
 
-        assertEquals("Unexpected consumer average value for the queue " + recordName, 0,
+        assertEquals("Unexpected consumer average value for the queue " + recordName, 96,
                 totalAlocatedStats.getGeometricMean(), 0.001);
 
         assertEquals("Unexpected consumer standard deviation value for the queue " + recordName, 0,
