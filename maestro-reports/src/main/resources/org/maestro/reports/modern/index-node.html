@@ -540,6 +540,19 @@
 
                     {% endif %}
 
+                    {% set routerLinkUnsettledFileName = "routerLink_unsettled.png" %}
+                    {% set routerLinkUnsettledFileNameExists = routerLinkUnsettledFileName|fe(reportDirInfo.reportDir) %}
+
+                    {% if routerLinkUnsettledFileNameExists %}
+                    <div>
+
+                        <h2 id="general-unsettled-messages-count">Router Link Information - Unsettled Messages</h2>
+                        <p></p>
+                        <img class="img-responsive" src="{{ routerLinkUnsettledFileName }}"  />
+                    </div>
+
+                    {% endif %}
+
                     {% set routerLinkUndeliveredFileName = "routerLink_undelivered.png" %}
                     {% set routerLinkUndeliveredFileNameExists = routerLinkUndeliveredFileName|fe(reportDirInfo.reportDir) %}
 
