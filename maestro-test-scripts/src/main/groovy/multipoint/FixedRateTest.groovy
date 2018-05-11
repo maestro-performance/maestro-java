@@ -48,16 +48,16 @@ if (maestroURL == null) {
     System.exit(1)
 }
 
-senderBrokerURL = System.getenv("SENDER_BROKER_URL")
+senderBrokerURL = System.getenv("SEND_URL")
 if (senderBrokerURL == null) {
-    println "Error: the broker URL was not given"
+    println "Error: the sender point URL was not given"
 
     System.exit(1)
 }
 
-receiverBrokerURL = System.getenv("RECEIVER_BROKER_URL")
+receiverBrokerURL = System.getenv("RECEIVE_URL")
 if (receiverBrokerURL == null) {
-    println "Error: the broker URL was not given"
+    println "Error: the receiver point URL was not given"
 
     System.exit(1)
 }
