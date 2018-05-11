@@ -3,7 +3,6 @@ package org.maestro.inspector.amqp.writers;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.maestro.common.inspector.types.ConnectionsInfo;
-import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.writers.InspectorDataWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,8 +17,6 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 /**
  * A router link information writer for AMQP Inspector.
@@ -78,7 +75,7 @@ public class ConnectionsInfoWriter implements InspectorDataWriter<ConnectionsInf
                         ConnectionsInfo.get("user"), ConnectionsInfo.get("sasl"),
                         ConnectionsInfo.get("isEncrypted"), ConnectionsInfo.get("sslProto"),
                         ConnectionsInfo.get("sslCipher"), ConnectionsInfo.get("tenant"),
-                        ConnectionsInfo.get("isAuthenticated"), ConnectionsInfo.get("properties"));     // TODO: 4/24/18 parse properties for better formating
+                        ConnectionsInfo.get("isAuthenticated"), ConnectionsInfo.get("properties"));
 
 
             } catch (IOException e) {
