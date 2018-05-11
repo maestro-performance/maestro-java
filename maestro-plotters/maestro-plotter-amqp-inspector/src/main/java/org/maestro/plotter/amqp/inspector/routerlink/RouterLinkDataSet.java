@@ -1,11 +1,8 @@
 package org.maestro.plotter.amqp.inspector.routerlink;
 
 
-import com.sun.org.apache.regexp.internal.RE;
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.maestro.plotter.amqp.inspector.Utilities;
-import org.maestro.plotter.amqp.inspector.generalinfo.GeneralInfoData;
-import org.maestro.plotter.amqp.inspector.generalinfo.GeneralInfoRecord;
 import org.maestro.plotter.common.properties.annotations.PropertyName;
 import org.maestro.plotter.common.properties.annotations.PropertyProvider;
 import org.maestro.plotter.common.statistics.Statistics;
@@ -24,6 +21,7 @@ public class RouterLinkDataSet {
     private Map<String, RouterLinkData> map = new HashMap<>();
 
     private static final String DELIVERED = "delivered";
+    private static final String UNSETTLED = "unsettled";
     private static final String UNDELIVERED = "undelivered";
     private static final String ACCEPTED = "accepted";
     private static final String RELEASED = "released";
@@ -63,6 +61,7 @@ public class RouterLinkDataSet {
 
             Utilities.putStatisticsRecord(calcMap, record.getDeliveryCount(), DELIVERED, instant);
             Utilities.putStatisticsRecord(calcMap, record.getUndeliveredCount(), UNDELIVERED, instant);
+            Utilities.putStatisticsRecord(calcMap, record.getUnsettledCount(), UNSETTLED, instant);
             Utilities.putStatisticsRecord(calcMap, record.getAcceptedCount(), ACCEPTED, instant);
             Utilities.putStatisticsRecord(calcMap, record.getReleasedCount(), RELEASED, instant);
         }
