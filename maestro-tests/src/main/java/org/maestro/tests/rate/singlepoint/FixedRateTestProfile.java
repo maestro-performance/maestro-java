@@ -38,6 +38,34 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     private TestDuration duration;
     private String messageSize;
 
+    private String extPointSource;
+    private String extPointBranch;
+    private String extPointCommand;
+
+    public String getExtPointSource() {
+        return extPointSource;
+    }
+
+    public void setExtPointSource(String extPointSource) {
+        this.extPointSource = extPointSource;
+    }
+
+    public String getExtPointBranch() {
+        return extPointBranch;
+    }
+
+    public void setExtPointBranch(String extPointBranch) {
+        this.extPointBranch = extPointBranch;
+    }
+
+    public String getExtPointCommand() {
+        return extPointCommand;
+    }
+
+    public void setExtPointCommand(String extPointCommand) {
+        this.extPointCommand = extPointCommand;
+    }
+
     public FixedRateTestProfile() {}
 
     public void setParallelCount(int parallelCount) {
@@ -126,6 +154,19 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
                         getInspectorName());
                 maestro.setManagementInterface(getManagementInterface());
             }
+        }
+
+        if (getExtPointSource() != null) {
+            if (getExtPointBranch() != null) {
+                logger.info("Setting the extension point source to {} using the {} branch", getExtPointSource(),
+                        getExtPointBranch());
+                maestro.sourceRequest(getExtPointSource(), getExtPointBranch());
+            }
+        }
+
+        if (getExtPointCommand() != null) {
+            logger.info("Setting command to Agent execution to {}", getExtPointCommand());
+            maestro.userCommand(0, getExtPointCommand());
         }
     }
 
