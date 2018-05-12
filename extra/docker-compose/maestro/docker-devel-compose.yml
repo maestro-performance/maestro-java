@@ -1,27 +1,27 @@
 version: '3'
 networks:
-    maestro-net:
+    maestro:
       driver: bridge
 services: 
-  maestro-broker:
-    build: maestro-broker
+  broker:
+    build: broker
     networks: 
-      - maestro-net
+      - maestro
     ports:
       - "18161:8161"
       # Usually it's not needed to expose MQTT port
       - "1883:1883"
-  maestro-sut:
+  sut:
     image: docker.io/rabbitmq:3-management
     networks: 
-      - maestro-net
+      - maestro
     ports:
       - "5672:5672"
       - "15672:15672"
       - "61616:61616"
-#  maestro-receiver:
+#  receiver:
 #    build:
-#      context: maestro-worker/maestro-receiver
+#      context: workers/receiver
 #      args:
 #        - MAESTRO_WORKER_VERSION=devel
 #    ports:
@@ -29,13 +29,13 @@ services:
 #    volumes:
 #      - ${HOME}/tmp/maestro:/maestro
 #    networks:
-#      - maestro-net
+#      - maestro
 #    depends_on:
-#      - maestro-broker
-#      - maestro-sut
-#  maestro-sender:
+#      - broker
+#      - sut
+#  sender:
 #    build:
-#      context: maestro-worker/maestro-sender
+#      context: workers/sender
 #      args:
 #        - MAESTRO_WORKER_VERSION=devel
 #    ports:
@@ -43,21 +43,21 @@ services:
 #    volumes:
 #      - ${HOME}/tmp/maestro:/maestro
 #    networks:
-#      - maestro-net
+#      - maestro
 #    depends_on:
-#      - maestro-receiver
-#  maestro-client:
+#      - receiver
+#  client:
 #    build:
-#      context: maestro-client
+#      context: client
 #      args:
 #        - MAESTRO_WORKER_VERSION=devel
 #    volumes:
 #      - ${HOME}/tmp/maestro:/maestro
 #    networks:
-#      - maestro-net
+#      - maestro
 #    ports:
 #      - "8000:8000"
 #    depends_on:
-#      - maestro-sender
-#      - maestro-receiver
+#      - sender
+#      - receiver
 #

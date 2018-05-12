@@ -1,27 +1,27 @@
 version: '3'
 networks:
-    maestro-net:
+    maestro:
       driver: bridge
 services: 
-  maestro-broker:
-    build: maestro-broker
+  broker:
+    build: broker
     networks: 
-      - maestro-net
+      - maestro
     ports:
       - "18161:8161"
-  maestro-sut:
-    build: maestro-suts/apache-artemis
+  sut:
+    build: suts/apache-artemis
     networks: 
-      - maestro-net
+      - maestro
     ports:
       - "48161:8161"
 # This is not needed, unless you want to test the
 # broker within the container
 #      - "45672:5672"
 #      - "41616:61616"
-  maestro-receiver:
+  receiver:
       build:
-        context: maestro-worker/maestro-receiver
+        context: workers/receiver
         args:
           - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
       ports:
@@ -29,13 +29,13 @@ services:
       volumes:
         - ${HOME}/tmp/maestro:/maestro
       networks:
-        - maestro-net
+        - maestro
       depends_on:
-        - maestro-broker
-        - maestro-sut
-    maestro-sender:
+        - broker
+        - sut
+    sender:
       build:
-        context: maestro-worker/maestro-sender
+        context: workers/sender
         args:
           - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
       ports:
@@ -43,12 +43,12 @@ services:
       volumes:
         - ${HOME}/tmp/maestro:/maestro
       networks:
-        - maestro-net
+        - maestro
       depends_on:
-        - maestro-receiver
-    maestro-inspector:
+        - receiver
+    inspector:
         build:
-          context: maestro-worker/maestro-inspector
+          context: workers/inspector
           args:
             - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
         ports:
@@ -56,12 +56,12 @@ services:
         volumes:
           - ${HOME}/tmp/maestro:/maestro
         networks:
-          - maestro-net
+          - maestro
         depends_on:
-          - maestro-receiver
-    maestro-agent:
+          - receiver
+    agent:
           build:
-            context: maestro-worker/maestro-agent
+            context: workers/agent
             args:
               - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
           ports:
@@ -69,21 +69,21 @@ services:
           volumes:
             - ${HOME}/tmp/maestro:/maestro
           networks:
-            - maestro-net
+            - maestro
           depends_on:
-            - maestro-broker
-    maestro-client:
+            - broker
+    client:
       build:
-        context: maestro-client
+        context: client
         args:
           - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
       volumes:
         - ${HOME}/tmp/maestro:/maestro
       networks:
-        - maestro-net
+        - maestro
       ports:
         - "8000:8000"
       depends_on:
-        - maestro-sender
-        - maestro-receiver
-        - maestro-broker
+        - sender
+        - receiver
+        - broker
