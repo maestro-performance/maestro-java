@@ -1,5 +1,3 @@
-
-
 version: '3'
 networks:
     maestro-net:
@@ -11,8 +9,6 @@ services:
       - maestro-net
     ports:
       - "18161:8161"
-      # Usually it's not needed to expose MQTT port
-      # - "18883:1883"
   maestro-sut:
     build: maestro-suts/apache-artemis
     networks: 
@@ -24,47 +20,70 @@ services:
 #      - "45672:5672"
 #      - "41616:61616"
   maestro-receiver:
-    build:
-      context: maestro-worker/maestro-receiver
-
-      args:
-        - MAESTRO_WORKER_VERSION=1.2.4
-    ports:
-      - "28000:8000"
-    volumes:
-      - ${HOME}/tmp/maestro:/maestro
-    networks: 
-      - maestro-net
-    depends_on:
-      - maestro-broker
-      - maestro-sut
-  maestro-sender:
-    build:
-      context: maestro-worker/maestro-sender
-# This can be replaced with a released version, such as 1.2.0
-      args:
-        - MAESTRO_WORKER_VERSION=1.2.4
-    ports:
-      - "38000:8000"
-    volumes:
-      - ${HOME}/tmp/maestro:/maestro
-    networks: 
-      - maestro-net
-    depends_on:
-      - maestro-receiver
-  maestro-client:
-    build:
-      context: maestro-client
-# This can be replaced with a released version, such as 1.2.0
-      args:
-        - MAESTRO_WORKER_VERSION=1.2.4
-    volumes:
-      - ${HOME}/tmp/maestro:/maestro
-    networks: 
-      - maestro-net
-    ports:
-      - "8000:8000"
-    depends_on:
-      - maestro-sender
-      - maestro-receiver
-  
+      build:
+        context: maestro-worker/maestro-receiver
+        args:
+          - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
+      ports:
+        - "18000:8000"
+      volumes:
+        - ${HOME}/tmp/maestro:/maestro
+      networks:
+        - maestro-net
+      depends_on:
+        - maestro-broker
+        - maestro-sut
+    maestro-sender:
+      build:
+        context: maestro-worker/maestro-sender
+        args:
+          - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
+      ports:
+        - "28000:8000"
+      volumes:
+        - ${HOME}/tmp/maestro:/maestro
+      networks:
+        - maestro-net
+      depends_on:
+        - maestro-receiver
+    maestro-inspector:
+        build:
+          context: maestro-worker/maestro-inspector
+          args:
+            - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
+        ports:
+          - "38000:8000"
+        volumes:
+          - ${HOME}/tmp/maestro:/maestro
+        networks:
+          - maestro-net
+        depends_on:
+          - maestro-receiver
+    maestro-agent:
+          build:
+            context: maestro-worker/maestro-agent
+            args:
+              - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
+          ports:
+            - "48000:8000"
+          volumes:
+            - ${HOME}/tmp/maestro:/maestro
+          networks:
+            - maestro-net
+          depends_on:
+            - maestro-broker
+    maestro-client:
+      build:
+        context: maestro-client
+        args:
+          - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
+      volumes:
+        - ${HOME}/tmp/maestro:/maestro
+      networks:
+        - maestro-net
+      ports:
+        - "8000:8000"
+      depends_on:
+        - maestro-sender
+        - maestro-receiver
+        - maestro-broker
