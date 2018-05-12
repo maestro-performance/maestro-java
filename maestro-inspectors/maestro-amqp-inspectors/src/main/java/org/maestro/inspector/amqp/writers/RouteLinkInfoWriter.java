@@ -32,10 +32,9 @@ public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>,
 
         writer = Files.newBufferedWriter(Paths.get(outputFile.getPath()), Charset.defaultCharset());
         csvPrinter = new CSVPrinter(writer, CSVFormat.DEFAULT
-                .withHeader("Timestamp", "Name", "LinkType", "LinkDir", "Identity", "OperStatus",
+                .withHeader("Timestamp", "Name", "LinkDir", "OperStatus", "Identity",
                         "DeliveryCount", "UndeliveredCount", "PresettledCount", "UnsettledCount",
-                        "DroppedPresettledCount", "ReleasedCount","ModifiedCount",
-                        "AcceptedCount", "RejectedCount", "Capacity"));
+                        "ReleasedCount","ModifiedCount", "AcceptedCount", "RejectedCount", "Capacity"));
     }
 
     /**
@@ -71,12 +70,12 @@ public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>,
 
                 csvPrinter.printRecord(timestamp,
                         routerLinkInfo.get("linkName"), routerLinkInfo.get("linkDir"),
-                        routerLinkInfo.get("identity"), routerLinkInfo.get("operStatus"),
+                        routerLinkInfo.get("operStatus"), routerLinkInfo.get("identity"),
                         routerLinkInfo.get("deliveryCount"), routerLinkInfo.get("undeliveredCount"),
                         routerLinkInfo.get("presettledCount"), routerLinkInfo.get("unsettledCount"),
-                        routerLinkInfo.get("droppedPresettledCount"), routerLinkInfo.get("releasedCount"),
-                        routerLinkInfo.get("modifiedCount"), routerLinkInfo.get("acceptedCount"),
-                        routerLinkInfo.get("rejectedCount"), routerLinkInfo.get("capacity"));
+                        routerLinkInfo.get("releasedCount"), routerLinkInfo.get("modifiedCount"),
+                        routerLinkInfo.get("acceptedCount"), routerLinkInfo.get("rejectedCount"),
+                        routerLinkInfo.get("capacity"));
 
 
             } catch (IOException e) {

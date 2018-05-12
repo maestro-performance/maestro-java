@@ -48,7 +48,7 @@ public class RouterLinkReader extends CsvReader<RouterLinkDataSet> {
             try {
                 routerLinkProcessor.process(record.get(0), record.get(1), record.get(2), record.get(3), record.get(4),
                         record.get(5), record.get(6), record.get(7), record.get(8), record.get(9), record.get(10),
-                        record.get(11), record.get(12), record.get(13), record.get(14));
+                        record.get(11), record.get(12), record.get(13));
             } catch (Throwable t) {
                 logger.warn("Unable to parse record: {}", t.getMessage(), t);
                 continue;
