@@ -58,7 +58,7 @@ Running The Tests
 To run the tests, first start the client container:
 
 ```
-docker run -it -h docker_maestro-client -v maestro-storage:/maestro --network=docker_maestro-net --name maestro-client -p 8000:8000 docker_maestro-client /bin/bash
+docker run -it -h maestro_client -v maestro:/maestro --network=maestro -p 8000:8000 maestro_client /bin/bash
 ```
 
 Once you attach to the container, the console MOTD will display useful information about 
@@ -91,7 +91,7 @@ You can use ```docker exec``` command to attach to a running container. For exam
 to maestro sender container: 
 
 ```
-docker exec -it docker_maestro-sender_1 /bin/bash 
+docker exec -it maestro_sender_1 /bin/bash 
 ```
 
 Customizing The Tests
@@ -121,9 +121,9 @@ Other
 
 Recreating only the client and using a custom volume:
 
-Supposing a volume named `maestro-storage` is already created. You can just run: 
+Supposing a volume named `maestro` is already created. You can just run: 
 
 ```
-docker rm -f maestro-client
-docker run -it -h maestro-client -v maestro-storage:/maestro --network=docker_maestro-net --name maestro-client -p 8000:8000 docker_maestro-client
+docker rm -f maestro_client
+docker run -it -h maestro-client -v maestro:/maestro --network=maestro -p 8000:8000 maestro_client
 ```
