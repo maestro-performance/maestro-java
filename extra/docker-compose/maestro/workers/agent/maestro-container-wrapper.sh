@@ -2,4 +2,4 @@
 echo "Synchronizing time"
 ntpd -d -q -n -p pool.ntp.org
 
-${MAESTRO_APP_ROOT}/maestro-agent/bin/maestro-agent -m mqtt://maestro-broker:1883 -l /maestro/agent/logs
+${MAESTRO_APP_ROOT}/maestro-agent/bin/maestro-agent -m mqtt://broker:1883 -l /maestro/agent/logs
