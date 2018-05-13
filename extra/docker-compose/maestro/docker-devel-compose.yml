@@ -50,7 +50,7 @@ services:
 #    build:
 #      context: client
 #      args:
-#        - MAESTRO_WORKER_VERSION=devel
+#        - MAESTRO_VERSION=devel
 #    volumes:
 #      - ${HOME}/tmp/maestro:/maestro
 #    networks:
