@@ -20,6 +20,7 @@ EXPOSE 8000
 RUN mkdir -p ${MAESTRO_APP_ROOT}
 WORKDIR ${MAESTRO_APP_ROOT}
 RUN yum install -y java-1.8.0-openjdk ntp
+RUN yum clean all
 COPY --from=buildimg /root/build/maestro-java/maestro-${MAESTRO_WORKER_TYPE}/target/maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_WORKER_VERSION}-bin.tar.gz .
 RUN mkdir maestro-${MAESTRO_WORKER_TYPE} && tar --strip-components=1 -xvf maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_WORKER_VERSION}-bin.tar.gz -C maestro-${MAESTRO_WORKER_TYPE}
 RUN rm -f maestro-${MAESTRO_WORKER_TYPE}.tar.gz

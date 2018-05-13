@@ -7,6 +7,7 @@ EXPOSE 8161
 EXPOSE 1883 
 RUN yum install -y java-1.8.0-openjdk
 ENV JAVA_HOME /etc/alternatives/jre
+RUN yum clean all
 RUN mkdir -p ${MAESTRO_APP_ROOT}
 WORKDIR ${MAESTRO_APP_ROOT}
 RUN curl https://archive.apache.org/dist/activemq/${ACTIVEMQ_VERSION}/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz -o apache-activemq.tar.gz

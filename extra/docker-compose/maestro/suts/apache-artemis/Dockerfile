@@ -7,6 +7,7 @@ ENV ARTEMIS_JOURNAL ${ARTEMIS_JOURNAL:-aio}
 ENV MAESTRO_SUT_ROOT /opt/maestro/sut/
 EXPOSE 5672 8161 61613 61616
 RUN yum install -y java-1.8.0-openjdk libaio
+RUN yum clean all
 ENV JAVA_HOME /etc/alternatives/jre
 RUN mkdir -p ${MAESTRO_SUT_ROOT}
 WORKDIR ${MAESTRO_SUT_ROOT}

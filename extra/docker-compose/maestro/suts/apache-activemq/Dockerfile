@@ -7,6 +7,7 @@ EXPOSE 8161
 EXPOSE 5672
 EXPOSE 61616
 RUN yum install -y java-1.8.0-openjdk
+RUN yum clean all
 ENV JAVA_HOME /etc/alternatives/jre
 RUN mkdir -p ${MAESTRO_SUT_ROOT}
 WORKDIR ${MAESTRO_SUT_ROOT}

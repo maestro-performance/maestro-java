@@ -18,6 +18,7 @@ ENV GROOVY_VERSION 2.4.15
 
 RUN yum install -y java-1.8.0-openjdk unzip zip which ntp
 ENV JAVA_HOME /etc/alternatives/jre
+RUN yum clean all
 
 RUN mkdir -p /opt/groovy/
 RUN curl -s get.sdkman.io | bash
