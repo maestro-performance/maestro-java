@@ -36,8 +36,8 @@ COPY --from=buildimg /root/build/maestro-java/maestro-test-scripts/target/maestr
 RUN mkdir maestro-test-scripts && tar --strip-components=1 -xvf maestro-test-scripts-${MAESTRO_VERSION}-bin.tar.gz -C maestro-test-scripts
 RUN rm -f maestro-test-scripts.tar.gz
 
-ENV MAESTRO_BROKER mqtt://maestro-broker:1883
-ENV BROKER_URL amqp://maestro-sut:5672/test.performance.queue
+ENV MAESTRO_BROKER mqtt://broker:1883
+ENV BROKER_URL amqp://sut:5672/test.performance.queue
 ENV MESSAGE_SIZE 256
 ENV TEST_DURATION 90s
 ENV RATE 0
