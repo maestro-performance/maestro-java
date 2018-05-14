@@ -9,6 +9,10 @@
 #### RATE=0
 #### PARALLEL_COUNT=2
 ####
+#### The following additional variables may be exported to enable inspectors:
+#### INSPECTOR_NAME, MANAGEMENT_INTERFACE
+####
+####
 #### To run a sample test case: 
 #### - cd /opt/maestro/maestro-test-scripts/scripts/groovy/singlepoint
 #### - groovy FixedRateTest.groovy /maestro/reports
