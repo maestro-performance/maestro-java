@@ -38,7 +38,7 @@ RUN mkdir maestro-test-scripts && tar --strip-components=1 -xvf maestro-test-scr
 RUN rm -f maestro-test-scripts.tar.gz
 
 ENV MAESTRO_BROKER mqtt://broker:1883
-ENV BROKER_URL amqp://sut:5672/test.performance.queue
+ENV SEND_RECEIVE_URL amqp://sut:5672/test.performance.queue
 ENV MESSAGE_SIZE 256
 ENV TEST_DURATION 90s
 ENV RATE 0

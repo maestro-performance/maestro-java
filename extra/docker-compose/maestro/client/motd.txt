@@ -3,7 +3,7 @@
 ####
 #### 
 #### Test parameters can be set by adjusting the following variables (shown w/ defaults):
-#### BROKER_URL=amqp://sut:5672/test.performance.queue
+#### SEND_RECEIVE_URL=amqp://sut:5672/test.performance.queue
 #### MESSAGE_SIZE=256
 #### TEST_DURATION=90s
 #### RATE=0
