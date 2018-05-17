@@ -47,4 +47,23 @@ public class QueuePlotterTest {
 
         assertTrue("The output plotted file does not exist", outputFile.exists());
     }
+
+
+    @Test(expected = EmptyDataSet.class)
+    public void testPlotEmpty() throws IOException, EmptyDataSet, IncompatibleDataSet {
+        String fileName = this.getClass().getResource("/empty/queues.csv").getPath();
+
+        QueueProcessor queueProcessor = new QueueProcessor();
+        QueueReader queueReader = new QueueReader(queueProcessor);
+
+        QueueDataSet dataSet = queueReader.read(fileName);
+
+        File sourceFile = new File(fileName);
+        QueuePlotter plotter = new QueuePlotter();
+
+        File outputFile = new File(sourceFile.getParentFile(), QueuePlotter.DEFAULT_FILENAME);
+        plotter.plot(dataSet, outputFile);
+
+        assertTrue("The output plotted file does not exist", outputFile.exists());
+    }
 }

@@ -47,4 +47,23 @@ public class HeapPlotterTest {
         assertTrue("The output file does not exist: " + outputFile.getPath(), outputFile.exists());
 
     }
+
+    @Test(expected = EmptyDataSet.class)
+    public void testPlotEmpty() throws IOException, EmptyDataSet, IncompatibleDataSet {
+        String fileName = this.getClass().getResource("/empty/heap.csv").getPath();
+
+        HeapProcessor heapProcessor = new HeapProcessor();
+        HeapReader heapReader = new HeapReader(heapProcessor);
+
+        HeapData heapData = heapReader.read(fileName);
+
+        File sourceFile = new File(fileName);
+        HeapPlotter plotter = new HeapPlotter();
+
+        File outputFile = new File(sourceFile.getParentFile(), HeapPlotter.DEFAULT_FILENAME);
+        plotter.plot(heapData, outputFile);
+
+        assertTrue("The output file does not exist: " + outputFile.getPath(), outputFile.exists());
+
+    }
 }

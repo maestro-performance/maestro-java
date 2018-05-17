@@ -17,6 +17,7 @@
 package org.maestro.plotter.inspector.graph;
 
 import org.junit.Test;
+import org.maestro.plotter.common.exceptions.EmptyDataSet;
 import org.maestro.plotter.inspector.memoryareas.MemoryAreasDataSet;
 import org.maestro.plotter.inspector.memoryareas.MemoryAreasProcessor;
 import org.maestro.plotter.inspector.memoryareas.MemoryAreasReader;
@@ -30,6 +31,32 @@ public class MemoryAreasPlotterTest {
     @Test
     public void testPlot() throws IOException {
         String fileName = this.getClass().getResource("/data-ok/memory-areas.csv").getPath();
+
+        MemoryAreasProcessor memoryAreaProcessor = new MemoryAreasProcessor();
+        MemoryAreasReader memoryAreaReader = new MemoryAreasReader(memoryAreaProcessor);
+
+        MemoryAreasDataSet memoryAreaDataSet = memoryAreaReader.read(fileName);
+
+        File sourceFile = new File(fileName);
+        MemoryAreasPlotter plotter = new MemoryAreasPlotter();
+
+        plotter.plot(memoryAreaDataSet, sourceFile.getParentFile());
+
+        for (String areaName : memoryAreaDataSet.getMap().keySet()) {
+            File outputFile = new File(sourceFile.getParentFile(), MemoryAreasPlotter.friendlyName(areaName));
+
+            assertTrue("The output file does not exist: " + outputFile.getPath(), outputFile.exists());
+        }
+    }
+
+    /**
+     * Results in nothing because there can be 0 or more memory areas data
+     * mapped in the CSV.
+     * @throws IOException
+     */
+    @Test
+    public void testPlotEmpty() throws IOException {
+        String fileName = this.getClass().getResource("/empty/memory-areas.csv").getPath();
 
         MemoryAreasProcessor memoryAreaProcessor = new MemoryAreasProcessor();
         MemoryAreasReader memoryAreaReader = new MemoryAreasReader(memoryAreaProcessor);
