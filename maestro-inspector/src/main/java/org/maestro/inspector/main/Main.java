@@ -37,7 +37,6 @@ public class Main {
     private static CommandLine cmdLine;
 
     private static String maestroUrl;
-    private static String inspector;
     private static String host;
     private static File logDir;
 
@@ -62,8 +61,6 @@ public class Main {
         options.addOption("h", "help", false, "prints the help");
         options.addOption("m", "maestro-url", true,
                 "maestro URL to connect to");
-        options.addOption("i", "inspector", true,
-                "maestro inspector to use");
         options.addOption("H", "host", true,
                 "optional hostname (to override auto-detection)");
         options.addOption("l", "log-dir", true,
@@ -83,12 +80,6 @@ public class Main {
         if (maestroUrl == null) {
             System.err.println("Maestro URL is missing (option -m)");
             help(options, -1);
-        }
-
-        inspector = cmdLine.getOptionValue('i');
-        if (inspector == null) {
-           System.err.println("The inspector class is missing (option -w)");
-           help(options, -1);
         }
 
         host = cmdLine.getOptionValue('H');
@@ -113,7 +104,6 @@ public class Main {
     /**
      * Running this as a debug is something like:
      * java -m mqtt://maestro-broker:1883
-     *      -I org.maestro.maestro.inspector.activemq.ArtemisInspector
      *      -l /storage/tmp/maestro-java/sender
      */
     public static void main(String[] args) {

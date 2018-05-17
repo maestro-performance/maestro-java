@@ -36,7 +36,7 @@ function eerror() {
 
 function start() {
     echo -en "Starting the daemon: "
-    nohup "$installdir"/bin/maestro-inspector -m "$MAESTRO_BROKER" -i "$MAESTRO_INSPECTOR_CLASS" -l "$MAESTRO_LOG_DIR" $@ > /dev/null 2> /dev/null &
+    nohup "$installdir"/bin/maestro-inspector -m "$MAESTRO_BROKER" -l "$MAESTRO_LOG_DIR" $@ > /dev/null 2> /dev/null &
     if [ $? -ne 0 ] ; then
         eerror "failed to daemonize the Maestro inspector"
         exit 1
