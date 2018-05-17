@@ -1,11 +1,8 @@
 version: '3'
-networks:
-    maestro:
-      driver: bridge
-services: 
+services:
   sut:
     build: suts/apache-artemis
     networks: 
-      - maestro
+      - test
     ports:
       - "48161:8161"

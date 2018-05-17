@@ -1,12 +1,9 @@
 version: '3'
-networks:
-    maestro:
-      driver: bridge
 services: 
   sut:
     build: suts/qpid-dispatch
     networks: 
-      - maestro
+      - test
     ports:
       - "48161:8161"
 # This is not needed, unless you want to test the

@@ -1,14 +1,9 @@
 version: '3'
-networks:
-    test:
-      driver: bridge
-    cluster:
-          driver: bridge
 services:
   sut:
     image: docker.io/rabbitmq:3-management
     networks: 
-      - maestro
+      - test
     hostname: sut
     ports:
       - "15672:15672"
