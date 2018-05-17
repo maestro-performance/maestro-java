@@ -3,14 +3,6 @@ networks:
     maestro:
       driver: bridge
 services: 
-  broker:
-    build: broker
-    networks: 
-      - maestro
-    ports:
-      - "18161:8161"
-      # Usually it's not needed to expose MQTT port
-      # - "18883:1883"
   sut:
     build: suts/qpid-dispatch
     networks: 
@@ -21,71 +13,3 @@ services:
 # broker within the container
 #      - "45672:5672"
 #      - "41616:61616"
-  receiver:
-      build:
-        context: workers/receiver
-        args:
-          - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
-      ports:
-        - "18000:8000"
-      volumes:
-        - ${HOME}/tmp/maestro:/maestro
-      networks:
-        - maestro
-      depends_on:
-        - broker
-        - sut
-    sender:
-      build:
-        context: workers/sender
-        args:
-          - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
-      ports:
-        - "28000:8000"
-      volumes:
-        - ${HOME}/tmp/maestro:/maestro
-      networks:
-        - maestro
-      depends_on:
-        - receiver
-    inspector:
-        build:
-          context: workers/inspector
-          args:
-            - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
-        ports:
-          - "38000:8000"
-        volumes:
-          - ${HOME}/tmp/maestro:/maestro
-        networks:
-          - maestro
-        depends_on:
-          - receiver
-    agent:
-          build:
-            context: workers/agent
-            args:
-              - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
-          ports:
-            - "48000:8000"
-          volumes:
-            - ${HOME}/tmp/maestro:/maestro
-          networks:
-            - maestro
-          depends_on:
-            - broker
-    client:
-      build:
-        context: client
-        args:
-          - MAESTRO_VERSION=1.3.0-SNAPSHOT
-      volumes:
-        - ${HOME}/tmp/maestro:/maestro
-      networks:
-        - maestro
-      ports:
-        - "8000:8000"
-      depends_on:
-        - sender
-        - receiver
-        - broker

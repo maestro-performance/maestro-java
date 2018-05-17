@@ -1,0 +1,85 @@
+version: '3'
+networks:
+    cluster:
+      driver: bridge
+    test:
+          driver: bridge
+services:
+  broker:
+    build: broker
+    networks:
+      - cluster
+    ports:
+      - "18161:8161"
+  receiver:
+    build:
+      context: workers/receiver
+      args:
+        - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
+    ports:
+      - "18000:8000"
+    volumes:
+      - ${HOME}/tmp/maestro:/maestro
+    networks:
+      - cluster
+      - test
+    depends_on:
+      - broker
+      - sut
+  sender:
+    build:
+      context: workers/sender
+      args:
+        - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
+    ports:
+      - "28000:8000"
+    volumes:
+      - ${HOME}/tmp/maestro:/maestro
+    networks:
+      - cluster
+      - test
+    depends_on:
+      - receiver
+  inspector:
+      build:
+        context: workers/inspector
+        args:
+          - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
+      ports:
+        - "38000:8000"
+      volumes:
+        - ${HOME}/tmp/maestro:/maestro
+      networks:
+        - cluster
+        - test
+      depends_on:
+        - receiver
+  agent:
+        build:
+          context: workers/agent
+          args:
+            - MAESTRO_WORKER_VERSION=1.3.0-SNAPSHOT
+        ports:
+          - "48000:8000"
+        volumes:
+          - ${HOME}/tmp/maestro:/maestro
+        networks:
+          - cluster
+          - test
+        depends_on:
+          - broker
+  client:
+    build:
+      context: client
+      args:
+        - MAESTRO_VERSION=1.3.0-SNAPSHOT
+    volumes:
+      - ${HOME}/tmp/maestro:/maestro
+    networks:
+      - cluster
+    ports:
+      - "8000:8000"
+    depends_on:
+      - sender
+      - receiver
+      - broker

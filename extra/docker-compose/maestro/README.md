@@ -20,7 +20,7 @@ will build the containers as required).
 
 There are two sets of containers: one is used for building a SUT container running Apache 
 ActiveMQ 5.15.2 (configurable via ACTIVEMQ_VERSION argument) and another for Apache 
-Artemis 2.4.0 (configurable via ARTEMIS_VERSION and ARTEMIS_JOURNAL). The files are
+Artemis 2.5.0 (configurable via ARTEMIS_VERSION and ARTEMIS_JOURNAL). The files are
 
 * docker-activemq-compose.yml
 * docker-artemis-compose.yml
@@ -29,13 +29,13 @@ Artemis 2.4.0 (configurable via ARTEMIS_VERSION and ARTEMIS_JOURNAL). The files 
 You can build the containers with:
 
 ```
- docker-compose -f docker-artemis-compose.yml build
+ docker-compose -f docker-compose.yml -f docker-artemis-compose.yml build
 ```
 
 or
 
 ```
- docker-compose -f docker-activemq-compose.yml build
+ docker-compose -f docker-compose.yml -f docker-activemq-compose.yml build
 ```
 
 
@@ -45,7 +45,7 @@ Launching
 Run:
 
 ```
- docker-compose -f docker-artemis-compose.yml up -d
+ docker-compose -f docker-compose.yml -f docker-artemis-compose.yml up -d
 ```
 
 **Note**: on some rare occasions, the containers for the workers does not start correct. 
