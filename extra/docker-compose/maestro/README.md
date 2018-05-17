@@ -58,7 +58,7 @@ Running The Tests
 To run the tests, first start the client container:
 
 ```
-docker run -it -h maestro_client -v maestro:/maestro --network=maestro -p 8000:8000 maestro_client /bin/bash
+docker run -it -h maestro_client -v maestro:/maestro --network=maestro_cluster -p 8000:8000 maestro_client /bin/bash
 ```
 
 Once you attach to the container, the console MOTD will display useful information about 
