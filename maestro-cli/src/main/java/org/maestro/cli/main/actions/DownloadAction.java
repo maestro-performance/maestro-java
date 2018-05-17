@@ -118,7 +118,7 @@ public class DownloadAction extends Action {
             return 0;
         }
         catch (Exception e) {
-            System.err.println("Unable to generate the performance test reports");
+            System.err.println("Unable to download the performance test reports");
             e.printStackTrace();
             return 1;
         }
