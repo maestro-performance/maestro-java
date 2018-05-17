@@ -51,7 +51,6 @@ public class QueueInfoWriter implements InspectorDataWriter<QueueInfo>, AutoClos
     @Override
     public void close() throws Exception {
         if (csvPrinter != null) {
-            csvPrinter.flush();
             csvPrinter.close();
         }
 
@@ -73,6 +72,7 @@ public class QueueInfoWriter implements InspectorDataWriter<QueueInfo>, AutoClos
                         queueProperties.get("Name"), queueProperties.get("MessagesAdded"),
                         queueProperties.get("MessageCount"), queueProperties.get("MessagesAcknowledged"),
                         queueProperties.get("MessagesExpired"), queueProperties.get("ConsumerCount"));
+                csvPrinter.flush();
             } catch (IOException e) {
                 logger.error("Unable to write record: {}", e.getMessage(), e);
             }

@@ -65,8 +65,6 @@ public class QueuePlotter extends DefaultScatterPlotter<QueueDataSet> {
 
         chart.addSeries("Min", periods, min);
 
-
-
         encode(chart, outputFile);
     }
 }

@@ -50,7 +50,6 @@ public class JVMMemoryInfoWriter implements InspectorDataWriter<JVMMemoryInfo>, 
     @Override
     public void close() throws Exception {
         if (csvPrinter != null) {
-            csvPrinter.flush();
             csvPrinter.close();
         }
 
@@ -70,6 +69,7 @@ public class JVMMemoryInfoWriter implements InspectorDataWriter<JVMMemoryInfo>, 
 
             csvPrinter.printRecord(timestamp, data.getMemoryAreaName(), data.getInitial(), data.getMax(),
                     data.getCommitted(), data.getUsed());
+            csvPrinter.flush();
         } catch (IOException e) {
             logger.error("Unable to write record: {}", e.getMessage(), e);
         }
