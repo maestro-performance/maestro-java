@@ -190,9 +190,14 @@ public class ArtemisInspector implements MaestroInspector {
         finally {
             startedEpochMillis = Long.MIN_VALUE;
 
-            heapMemoryWriter.close();
-            jvmMemoryAreasWriter.close();
-            queueInfoWriter.close();
+            try {
+                heapMemoryWriter.close();
+                jvmMemoryAreasWriter.close();
+                queueInfoWriter.close();
+            }
+            catch (Exception e) {
+                logger.warn(e.getMessage(), e);
+            }
         }
     }
 
