@@ -17,7 +17,9 @@
 package org.maestro.reports;
 
 
+import net.orpiske.hhp.plot.exceptions.HdrEmptyDataSet;
 import org.apache.commons.io.FileUtils;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.common.exceptions.EmptyDataSet;
 import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
 import org.maestro.reports.files.ReportDirInfo;
@@ -71,7 +73,13 @@ public class ReportGenerator {
         catch (EmptyDataSet | IncompatibleDataSet e) {
             if (reportFile.isTestSuccessful()) {
                 logger.error("File {} contains invalid data for a successful test", reportFile);
-                throw e;
+            }
+        }
+        catch (MaestroException e) {
+            if (e.getCause() instanceof HdrEmptyDataSet) {
+                if (reportFile.isTestSuccessful()) {
+                    logger.error("File {} contains invalid data for a successful test", reportFile);
+                }
             }
         }
     }

@@ -167,9 +167,9 @@ public class ReportGeneratorTest {
     }
 
     /**
-     * Ensures proper handling of invalid reports (ie.: empty reports marked as successful)
+     * Ensures proper handling of invalid reports (ie.: empty reports marked as successful should be ignored)
      */
-    @Test(timeout = 20000, expected = EmptyDataSet.class)
+    @Test(timeout = 20000)
     public void testInvalidReport() {
         String path = this.getClass().getResource("/data-empty-sender-rate-records").getPath();
 
