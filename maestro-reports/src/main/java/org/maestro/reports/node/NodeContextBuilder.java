@@ -16,6 +16,7 @@
 
 package org.maestro.reports.node;
 
+import org.maestro.common.Constants;
 import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.test.TestProperties;
 import org.maestro.reports.files.ReportDirInfo;
@@ -43,6 +44,7 @@ public class NodeContextBuilder {
         context.put("testNumber", reportDirInfo.getTestNum());
         context.put("result", reportDirInfo.getResultTypeString());
         context.put("reportDirInfo", reportDirInfo);
+        context.put("maestroVersion", Constants.VERSION);
 
         loadProperties(new File(reportDirInfo.getReportDir(), TestProperties.FILENAME), context);
         loadProperties(new File(reportDirInfo.getReportDir(), InspectorProperties.FILENAME), context);

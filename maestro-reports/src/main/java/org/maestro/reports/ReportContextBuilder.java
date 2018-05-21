@@ -16,6 +16,7 @@
 
 package org.maestro.reports;
 
+import org.maestro.common.Constants;
 import org.maestro.reports.files.ReportDirInfo;
 import org.maestro.reports.files.ReportFile;
 import org.slf4j.Logger;
@@ -64,6 +65,7 @@ public class ReportContextBuilder {
         context.put("tests", tests);
         context.put("reportFiles", reportFiles);
         context.put("reportDirs", reportDirs);
+        context.put("maestroVersion", Constants.VERSION);
 
         return context;
     }
