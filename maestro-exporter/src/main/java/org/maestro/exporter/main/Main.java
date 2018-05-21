@@ -78,9 +78,6 @@ public class Main {
 
 
     public static void main(String[] args) {
-        processCommand(args);
-
-        LogConfigurator.defaultForDaemons();
         try {
             ConfigurationWrapper.initConfiguration(Constants.MAESTRO_CONFIG_DIR, "maestro-exporter.properties");
         } catch (Exception e) {
@@ -88,6 +85,10 @@ public class Main {
             e.printStackTrace();
             System.exit(1);
         }
+
+        processCommand(args);
+
+        LogConfigurator.defaultForDaemons();
 
         try {
             MaestroExporter exporter = new MaestroExporter(maestroUrl);

@@ -132,10 +132,6 @@ public class Main {
      *      -l /storage/tmp/maestro-java/sender
      */
     public static void main(String[] args) {
-        processCommand(args);
-
-
-        LogConfigurator.defaultForDaemons();
         try {
             ConfigurationWrapper.initConfiguration(Constants.MAESTRO_CONFIG_DIR, "maestro-worker.properties");
         } catch (Exception e) {
@@ -143,6 +139,10 @@ public class Main {
             e.printStackTrace();
             System.exit(1);
         }
+
+        processCommand(args);
+
+        LogConfigurator.defaultForDaemons();
 
         try {
             MaestroDataServer dataServer = new MaestroDataServer(logDir, host);
