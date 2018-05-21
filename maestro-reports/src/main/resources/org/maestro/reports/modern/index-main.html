@@ -97,7 +97,7 @@
                     <td>{{ reportDir.rate }} msg/sec </td>
                     <td>{{ reportDir.parallelCount }} </td>
                     <td>{{ reportDir.messageSize }} bytes {% if reportDir.variableSize == true %} (+/- 5% variation) {% endif %} </td>
-                    <td class={% if reportDir.testSuccessful %} "passed" {% else %} "failed" {% endif %}>{% if reportDir.testSuccessful == true %} passed {% else %} failed {% endif %}</td>
+                    <td><span class={% if reportDir.testSuccessful %} "pficon pficon-ok" {% else %} "pficon pficon-error-circle-o" {% endif %}></span> {% if reportDir.testSuccessful == true %} passed {% else %} failed {% endif %}</td>
                 </tr>
                 {% endfor %}
                 </tbody>
