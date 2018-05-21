@@ -129,3 +129,9 @@ The following parameters can be set for the JMS worker/client:
 | `durable` | true | Durable flag for the message |
 | `priority` | null | Message priority |
 | `limitDestinations` | `1` | Distributes the load in a fixed number of queues (<= number of connections) |
+
+
+Demos
+---- 
+
+Some demonstration about using Maestro, focused on the front-end, is available [here](extra/doc/Demos.md).
