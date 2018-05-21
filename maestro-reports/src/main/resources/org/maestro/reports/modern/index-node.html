@@ -118,7 +118,7 @@
 
                                 <tr>
                                     <td>Message Size</td>
-                                    <td>{{ messageSize }} bytes {% if variableSize == 1 %} (+/- 5% variation) {% endif %} </td>
+                                    <td>{{ messageSize | filesizeformat(true) }} {% if variableSize == 1 %} (+/- 5% variation) {% endif %} </td>
                                 </tr>
                                 <tr>
                                     <td>Messaging Protocol</td>
