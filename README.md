@@ -56,7 +56,7 @@ it is possible to get started with Maestro testing by running just 3 or 4 comman
 **Note**: although it would be possible to use this model for production testing, this is 
 a new feature that needs to be matured.  
 
-This deployment method is documented in greater detail [here](extra/docker/)
+This deployment method is documented in greater detail [here](extra/docker-compose/maestro)
 
 
 Using as Library
