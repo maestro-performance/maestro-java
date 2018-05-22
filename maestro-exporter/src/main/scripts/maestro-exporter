@@ -45,6 +45,12 @@ if [ "$installdir" = "." ] ; then
 	installdir=".."
 fi
 
+if [ -z "$JAVA_OPTS" ] ; then
+    MAESTRO_JAVA_OPTS="-Xmx1024m"
+else
+    MAESTRO_JAVA_OPTS="$JAVA_OPTS"
+fi
+
 mainclass=org.maestro.exporter.main.Main
 
-java -classpath "$installdir"/bin/*exporter-*.jar -Dorg.maestro.home="$installdir" "$mainclass" $@
+java -classpath "$installdir"/bin/*exporter-*.jar -Dorg.maestro.home="$installdir" $MAESTRO_JAVA_OPTS "$mainclass" $@

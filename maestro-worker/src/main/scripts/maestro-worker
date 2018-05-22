@@ -45,7 +45,13 @@ if [ "$installdir" = "." ] ; then
 	installdir=".."
 fi
 
+
+MAESTRO_JAVA_OPTS=""
+if [ -z "$JAVA_OPTS" ] ; then
+    MAESTRO_JAVA_OPTS="$JAVA_OPTS"
+fi
+
 mainclass=org.maestro.worker.main.Main
 pid_file="$installdir"/tmp/maestro-worker.pid
 
-java -classpath "$installdir"/bin/*maestro-worker-*.jar -Dorg.maestro.home="$installdir" "$mainclass" $@
+java -classpath "$installdir"/bin/*maestro-worker-*.jar -Dorg.maestro.home="$installdir" $MAESTRO_JAVA_OPTS "$mainclass" $@
