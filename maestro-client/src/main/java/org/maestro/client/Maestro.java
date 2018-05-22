@@ -318,7 +318,7 @@ public final class Maestro implements MaestroRequester {
 
     /**
      * Sets the management interface URL
-     * @param value The value to set the (remote) parameter to
+     * @param value The management interface URL
      * @throws MaestroException if unable to send the MQTT request
      */
     public void setManagementInterface(final String value) throws MaestroException {
@@ -332,6 +332,8 @@ public final class Maestro implements MaestroRequester {
 
     /**
      * Sends a start inspector request
+     * @param value The name of the inspector to start. The URL is set via setManagementInterface
+     *              command
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
     public void startInspector(final String value) throws MaestroConnectionException {
