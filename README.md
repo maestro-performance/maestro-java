@@ -131,6 +131,12 @@ The following parameters can be set for the JMS worker/client:
 | `limitDestinations` | `1` | Distributes the load in a fixed number of queues (<= number of connections) |
 
 
+Components: Inspectors
+---- 
+
+Documentation about the Inspectors is available [here](extra/doc/Inspectors.md).
+
+
 Demos
 ---- 
 
