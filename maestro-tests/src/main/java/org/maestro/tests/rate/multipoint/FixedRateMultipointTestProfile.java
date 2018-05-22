@@ -120,6 +120,27 @@ public class FixedRateMultipointTestProfile extends FixedRateTestProfile impleme
 
         logger.info("Setting message size to {}", getMessageSize());
         maestro.setMessageSize(getMessageSize());
+
+        if (getManagementInterface() != null) {
+            if (getInspectorName() != null) {
+                logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
+                        getInspectorName());
+                maestro.setManagementInterface(getManagementInterface());
+            }
+        }
+
+        if (getExtPointSource() != null) {
+            if (getExtPointBranch() != null) {
+                logger.info("Setting the extension point source to {} using the {} branch", getExtPointSource(),
+                        getExtPointBranch());
+                maestro.sourceRequest(getExtPointSource(), getExtPointBranch());
+            }
+        }
+
+        if (getExtPointCommand() != null) {
+            logger.info("Setting command to Agent execution to {}", getExtPointCommand());
+            maestro.userCommand(0, getExtPointCommand());
+        }
     }
 
     @Override
