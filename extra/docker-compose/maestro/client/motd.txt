@@ -16,8 +16,8 @@
 #### PARALLEL_COUNT=2
 ####
 #### The following additional variables may be exported to enable inspectors:
-#### INSPECTOR_NAME, MANAGEMENT_INTERFACE
-####
+#### INSPECTOR_NAME, MANAGEMENT_INTERFACE (or just use one of the
+#### setup-*-inspector.sh scripts)
 ####
 #### To run a sample test case: 
 #### - cd /opt/maestro/maestro-test-scripts/scripts/groovy/singlepoint

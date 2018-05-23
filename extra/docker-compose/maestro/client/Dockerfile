@@ -51,4 +51,6 @@ RUN mkdir -p /maestro
 VOLUME /maestro
 
 ADD maestro-container-wrapper.sh /usr/bin/maestro-container-wrapper
+ADD setup-artemis-inspector.sh /usr/bin/setup-artemis-inspector
+ADD setup-interconnect-inspector.sh /usr/bin/setup-interconnect-inspector
 CMD [ "sh", "-c", "/usr/bin/maestro-container-wrapper"]
