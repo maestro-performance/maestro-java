@@ -88,10 +88,14 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     // before downloading
     private void waitForFlush() {
         logger.info("Waiting for {} seconds for the backend to flush their data", flushWaitSeconds);
-        try {
-            Thread.sleep(flushWaitSeconds * 1000);
-        } catch (InterruptedException e) {
 
+        while (flushWaitSeconds > 0) {
+            try {
+                Thread.sleep(1000);
+                flushWaitSeconds--;
+            } catch (InterruptedException e) {
+                break;
+            }
         }
     }
 
