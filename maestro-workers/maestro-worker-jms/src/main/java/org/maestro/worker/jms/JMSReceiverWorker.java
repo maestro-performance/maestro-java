@@ -79,10 +79,6 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         return startedEpochMillis;
     }
 
-    private void setFCL(String fcl) {
-
-    }
-
     private void setBroker(String url) {
         this.url = url;
     }
