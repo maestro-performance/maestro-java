@@ -64,7 +64,7 @@ public class ReportGenerator {
             logger.debug("Will report file {} on thread {}", reportFile, Thread.currentThread().getId());
         }
 
-        logger.info("Plotting maestro data from {}", reportFile);
+        logger.info("Plotting report file {}", reportFile.getSourceFile());
         PlotterWrapper plotterWrapper = registry.getWrapper(reportFile.getClass());
 
         try {

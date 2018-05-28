@@ -146,7 +146,7 @@ public class InspectorPlotterWrapper implements PlotterWrapper {
 
     @Override
     public boolean plot(final File file) {
-        logger.info("Plotting Maestro Inspector report file {}", file.getPath());
+        logger.debug("Plotting Maestro Inspector report file {}", file.getPath());
         boolean ret = false;
 
         switch (file.getName()) {
