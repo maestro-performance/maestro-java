@@ -129,7 +129,32 @@ public class LogConfigurator {
         configureSilent(properties);
 
         PropertyConfigurator.configure(properties);
+    }
 
 
+    /**
+     * Configures the log level based on the input string
+     * @param logLevel The log level  as a string (one of trace, debug, warn, info).
+     */
+    public static void configureLogLevel(final String logLevel) {
+        switch (logLevel) {
+            case "trace": {
+                LogConfigurator.trace();
+                break;
+            }
+            case "debug": {
+                LogConfigurator.debug();
+                break;
+            }
+            case "warn": {
+                LogConfigurator.silent();
+                break;
+            }
+            case "info":
+            default: {
+                LogConfigurator.verbose();
+                break;
+            }
+        }
     }
 }

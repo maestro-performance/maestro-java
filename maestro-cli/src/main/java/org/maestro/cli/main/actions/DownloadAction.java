@@ -17,6 +17,7 @@
 package org.maestro.cli.main.actions;
 
 import org.apache.commons.cli.*;
+import org.maestro.common.LogConfigurator;
 import org.maestro.reports.ReportsDownloader;
 
 public class DownloadAction extends Action {
@@ -93,7 +94,7 @@ public class DownloadAction extends Action {
 
         String logLevel = cmdLine.getOptionValue('l');
         if (logLevel != null) {
-            configureLogLevel(logLevel);
+            LogConfigurator.configureLogLevel(logLevel);
         }
     }
 

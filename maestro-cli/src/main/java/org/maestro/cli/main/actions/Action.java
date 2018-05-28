@@ -39,28 +39,6 @@ public abstract class Action {
 		System.exit(code);
 	}
 
-	protected void configureLogLevel(final String logLevel) {
-		switch (logLevel) {
-			case "trace": {
-				LogConfigurator.trace();
-				break;
-			}
-			case "debug": {
-				LogConfigurator.debug();
-				break;
-			}
-			case "warn": {
-				LogConfigurator.silent();
-				break;
-			}
-			case "info":
-			default: {
-				LogConfigurator.verbose();
-				break;
-			}
-		}
-	}
-	
 	/**
 	 * Process the command line arguments
 	 * @param args the command line arguments

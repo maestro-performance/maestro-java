@@ -17,6 +17,7 @@
 package org.maestro.cli.main.actions;
 
 import org.apache.commons.cli.*;
+import org.maestro.common.LogConfigurator;
 import org.maestro.reports.ReportGenerator;
 import org.maestro.reports.plotter.HdrPlotterWrapper;
 import org.maestro.reports.plotter.PlotterWrapperFactory;
@@ -85,7 +86,7 @@ public class ReportAction extends Action {
 
         String logLevel = cmdLine.getOptionValue('l');
         if (logLevel != null) {
-            configureLogLevel(logLevel);
+            LogConfigurator.configureLogLevel(logLevel);
         }
 
         clean = cmdLine.hasOption('C');
