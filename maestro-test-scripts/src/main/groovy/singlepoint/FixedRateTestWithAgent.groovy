@@ -31,15 +31,12 @@ package singlepoint
 
 
 import org.maestro.client.Maestro
-import org.maestro.client.exchange.MaestroTopics
 import org.maestro.common.LogConfigurator
 import org.maestro.common.duration.TestDurationBuilder
 import org.maestro.reports.InspectorReportResolver
 import org.maestro.reports.InterconnectInspectorReportResolver
 import org.maestro.reports.ReportsDownloader
-import org.maestro.tests.MultiPointProfile
 import org.maestro.tests.rate.FixedRateTestExecutor
-import org.maestro.tests.rate.multipoint.FixedRateMultipointTestProfile
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile
 
 maestroURL = System.getenv("MAESTRO_BROKER")
