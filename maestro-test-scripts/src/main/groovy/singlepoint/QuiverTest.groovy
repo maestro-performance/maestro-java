@@ -54,6 +54,8 @@ class QuiverExecutor extends FlexibleTestExecutor {
 
     void startServices() {
         maestro.userCommand(0, "rhea")
+        // Wait for up to 2 minutes for the test to complete
+        Thread.sleep(60*1000*2)
     }
 }
 
