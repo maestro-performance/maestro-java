@@ -141,6 +141,11 @@ public class LogConfigurator {
      * @param logLevel The log level  as a string (one of trace, debug, warn, info).
      */
     public static void configureLogLevel(final String logLevel) {
+        if (logLevel == null) {
+            LogConfigurator.verbose();
+            return;
+        }
+
         switch (logLevel) {
             case "trace": {
                 LogConfigurator.trace();
