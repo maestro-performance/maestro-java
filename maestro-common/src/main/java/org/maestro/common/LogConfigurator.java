@@ -65,6 +65,10 @@ public class LogConfigurator {
     private static void configureVerbose(Properties properties) {
         properties.setProperty("log4j.rootLogger", "WARN, stdout");
         properties.setProperty("log4j.logger.org.maestro", "INFO, stdout");
+
+        properties.setProperty(
+                "log4j.appender.stdout.layout.ConversionPattern",
+                "[%p] %m%n");
     }
 
     private static void configureSilent(Properties properties) {
