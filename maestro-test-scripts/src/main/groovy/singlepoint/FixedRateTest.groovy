@@ -76,10 +76,11 @@ if (parallelCount == null) {
     System.exit(1)
 }
 
+logLevel = System.getenv("LOG_LEVEL")
+LogConfigurator.configureLogLevel(logLevel)
+
 managementInterface = System.getenv("MANAGEMENT_INTERFACE");
 inspectorName = System.getenv("INSPECTOR_NAME");
-
-LogConfigurator.verbose()
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)

@@ -24,6 +24,7 @@
 
 import org.maestro.client.Maestro
 import org.maestro.client.exchange.MaestroNoteProcessor
+import org.maestro.common.LogConfigurator
 import org.maestro.common.client.notes.MaestroNote
 import org.maestro.client.notes.PingResponse
 import org.maestro.client.notes.TestFailedNotification
@@ -168,6 +169,9 @@ class ShortTestExecutorCount implements TestExecutor {
  */
 maestroURL = System.getenv("MAESTRO_BROKER")
 brokerURL = System.getenv("SEND_RECEIVE_URL")
+
+logLevel = System.getenv("LOG_LEVEL")
+LogConfigurator.configureLogLevel(logLevel)
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)

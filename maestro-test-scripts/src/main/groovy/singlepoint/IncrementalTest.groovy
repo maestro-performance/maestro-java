@@ -36,7 +36,8 @@ import org.maestro.common.duration.TestDurationBuilder
 maestroURL = System.getenv("MAESTRO_BROKER")
 brokerURL = System.getenv("SEND_RECEIVE_URL")
 
-LogConfigurator.verbose()
+logLevel = System.getenv("LOG_LEVEL")
+LogConfigurator.configureLogLevel(logLevel)
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)

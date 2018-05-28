@@ -136,7 +136,8 @@ if (sourceURL == null) {
     sourceURL = "https://github.com/maestro-performance/maestro-quiver-agent.git"
 }
 
-LogConfigurator.verbose()
+logLevel = System.getenv("LOG_LEVEL")
+LogConfigurator.configureLogLevel(logLevel)
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)

@@ -40,7 +40,8 @@ maestroURL = System.getenv("MAESTRO_BROKER")
 senderBrokerURL = System.getenv("SEND_URL")
 receiveBrokerURL = System.getenv("RECEIVE_URL")
 
-LogConfigurator.verbose()
+logLevel = System.getenv("LOG_LEVEL")
+LogConfigurator.configureLogLevel(logLevel)
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
