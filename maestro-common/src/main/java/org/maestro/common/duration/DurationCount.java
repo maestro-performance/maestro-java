@@ -20,6 +20,7 @@ package org.maestro.common.duration;
  * Count-based test duration object
  */
 public class DurationCount implements TestDuration {
+    public static final long WARM_UP_COUNT = 1000000;
     private static final String DURATION_TYPE_NAME = "count";
 
     private final long count;
@@ -28,13 +29,36 @@ public class DurationCount implements TestDuration {
         this.count = Long.parseLong(durationSpec);
     }
 
-    public boolean canContinue(TestProgress progress) {
+    DurationCount(long count) {
+        this.count = count;
+    }
+
+    @Override
+    public boolean canContinue(final TestProgress progress) {
         return progress.messageCount() < count;
 
     }
 
+    @Override
     public long getNumericDuration() {
         return count;
+    }
+
+    @Override
+    public TestDuration getWarmUpDuration() {
+        if (count > WARM_UP_COUNT) {
+            return new DurationCount(WARM_UP_COUNT);
+        }
+
+        final double warmUpSize = 0.1;
+        double warmUpCount = count * warmUpSize;
+
+        return new DurationCount(Math.round(warmUpCount));
+    }
+
+    @Override
+    public TestDuration getCoolDownDuration() {
+        return getWarmUpDuration();
     }
 
     public String toString() {

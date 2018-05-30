@@ -62,6 +62,21 @@ public interface TestDuration {
      */
     long getNumericDuration();
 
+    /**
+     * Get the warm up duration
+     *
+     * @return the warm up duration
+     */
+    TestDuration getWarmUpDuration();
+
+
+    /**
+     * Get the cool down duration
+     *
+     * @return the cool down duration
+     */
+    TestDuration getCoolDownDuration();
+
 
     /**
      * Whether the test can continue based on the current test's progress

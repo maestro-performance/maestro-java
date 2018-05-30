@@ -17,7 +17,6 @@
 package org.maestro.tests.rate.multipoint;
 
 import org.maestro.client.Maestro;
-import org.maestro.common.duration.TestDuration;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.MultiPointProfile;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
@@ -32,60 +31,7 @@ import java.util.List;
  */
 public class FixedRateMultipointTestProfile extends FixedRateTestProfile implements MultiPointProfile {
     private static final Logger logger = LoggerFactory.getLogger(FixedRateMultipointTestProfile.class);
-
-    protected int rate;
-    protected int parallelCount;
-
-    private int maximumLatency = 600;
-    private TestDuration duration;
-    private String messageSize;
-
     private final List<EndPoint> endPoints = new LinkedList<>();
-
-    public FixedRateMultipointTestProfile() {
-
-    }
-
-    public void setParallelCount(int parallelCount) {
-        this.parallelCount = parallelCount;
-    }
-
-    public int getParallelCount() {
-        return this.parallelCount;
-    }
-
-    public void setRate(int rate) {
-        this.rate = rate;
-    }
-
-    public int getRate() {
-        return this.rate;
-    }
-
-    public int getMaximumLatency() {
-        return this.maximumLatency;
-    }
-
-    public void setMaximumLatency(int maximumLatency) {
-        this.maximumLatency = maximumLatency;
-    }
-
-    public TestDuration getDuration() {
-        return this.duration;
-    }
-
-    public void setDuration(TestDuration duration) {
-        this.duration = duration;
-    }
-
-    public String getMessageSize() {
-        return this.messageSize;
-    }
-
-    public void setMessageSize(String messageSize) {
-        this.messageSize = messageSize;
-    }
-
 
     @Override
     public void addEndPoint(EndPoint endPoint) {
@@ -98,7 +44,7 @@ public class FixedRateMultipointTestProfile extends FixedRateTestProfile impleme
     }
 
     @Override
-    public void apply(Maestro maestro) throws MaestroException {
+    protected void apply(final Maestro maestro, boolean warmUp) throws MaestroException {
         for (EndPoint endPoint : endPoints) {
             logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getSendReceiveURL());
             logger.debug(" {} end point located at {}", endPoint.getName(), endPoint.getTopic());
@@ -106,14 +52,23 @@ public class FixedRateMultipointTestProfile extends FixedRateTestProfile impleme
             maestro.setBroker(endPoint.getTopic(), endPoint.getSendReceiveURL());
         }
 
-        logger.info("Setting rate to {}", getRate());
-        maestro.setRate(rate);
+        if (warmUp) {
+            logger.info("Setting warm up rate to {}", getRate());
+            maestro.setRate(warmUpRate);
 
-        logger.info("Setting parallel count to {}", this.parallelCount);
-        maestro.setParallelCount(this.parallelCount);
+            logger.info("Setting warm up duration to {}", getDuration());
+            maestro.setDuration(getDuration().getWarmUpDuration().toString());
+        }
+        else {
+            logger.info("Setting test rate to {}", getRate());
+            maestro.setRate(getRate());
 
-        logger.info("Setting duration to {}", getDuration());
-        maestro.setDuration(this.getDuration().toString());
+            logger.info("Setting test duration to {}", getDuration());
+            maestro.setDuration(getDuration().toString());
+        }
+
+        logger.info("Setting parallel count to {}", getParallelCount());
+        maestro.setParallelCount(getParallelCount());
 
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
         maestro.setFCL(getMaximumLatency());
@@ -143,14 +98,11 @@ public class FixedRateMultipointTestProfile extends FixedRateTestProfile impleme
         }
     }
 
+
     @Override
     public String toString() {
-        return "FixedRateTestProfile{" +
-                "rate=" + rate +
-                ", parallelCount=" + parallelCount +
-                ", maximumLatency=" + maximumLatency +
-                ", duration=" + duration +
-                ", messageSize='" + messageSize + '\'' +
+        return "FixedRateMultipointTestProfile{" +
+                "endPoints=" + endPoints +
                 "} " + super.toString();
     }
 }

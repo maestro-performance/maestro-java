@@ -46,8 +46,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         repeat = (replyRetries * 2);
     }
 
-    public boolean run() {
-        logger.info("Starting the test");
+    private boolean runTest(boolean warmUp) {
         try {
             // Clean up the topic
             getMaestro().collect();
@@ -57,9 +56,17 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             resolveDataServers();
             processReplies(testProcessor, (int) repeat, numPeers);
 
-            getReportsDownloader().getOrganizer().getTracker().setCurrentTest(testProfile.getTestExecutionNumber());
 
-            testProfile.apply(getMaestro());
+
+            if (warmUp) {
+                getReportsDownloader().getOrganizer().getTracker().setCurrentTest(0);
+                testProfile.warmUp(getMaestro());
+            }
+            else {
+                getReportsDownloader().getOrganizer().getTracker().setCurrentTest(1);
+                testProfile.apply(getMaestro());
+            }
+
             testProcessor.resetNotifications();
 
             if (testProfile.getInspectorName() != null) {
@@ -82,6 +89,19 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             logger.error("Error: {}", e.getMessage(), e);
         }
 
+        return false;
+    }
+
+    public boolean run() {
+        logger.info("Starting the warm up execution");
+
+        if (runTest(true)) {
+            logger.info("Starting the test");
+
+            return runTest(false);
+        }
+
+        logger.error("Warm up execution failed");
         return false;
     }
 

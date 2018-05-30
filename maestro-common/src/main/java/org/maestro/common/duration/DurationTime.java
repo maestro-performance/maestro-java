@@ -17,6 +17,8 @@
 package org.maestro.common.duration;
 
 import org.maestro.common.exceptions.DurationParseException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
@@ -36,13 +38,31 @@ public class DurationTime implements TestDuration {
         this.outputTimeUnit = TimeUnit.SECONDS;
     }
 
-    public boolean canContinue(TestProgress snapshot) {
+    private DurationTime(final long seconds) {
+        this.expectedDuration = seconds;
+        this.timeSpec = seconds + "s";
+        this.outputTimeUnit = TimeUnit.SECONDS;
+    }
+
+    @Override
+    public boolean canContinue(final TestProgress snapshot) {
         final long currentDuration = snapshot.elapsedTime(outputTimeUnit);
         return currentDuration < expectedDuration;
     }
 
+    @Override
     public long getNumericDuration() {
         return expectedDuration;
+    }
+
+    @Override
+    public TestDuration getWarmUpDuration() {
+        return new DurationCount(DurationCount.WARM_UP_COUNT);
+    }
+
+    @Override
+    public TestDuration getCoolDownDuration() {
+        return getWarmUpDuration();
     }
 
     public String toString() {

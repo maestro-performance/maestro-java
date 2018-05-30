@@ -31,6 +31,7 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestProfile.class);
 
     protected int rate;
+    protected int warmUpRate;
     protected int parallelCount;
     private String brokerURL;
 
@@ -66,8 +67,6 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
         this.extPointCommand = extPointCommand;
     }
 
-    public FixedRateTestProfile() {}
-
     public void setParallelCount(int parallelCount) {
         this.parallelCount = parallelCount;
     }
@@ -79,6 +78,14 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
 
     public void setRate(int rate) {
         this.rate = rate;
+        double warmUpTmp = rate * 0.3;
+
+        if (warmUpTmp > Integer.MAX_VALUE) {
+            warmUpRate = Integer.MAX_VALUE;
+        }
+        else {
+            warmUpRate = (int) Math.round(warmUpTmp);
+        }
     }
 
     public int getRate() {
@@ -128,19 +135,28 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
         return brokerURL;
     }
 
-    @Override
-    public void apply(Maestro maestro) throws MaestroException {
+    protected void apply(final Maestro maestro, boolean warmUp) throws MaestroException {
         logger.info("Setting endpoint URL to {}", getSendReceiveURL());
         maestro.setBroker(getSendReceiveURL());
 
-        logger.info("Setting rate to {}", getRate());
-        maestro.setRate(rate);
+        if (warmUp) {
+            logger.info("Setting warm up rate to {}", getRate());
+            maestro.setRate(warmUpRate);
+
+            logger.info("Setting warm up duration to {}", getDuration().getWarmUpDuration());
+            maestro.setDuration(this.getDuration().getWarmUpDuration().toString());
+        }
+        else {
+            logger.info("Setting test rate to {}", getRate());
+            maestro.setRate(rate);
+
+            logger.info("Setting test duration to {}", getDuration());
+            maestro.setDuration(this.getDuration().toString());
+        }
 
         logger.info("Setting parallel count to {}", this.parallelCount);
         maestro.setParallelCount(this.parallelCount);
 
-        logger.info("Setting duration to {}", getDuration());
-        maestro.setDuration(this.getDuration().toString());
 
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
         maestro.setFCL(getMaximumLatency());
@@ -168,6 +184,17 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
             logger.info("Setting command to Agent execution to {}", getExtPointCommand());
             maestro.userCommand(0, getExtPointCommand());
         }
+    }
+
+    @Override
+    public void apply(final Maestro maestro) throws MaestroException {
+        logger.info("Applying test execution profile");
+        apply(maestro, false);
+    }
+
+    public void warmUp(final Maestro maestro) throws MaestroException {
+        logger.info("Applying test warm up profile");
+        apply(maestro, true);
     }
 
     @Override
