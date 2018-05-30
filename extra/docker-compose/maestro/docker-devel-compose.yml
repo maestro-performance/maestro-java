@@ -1,63 +1,23 @@
 version: '3'
 networks:
-    maestro:
+    cluster:
       driver: bridge
-services: 
+    test:
+          driver: bridge
+services:
   broker:
     build: broker
-    networks: 
-      - maestro
+    networks:
+      - cluster
     ports:
       - "18161:8161"
-      # Usually it's not needed to expose MQTT port
-      - "1883:1883"
+      - "1884:1883"
   sut:
-    image: docker.io/rabbitmq:3-management
-    networks: 
-      - maestro
+    build: suts/apache-artemis
+    networks:
+      - test
     ports:
       - "5672:5672"
-      - "15672:15672"
+      - "8161:8161"
+      - "61613:61613"
       - "61616:61616"
-#  receiver:
-#    build:
-#      context: workers/receiver
-#      args:
-#        - MAESTRO_WORKER_VERSION=devel
-#    ports:
-#      - "28000:8000"
-#    volumes:
-#      - ${HOME}/tmp/maestro:/maestro
-#    networks:
-#      - maestro
-#    depends_on:
-#      - broker
-#      - sut
-#  sender:
-#    build:
-#      context: workers/sender
-#      args:
-#        - MAESTRO_WORKER_VERSION=devel
-#    ports:
-#      - "38000:8000"
-#    volumes:
-#      - ${HOME}/tmp/maestro:/maestro
-#    networks:
-#      - maestro
-#    depends_on:
-#      - receiver
-#  client:
-#    build:
-#      context: client
-#      args:
-#        - MAESTRO_VERSION=devel
-#    volumes:
-#      - ${HOME}/tmp/maestro:/maestro
-#    networks:
-#      - maestro
-#    ports:
-#      - "8000:8000"
-#    depends_on:
-#      - sender
-#      - receiver
-#
