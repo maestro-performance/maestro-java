@@ -46,14 +46,7 @@ public class DurationCount implements TestDuration {
 
     @Override
     public TestDuration getWarmUpDuration() {
-        if (count > WARM_UP_COUNT) {
-            return new DurationCount(WARM_UP_COUNT);
-        }
-
-        final double warmUpSize = 0.1;
-        double warmUpCount = count * warmUpSize;
-
-        return new DurationCount(Math.round(warmUpCount));
+        return new DurationCount(WARM_UP_COUNT);
     }
 
     @Override
