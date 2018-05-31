@@ -21,8 +21,9 @@ import org.maestro.common.exceptions.DurationParseException;
 import java.time.Duration;
 
 public class DurationUtils {
-    private DurationUtils() {}
+    static final DurationCount DEFAULT_WARM_UP_DURATION = new DurationCount(DurationCount.WARM_UP_COUNT);
 
+    private DurationUtils() {}
 
     public static long parse(CharSequence sequence) throws DurationParseException {
         Duration d = Duration.ZERO;

@@ -57,7 +57,7 @@ public class DurationTime implements TestDuration {
 
     @Override
     public TestDuration getWarmUpDuration() {
-        return new DurationCount(DurationCount.WARM_UP_COUNT);
+        return DurationUtils.DEFAULT_WARM_UP_DURATION;
     }
 
     @Override
