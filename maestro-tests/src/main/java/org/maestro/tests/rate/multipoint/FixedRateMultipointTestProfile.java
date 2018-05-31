@@ -17,6 +17,7 @@
 package org.maestro.tests.rate.multipoint;
 
 import org.maestro.client.Maestro;
+import org.maestro.common.duration.TestDuration;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.MultiPointProfile;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
@@ -56,8 +57,11 @@ public class FixedRateMultipointTestProfile extends FixedRateTestProfile impleme
             logger.info("Setting warm up rate to {}", getRate());
             maestro.setRate(warmUpRate);
 
-            logger.info("Setting warm up duration to {}", getDuration());
-            maestro.setDuration(getDuration().getWarmUpDuration().toString());
+            TestDuration warmUpDuration = getDuration().getWarmUpDuration();
+            long balancedDuration = Math.round(warmUpDuration.getNumericDuration() / getParallelCount());
+
+            logger.info("Setting warm up duration to {}", balancedDuration);
+            maestro.setDuration(balancedDuration);
         }
         else {
             logger.info("Setting test rate to {}", getRate());

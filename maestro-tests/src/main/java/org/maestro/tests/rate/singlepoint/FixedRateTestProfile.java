@@ -143,8 +143,11 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
             logger.info("Setting warm up rate to {}", getRate());
             maestro.setRate(warmUpRate);
 
-            logger.info("Setting warm up duration to {}", getDuration().getWarmUpDuration());
-            maestro.setDuration(this.getDuration().getWarmUpDuration().toString());
+            TestDuration warmUpDuration = getDuration().getWarmUpDuration();
+            long balancedDuration = Math.round(warmUpDuration.getNumericDuration() / getParallelCount());
+
+            logger.info("Setting warm up duration to {}", balancedDuration);
+            maestro.setDuration(balancedDuration);
         }
         else {
             logger.info("Setting test rate to {}", getRate());
