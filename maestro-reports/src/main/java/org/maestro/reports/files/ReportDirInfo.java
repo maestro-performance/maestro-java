@@ -83,6 +83,10 @@ public class ReportDirInfo {
         return testNum;
     }
 
+    public String getTestPhase() {
+        return getTestNum() == 0 ? "warm-up" : "test";
+    }
+
     public String getResultTypeString() {
         return resultTypeString;
     }

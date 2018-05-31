@@ -79,6 +79,7 @@
                 <thead>
                 <tr>
                     <th>Test Number</th>
+                    <th>Test Phase</th>
                     <th>Host</th>
                     <th>Type</th>
                     <th>Target Rate</th>
@@ -92,6 +93,7 @@
                 {% for reportDir in reportDirs %}
                 <tr>
                     <td><a href="./{{reportDir.reportDirRelative}}/index.html ">{{ reportDir.testNum }}</a></td>
+                    <td>{{ reportDir.testPhase }}</td>
                     <td><a href="./{{reportDir.reportDirRelative}}/index.html ">{{ reportDir.nodeHost }}</a> </td>
                     <td>{{ reportDir.nodeType }} </td>
                     <td>{{ reportDir.rate }} msg/sec </td>
