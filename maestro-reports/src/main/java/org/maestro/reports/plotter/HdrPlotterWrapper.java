@@ -43,17 +43,20 @@ public class HdrPlotterWrapper implements PlotterWrapper {
     }
 
     @Override
-    public synchronized boolean plot(final File file) {
+    public boolean plot(final File file) {
         logger.debug("Plotting HDR file {}", file.getPath());
 
         try {
-            final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
-
             if (!file.exists()) {
                 throw new IOException("File " + file.getPath() + " does not exist");
             }
 
-            String csvFile = processorWrapper.convertLog(file.getPath());
+            final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
+            String csvFile;
+
+            synchronized (this) {
+                csvFile = processorWrapper.convertLog(file.getPath());
+            }
 
             // CSV Reader
             final HdrReader reader = new HdrReader();
