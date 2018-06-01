@@ -149,7 +149,7 @@ public class Downloader {
 				long outSize = FileUtils.sizeOf(outputFile);
 				long sourceSize = resourceInfo.getSize();
 
-				if (sourceSize == outSize) {
+				if (sourceSize == outSize && outSize > 0) {
 					logger.info("Destination file and source file appears to be " +
 							"the same. Using cached file instead.");
 
