@@ -136,15 +136,20 @@ public class HttpResourceExchange implements ResourceExchange {
     private long getContentLength(HttpResponse response) {
         Header header = response.getFirstHeader(HttpHeaders.CONTENT_LENGTH);
 
-        String tmp = header.getValue();
-        try {
-            return Long.parseLong(tmp);
-        } catch (NumberFormatException e) {
-            logger.warn("The server provided an invalid content length value");
+        if (header != null) {
+            String tmp = header.getValue();
+            try {
+                return Long.parseLong(tmp);
+            } catch (NumberFormatException e) {
+                logger.warn("The server provided an invalid content length value");
 
-            if (logger.isDebugEnabled()) {
-                logger.debug(e.getMessage(), e);
+                if (logger.isDebugEnabled()) {
+                    logger.debug(e.getMessage(), e);
+                }
             }
+        }
+        else {
+            logger.debug("Unable to determine the file size. Setting it as 0.");
         }
 
         return 0;
