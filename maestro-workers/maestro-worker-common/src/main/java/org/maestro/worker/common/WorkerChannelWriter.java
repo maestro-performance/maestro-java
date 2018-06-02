@@ -94,31 +94,8 @@ public final class WorkerChannelWriter implements Runnable {
                     }
                 }
             }
-            final int rateReportsCount = rateReports.size();
-            //doesn't need to continue if there aren't any reports to be populated
-            if (rateReportsCount > 0) {
-                final Thread currentThread = Thread.currentThread();
-                final IdleStrategy idleStrategy = new SleepingIdleStrategy(1000L);
-                while (!currentThread.isInterrupted()) {
-                    int events = 0;
-                    for (int i = 0; i < rateReportsCount; i++) {
-                        final WorkerRateReport report = rateReports.get(i);
-                        events += report.updateReport(drainLimit);
-                    }
-                    idleStrategy.idle(events);
-                }
-                //lets finish to drain the remaining samples left (if any)
-                boolean allDrained = false;
-                while (!allDrained) {
-                    allDrained = true;
-                    for (int i = 0; i < rateReportsCount; i++) {
-                        final WorkerRateReport report = rateReports.get(i);
-                        if (report.updateReport(drainLimit) > 0) {
-                            allDrained = false;
-                        }
-                    }
-                }
-            }
+
+            update(drainLimit, rateReports);
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
@@ -137,6 +114,34 @@ public final class WorkerChannelWriter implements Runnable {
                     final long totalMissed = workers.stream().filter(w -> w.workerChannel() != null).map(MaestroWorker::workerChannel).mapToLong(OneToOneWorkerChannel::missedSamples).sum();
                     if (totalMissed > 0) {
                         System.err.println("TOTAL MISSED RATE SAMPLES= " + totalMissed);
+                    }
+                }
+            }
+        }
+    }
+
+    public void update(int drainLimit, List<WorkerRateReport> rateReports) {
+        final int rateReportsCount = rateReports.size();
+        //doesn't need to continue if there aren't any reports to be populated
+        if (rateReportsCount > 0) {
+            final Thread currentThread = Thread.currentThread();
+            final IdleStrategy idleStrategy = new SleepingIdleStrategy(1000L);
+            while (!currentThread.isInterrupted()) {
+                int events = 0;
+                for (int i = 0; i < rateReportsCount; i++) {
+                    final WorkerRateReport report = rateReports.get(i);
+                    events += report.updateReport(drainLimit);
+                }
+                idleStrategy.idle(events);
+            }
+            //lets finish to drain the remaining samples left (if any)
+            boolean allDrained = false;
+            while (!allDrained) {
+                allDrained = true;
+                for (int i = 0; i < rateReportsCount; i++) {
+                    final WorkerRateReport report = rateReports.get(i);
+                    if (report.updateReport(drainLimit) > 0) {
+                        allDrained = false;
                     }
                 }
             }
