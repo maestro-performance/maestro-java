@@ -70,7 +70,7 @@ public final class WorkerChannelWriter implements Runnable {
 
     @Override
     public void run() {
-        final int drainLimit = 128;
+
         RateWriter rateWriter = null;
 
         try {
@@ -97,7 +97,7 @@ public final class WorkerChannelWriter implements Runnable {
                 }
             }
 
-            update(drainLimit, rateReports);
+            update(rateReports);
         } catch (IOException ex) {
             ex.printStackTrace();
         } finally {
@@ -115,7 +115,9 @@ public final class WorkerChannelWriter implements Runnable {
         }
     }
 
-    public void update(int drainLimit, List<WorkerRateReport> rateReports) {
+    public void update(List<WorkerRateReport> rateReports) {
+        final int drainLimit = 128;
+
         final int rateReportsCount = rateReports.size();
         //doesn't need to continue if there aren't any reports to be populated
         if (rateReportsCount > 0) {
