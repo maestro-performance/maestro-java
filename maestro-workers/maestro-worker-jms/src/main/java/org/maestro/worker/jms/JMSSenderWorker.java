@@ -137,48 +137,9 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
         final SenderClient client = this.clientFactory.get();
         try {
-            final EpochMicroClock epochMicroClock = EpochClocks.exclusiveMicro();
-            client.setUrl(url);
-            client.setContentStrategy(contentStrategy);
+            doClientStartup(client);
 
-            workerStateInfo.setState(true, null, null);
-            client.setNumber(number);
-            client.start();
-            long count = 0;
-
-            final long intervalInNanos = getIntervalInNanos();
-
-            //it couldn't uses the Epoch in nanos because it could overflow pretty soon (less than 1 day)
-            final long startFireEpochMicros = epochMicroClock.microTime();
-            //to avoid accumulated approx errors on the expectedSendTimeEpochMillis calculations
-            long elapsedIntervalsNanos = 0;
-
-            long nextFireTime = System.nanoTime() + intervalInNanos;
-
-            while (duration.canContinue(this) && isRunning()) {
-                if (intervalInNanos > 0) {
-                    final long now = waitNanoInterval(nextFireTime, intervalInNanos);
-                    assert (now - nextFireTime) >= 0 : "can't wait less than the configured interval in nanos";
-                    nextFireTime += intervalInNanos;
-                    elapsedIntervalsNanos += intervalInNanos;
-                }
-
-                final long sendTimeEpochMicros = epochMicroClock.microTime();
-                final long expectedSendTimeEpochMicros;
-
-                if (intervalInNanos > 0) {
-                    final long elapsedIntervalsMicros = (elapsedIntervalsNanos / 1_000L);
-                    expectedSendTimeEpochMicros = startFireEpochMicros + elapsedIntervalsMicros;
-                } else {
-                    expectedSendTimeEpochMicros = sendTimeEpochMicros;
-                }
-
-                client.sendMessages(sendTimeEpochMicros);
-                workerChannel.emitRate(expectedSendTimeEpochMicros, sendTimeEpochMicros);
-                count++;
-                //update message sent count
-                this.messageCount.lazySet(count);
-            }
+            runLoadLoop(client);
 
             logger.info("Test completed successfully");
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS, null);
@@ -195,6 +156,53 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             //the test could be considered already stopped here, but cleaning up JMS resources could take some time anyway
             client.stop();
         }
+    }
+
+    private void runLoadLoop(final SenderClient client) throws Exception {
+        long count = 0;
+        final long intervalInNanos = getIntervalInNanos();
+
+        //it couldn't uses the Epoch in nanos because it could overflow pretty soon (less than 1 day)
+        final EpochMicroClock epochMicroClock = EpochClocks.exclusiveMicro();
+        final long startFireEpochMicros = epochMicroClock.microTime();
+        //to avoid accumulated approx errors on the expectedSendTimeEpochMillis calculations
+        long elapsedIntervalsNanos = 0;
+
+        long nextFireTime = System.nanoTime() + intervalInNanos;
+
+        while (duration.canContinue(this) && isRunning()) {
+            if (intervalInNanos > 0) {
+                final long now = waitNanoInterval(nextFireTime, intervalInNanos);
+                assert (now - nextFireTime) >= 0 : "can't wait less than the configured interval in nanos";
+                nextFireTime += intervalInNanos;
+                elapsedIntervalsNanos += intervalInNanos;
+            }
+
+            final long sendTimeEpochMicros = epochMicroClock.microTime();
+            final long expectedSendTimeEpochMicros;
+
+            if (intervalInNanos > 0) {
+                final long elapsedIntervalsMicros = (elapsedIntervalsNanos / 1_000L);
+                expectedSendTimeEpochMicros = startFireEpochMicros + elapsedIntervalsMicros;
+            } else {
+                expectedSendTimeEpochMicros = sendTimeEpochMicros;
+            }
+
+            client.sendMessages(sendTimeEpochMicros);
+            workerChannel.emitRate(expectedSendTimeEpochMicros, sendTimeEpochMicros);
+            count++;
+            //update message sent count
+            this.messageCount.lazySet(count);
+        }
+    }
+
+    private void doClientStartup(final SenderClient client) throws Exception {
+        client.setUrl(url);
+        client.setContentStrategy(contentStrategy);
+
+        workerStateInfo.setState(true, null, null);
+        client.setNumber(number);
+        client.start();
     }
 
     private long getIntervalInNanos() {
