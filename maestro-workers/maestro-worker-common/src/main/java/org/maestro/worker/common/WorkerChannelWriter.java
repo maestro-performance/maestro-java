@@ -67,28 +67,30 @@ public final class WorkerChannelWriter implements Runnable {
         return new RateWriter(reportFolder, sender, compressed);
     }
 
+
     @Override
     public void run() {
         final int drainLimit = 128;
-        RateWriter senderRateWriter = null;
-        RateWriter receiverRateWriter = null;
+        RateWriter rateWriter = null;
+
         try {
             final int workersCount = workers.size();
             final List<WorkerRateReport> rateReports = new ArrayList<>(workersCount);
+
             for (int workerId = 0; workerId < workersCount; workerId++) {
                 final MaestroWorker worker = workers.get(workerId);
+
                 if (worker.workerChannel() != null) {
                     final boolean sender = worker instanceof MaestroSenderWorker;
                     final boolean receiver = worker instanceof MaestroReceiverWorker;
                     assert !(sender && receiver);
-                    RateWriter rateWriter = null;
+
                     if (sender) {
-                        senderRateWriter = senderRateWriter == null ? createRateWriter(true) : senderRateWriter;
-                        rateWriter = senderRateWriter;
+                        rateWriter = rateWriter == null ? createRateWriter(true) : rateWriter;
                     } else if (receiver) {
-                        receiverRateWriter = receiverRateWriter == null ? createRateWriter(false) : receiverRateWriter;
-                        rateWriter = receiverRateWriter;
+                        rateWriter = rateWriter == null ? createRateWriter(false) : rateWriter;
                     }
+
                     if (rateWriter != null) {
                         rateReports.add(new WorkerRateReport(worker, rateWriter));
                     }
@@ -101,20 +103,13 @@ public final class WorkerChannelWriter implements Runnable {
         } finally {
             //close the report writers
             try {
-                if (senderRateWriter != null) {
-                    senderRateWriter.close();
+                if (rateWriter != null) {
+                    rateWriter.close();
                 }
             } finally {
-                try {
-                    if (receiverRateWriter != null) {
-                        receiverRateWriter.close();
-                    }
-                } finally {
-                    //TODO improve this warn
-                    final long totalMissed = workers.stream().filter(w -> w.workerChannel() != null).map(MaestroWorker::workerChannel).mapToLong(OneToOneWorkerChannel::missedSamples).sum();
-                    if (totalMissed > 0) {
-                        System.err.println("TOTAL MISSED RATE SAMPLES= " + totalMissed);
-                    }
+                final long totalMissed = workers.stream().filter(w -> w.workerChannel() != null).map(MaestroWorker::workerChannel).mapToLong(OneToOneWorkerChannel::missedSamples).sum();
+                if (totalMissed > 0) {
+                    System.err.println("TOTAL MISSED RATE SAMPLES= " + totalMissed);
                 }
             }
         }
