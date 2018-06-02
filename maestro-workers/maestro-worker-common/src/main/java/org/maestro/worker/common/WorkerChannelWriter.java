@@ -23,6 +23,8 @@ import org.maestro.common.worker.MaestroSenderWorker;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.writers.OneToOneWorkerChannel;
 import org.maestro.common.writers.RateWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -31,6 +33,7 @@ import java.util.List;
 import java.util.function.Consumer;
 
 public final class WorkerChannelWriter implements Runnable {
+    private static final Logger logger = LoggerFactory.getLogger(WorkerChannelWriter.class);
 
     private static final class WorkerRateReport {
 
@@ -109,7 +112,7 @@ public final class WorkerChannelWriter implements Runnable {
             } finally {
                 final long totalMissed = workers.stream().filter(w -> w.workerChannel() != null).map(MaestroWorker::workerChannel).mapToLong(OneToOneWorkerChannel::missedSamples).sum();
                 if (totalMissed > 0) {
-                    System.err.println("TOTAL MISSED RATE SAMPLES= " + totalMissed);
+                    logger.error("Total missed rate samples: {}", totalMissed);
                 }
             }
         }
