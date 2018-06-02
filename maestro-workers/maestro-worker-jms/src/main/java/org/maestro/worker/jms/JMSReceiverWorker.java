@@ -127,43 +127,9 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
         final ReceiverClient client = clientFactory.get();
         try {
-            final EpochMicroClock epochMicroClock = EpochClocks.exclusiveMicro();
+            doClientStartup(client);
 
-            client.setUrl(url);
-
-            workerStateInfo.setState(true, null, null);
-            client.setNumber(number);
-            client.start();
-
-            long count = 0;
-
-            while (duration.canContinue(this) && isRunning()) {
-                final long sendTimeEpochMicros = client.receiveMessages();
-                if (sendTimeEpochMicros != ReceiverClient.noMessagePayload()) {
-                    final long nowInMicros = epochMicroClock.microTime();
-                    long elapsedMicros = nowInMicros - sendTimeEpochMicros;
-                    boolean validLatency = true;
-                    if (elapsedMicros < 0) {
-                        handleNegativeSampleError(sendTimeEpochMicros, nowInMicros);
-                        validLatency = false;
-                    } else if (elapsedMicros == 0) {
-                        logger.warn("Registered Latency of 0: please consider to improve timestamp precision");
-                    } else if (elapsedMicros > HIGHEST_TRACKABLE_VALUE) {
-                        handleHugeSampleError(sendTimeEpochMicros, nowInMicros);
-                        //record it but avoid histogram to throw any error
-                        elapsedMicros = HIGHEST_TRACKABLE_VALUE;
-                    }
-                    if (validLatency) {
-                        //we can perform fnc check here to fail the test
-                        //TODO use Histogram:recordValueWithExpectedInterval if the rate is known
-                        latencyRecorder.recordValue(elapsedMicros);
-                    }
-                    //record everything
-                    workerChannel.emitRate(sendTimeEpochMicros, nowInMicros);
-                    count++;
-                    messageCount.lazySet(count);
-                }
-            }
+            runReceiveLoop(client);
 
             logger.info("Test completed successfully");
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS, null);
@@ -175,6 +141,53 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
             //the test could be considered already stopped here, but cleaning up JMS resources could take some time anyway
             client.stop();
         }
+    }
+
+    public void runReceiveLoop(final ReceiverClient client) throws Exception {
+        final EpochMicroClock epochMicroClock = EpochClocks.exclusiveMicro();
+        long count = 0;
+
+        while (duration.canContinue(this) && isRunning()) {
+            final long sendTimeEpochMicros = client.receiveMessages();
+
+            if (sendTimeEpochMicros != ReceiverClient.noMessagePayload()) {
+                final long nowInMicros = epochMicroClock.microTime();
+                long elapsedMicros = nowInMicros - sendTimeEpochMicros;
+
+                if (elapsedMicros >= 0) {
+                    if (elapsedMicros > HIGHEST_TRACKABLE_VALUE) {
+                        handleHugeSampleError(sendTimeEpochMicros, nowInMicros);
+                        elapsedMicros = HIGHEST_TRACKABLE_VALUE;
+                    }
+
+                    latencyRecorder.recordValue(elapsedMicros);
+                }
+                else {
+                    handleInvalidLatency(sendTimeEpochMicros, nowInMicros, elapsedMicros);
+                }
+
+                workerChannel.emitRate(sendTimeEpochMicros, nowInMicros);
+                count++;
+                messageCount.lazySet(count);
+            }
+        }
+    }
+
+    public void handleInvalidLatency(long sendTimeEpochMicros, long nowInMicros, long elapsedMicros) {
+        if (elapsedMicros == 0) {
+            logger.warn("Registered Latency of 0: please consider to improve timestamp precision");
+        }
+        else {
+            handleNegativeSampleError(sendTimeEpochMicros, nowInMicros);
+        }
+    }
+
+    private void doClientStartup(final ReceiverClient client) throws Exception {
+        client.setUrl(url);
+
+        workerStateInfo.setState(true, null, null);
+        client.setNumber(number);
+        client.start();
     }
 
     @Override
