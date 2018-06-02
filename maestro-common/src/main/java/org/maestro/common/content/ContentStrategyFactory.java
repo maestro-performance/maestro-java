@@ -32,13 +32,11 @@ public class ContentStrategyFactory {
         ContentStrategy ret;
 
         if (sizeSpec.startsWith("~")) {
-            ret = new VariableSizeContent();
+            ret = new VariableSizeContent(sizeSpec);
         }
         else {
-            ret = new FixedSizeContent();
+            ret = new FixedSizeContent(sizeSpec);
         }
-
-        ret.setSize(sizeSpec);
 
         return ret;
     }

@@ -25,23 +25,27 @@ final class FixedSizeContent implements ContentStrategy {
     private int size = 0;
     private ByteBuffer buffer = null;
 
-    /*
-     * @see ContentStrategy#setSize(int)
-     */
-    @Override
-    public void setSize(int size) {
+    FixedSizeContent(int size) {
+        setSize(size);
+    }
+
+    FixedSizeContent(final String sizeSpec) {
+        setSize(sizeSpec);
+    }
+
+    private void setSize(int size) {
         this.size = size;
         this.buffer = ByteBuffer.allocate(size).order(CONTENT_ENDIANNESS);
         for (int i = 0; i < size; i++) {
             this.buffer.put(i, (byte) i);
         }
+
+        buffer.clear();
+        buffer.limit(this.size);
     }
 
-    /*
-     * @see ContentStrategy#setSize(String)
-     */
-    @Override
-    public void setSize(String sizeSpec) {
+
+    private void setSize(final String sizeSpec) {
         setSize(MessageSize.toSizeFromSpec(sizeSpec));
     }
 
@@ -50,12 +54,6 @@ final class FixedSizeContent implements ContentStrategy {
      */
     @Override
     public ByteBuffer prepareContent() {
-        if (buffer == null) {
-            assert size == 0;
-            return buffer;
-        }
-        buffer.clear();
-        buffer.limit(this.size);
         return buffer;
     }
 }

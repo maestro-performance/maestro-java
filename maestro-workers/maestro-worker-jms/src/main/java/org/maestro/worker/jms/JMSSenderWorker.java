@@ -23,6 +23,7 @@ import org.maestro.common.duration.EpochMicroClock;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.jms.SenderClient;
 import org.maestro.common.worker.MaestroSenderWorker;
 import org.maestro.common.worker.WorkerOptions;
@@ -197,6 +198,10 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
     private void doClientStartup(final SenderClient client) throws Exception {
+        if (contentStrategy == null) {
+            throw new MaestroException("Trying to run a test without defining the message size");
+        }
+
         client.setUrl(url);
         client.setContentStrategy(contentStrategy);
 

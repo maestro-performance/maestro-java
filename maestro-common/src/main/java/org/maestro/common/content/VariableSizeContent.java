@@ -27,6 +27,14 @@ final class VariableSizeContent implements ContentStrategy {
     private int upperLimitExclusive = 1;
     private ByteBuffer buffer = null;
 
+    VariableSizeContent(int size) {
+        setSize(size);
+    }
+
+    VariableSizeContent(final String sizeSpec) {
+        setSize(sizeSpec);
+    }
+
     public int minSize() {
         return this.lowerLimitInclusive;
     }
@@ -35,11 +43,7 @@ final class VariableSizeContent implements ContentStrategy {
         return this.upperLimitExclusive - 1;
     }
 
-    /*
-     * @see ContentStrategy#setSize(int)
-     */
-    @Override
-    public void setSize(int size) {
+    private void setSize(int size) {
         final int lowerBoundInclusive;
         final int upperBoundExclusive;
 
@@ -64,11 +68,8 @@ final class VariableSizeContent implements ContentStrategy {
         }
     }
 
-    /*
-     * @see ContentStrategy#setSize(String)
-     */
-    @Override
-    public void setSize(String sizeSpec) {
+
+    private void setSize(final String sizeSpec) {
         setSize(MessageSize.toSizeFromSpec(sizeSpec));
     }
 
@@ -77,10 +78,6 @@ final class VariableSizeContent implements ContentStrategy {
      */
     @Override
     public ByteBuffer prepareContent() {
-        if (buffer == null) {
-            assert this.lowerLimitInclusive == 0 && this.upperLimitExclusive == 1;
-            return null;
-        }
         final int currentLimit = ThreadLocalRandom.current().nextInt(this.lowerLimitInclusive, this.upperLimitExclusive);
         buffer.clear();
         buffer.limit(currentLimit);

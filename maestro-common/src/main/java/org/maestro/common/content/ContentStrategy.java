@@ -30,20 +30,6 @@ public interface ContentStrategy {
     ByteOrder CONTENT_ENDIANNESS = ByteOrder.LITTLE_ENDIAN;
 
     /**
-     * Set the message size
-     *
-     * @param size the message size
-     */
-    void setSize(int size);
-
-    /**
-     * Sets the size based on a size specification string
-     *
-     * @param sizeSpec the size specification string as formatted by ({@link MessageSize})
-     */
-    void setSize(String sizeSpec);
-
-    /**
      * Gets the message content to send.
      * <p>
      * The returned {@link ByteBuffer} has {@link ByteBuffer#hasArray()} {@code true} and
