@@ -134,15 +134,21 @@ public final class WorkerChannelWriter implements Runnable {
                 }
                 idleStrategy.idle(events);
             }
-            //lets finish to drain the remaining samples left (if any)
-            boolean allDrained = false;
-            while (!allDrained) {
-                allDrained = true;
-                for (int i = 0; i < rateReportsCount; i++) {
-                    final WorkerRateReport report = rateReports.get(i);
-                    if (report.updateReport(drainLimit) > 0) {
-                        allDrained = false;
-                    }
+
+            drain(drainLimit, rateReports, rateReportsCount);
+
+        }
+    }
+
+    public void drain(int drainLimit, List<WorkerRateReport> rateReports, int rateReportsCount) {
+        //lets finish to drain the remaining samples left (if any)
+        boolean allDrained = false;
+        while (!allDrained) {
+            allDrained = true;
+            for (int i = 0; i < rateReportsCount; i++) {
+                final WorkerRateReport report = rateReports.get(i);
+                if (report.updateReport(drainLimit) > 0) {
+                    allDrained = false;
                 }
             }
         }
