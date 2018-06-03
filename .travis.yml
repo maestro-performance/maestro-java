@@ -11,7 +11,7 @@ os:
   - linux
 language:
   - java
-script: mvn -PJMS,Package package
+script: mvn -PPackage package
 
 after_success:
     - sh -c "curl --ftp-create-dirs -T ./maestro-test-scripts/target/maestro-test-scripts-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-test-scripts-devel-bin.tar.gz"
