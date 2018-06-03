@@ -18,6 +18,8 @@ after_success:
     - sh -c "curl --ftp-create-dirs -T ./maestro-worker/target/maestro-worker-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-worker-devel-bin.tar.gz"
     - sh -c "curl --ftp-create-dirs -T ./maestro-cli/target/maestro-cli-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-cli-devel-bin.tar.gz"
     - sh -c "curl --ftp-create-dirs -T ./maestro-exporter/target/maestro-exporter-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-exporter-devel-bin.tar.gz"
+    - sh -c "curl --ftp-create-dirs -T ./maestro-agent/target/maestro-agent-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-agent-devel-bin.tar.gz"
+    - sh -c "curl --ftp-create-dirs -T ./maestro-inspector/target/maestro-inspector-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-inspector-devel-bin.tar.gz"
 
 addons:
   coverity_scan:
