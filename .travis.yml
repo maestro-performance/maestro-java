@@ -25,8 +25,8 @@ addons:
   coverity_scan:
     project:
       name: "orpiske/maestro-java"
-      description: "Maestro client in Java and Groovy "
+      description: "Maestro performance testing tool in Java and Groovy "
     notification_email: angusyoung@gmail.com
     build_command_prepend: "mvn clean"
-    build_command:   "mvn -PJMS,Groovy test"
+    build_command:   "mvn test"
     branch_pattern: coverity_scan
