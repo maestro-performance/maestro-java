@@ -121,6 +121,15 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
                 nowInMicros, sendTimeEpochMicros);
     }
 
+    private static void handleInvalidLatency(long sendTimeEpochMicros, long nowInMicros, long elapsedMicros) {
+        if (elapsedMicros == 0) {
+            logger.warn("Registered Latency of 0: please consider to improve timestamp precision");
+        }
+        else {
+            handleNegativeSampleError(sendTimeEpochMicros, nowInMicros);
+        }
+    }
+
     public void start() {
         startedEpochMillis = System.currentTimeMillis();
         logger.info("Starting the test");
@@ -143,7 +152,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         }
     }
 
-    public void runReceiveLoop(final ReceiverClient client) throws Exception {
+    private void runReceiveLoop(final ReceiverClient client) throws Exception {
         final EpochMicroClock epochMicroClock = EpochClocks.exclusiveMicro();
         long count = 0;
 
@@ -170,15 +179,6 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
                 count++;
                 messageCount.lazySet(count);
             }
-        }
-    }
-
-    public void handleInvalidLatency(long sendTimeEpochMicros, long nowInMicros, long elapsedMicros) {
-        if (elapsedMicros == 0) {
-            logger.warn("Registered Latency of 0: please consider to improve timestamp precision");
-        }
-        else {
-            handleNegativeSampleError(sendTimeEpochMicros, nowInMicros);
         }
     }
 
