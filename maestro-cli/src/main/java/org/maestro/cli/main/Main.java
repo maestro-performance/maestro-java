@@ -39,7 +39,7 @@ public class Main {
         System.out.println("   download");
         System.out.println("   report");
         System.out.println("   data");
-        System.out.println("   download");
+        System.out.println("   extension-point");
         System.out.println("   maestro");
         System.out.println("----------");
         System.out.println("   help");
