@@ -14,8 +14,6 @@
  *  limitations under the License.
  */
 
-@GrabConfig(systemClassLoader=true)
-
 @GrabResolver(name='Eclipse', root='https://repo.eclipse.org/content/repositories/paho-releases/')
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 

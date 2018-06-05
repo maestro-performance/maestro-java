@@ -63,6 +63,19 @@
             <artifactId>maestro-reports</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-tests</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-test-scripts</artifactId>
+            <version>${project.version}</version>
+            <scope>runtime</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -79,8 +92,43 @@
                     </archive>
                 </configuration>
             </plugin>
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-dependency-plugin</artifactId>
+                <version>3.1.1</version>
+                <executions>
+                    <execution>
+                        <id>unpack</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>unpack</goal>
+                        </goals>
+                        <configuration>
+                            <artifactItems>
+                                <artifactItem>
+                                    <groupId>org.maestro</groupId>
+                                    <artifactId>maestro-test-scripts</artifactId>
+                                    <version>${project.version}</version>
+                                    <type>jar</type>
+                                    <overWrite>true</overWrite>
+                                    <outputDirectory>${project.build.directory}/classes/scripts</outputDirectory>
+                                    <includes>**/*.groovy</includes>
+                                </artifactItem>
+                            </artifactItems>
+                            <includes>**/*.java</includes>
+                            <excludes>**/*.properties</excludes>
+                            <outputDirectory>${project.build.directory}/wars</outputDirectory>
+                            <overWriteReleases>false</overWriteReleases>
+                            <overWriteSnapshots>true</overWriteSnapshots>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
     </build>
+
+
 
     <profiles>
         <profile>
@@ -110,6 +158,9 @@
                                     <goal>single</goal>
                                 </goals>
                             </execution>
+
+
+
                         </executions>
                     </plugin>
                 </plugins>

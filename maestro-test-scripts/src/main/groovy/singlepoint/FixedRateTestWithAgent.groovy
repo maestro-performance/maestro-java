@@ -16,19 +16,11 @@
 
 package singlepoint
 
-@GrabConfig(systemClassLoader=true)
-
-@Grab(group='commons-cli', module='commons-cli', version='1.3.1')
-@Grab(group='org.apache.commons', module='commons-lang3', version='3.6')
-
-@Grab(group='org.msgpack', module='msgpack-core', version='0.8.3')
-
 @GrabResolver(name='Eclipse', root='https://repo.eclipse.org/content/repositories/paho-releases/')
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
 @Grab(group='org.maestro', module='maestro-tests', version='1.3.0-SNAPSHOT')
-
 
 import org.maestro.client.Maestro
 import org.maestro.common.LogConfigurator

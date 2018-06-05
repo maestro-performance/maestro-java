@@ -1,7 +1,3 @@
-package singlepoint
-
-// import java.lang.Math.*
-
 /*
  *  Copyright 2017 Otavio R. Piske <angusyoung@gmail.com>
  *
@@ -17,12 +13,7 @@ package singlepoint
  *  See the License for the specific language governing permissions and
  *  limitations under the License.
  */
-@GrabConfig(systemClassLoader=true)
-
-@Grab(group='commons-cli', module='commons-cli', version='1.3.1')
-@Grab(group='org.apache.commons', module='commons-lang3', version='3.6')
-
-@Grab(group='org.msgpack', module='msgpack-core', version='0.8.3')
+package singlepoint
 
 @GrabResolver(name='Eclipse', root='https://repo.eclipse.org/content/repositories/paho-releases/')
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
