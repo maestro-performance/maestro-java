@@ -129,6 +129,8 @@ public final class WorkerContainer {
         if (workerWatchdog != null) {
             workerWatchdog.setRunning(false);
         }
+
+        startTime = null;
     }
 
 
@@ -162,6 +164,10 @@ public final class WorkerContainer {
      * @return the throughput statistics
      */
     public ThroughputStats throughputStats() {
+        if (!workerWatchdog.isRunning()) {
+            return null;
+        }
+
         ThroughputStats ret = new ThroughputStats();
 
         long messageCount = 0;
@@ -182,6 +188,10 @@ public final class WorkerContainer {
      * @return the latency statistics or null if not applicable for the work set in the container
      */
     public LatencyStats latencyStats() {
+        if (!workerWatchdog.isRunning()) {
+            return null;
+        }
+
         if (evaluator instanceof LatencyEvaluator) {
             LatencyStats ret = new LatencyStats();
             
