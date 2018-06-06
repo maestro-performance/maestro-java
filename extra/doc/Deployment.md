@@ -14,6 +14,8 @@ Maestro can be used for both low-scale as well as large scale tests. For large s
 way is to deploy multiple nodes, each on a dedicated environment. For small scale and local tests, the docker
 containers should be sufficient (at a small performance penalty cost of ~10% in the max throughput).
 
+The backends generate the load on the SUT using the Protocol Under Test (PUT), which can be any of the supported
+protocols.
 
 Maestro Deployment: Multi-host deployment via Ansible
 ----
