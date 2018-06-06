@@ -42,7 +42,6 @@ public class ExecAction extends Action {
         options.addOption("d", "directory", true, "the directory to generate the report");
         options.addOption("s", "script", true, "the path to the test script");
 
-
         try {
             cmdLine = parser.parse(options, args);
         } catch (ParseException e) {
@@ -79,6 +78,7 @@ public class ExecAction extends Action {
             e.printStackTrace();
             return 1;
         }
+
         return 0;
     }
 }
