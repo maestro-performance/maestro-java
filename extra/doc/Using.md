@@ -68,7 +68,7 @@ Once the test parameters have been adequately set by exporting the test variable
 run with one of the following commands:
 
 ```
-./maestro-cli exec -s ../scripts/singlepoint/IncrementalTest.groovy -d /path/to/save/reports
+maestro-cli exec -s ../scripts/singlepoint/IncrementalTest.groovy -d /path/to/save/reports
 ```
 
 ```
@@ -78,6 +78,15 @@ cd /path/to/scripts/singlepoint/ && groovy IncrementalTest.groovy /path/to/save/
 The only difference is that the first will use builtin dependencies resulting in a much quicker test
 start up time. 
 
+
+Generating the Reports
+----
+
+After a test is completed, performance reports can be generated using the following command line:
+
+```
+maestro-cli report -l info -d /path/to/save/reports
+```
 
 Using as Library
 ----
