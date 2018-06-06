@@ -15,9 +15,10 @@ Artemis Inspector
 ----
 
 Is used for Apache Artemis (greater than 2.4.0) and provide support for measuring the queue length, JVM memory usage, 
-system details, and others. 
+system details, and others.
 
 **Name**: ArtemisInspector
+**URL Format**: ```http://user:password@host:8161/console/jolokia```
 
 Interconnect Inspector
 ----
@@ -30,3 +31,4 @@ information such as number of current active connections, neighbor nodes, etc.
 
 
 **Name**: InterconnectInspector
+**URL Format**: ```amqp://host/```
