@@ -33,65 +33,10 @@ on the first time. However, there are a couple of alternatives to simplify the p
 including Ansible playbooks as docker containers. Please read the 
 [Deployment Documentation](extra/doc/Deployment.md) for details about how to deploy Maestro.
 
+Using Maestro
+---- 
 
-Using as Library
-----
-
-**Note**: this is not important unless you are developing Maestro performance tests.
-
-
-To use this project as library on your project you have to add my personal 
-[bintray](https://bintray.com/orpiske/libs-release/) repository to the pom.xml
-file:
-
-```
-<repositories>
-    <repository>
-        <id>orpiske-repo</id>
-        <url>https://dl.bintray.com/orpiske/libs-release</url>
-    </repository>
-</repositories>
-```
-
-Then, the library can be referenced as: 
-```
-<dependency>
-    <groupId>org.maestro</groupId>
-    <artifactId>maestro-java</artifactId>
-    <version>1.2.0</version>
-</dependency>
-```
-
-There are multiple components and it is possible to choose only the desired one: 
-
-* maestro-client
-* maestro-common
-* maestro-contrib
-* maestro-exporter
-* maestro-reports
-* maestro-tests
-* maestro-worker
-
-The API documentation (javadoc) is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.2/apidocs/). 
-Additional project documentation is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.2/). 
-
-**Note**: replace version with the latest available version you wish to use.
-
-
-
-Usage - Runtime Parameters and Message Customization
-----
-
-The following parameters can be set for the JMS worker/client:
-
-| Parameter Name    | Default Value       | Description          |
-|-------------------|---------------------|----------------------|
-| `protocol` | `AMQP` | The underlying messaging protocol to use (one of AMQP, OPENWIRE, ARTEMIS, RABBITAMQP) |
-| `type` | queue | Destination type ('queue' or 'topic') |
-| `ttl` | 5000 | Time to live. |
-| `durable` | true | Durable flag for the message |
-| `priority` | null | Message priority |
-| `limitDestinations` | `1` | Distributes the load in a fixed number of queues (<= number of connections) |
+Basic Maestro documentation is available [here](extra/doc/Using.md).
 
 
 Components: Inspectors
