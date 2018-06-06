@@ -56,6 +56,11 @@ If you maintain your own Maven repository, you can deploy this library using:
 mvn deploy -DaltDeploymentRepository=libs-snapshot::default::http://hostname:8081/path/to/libs-snapshot-local
 ```
 
+Maestro Deployment: Verifying the Test Cluster
+---- 
 
+Run the ping command to check if the test cluster was deployed correctly: 
 
-
+```
+maestro-cli maestro -c ping -m mqtt://host:1883'
+```
