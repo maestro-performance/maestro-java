@@ -19,11 +19,7 @@ package org.maestro.cli.main.actions;
 import org.apache.commons.cli.*;
 import org.maestro.common.LogConfigurator;
 import org.maestro.reports.ReportGenerator;
-import org.maestro.reports.plotter.HdrPlotterWrapper;
-import org.maestro.reports.plotter.PlotterWrapperFactory;
 import org.maestro.reports.processors.DiskCleaner;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class ReportAction extends Action {
     private static final String DEFAULT_TIME_UNIT = "1000";
@@ -32,25 +28,6 @@ public class ReportAction extends Action {
     private String directory;
     private boolean clean;
 
-
-    private static class HdrPlotterWrapperFactory implements PlotterWrapperFactory<HdrPlotterWrapper> {
-        private static final Logger logger = LoggerFactory.getLogger(HdrPlotterWrapperFactory.class);
-        private final String unitRate;
-
-        public HdrPlotterWrapperFactory(final String unitRate) {
-            this.unitRate = unitRate;
-
-            logger.info("Creating a custom HDR Plotter Factory");
-        }
-
-        @Override
-        public HdrPlotterWrapper newPlotterWrapper() {
-
-            return new HdrPlotterWrapper(unitRate);
-        }
-    }
-
-    private HdrPlotterWrapperFactory hdrPlotterWrapperFactory;
 
     public ReportAction(String[] args) {
         processCommand(args);
@@ -65,7 +42,6 @@ public class ReportAction extends Action {
         options.addOption("d", "directory", true, "the directory to generate the report");
         options.addOption("l", "log-level", true, "the log level to use [trace, debug, info, warn]");
         options.addOption("C", "clean", false, "clean the report directory after processing");
-        options.addOption("r", "unit-rate", false, "unit-rate to use [default: 1000]");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -90,13 +66,6 @@ public class ReportAction extends Action {
         }
 
         clean = cmdLine.hasOption('C');
-
-        String timeUnit = cmdLine.getOptionValue('r');
-        if (timeUnit == null) {
-            timeUnit = DEFAULT_TIME_UNIT;
-        }
-
-        hdrPlotterWrapperFactory = new HdrPlotterWrapperFactory(timeUnit);
     }
 
     public int run() {
@@ -107,7 +76,6 @@ public class ReportAction extends Action {
                 reportGenerator.getPostProcessors().add(new DiskCleaner());
             }
 
-//            reportGenerator.setHdrPlotterWrapperFactory(hdrPlotterWrapperFactory);
             reportGenerator.generate();
             System.out.println("Report generated successfully");
             return 0;
