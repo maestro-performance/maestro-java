@@ -43,10 +43,6 @@ public class Main {
     private static String host;
     private static File logDir;
 
-    static {
-        LogConfigurator.defaultForDaemons();
-    }
-
     /**
      * Prints the help for the action and exit
      * @param options the options object
@@ -146,7 +142,7 @@ public class Main {
 
         processCommand(args);
 
-
+        LogConfigurator.defaultForDaemons();
 
         try {
             MaestroDataServer dataServer = new MaestroDataServer(logDir, host);

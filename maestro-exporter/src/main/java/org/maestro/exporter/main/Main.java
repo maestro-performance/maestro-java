@@ -30,10 +30,6 @@ public class Main {
     private static String maestroUrl;
     private static int port = 9200;
 
-    static {
-        LogConfigurator.defaultForDaemons();
-    }
-
     /**
      * Prints the help for the action and exit
      * @param options the options object
@@ -91,6 +87,8 @@ public class Main {
         }
 
         processCommand(args);
+
+        LogConfigurator.defaultForDaemons();
 
         try {
             MaestroExporter exporter = new MaestroExporter(maestroUrl);
