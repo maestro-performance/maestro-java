@@ -20,8 +20,8 @@
 #### setup-*-inspector.sh scripts)
 ####
 #### To run a sample test case: 
-#### - cd /opt/maestro/maestro-test-scripts/scripts/groovy/singlepoint
-#### - groovy FixedRateTest.groovy /maestro/reports
+#### - cd /opt/maestro/maestro-cli/bin/
+#### - ./maestro-cli exec -s ../singlepoint/FixedRateTest.groovy -d /maestro/reports
 ####
 #### To generate the test report:
 #### /opt/maestro/maestro-cli/bin/maestro-cli report -l info -d /maestro/reports/

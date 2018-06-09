@@ -20,10 +20,6 @@ RUN yum install -y java-1.8.0-openjdk unzip zip which ntp
 ENV JAVA_HOME /etc/alternatives/jre
 RUN yum clean all
 
-RUN mkdir -p /opt/groovy/
-RUN curl -s get.sdkman.io | bash
-RUN source "/root/.sdkman/bin/sdkman-init.sh" && sdk install groovy ${GROOVY_VERSION}
-
 ENV MAESTRO_APP_ROOT /opt/maestro
 RUN mkdir -p ${MAESTRO_APP_ROOT}
 WORKDIR ${MAESTRO_APP_ROOT}
@@ -32,10 +28,6 @@ COPY --from=buildimg /root/build/maestro-java/maestro-cli/target/maestro-cli-${M
 RUN mkdir maestro-cli && tar --strip-components=1 -xvf maestro-cli-${MAESTRO_VERSION}-bin.tar.gz -C maestro-cli
 RUN rm -f maestro-cli-${MAESTRO_VERSION}-bin.tar.gz
 COPY --from=buildimg /root/.m2 /root/.m2
-
-COPY --from=buildimg /root/build/maestro-java/maestro-test-scripts/target/maestro-test-scripts-${MAESTRO_VERSION}-bin.tar.gz .
-RUN mkdir maestro-test-scripts && tar --strip-components=1 -xvf maestro-test-scripts-${MAESTRO_VERSION}-bin.tar.gz -C maestro-test-scripts
-RUN rm -f maestro-test-scripts.tar.gz
 
 ENV MAESTRO_BROKER mqtt://broker:1883
 ENV SEND_RECEIVE_URL amqp://sut:5672/test.performance.queue
