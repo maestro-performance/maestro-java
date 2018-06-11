@@ -80,6 +80,9 @@ public class TestProperties extends CommonProperties {
             }
 
             super.load(prop);
+        } catch (Throwable t) {
+            logger.error("Invalid data when processing file {}", testProperties.getPath(), t);
+            throw t;
         }
 
         logger.debug("Read properties: {}", this.toString());
