@@ -186,14 +186,27 @@ public class ReportGeneratorTest {
 
             throw e;
         }
-
-
     }
 
 
     @Test(timeout = 20000)
     public void testInspectorOnly() {
         String path = this.getClass().getResource("/data-ok").getPath();
+
+        ReportGenerator reportGenerator = new ReportGenerator(path);
+
+        reportGenerator.generate();
+
+        File indexFile = new File(path, "index.html");
+        assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
+
+        validateRoleDirectoryStructure(new File(path),
+                Arrays.asList("inspector"), Arrays.asList());
+    }
+
+    @Test(timeout = 20000)
+    public void testInspectorMissingData() {
+        String path = this.getClass().getResource("/data-inspector-missing").getPath();
 
         ReportGenerator reportGenerator = new ReportGenerator(path);
 
