@@ -16,6 +16,7 @@
 
 package singlepoint
 
+@GrabConfig(systemClassLoader = true)
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
 @Grab(group='net.orpiske', module='quiver-data-plotter', version='1.0.0')
 
