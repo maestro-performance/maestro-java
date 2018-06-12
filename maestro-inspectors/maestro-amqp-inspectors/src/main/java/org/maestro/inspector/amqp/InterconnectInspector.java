@@ -49,9 +49,9 @@ public class InterconnectInspector implements MaestroInspector {
 
     private int interval;
 
-    private AbstractConfiguration config = ConfigurationWrapper.getConfig();
-
     public InterconnectInspector() {
+        final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+
         interval = config.getInteger("inspector.sleep.interval", 5000);
     }
 

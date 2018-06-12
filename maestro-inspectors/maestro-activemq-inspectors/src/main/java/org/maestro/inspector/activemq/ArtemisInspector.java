@@ -16,9 +16,11 @@
 
 package org.maestro.inspector.activemq;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.jolokia.client.BasicAuthenticator;
 import org.jolokia.client.J4pClient;
 import org.jolokia.client.exception.J4pException;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
@@ -59,9 +61,12 @@ public class ArtemisInspector implements MaestroInspector {
     private ArtemisDataReader artemisDataReader;
     private J4pClient j4p;
 
+    private int interval;
 
-
-    public ArtemisInspector() {}
+    public ArtemisInspector() {
+        final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+        interval = config.getInteger("inspector.sleep.interval", 5000);
+    }
 
     public void setUrl(final String value) {
         try {
@@ -169,7 +174,7 @@ public class ArtemisInspector implements MaestroInspector {
                     logger.error("Unable to read queue information: {}", e.getMessage(), e);
                 }
 
-                Thread.sleep(5000);
+                Thread.sleep(interval);
             }
 
             TestLogUtils.createSymlinks(this.baseLogDir, false);
