@@ -157,14 +157,25 @@ QuiverExecutor executor = new QuiverExecutor(maestro, reportsDownloader, testPro
 
 executor.setNotificationRetries(120)
 
-println "Running the test"
-if (!executor.run()) {
-    maestro.stop()
-    plotQuiverFiles(args[0])
+int ret = 0;
 
-    System.exit(1)
+try {
+    println "Running the test"
+    if (!executor.run()) {
+        ret = 1;
+    }
+} finally {
+    println "Stopping the workers on the cluster if they haven't already done so"
+    maestro.stop()
+
+    println "Plotting the data"
+    plotQuiverFiles(args[0])
 }
 
-maestro.stop()
-plotQuiverFiles(args[0])
-System.exit(0)
+if (ret == 0) {
+    println "Test completed successfully"
+}
+else {
+    println "Test completed with errors"
+}
+System.exit(ret)
