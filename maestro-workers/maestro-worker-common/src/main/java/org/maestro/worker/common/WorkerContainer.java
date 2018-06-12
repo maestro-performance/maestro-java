@@ -64,8 +64,6 @@ public final class WorkerContainer {
     }
 
 
-
-
     /**
      * Sets the worker options for the instance.
      * @param workerOptions the worker options to set
@@ -133,30 +131,32 @@ public final class WorkerContainer {
         startTime = null;
     }
 
+    private boolean watchdogRunning() {
+        if (workerWatchdog == null) {
+            return false;
+        }
+
+        return workerWatchdog.isRunning();
+    }
 
     /**
      * Checks whether the test is in progress or not
      * @return
      */
     public boolean isTestInProgress() {
-        if (watchDogThread == null) {
+        if (!watchdogRunning()) {
             return false;
         }
 
-
-        if (workerWatchdog.isRunning()) {
-            for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
-                // A worker should only be in "not running" state if it is being
-                // shutdown
-                if (!ri.worker.isRunning()) {
-                    return false;
-                }
+        for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
+            // A worker should only be in "not running" state if it is being
+            // shutdown
+            if (!ri.worker.isRunning()) {
+                return false;
             }
-            return true;
         }
 
-
-        return false;
+        return true;
     }
 
     /**
@@ -164,7 +164,7 @@ public final class WorkerContainer {
      * @return the throughput statistics
      */
     public ThroughputStats throughputStats() {
-        if (!workerWatchdog.isRunning()) {
+        if (!watchdogRunning()) {
             return null;
         }
 
@@ -183,12 +183,14 @@ public final class WorkerContainer {
         return ret;
     }
 
+
+
     /**
      * Gets the latency statistics
      * @return the latency statistics or null if not applicable for the work set in the container
      */
     public LatencyStats latencyStats() {
-        if (!workerWatchdog.isRunning()) {
+        if (!watchdogRunning()) {
             return null;
         }
 
