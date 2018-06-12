@@ -2,6 +2,7 @@ package org.maestro.inspector.amqp.writers;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
+import org.apache.commons.io.IOUtils;
 import org.maestro.common.inspector.types.GeneralInfo;
 import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.writers.InspectorDataWriter;
@@ -42,15 +43,9 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
      * @throws Exception implementation specific
      */
     @Override
-    public void close() throws Exception {
-        if (csvPrinter != null) {
-            csvPrinter.flush();
-            csvPrinter.close();
-        }
-
-        if (writer != null) {
-            writer.close();
-        }
+    public void close() {
+        IOUtils.closeQuietly(csvPrinter);
+        IOUtils.closeQuietly(writer);
     }
 
     /**
