@@ -26,6 +26,8 @@ import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -37,6 +39,8 @@ import java.util.stream.Collectors;
  * A maestro instance
  */
 public final class Maestro implements MaestroRequester {
+    private static final Logger logger = LoggerFactory.getLogger(Maestro.class);
+
     private MaestroClient maestroClient;
     private final MaestroCollectorExecutor collectorExecutor;
     private final Thread collectorThread;
@@ -66,7 +70,7 @@ public final class Maestro implements MaestroRequester {
         try {
             collectorThread.join();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.warn("Interrupted while stopping Maestro {}", e.getMessage(), e);
         }
     }
 
@@ -511,7 +515,7 @@ public final class Maestro implements MaestroRequester {
             try {
                 Thread.sleep(wait);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.warn("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
             }
             retries--;
         } while (retries > 0);
@@ -543,7 +547,7 @@ public final class Maestro implements MaestroRequester {
             try {
                 Thread.sleep(wait);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.warn("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
             }
             retries--;
         } while (retries > 0);
@@ -577,7 +581,7 @@ public final class Maestro implements MaestroRequester {
             try {
                 Thread.sleep(wait);
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.warn("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
             }
             retries--;
         } while (retries > 0);
