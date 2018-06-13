@@ -27,7 +27,6 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
     private final IncrementalTestProfile testProfile;
 
-    private long repeat;
     private long coolDownPeriod = 10000;
     private final IncrementalTestProcessor testProcessor;
 
@@ -37,12 +36,11 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
         this.testProfile = testProfile;
         this.testProcessor = new IncrementalTestProcessor(testProfile, reportsDownloader);
-
-        long replyRetries = this.testProfile.getDuration().getNumericDuration();
-        repeat = (replyRetries * 2);
     }
 
     public boolean run() {
+        long repeat = testProfile.getEstimatedCompletionTime();
+
         try {
             // Clean up the topic
             getMaestro().collect();

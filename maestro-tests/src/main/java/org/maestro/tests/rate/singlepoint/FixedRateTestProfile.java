@@ -21,6 +21,7 @@ import org.maestro.common.duration.TestDuration;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestProfile;
 import org.maestro.tests.SinglePointProfile;
+import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -74,7 +75,6 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     public int getParallelCount() {
         return parallelCount;
     }
-
 
     public void setRate(int rate) {
         this.rate = rate;
@@ -133,6 +133,15 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     @Override
     public String getSendReceiveURL() {
         return brokerURL;
+    }
+
+    @Override
+    public long getEstimatedCompletionTime() {
+        return CompletionTime.estimate(duration, getRate());
+    }
+
+    public long getWarmUpEstimatedCompletionTime() {
+        return CompletionTime.estimate(getDuration().getWarmUpDuration(), warmUpRate);
     }
 
     protected void apply(final Maestro maestro, boolean warmUp) throws MaestroException {

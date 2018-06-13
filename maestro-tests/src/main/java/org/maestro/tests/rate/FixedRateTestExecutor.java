@@ -31,7 +31,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
 
     private final FixedRateTestProfile testProfile;
 
-    private long repeat;
+
     private long coolDownPeriod = 10000;
     private final FixedRateTestProcessor testProcessor;
 
@@ -42,8 +42,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         this.testProfile = testProfile;
         this.testProcessor = new FixedRateTestProcessor(testProfile, reportsDownloader);
 
-        long replyRetries = this.testProfile.getDuration().getNumericDuration();
-        repeat = (replyRetries * 2);
+
     }
 
     private boolean runTest(boolean warmUp) {
@@ -54,9 +53,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             int numPeers = getNumPeers();
 
             resolveDataServers();
-            processReplies(testProcessor, (int) repeat, numPeers);
-
-
+            processReplies(testProcessor, 60, numPeers);
 
             if (warmUp) {
                 getReportsDownloader().getOrganizer().getTracker().setCurrentTest(0);
@@ -76,14 +73,24 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
                 startServices();
             }
 
+            long repeat;
+
+            if (warmUp) {
+                repeat = testProfile.getWarmUpEstimatedCompletionTime();
+            }
+            else {
+                repeat = testProfile.getEstimatedCompletionTime();
+            }
+
             processNotifications(testProcessor, repeat, numPeers);
 
             if (testProcessor.isSuccessful()) {
-                logger.info("Test completed successfully");
+                logger.info("Test {} completed successfully", (warmUp ? "warm-up" : ""));
+
                 return true;
             }
 
-            logger.info("Test completed unsuccessfully");
+            logger.info("Test {} completed unsuccessfully", (warmUp ? "warm-up" : ""));
         }
         catch (Exception e) {
             logger.error("Error: {}", e.getMessage(), e);

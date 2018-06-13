@@ -30,6 +30,12 @@ import org.maestro.common.exceptions.MaestroException;
 public interface TestProfile {
 
     /**
+     * Gets an estimate of how much time it will take to complete the test execution
+     * @return the estimated duration in seconds
+     */
+    long getEstimatedCompletionTime();
+
+    /**
      * Get the test execution number
      * @return the test execution number
      */

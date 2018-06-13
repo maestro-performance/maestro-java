@@ -27,6 +27,7 @@ public class FlexibleTestProfile extends AbstractTestProfile {
     private String sourceURL;
     private String brokerURL;
 
+    @SuppressWarnings("unused")
     void setSourceURL(final String sourceURL) {
         this.sourceURL = sourceURL;
     }
@@ -38,6 +39,12 @@ public class FlexibleTestProfile extends AbstractTestProfile {
 
     public void setSendReceiveURL(final String url) {
         this.brokerURL = url;
+    }
+
+    // NO-OP for this
+    @Override
+    public long getEstimatedCompletionTime() {
+        return 0;
     }
 
     @Override

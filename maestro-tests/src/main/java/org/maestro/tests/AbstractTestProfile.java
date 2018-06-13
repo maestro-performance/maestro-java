@@ -25,7 +25,6 @@ public abstract class AbstractTestProfile implements TestProfile {
         return testExecutionNumber;
     }
 
-
     public void incrementTestExecutionNumber() {
         testExecutionNumber++;
     }
