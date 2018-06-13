@@ -44,7 +44,7 @@ public class CompletionTime {
                 ret = Math.round(duration.getNumericDuration());
             }
             else {
-                ret = Math.round(duration.getNumericDuration() / rate) + 10;
+                ret = Math.round(duration.getNumericDuration() / rate) + 30;
             }
         }
 
