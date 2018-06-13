@@ -34,11 +34,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public class ReportGenerator {
     private static final Logger logger = LoggerFactory.getLogger(ReportGenerator.class);
@@ -54,6 +53,8 @@ public class ReportGenerator {
     private final NodeReportRenderer reportRenderer = new NodeReportRenderer();
 
     private final String path;
+
+    private Map<String, String> indexProperties;
 
     public ReportGenerator(final String path) {
         this.path = path;
@@ -84,11 +85,28 @@ public class ReportGenerator {
         }
     }
 
+    public void write(final File testProperties) throws IOException {
+        logger.debug("Writing properties to {}", testProperties.getPath());
+        logger.debug("Wrote properties: {}", this.toString());
+
+        Properties prop = new Properties();
+
+        indexProperties.forEach((k, v) -> prop.setProperty(k, v));
+
+        try (FileOutputStream fos = new FileOutputStream(testProperties)) {
+            prop.store(fos, "mpt-index");
+        }
+    }
+
     private void renderReportIndex(final File baseDir, final Map<String, Object> context) {
         File outFile = new File(path, "index.html");
         try {
             FileUtils.writeStringToFile(outFile, indexRenderer.render(context), StandardCharsets.UTF_8);
             indexRenderer.copyResources(baseDir);
+
+            if (indexProperties != null && indexProperties.size() > 0) {
+                write(new File(path, "index.properties"));
+            }
         } catch (Exception e) {
             logger.error("Unable to generate the index: {}", e.getMessage(), e);
         }
@@ -157,5 +175,13 @@ public class ReportGenerator {
 
     public List<ReportFileProcessor> getPostProcessors() {
         return postProcessors;
+    }
+
+    public Map<String, String> getIndexProperties() {
+        return indexProperties;
+    }
+
+    public void setIndexProperties(Map<String, String> indexProperties) {
+        this.indexProperties = indexProperties;
     }
 }

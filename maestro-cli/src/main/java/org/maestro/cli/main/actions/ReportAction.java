@@ -21,16 +21,38 @@ import org.maestro.common.LogConfigurator;
 import org.maestro.reports.ReportGenerator;
 import org.maestro.reports.processors.DiskCleaner;
 
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.Map;
+
 public class ReportAction extends Action {
     private static final String DEFAULT_TIME_UNIT = "1000";
     private CommandLine cmdLine;
 
     private String directory;
     private boolean clean;
+    private Map<String,String> indexProperties = new HashMap<>();
 
 
     public ReportAction(String[] args) {
         processCommand(args);
+    }
+
+
+    private void addProperty(final String str) {
+        String[] tmp = str.split("=");
+
+        indexProperties.put(tmp[0], tmp[1]);
+    }
+
+    private void parseProperties(final String str) {
+        if (str == null) {
+            return;
+        }
+
+        String[] array = str.split(",");
+
+        Arrays.asList(array).forEach(this::addProperty);
     }
 
     protected void processCommand(String[] args) {
@@ -42,6 +64,7 @@ public class ReportAction extends Action {
         options.addOption("d", "directory", true, "the directory to generate the report");
         options.addOption("l", "log-level", true, "the log level to use [trace, debug, info, warn]");
         options.addOption("C", "clean", false, "clean the report directory after processing");
+        options.addOption("", "with-properties", true, "pass optional properties (ie.: saved along with the index)");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -66,6 +89,7 @@ public class ReportAction extends Action {
         }
 
         clean = cmdLine.hasOption('C');
+        parseProperties(cmdLine.getOptionValue("with-properties"));
     }
 
     public int run() {
@@ -76,6 +100,7 @@ public class ReportAction extends Action {
                 reportGenerator.getPostProcessors().add(new DiskCleaner());
             }
 
+            reportGenerator.setIndexProperties(indexProperties);
             reportGenerator.generate();
             System.out.println("Report generated successfully");
             return 0;
