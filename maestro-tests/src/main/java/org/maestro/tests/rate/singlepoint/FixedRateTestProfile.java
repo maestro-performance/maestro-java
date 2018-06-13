@@ -149,13 +149,13 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
         maestro.setBroker(getSendReceiveURL());
 
         if (warmUp) {
-            logger.info("Setting warm up rate to {}", getRate());
+            logger.info("Setting warm-up rate to {}", warmUpRate);
             maestro.setRate(warmUpRate);
 
             TestDuration warmUpDuration = getDuration().getWarmUpDuration();
             long balancedDuration = Math.round(warmUpDuration.getNumericDuration() / getParallelCount());
 
-            logger.info("Setting warm up duration to {}", balancedDuration);
+            logger.info("Setting warm-up duration to {}", balancedDuration);
             maestro.setDuration(balancedDuration);
         }
         else {
@@ -205,7 +205,7 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     }
 
     public void warmUp(final Maestro maestro) throws MaestroException {
-        logger.info("Applying test warm up profile");
+        logger.info("Applying test warm-up profile");
         apply(maestro, true);
     }
 
