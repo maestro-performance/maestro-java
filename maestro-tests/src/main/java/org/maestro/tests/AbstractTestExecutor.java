@@ -117,7 +117,6 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         List<MaestroNote> replies = getMaestro().collect(1000, repeat, numPeers, reply -> reply instanceof MaestroNotification);
 
         testProcessor.process(replies);
-        logger.debug("Estimated time for test completion: {} secs", repeat);
     }
 
 

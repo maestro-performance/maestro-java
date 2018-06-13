@@ -67,5 +67,6 @@ public class SimpleTestProfile extends IncrementalTestProfile implements MultiPo
 
         // Variable message messageSize
         maestro.setMessageSize(getMessageSize());
+        logger.info("Estimated time for test completion: {} secs", getEstimatedCompletionTime());
     }
 }
