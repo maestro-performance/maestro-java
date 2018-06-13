@@ -90,7 +90,7 @@ public class ReportGenerator {
             FileUtils.writeStringToFile(outFile, indexRenderer.render(context), StandardCharsets.UTF_8);
             indexRenderer.copyResources(baseDir);
         } catch (Exception e) {
-            e.printStackTrace();
+            logger.error("Unable to generate the index: {}", e.getMessage(), e);
         }
     }
 
