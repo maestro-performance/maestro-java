@@ -16,6 +16,8 @@
 
 package org.maestro.tests.utils;
 
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.duration.DurationTime;
 import org.maestro.common.duration.TestDuration;
 
@@ -23,6 +25,8 @@ import org.maestro.common.duration.TestDuration;
  * Test completion time calculator
  */
 public class CompletionTime {
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+
 
     private CompletionTime() {}
 
@@ -36,15 +40,17 @@ public class CompletionTime {
         long ret;
 
         if (duration instanceof DurationTime) {
-            ret = (duration.getNumericDuration() * 2);
+            final long defaultMultiplier = 90;
+            long multiplier = config.getLong("duration.time.wait.multiplier", defaultMultiplier);
+
+            ret = (duration.getNumericDuration() * multiplier);
         }
         else {
-            if (rate == 0) {
-                // Not ideal: if the rate is unknown we assume a very slow rate of ~1 msg/sec.
-                ret = Math.round(duration.getNumericDuration());
-            }
-            else {
-                ret = Math.round(duration.getNumericDuration() / rate) + 30;
+            final long defaultBase = 90;
+            ret = config.getLong("duration.count.wait.base", defaultBase);
+
+            if (rate > 0) {
+                ret += Math.round(duration.getNumericDuration() / rate);
             }
         }
 

@@ -16,12 +16,20 @@
 
 package org.maestro.common.duration;
 
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.maestro.common.ConfigurationWrapper;
+
 /**
  * Count-based test duration object
  */
 public class DurationCount implements TestDuration {
-    public static final long WARM_UP_COUNT = 1000000;
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+    public static final long WARM_UP_COUNT;
     private static final String DURATION_TYPE_NAME = "count";
+
+    static {
+        WARM_UP_COUNT = config.getLong("warm-up.message.count", 1000000);
+    }
 
     private final long count;
 
