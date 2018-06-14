@@ -178,7 +178,13 @@ public class ReportsDownloader {
      * @param host the host to download the files from
      * @param testNumber the test execution number from the peer or one of the links (last, lastSuccessful, lastFailed)
      */
-    public void downloadAny(final String host, final String testNumber) {
-        resolverMap.values().forEach(value -> downloadAny(value, host, testNumber));
+    public void downloadAny(final String type, final String host, final String testNumber) {
+        ReportResolver reportResolver = resolverMap.get(type);
+        if (reportResolver != null) {
+            downloadAny(reportResolver, host, testNumber);
+        }
+        else {
+            logger.warn("There is no report resolver registered for host type {}", type);
+        }
     }
 }
