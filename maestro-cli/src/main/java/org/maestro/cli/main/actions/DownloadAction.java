@@ -23,6 +23,8 @@ import org.maestro.common.LogConfigurator;
 import org.maestro.common.NodeUtils;
 import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.reports.InspectorReportResolver;
+import org.maestro.reports.InterconnectInspectorReportResolver;
 import org.maestro.reports.ReportsDownloader;
 
 import java.util.LinkedList;
@@ -42,6 +44,7 @@ public class DownloadAction extends Action {
     private String result;
     private int from;
     private int to;
+    private String customResolver;
 
     public DownloadAction(String[] args) {
         processCommand(args);
@@ -60,6 +63,7 @@ public class DownloadAction extends Action {
         options.addOption("s", "servers", true, "a command separated list of servers (ie: sender@host0:port,receiver@host1:port)");
         options.addOption("r", "result", true, "the result to assign to the downloaded files [success,failed]");
         options.addOption("m", "maestro-url", true, "maestro URL to connect to");
+        options.addOption("", "with-inspector-resolver", true, "add custom resolver");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -126,6 +130,8 @@ public class DownloadAction extends Action {
         if (logLevel != null) {
             LogConfigurator.configureLogLevel(logLevel);
         }
+
+        customResolver = cmdLine.getOptionValue("with-inspector-resolver");
     }
 
     public int run() {
@@ -135,7 +141,17 @@ public class DownloadAction extends Action {
             for (Server server : servers) {
                 ReportsDownloader rd = new ReportsDownloader(directory);
 
+                if (customResolver.equals("InterconnectInspector")) {
+                    rd.addReportResolver("inspector", new InterconnectInspectorReportResolver());
+                }
+                else {
+                    if (customResolver.equals("ArtemisInspector")) {
+                        rd.addReportResolver("inspector", new InspectorReportResolver());
+                    }
+                }
+
                 rd.getOrganizer().setResultType(result);
+
                 int i = from;
                 do {
                     String resourcePath = Integer.toString(i);
