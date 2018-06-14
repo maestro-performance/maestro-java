@@ -17,8 +17,6 @@
 package org.maestro.common.duration;
 
 import org.maestro.common.exceptions.DurationParseException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.concurrent.TimeUnit;
 
