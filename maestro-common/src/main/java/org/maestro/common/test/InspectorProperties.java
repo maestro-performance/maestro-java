@@ -64,8 +64,21 @@ public class InspectorProperties extends CommonProperties {
             operatingSystemArch = prop.getProperty("operatingSystemArch");
             operatingSystemVersion = prop.getProperty("operatingSystemVersion");
 
-            systemCpuCount = Integer.parseInt(prop.getProperty("systemCpuCount"));
-            systemMemory = Long.parseLong(prop.getProperty("systemMemory"));
+            String systemCpuCountStr = prop.getProperty("systemCpuCount");
+            if (systemCpuCountStr != null) {
+                systemCpuCount = Integer.parseInt(systemCpuCountStr);
+            }
+            else {
+                systemCpuCount = UNSET_INT;
+            }
+
+            String systemMemoryStr = prop.getProperty("systemMemory");
+            if (systemMemoryStr != null) {
+                systemMemory = Long.parseLong(systemMemoryStr);
+            }
+            else {
+                systemMemory = UNSET_INT;
+            }
 
             loadedSwap = prop.getProperty("systemSwap");
             systemSwap = (loadedSwap != null) ? Long.parseLong(loadedSwap) : UNSET_INT;
