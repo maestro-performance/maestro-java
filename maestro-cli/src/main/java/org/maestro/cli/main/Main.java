@@ -17,6 +17,7 @@
 package org.maestro.cli.main;
 
 import org.maestro.cli.main.actions.*;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 
@@ -50,6 +51,14 @@ public class Main {
     }
 
     public static void main(String[] args) {
+        try {
+            ConfigurationWrapper.initConfiguration(Constants.MAESTRO_CONFIG_DIR, "maestro-cli.properties");
+        } catch (Exception e) {
+            System.err.println("Unable to initialize configuration file: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        }
+
         if (args.length == 0) {
             System.err.println("The action is missing!");
             help(1);
