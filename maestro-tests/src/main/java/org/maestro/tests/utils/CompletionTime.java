@@ -40,7 +40,7 @@ public class CompletionTime {
         long ret;
 
         if (duration instanceof DurationTime) {
-            final long defaultMultiplier = 90;
+            final long defaultMultiplier = 2;
             long multiplier = config.getLong("duration.time.wait.multiplier", defaultMultiplier);
 
             ret = (duration.getNumericDuration() * multiplier);
