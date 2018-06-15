@@ -46,7 +46,13 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             getMaestro().collect();
 
             while (!testProcessor.isCompleted()) {
-                int numPeers = getNumPeers();
+                int numPeers;
+                if (testProfile.getManagementInterface() != null) {
+                    numPeers = getNumPeers("sender", "receiver", "inspector");
+                }
+                else {
+                    numPeers = getNumPeers("sender", "receiver");
+                }
 
                 resolveDataServers();
                 processReplies(testProcessor, (int) repeat, numPeers);

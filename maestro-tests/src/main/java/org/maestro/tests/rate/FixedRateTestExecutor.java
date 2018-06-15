@@ -50,7 +50,13 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             // Clean up the topic
             getMaestro().collect();
 
-            int numPeers = getNumPeers();
+            int numPeers;
+            if (testProfile.getManagementInterface() != null) {
+                numPeers = getNumPeers("sender", "receiver", "inspector");
+            }
+            else {
+                numPeers = getNumPeers("sender", "receiver");
+            }
 
             resolveDataServers();
             processReplies(testProcessor, 60, numPeers);

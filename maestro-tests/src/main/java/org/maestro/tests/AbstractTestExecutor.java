@@ -19,6 +19,7 @@ package org.maestro.tests;
 import org.maestro.client.Maestro;
 import org.maestro.client.notes.MaestroNotification;
 import org.maestro.client.notes.PingResponse;
+import org.maestro.common.NodeUtils;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.reports.ReportsDownloader;
@@ -26,6 +27,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.function.Predicate;
 
 /**
  * A simple test executor that should be extensible for most usages
@@ -93,6 +95,41 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         for (MaestroNote note : replies) {
             if (note instanceof PingResponse) {
                 numPeers++;
+            }
+        }
+
+        return numPeers;
+    }
+
+    /**
+     * Try to guess the number of connected peers
+     * @return the number of connected peers (best guess)
+     * @throws MaestroConnectionException
+     * @throws InterruptedException
+     */
+    protected int getNumPeers(String ...types) throws MaestroConnectionException, InterruptedException {
+        int numPeers = 0;
+
+        logger.debug("Collecting responses to ensure topic is clean prior to pinging nodes");
+        maestro.collect();
+
+        logger.debug("Sending ping request");
+        maestro.pingRequest();
+
+        Thread.sleep(5000);
+
+        List<MaestroNote> replies = maestro.collect();
+        for (MaestroNote note : replies) {
+            if (note instanceof PingResponse) {
+                if (types != null) {
+                    for (String type : types) {
+                        String nodeType = NodeUtils.getTypeFromName(((PingResponse) note).getName());
+                        if (type.equals(nodeType)) {
+                            numPeers++;
+                            continue;
+                        }
+                    }
+                }
             }
         }
 
