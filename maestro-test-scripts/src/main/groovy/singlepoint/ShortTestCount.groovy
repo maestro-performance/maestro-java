@@ -87,18 +87,24 @@ class ShortTestExecutorCount implements TestExecutor {
      */
     class ShortTestProcessor extends MaestroNoteProcessor {
         @Override
-        protected void processPingResponse(PingResponse note) {
+        protected boolean processPingResponse(PingResponse note) {
             println  "Elapsed time from " + note.getName() + ": " + note.getElapsed() + " ms"
+
+            return true;
         }
 
         @Override
-        protected void processNotifySuccess(TestSuccessfulNotification note) {
+        protected boolean processNotifySuccess(TestSuccessfulNotification note) {
             println "Test successful on " + note.getName()
+
+            return true;
         }
 
         @Override
-        protected void processNotifyFail(TestFailedNotification note) {
+        protected boolean processNotifyFail(TestFailedNotification note) {
             println "Test failed on " + note.getName()
+
+            return true;
         }
 
 
