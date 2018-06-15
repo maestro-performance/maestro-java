@@ -43,7 +43,7 @@ public class CompletionTime {
             final long defaultMultiplier = 2;
             long multiplier = config.getLong("duration.time.wait.multiplier", defaultMultiplier);
 
-            ret = (duration.getNumericDuration() * multiplier);
+            ret = (duration.getNumericDuration() * multiplier) + 30;
         }
         else {
             final long defaultBase = 90;
