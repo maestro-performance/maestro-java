@@ -16,6 +16,7 @@
 
 package org.maestro.client.exchange;
 
+import org.maestro.client.callback.MaestroNoteCallback;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.slf4j.Logger;
@@ -31,6 +32,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     private boolean running = true;
 
     private final List<MaestroNote> collected = Collections.synchronizedList(new LinkedList<MaestroNote>());
+    private final List<MaestroNoteCallback> callbacks = new LinkedList<>();
 
     public MaestroCollector(final String url) throws MaestroConnectionException {
         super(url, "maestro-java-collector",MaestroDeserializer::deserialize);
@@ -39,6 +41,10 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
 
     @Override
     protected void noteArrived(MaestroNote note) {
+        for (MaestroNoteCallback callback : callbacks) {
+            callback.call(note);
+        }
+
         collected.add(note);
     }
 
@@ -61,4 +67,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         return ret;
     }
 
+    public List<MaestroNoteCallback> getCallbacks() {
+        return callbacks;
+    }
 }

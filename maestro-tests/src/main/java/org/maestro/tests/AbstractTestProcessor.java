@@ -120,7 +120,7 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     }
 
     @Override
-    protected boolean processNotifySuccess(final TestSuccessfulNotification note) {
+    public boolean processNotifySuccess(final TestSuccessfulNotification note) {
         logger.info("Test successful on {} after {} executions", note.getName(),
                 testProfile.getTestExecutionNumber());
         logger.info("Test parameters used: {}", testProfile.toString());
@@ -136,7 +136,7 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     }
 
     @Override
-    protected boolean processNotifyFail(TestFailedNotification note) {
+    public boolean processNotifyFail(TestFailedNotification note) {
         logger.info("Test failed on {} after {} executions", note.getName(),
                 testProfile.getTestExecutionNumber());
 

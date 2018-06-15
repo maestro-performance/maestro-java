@@ -17,24 +17,92 @@
 package org.maestro.tests.rate;
 
 import org.maestro.client.Maestro;
-import org.maestro.client.exchange.MaestroProcessedInfo;
+import org.maestro.client.callback.MaestroNoteCallback;
+import org.maestro.client.notes.StatsResponse;
+import org.maestro.client.notes.TestFailedNotification;
+import org.maestro.client.notes.TestSuccessfulNotification;
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.reports.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
+
 /**
  * A test executor that uses fixed rates
  */
 public class FixedRateTestExecutor extends AbstractTestExecutor {
+    private static final class StatsCallBack implements MaestroNoteCallback {
+        private static final Logger logger = LoggerFactory.getLogger(StatsCallBack.class);
+
+        FixedRateTestExecutor executor;
+
+        StatsCallBack(FixedRateTestExecutor executor) {
+            this.executor = executor;
+        }
+
+        @Override
+        public void call(MaestroNote note) {
+            if (note instanceof StatsResponse) {
+                StatsResponse statsResponse = (StatsResponse) note;
+                if (statsResponse.getRate() < 200.0 && statsResponse.getRate() > 0) {
+                    logger.error("The rate {} is too low. The test must be aborted",
+                            statsResponse.getRate());
+                }
+            }
+        }
+    }
+
+    private static final class TestNotificationCallBack implements MaestroNoteCallback {
+        private static final Logger logger = LoggerFactory.getLogger(TestNotificationCallBack.class);
+
+        FixedRateTestExecutor executor;
+
+
+        public TestNotificationCallBack(FixedRateTestExecutor executor) {
+            this.executor = executor;
+        }
+
+        @Override
+        public void call(MaestroNote note) {
+            if (!executor.running) {
+                return;
+            }
+
+            if (note instanceof TestSuccessfulNotification) {
+                executor.successNotifications++;
+                executor.testProcessor.processNotifySuccess((TestSuccessfulNotification) note);
+            }
+            else {
+                if (note instanceof TestFailedNotification) {
+                    executor.failedNotifications++;
+                    executor.testProcessor.processNotifyFail((TestFailedNotification) note);
+                }
+            }
+
+            int totalNotifications = executor.failedNotifications + executor.successNotifications;
+            if (executor.numPeers > 0 && totalNotifications > 0) {
+                if (totalNotifications >= executor.numPeers) {
+                    logger.warn("Received the required amount of notifications");
+                    executor.running = false;
+                }
+            }
+        }
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestExecutor.class);
 
     private final FixedRateTestProfile testProfile;
 
-
     private long coolDownPeriod = 10000;
     private final FixedRateTestProcessor testProcessor;
+
+    private int numPeers = 0;
+    private int successNotifications = 0;
+    private int failedNotifications = 0;
+    private boolean running = false;
 
     public FixedRateTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
                                  final FixedRateTestProfile testProfile) {
@@ -43,7 +111,9 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         this.testProfile = testProfile;
         this.testProcessor = new FixedRateTestProcessor(testProfile, reportsDownloader);
 
-
+        List<MaestroNoteCallback> callbackList = getMaestro().getCollector().getCallbacks();
+        callbackList.add(new StatsCallBack(this));
+        callbackList.add(new TestNotificationCallBack(this));
     }
 
     private boolean runTest(boolean warmUp) {
@@ -51,7 +121,6 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             // Clean up the topic
             getMaestro().collect();
 
-            int numPeers;
             if (testProfile.getManagementInterface() != null) {
                 numPeers = getNumPeers("sender", "receiver", "inspector");
             }
@@ -79,6 +148,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             else {
                 startServices();
             }
+            running = true;
 
             long repeat;
 
@@ -89,23 +159,30 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
                 repeat = testProfile.getEstimatedCompletionTime();
             }
 
-            MaestroProcessedInfo processedInfo = processNotifications(testProcessor, repeat, numPeers);
-            if (processedInfo.getNotificationCount() == numPeers) {
-                if (testProcessor.isSuccessful()) {
-                    logger.info("Test {} completed successfully", (warmUp ? "warm-up" : ""));
 
-                    return true;
+            long i = repeat;
+            while (running) {
+                getMaestro().statsRequest();
+                Thread.sleep(1000);
+                i--;
+                if (i == 0) {
+                    break;
                 }
             }
-            else {
-                logger.error("Failing the test because did not receive all the notifications: received {} of {}",
-                        processedInfo.getNotificationCount(), numPeers);
-            }
 
-            logger.info("Test {} completed unsuccessfully", (warmUp ? "warm-up" : ""));
+            if (failedNotifications > 0) {
+                logger.info("Test {} completed unsuccessfully", (warmUp ? "warm-up" : ""));
+            }
+            else {
+                logger.info("Test {} completed successfully", (warmUp ? "warm-up" : ""));
+                return true;
+            }
         }
         catch (Exception e) {
             logger.error("Error: {}", e.getMessage(), e);
+        }
+        finally {
+            running = false;
         }
 
         return false;

@@ -33,7 +33,7 @@ public class FlexibleTestProcessor extends AbstractTestProcessor {
     }
 
     @Override
-    protected boolean processNotifyFail(TestFailedNotification note) {
+    public boolean processNotifyFail(TestFailedNotification note) {
         super.processNotifyFail(note);
         successful = false;
         return true;

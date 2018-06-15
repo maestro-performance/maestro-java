@@ -16,6 +16,7 @@
 
 package org.maestro.client;
 
+import org.maestro.client.exchange.MaestroCollector;
 import org.maestro.client.exchange.MaestroCollectorExecutor;
 import org.maestro.client.exchange.MaestroMqttClient;
 import org.maestro.client.exchange.MaestroTopics;
@@ -587,5 +588,9 @@ public final class Maestro implements MaestroRequester {
         } while (retries > 0);
 
         return replies;
+    }
+
+    public MaestroCollector getCollector() {
+        return collectorExecutor.getCollector();
     }
 }

@@ -62,4 +62,8 @@ public class MaestroCollectorExecutor extends AbstractMaestroExecutor {
 
         maestroCollector.setRunning(false);
     }
+
+    public MaestroCollector getCollector() {
+        return (MaestroCollector) getMaestroPeer();
+    }
 }
