@@ -22,27 +22,27 @@ import org.maestro.common.client.notes.MaestroNote;
 import java.util.List;
 
 public class MaestroNoteProcessor {
-    protected void processGetResponse(GetResponse note) {
+    protected void processGetResponse(final GetResponse note) {
 
     }
 
-    protected void processPingResponse(PingResponse note) {
+    protected void processPingResponse(final PingResponse note) {
 
     }
 
-    protected void processNotifySuccess(TestSuccessfulNotification note) {
+    protected void processNotifySuccess(final TestSuccessfulNotification note) {
 
     }
 
-    protected void processNotifyFail(TestFailedNotification note) {
+    protected void processNotifyFail(final TestFailedNotification note) {
 
     }
 
-    protected void processAgentGeneralResponse(UserCommand1Response note) {
+    protected void processAgentGeneralResponse(final UserCommand1Response note) {
 
     }
 
-    protected void processResponse(MaestroNote note) {
+    protected void processResponse(final MaestroNote note) {
         switch (note.getMaestroCommand()) {
             case MAESTRO_NOTE_PING: {
                 processPingResponse((PingResponse) note);
@@ -59,11 +59,11 @@ public class MaestroNoteProcessor {
         }
     }
 
-    protected void processRequest(MaestroNote note) {
+    protected void processRequest(final MaestroNote note) {
         // NO-OP
     }
 
-    protected void processNotification(MaestroNote note) {
+    protected void processNotification(final MaestroNote note) {
         switch (note.getMaestroCommand()) {
             case MAESTRO_NOTE_NOTIFY_FAIL: {
                 processNotifyFail((TestFailedNotification) note);
@@ -76,7 +76,7 @@ public class MaestroNoteProcessor {
         }
     }
 
-    public void process(List<MaestroNote> notes) {
+    public void process(final List<MaestroNote> notes) {
         for (MaestroNote note : notes) {
             switch (note.getNoteType()) {
                 case MAESTRO_TYPE_RESPONSE: {
