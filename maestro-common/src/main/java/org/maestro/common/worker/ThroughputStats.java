@@ -45,6 +45,10 @@ public class ThroughputStats implements PerfStats {
     }
 
     public double getRate() {
+        if (duration.getSeconds() == 0) {
+            return 0;
+        }
+
         return count / duration.getSeconds();
     }
 
