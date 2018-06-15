@@ -22,79 +22,95 @@ import org.maestro.common.client.notes.MaestroNote;
 import java.util.List;
 
 public class MaestroNoteProcessor {
-    protected void processGetResponse(final GetResponse note) {
-
+    protected boolean processGetResponse(final GetResponse note) {
+        return true;
     }
 
-    protected void processPingResponse(final PingResponse note) {
-
+    protected boolean processPingResponse(final PingResponse note) {
+        return true;
     }
 
-    protected void processNotifySuccess(final TestSuccessfulNotification note) {
-
+    protected boolean processNotifySuccess(final TestSuccessfulNotification note) {
+        return true;
     }
 
-    protected void processNotifyFail(final TestFailedNotification note) {
-
+    protected boolean processNotifyFail(final TestFailedNotification note) {
+        return true;
     }
 
-    protected void processAgentGeneralResponse(final UserCommand1Response note) {
-
+    protected boolean processAgentGeneralResponse(final UserCommand1Response note) {
+        return true;
     }
 
-    protected void processResponse(final MaestroNote note) {
+    protected boolean processResponse(final MaestroNote note) {
+        boolean ret = false;
         switch (note.getMaestroCommand()) {
             case MAESTRO_NOTE_PING: {
-                processPingResponse((PingResponse) note);
+                ret = processPingResponse((PingResponse) note);
                 break;
             }
             case MAESTRO_NOTE_GET: {
-                processGetResponse((GetResponse) note);
+                ret = processGetResponse((GetResponse) note);
                 break;
             }
             case MAESTRO_NOTE_USER_COMMAND_1: {
-                processAgentGeneralResponse((UserCommand1Response) note);
+                ret = processAgentGeneralResponse((UserCommand1Response) note);
                 break;
             }
         }
+
+        return ret;
     }
 
-    protected void processRequest(final MaestroNote note) {
-        // NO-OP
+    protected boolean processRequest(final MaestroNote note) {
+        return true;
     }
 
-    protected void processNotification(final MaestroNote note) {
+    protected boolean processNotification(final MaestroNote note) {
+        boolean ret = false;
         switch (note.getMaestroCommand()) {
             case MAESTRO_NOTE_NOTIFY_FAIL: {
-                processNotifyFail((TestFailedNotification) note);
+                ret = processNotifyFail((TestFailedNotification) note);
                 break;
             }
             case MAESTRO_NOTE_NOTIFY_SUCCESS: {
-                processNotifySuccess((TestSuccessfulNotification) note);
+                ret = processNotifySuccess((TestSuccessfulNotification) note);
                 break;
             }
         }
+
+        return ret;
     }
 
-    public void process(final List<MaestroNote> notes) {
+    public MaestroProcessedInfo process(final List<MaestroNote> notes) {
+        MaestroProcessedInfo ret = new MaestroProcessedInfo(notes.size());
+
         for (MaestroNote note : notes) {
             switch (note.getNoteType()) {
                 case MAESTRO_TYPE_RESPONSE: {
-                    processResponse(note);
+                    if (processResponse(note)) {
+                        ret.incrementResponseCount();
+                    }
 
                     break;
                 }
                 case MAESTRO_TYPE_REQUEST: {
-                    processRequest(note);
+                    if (processRequest(note)) {
+                        ret.incrementRequestCount();
+                    }
 
                     break;
                 }
                 case MAESTRO_TYPE_NOTIFICATION: {
-                    processNotification(note);
+                    if (processNotification(note)) {
+                        ret.incrementNotificationCount();
+                    }
 
                     break;
                 }
             }
         }
+
+        return ret;
     }
 }

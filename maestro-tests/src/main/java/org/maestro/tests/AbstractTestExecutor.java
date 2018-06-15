@@ -17,6 +17,7 @@
 package org.maestro.tests;
 
 import org.maestro.client.Maestro;
+import org.maestro.client.exchange.MaestroProcessedInfo;
 import org.maestro.client.notes.MaestroNotification;
 import org.maestro.client.notes.PingResponse;
 import org.maestro.common.NodeUtils;
@@ -150,16 +151,16 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         maestro.getDataServer();
     }
 
-    protected void processNotifications(final AbstractTestProcessor testProcessor, long repeat, int numPeers) {
+    protected MaestroProcessedInfo processNotifications(final AbstractTestProcessor testProcessor, long repeat, int numPeers) {
         List<MaestroNote> replies = getMaestro().collect(1000, repeat, numPeers, reply -> reply instanceof MaestroNotification);
 
-        testProcessor.process(replies);
+        return testProcessor.process(replies);
     }
 
 
-    protected void processReplies(final AbstractTestProcessor testProcessor, long repeat, int numPeers) {
+    protected MaestroProcessedInfo processReplies(final AbstractTestProcessor testProcessor, long repeat, int numPeers) {
         List<MaestroNote> replies = getMaestro().collect(1000, repeat, numPeers);
 
-        testProcessor.process(replies);
+        return testProcessor.process(replies);
     }
 }

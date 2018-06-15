@@ -17,6 +17,7 @@
 package org.maestro.tests.rate;
 
 import org.maestro.client.Maestro;
+import org.maestro.client.exchange.MaestroProcessedInfo;
 import org.maestro.reports.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
@@ -88,12 +89,17 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
                 repeat = testProfile.getEstimatedCompletionTime();
             }
 
-            processNotifications(testProcessor, repeat, numPeers);
+            MaestroProcessedInfo processedInfo = processNotifications(testProcessor, repeat, numPeers);
+            if (processedInfo.getNotificationCount() == numPeers) {
+                if (testProcessor.isSuccessful()) {
+                    logger.info("Test {} completed successfully", (warmUp ? "warm-up" : ""));
 
-            if (testProcessor.isSuccessful()) {
-                logger.info("Test {} completed successfully", (warmUp ? "warm-up" : ""));
-
-                return true;
+                    return true;
+                }
+            }
+            else {
+                logger.error("Failing the test because did not receive all the notifications: received {} of {}",
+                        processedInfo.getNotificationCount(), numPeers);
             }
 
             logger.info("Test {} completed unsuccessfully", (warmUp ? "warm-up" : ""));

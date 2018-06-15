@@ -17,10 +17,7 @@
 package org.maestro.tests;
 
 import org.maestro.client.exchange.MaestroNoteProcessor;
-import org.maestro.client.notes.GetResponse;
-import org.maestro.client.notes.PingResponse;
-import org.maestro.client.notes.TestFailedNotification;
-import org.maestro.client.notes.TestSuccessfulNotification;
+import org.maestro.client.notes.*;
 import org.maestro.common.NodeUtils;
 import org.maestro.common.client.notes.GetOption;
 import org.maestro.reports.ReportsDownloader;
@@ -61,19 +58,25 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     }
 
     @Override
-    protected void processGetResponse(GetResponse note) {
+    protected boolean processGetResponse(GetResponse note) {
         logger.debug("Processing data server response");
         super.processGetResponse(note);
 
         if (note.getOption() == GetOption.MAESTRO_NOTE_OPT_GET_DS) {
             logger.info("Registering data server at {}", note.getValue());
             dataServers.put(note.getName(), note.getValue());
+
+            return true;
         }
+
+        return false;
     }
 
     @Override
-    protected void processPingResponse(PingResponse note) {
+    protected boolean processPingResponse(PingResponse note) {
         logger.debug("Elapsed time from {}: {} ms", note.getName(), note.getElapsed());
+
+        return true;
     }
 
     protected int getFlushWaitSeconds() {
@@ -101,43 +104,52 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
         }
     }
 
+    private void doProcess(final String name, final String resultType) {
+        if (name != null) {
+            final String type = NodeUtils.getTypeFromName(name);
+            final String host = dataServers.get(name);
+
+            waitForFlush();
+
+            reportsDownloader.getOrganizer().setResultType(resultType);
+            reportsDownloader.downloadLastSuccessful(type, host);
+
+            notifications++;
+
+        }
+    }
+
     @Override
-    protected void processNotifySuccess(TestSuccessfulNotification note) {
+    protected boolean processNotifySuccess(final TestSuccessfulNotification note) {
         logger.info("Test successful on {} after {} executions", note.getName(),
                 testProfile.getTestExecutionNumber());
         logger.info("Test parameters used: {}", testProfile.toString());
 
-        String type = NodeUtils.getTypeFromName(note.getName());
-        String host = dataServers.get(note.getName());
+        String name = note.getName();
+        if (name != null) {
+            doProcess(name, "success");
 
-        // TODO: what if host is null?
+            return true;
+        }
 
-        waitForFlush();
-
-        reportsDownloader.getOrganizer().setResultType("success");
-        reportsDownloader.downloadLastSuccessful(type, host);
-
-        notifications++;
+        return false;
     }
 
     @Override
-    protected void processNotifyFail(TestFailedNotification note) {
+    protected boolean processNotifyFail(TestFailedNotification note) {
         logger.info("Test failed on {} after {} executions", note.getName(),
                 testProfile.getTestExecutionNumber());
-        logger.info("Test parameter used");
 
-        String type = NodeUtils.getTypeFromName(note.getName());
-        String host = dataServers.get(note.getName());
-
-        // TODO: what if host is null?
-
-        waitForFlush();
-
-        reportsDownloader.getOrganizer().setResultType("failed");
-        reportsDownloader.downloadLastFailed(type, host);
+        logger.info("Test parameter used: {}", testProfile.toString());
 
         failed = true;
-        notifications++;
+        String name = note.getName();
+        if (name != null) {
+            doProcess(name, "failed");
+
+            return true;
+        }
+        return false;
     }
 
     /**
@@ -154,6 +166,10 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
      */
     public abstract boolean isSuccessful();
 
+    /**
+     * Whether the test is completed or now
+     * @return true if completed or false otherwise
+     */
     public boolean isCompleted() {
         if (isFailed()) {
             return true;
