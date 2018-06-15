@@ -16,7 +16,9 @@
 
 package org.maestro.tests.rate.singlepoint;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestProfile;
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FixedRateTestProfile extends AbstractTestProfile implements SinglePointProfile {
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestProfile.class);
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
     protected int rate;
     protected int warmUpRate;
@@ -77,8 +80,10 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     }
 
     public void setRate(int rate) {
+        double rateMultiplier = config.getDouble("warm-up.rate.percent", 30);
+
         this.rate = rate;
-        double warmUpTmp = rate * 0.3;
+        double warmUpTmp = rate * (rateMultiplier / 100);
 
         if (warmUpTmp > Integer.MAX_VALUE) {
             warmUpRate = Integer.MAX_VALUE;
