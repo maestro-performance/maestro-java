@@ -31,7 +31,9 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.Instant;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * A test executor that uses fixed rates
@@ -41,15 +43,14 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         private static final Logger logger = LoggerFactory.getLogger(StatsCallBack.class);
 
         private FixedRateTestExecutor executor;
-        private long messageCount;
-
+        private Map<String, Long> counters = new HashMap<>();
 
         StatsCallBack(FixedRateTestExecutor executor) {
             this.executor = executor;
         }
 
         private void reset() {
-            messageCount = 0;
+            counters.clear();
         }
 
         @Override
@@ -60,12 +61,19 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
 
             if (note instanceof StatsResponse) {
                 StatsResponse statsResponse = (StatsResponse) note;
-                if (statsResponse.getRate() < 200.0 && statsResponse.getRate() > 0) {
-                    logger.warn("The rate {} is too low. Adjusting the warm up duration",
-                            statsResponse.getRate());
+                logger.debug("Received stats {}", statsResponse);
+
+                int targetRate = executor.testProfile.getRate();
+                if (statsResponse.getRate() < (targetRate / 2) && statsResponse.getRate() > 0) {
+                    logger.warn("The warm-up duration might expire of time instead of count because the current " +
+                            "rate {} is much lower than the target rate {}", statsResponse.getRate(),
+                            executor.testProfile.getRate());
                 }
 
-                messageCount += statsResponse.getCount();
+                updateCounters(statsResponse);
+
+                long messageCount = counters.values().stream().mapToLong(Number::longValue).sum();
+                logger.debug("Current message count: {}", messageCount);
                 if (messageCount >= DurationCount.WARM_UP_COUNT) {
                     logger.info("The warm-up count has been reached: {} of {}",
                             messageCount, DurationCount.WARM_UP_COUNT);
@@ -85,6 +93,17 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
                     }
                 }
             }
+        }
+
+        private void updateCounters(StatsResponse statsResponse) {
+            Long nodeCount = counters.get(statsResponse.getName());
+            if (nodeCount == null) {
+                nodeCount = statsResponse.getCount();
+            }
+            else {
+                nodeCount += statsResponse.getCount();
+            }
+            counters.put(statsResponse.getName(), nodeCount);
         }
     }
 
@@ -150,17 +169,20 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         callbackList.add(new TestNotificationCallBack(this));
     }
 
+    private void reset() {
+        numPeers = 0;
+        successNotifications = 0;
+        failedNotifications = 0;
+        running = false;
+        warmUp = false;
+    }
+
     private boolean runTest() {
         try {
             // Clean up the topic
             getMaestro().collect();
 
-            if (testProfile.getManagementInterface() != null) {
-                numPeers = getNumPeers("sender", "receiver", "inspector");
-            }
-            else {
-                numPeers = getNumPeers("sender", "receiver");
-            }
+            updatePeerCount();
 
             resolveDataServers();
             processReplies(testProcessor, 60, numPeers);
@@ -194,7 +216,6 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
                 repeat = testProfile.getEstimatedCompletionTime();
             }
 
-
             long i = repeat;
             while (running) {
                 getMaestro().statsRequest();
@@ -217,11 +238,20 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             logger.error("Error: {}", e.getMessage(), e);
         }
         finally {
-            running = false;
+            reset();
             stopServices();
         }
 
         return false;
+    }
+
+    private void updatePeerCount() throws InterruptedException {
+        if (testProfile.getManagementInterface() != null) {
+            numPeers = getNumPeers("sender", "receiver", "inspector");
+        }
+        else {
+            numPeers = getNumPeers("sender", "receiver");
+        }
     }
 
     public boolean run() {
