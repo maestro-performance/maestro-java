@@ -76,6 +76,16 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     }
 
     /**
+     * Stop connected peers
+     * @throws MaestroConnectionException
+     */
+    protected void stopServices() throws MaestroConnectionException {
+        maestro.stopSender();
+        maestro.stopReceiver();
+        maestro.stopInspector();
+    }
+
+    /**
      * Try to guess the number of connected peers
      * @return the number of connected peers (best guess)
      * @throws MaestroConnectionException

@@ -22,12 +22,15 @@ import org.maestro.client.notes.StatsResponse;
 import org.maestro.client.notes.TestFailedNotification;
 import org.maestro.client.notes.TestSuccessfulNotification;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.duration.DurationCount;
 import org.maestro.reports.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 /**
@@ -37,19 +40,49 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     private static final class StatsCallBack implements MaestroNoteCallback {
         private static final Logger logger = LoggerFactory.getLogger(StatsCallBack.class);
 
-        FixedRateTestExecutor executor;
+        private FixedRateTestExecutor executor;
+        private long messageCount;
+
 
         StatsCallBack(FixedRateTestExecutor executor) {
             this.executor = executor;
         }
 
+        private void reset() {
+            messageCount = 0;
+        }
+
         @Override
         public void call(MaestroNote note) {
+            if (!executor.warmUp) {
+                return;
+            }
+
             if (note instanceof StatsResponse) {
                 StatsResponse statsResponse = (StatsResponse) note;
                 if (statsResponse.getRate() < 200.0 && statsResponse.getRate() > 0) {
-                    logger.error("The rate {} is too low. The test must be aborted",
+                    logger.warn("The rate {} is too low. Adjusting the warm up duration",
                             statsResponse.getRate());
+                }
+
+                messageCount += statsResponse.getCount();
+                if (messageCount >= DurationCount.WARM_UP_COUNT) {
+                    logger.info("The warm-up count has been reached: {} of {}",
+                            messageCount, DurationCount.WARM_UP_COUNT);
+                    this.executor.stopServices();
+                    reset();
+                }
+                else {
+                    final int maxDuration = 3;
+                    Instant now = Instant.now();
+
+                    Duration elapsed = Duration.between(now, executor.startTime);
+                    if (elapsed.getSeconds() > (Duration.ofMinutes(maxDuration).getSeconds())) {
+                        logger.warn("Stopping the warm-up because the maximum duration was reached");
+
+                        this.executor.stopServices();
+                        reset();
+                    }
                 }
             }
         }
@@ -85,7 +118,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             int totalNotifications = executor.failedNotifications + executor.successNotifications;
             if (executor.numPeers > 0 && totalNotifications > 0) {
                 if (totalNotifications >= executor.numPeers) {
-                    logger.warn("Received the required amount of notifications");
+                    logger.info("Received the required amount of notifications");
                     executor.running = false;
                 }
             }
@@ -93,7 +126,6 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     }
 
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestExecutor.class);
-
     private final FixedRateTestProfile testProfile;
 
     private long coolDownPeriod = 10000;
@@ -103,6 +135,8 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     private int successNotifications = 0;
     private int failedNotifications = 0;
     private boolean running = false;
+    private Instant startTime;
+    private boolean warmUp = false;
 
     public FixedRateTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
                                  final FixedRateTestProfile testProfile) {
@@ -116,7 +150,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         callbackList.add(new TestNotificationCallBack(this));
     }
 
-    private boolean runTest(boolean warmUp) {
+    private boolean runTest() {
         try {
             // Clean up the topic
             getMaestro().collect();
@@ -149,6 +183,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
                 startServices();
             }
             running = true;
+            startTime = Instant.now();
 
             long repeat;
 
@@ -183,6 +218,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         }
         finally {
             running = false;
+            stopServices();
         }
 
         return false;
@@ -191,10 +227,12 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     public boolean run() {
         logger.info("Starting the warm up execution");
 
-        if (runTest(true)) {
+        warmUp = true;
+        if (runTest()) {
             logger.info("Starting the test");
 
-            return runTest(false);
+            warmUp = false;
+            return runTest();
         }
 
         logger.error("Warm up execution failed");
