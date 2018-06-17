@@ -21,6 +21,7 @@ import org.maestro.client.callback.MaestroNoteCallback;
 import org.maestro.client.notes.StatsResponse;
 import org.maestro.client.notes.TestFailedNotification;
 import org.maestro.client.notes.TestSuccessfulNotification;
+import org.maestro.common.NodeUtils;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.duration.DurationCount;
 import org.maestro.reports.ReportsDownloader;
@@ -96,14 +97,20 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         }
 
         private void updateCounters(StatsResponse statsResponse) {
-            Long nodeCount = counters.get(statsResponse.getName());
+            final String name = statsResponse.getName();
+            String type = NodeUtils.getTypeFromName(name);
+            if (type.equals("inspector") || type.equals("agent")) {
+                return;
+            }
+
+            Long nodeCount = counters.get(name);
             if (nodeCount == null) {
                 nodeCount = statsResponse.getCount();
             }
             else {
                 nodeCount += statsResponse.getCount();
             }
-            counters.put(statsResponse.getName(), nodeCount);
+            counters.put(name, nodeCount);
         }
     }
 
