@@ -55,7 +55,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
 
         @Override
         public void call(MaestroNote note) {
-            if (!executor.warmUp) {
+            if (!executor.warmUp || !executor.running) {
                 return;
             }
 
