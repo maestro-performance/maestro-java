@@ -26,7 +26,6 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ReportAction extends Action {
-    private static final String DEFAULT_TIME_UNIT = "1000";
     private CommandLine cmdLine;
 
     private String directory;
