@@ -32,7 +32,7 @@ public class ComposedProperties {
         PropertyUtils.loadProperties(indexProperties, context);
     }
 
-    private String getParentDir() {
+    public String getParentDir() {
         return indexProperties.getParentFile().getName();
     }
 
