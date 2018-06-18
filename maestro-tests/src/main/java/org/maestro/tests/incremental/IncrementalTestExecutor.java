@@ -97,7 +97,6 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
         return coolDownPeriod;
     }
 
-    @Override
     public void setCoolDownPeriod(long period) {
         this.coolDownPeriod = period;
     }

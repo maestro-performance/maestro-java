@@ -16,11 +16,13 @@
 
 package org.maestro.tests.rate;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.callback.MaestroNoteCallback;
 import org.maestro.client.notes.StatsResponse;
 import org.maestro.client.notes.TestFailedNotification;
 import org.maestro.client.notes.TestSuccessfulNotification;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.NodeUtils;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.duration.DurationCount;
@@ -152,9 +154,10 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     }
 
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestExecutor.class);
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
     private final FixedRateTestProfile testProfile;
 
-    private long coolDownPeriod = 10000;
+    private static final long coolDownPeriod;
     private final FixedRateTestProcessor testProcessor;
 
     private int numPeers = 0;
@@ -163,6 +166,10 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     private boolean running = false;
     private Instant startTime;
     private boolean warmUp = false;
+
+    static {
+        coolDownPeriod = config.getLong("test.fixedrate.cooldown.period", 1) * 1000;
+    }
 
     public FixedRateTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
                                  final FixedRateTestProfile testProfile) {
@@ -269,10 +276,15 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
 
         warmUp = true;
         if (runTest()) {
-            logger.info("Starting the test");
+            try {
+                Thread.sleep(getCoolDownPeriod());
+                logger.info("Starting the test");
 
-            warmUp = false;
-            return runTest();
+                warmUp = false;
+                return runTest();
+            } catch (InterruptedException e) {
+                logger.warn("The test execution was interrupted");
+            }
         }
 
         logger.error("Warm up execution failed");
@@ -282,10 +294,5 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     @Override
     public long getCoolDownPeriod() {
         return coolDownPeriod;
-    }
-
-    @Override
-    public void setCoolDownPeriod(long period) {
-        this.coolDownPeriod = period;
     }
 }

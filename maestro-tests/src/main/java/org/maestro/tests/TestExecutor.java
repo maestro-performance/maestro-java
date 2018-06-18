@@ -32,10 +32,4 @@ public interface TestExecutor {
      * @return
      */
     long getCoolDownPeriod();
-
-    /**
-     * Sets the amount of time (in milliseconds) to wait for the SUT to cool down
-     * @param period
-     */
-    void setCoolDownPeriod(long period);
 }
