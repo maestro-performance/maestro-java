@@ -214,21 +214,12 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             running = true;
             startTime = Instant.now();
 
-            long repeat;
-
-            if (warmUp) {
-                repeat = testProfile.getWarmUpEstimatedCompletionTime();
-            }
-            else {
-                repeat = testProfile.getEstimatedCompletionTime();
-            }
-
-            long i = repeat;
+            long repeatCounter = getRepeat();;
             while (running) {
                 getMaestro().statsRequest();
                 Thread.sleep(1000);
-                i--;
-                if (i == 0) {
+                repeatCounter--;
+                if (repeatCounter == 0) {
                     break;
                 }
             }
@@ -250,6 +241,18 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         }
 
         return false;
+    }
+
+    private long getRepeat() {
+        long repeat;
+
+        if (warmUp) {
+            repeat = testProfile.getWarmUpEstimatedCompletionTime();
+        }
+        else {
+            repeat = testProfile.getEstimatedCompletionTime();
+        }
+        return repeat;
     }
 
     private void updatePeerCount() throws InterruptedException {
