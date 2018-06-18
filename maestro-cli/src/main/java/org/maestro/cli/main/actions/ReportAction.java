@@ -19,8 +19,10 @@ package org.maestro.cli.main.actions;
 import org.apache.commons.cli.*;
 import org.maestro.common.LogConfigurator;
 import org.maestro.reports.ReportGenerator;
+import org.maestro.reports.composed.ComposedIndexGenerator;
 import org.maestro.reports.processors.DiskCleaner;
 
+import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -31,6 +33,7 @@ public class ReportAction extends Action {
     private String directory;
     private boolean clean;
     private Map<String,String> indexProperties = new HashMap<>();
+    private boolean composed;
 
 
     public ReportAction(String[] args) {
@@ -64,6 +67,7 @@ public class ReportAction extends Action {
         options.addOption("l", "log-level", true, "the log level to use [trace, debug, info, warn]");
         options.addOption("C", "clean", false, "clean the report directory after processing");
         options.addOption("", "with-properties", true, "pass optional properties (ie.: saved along with the index)");
+        options.addOption("", "composed", false, "generate the composed index");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -89,19 +93,25 @@ public class ReportAction extends Action {
 
         clean = cmdLine.hasOption('C');
         parseProperties(cmdLine.getOptionValue("with-properties"));
+        composed = cmdLine.hasOption("composed");
     }
 
     public int run() {
         try {
-            ReportGenerator reportGenerator = new ReportGenerator(directory);
-
-            if (clean) {
-                reportGenerator.getPostProcessors().add(new DiskCleaner());
+            if (composed) {
+                ComposedIndexGenerator.generate(new File(directory));
             }
+            else {
+                ReportGenerator reportGenerator = new ReportGenerator(directory);
 
-            reportGenerator.setIndexProperties(indexProperties);
-            reportGenerator.generate();
-            System.out.println("Report generated successfully");
+                if (clean) {
+                    reportGenerator.getPostProcessors().add(new DiskCleaner());
+                }
+
+                reportGenerator.setIndexProperties(indexProperties);
+                reportGenerator.generate();
+                System.out.println("Report generated successfully");
+            }
             return 0;
         }
         catch (Exception e) {

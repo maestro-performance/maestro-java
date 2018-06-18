@@ -40,6 +40,5 @@ public class NodeReportRenderer extends AbstractRenderer {
 
     public void copyResources(File path) throws IOException {
         super.copyResources(path, "/org/maestro/reports/favicon.png", "favicon.png");
-
     }
 }
