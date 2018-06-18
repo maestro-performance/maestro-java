@@ -134,18 +134,20 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     public void start() {
         startedEpochMillis = System.currentTimeMillis();
-        logger.info("Starting the test");
+        logger.info("Starting the worker");
 
         final SenderClient client = this.clientFactory.get();
+        final long id = Thread.currentThread().getId();
         try {
             doClientStartup(client);
 
             runLoadLoop(client);
 
-            logger.info("Test completed successfully");
+            logger.info("Worker {} completed running successfully with {} messages sent", id,
+                    messageCount);
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS, null);
         } catch (InterruptedException e) {
-            logger.error("JMS Sender Worker {} interrupted while sending messages: {}", Thread.currentThread().getId(),
+            logger.error("JMS sender worker {} interrupted while sending messages: {}", id,
                     e.getMessage());
 
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
@@ -156,6 +158,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         } finally {
             //the test could be considered already stopped here, but cleaning up JMS resources could take some time anyway
             client.stop();
+            logger.info("Finalized worker {} after sending {} messages", id, messageCount);
         }
     }
 
