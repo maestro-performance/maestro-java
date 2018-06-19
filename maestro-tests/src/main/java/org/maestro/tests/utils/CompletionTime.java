@@ -52,6 +52,9 @@ public class CompletionTime {
             if (rate > 0) {
                 ret += Math.round(duration.getNumericDuration() / rate);
             }
+            else {
+                ret = ret * 7;
+            }
         }
 
         return ret;
