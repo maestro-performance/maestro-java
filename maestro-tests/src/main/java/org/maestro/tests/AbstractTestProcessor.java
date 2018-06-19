@@ -49,7 +49,7 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     private Map<String, String> dataServers = new HashMap<>();
 
     static {
-        DEFAULT_WAIT_TIME = config.getInteger("test.post.processing.wait.time", 5);
+        DEFAULT_WAIT_TIME = config.getInteger("test.post.processing.wait.time", 3);
     }
 
     /**
