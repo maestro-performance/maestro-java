@@ -137,8 +137,8 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
 
     @Override
     public boolean processNotifyFail(TestFailedNotification note) {
-        logger.info("Test failed on {} after {} executions", note.getName(),
-                testProfile.getTestExecutionNumber());
+        logger.info("Test failed on {} after {} executions: {}", note.getName(),
+                testProfile.getTestExecutionNumber(), note.getMessage());
 
         logger.info("Test parameter used: {}", testProfile.toString());
 
