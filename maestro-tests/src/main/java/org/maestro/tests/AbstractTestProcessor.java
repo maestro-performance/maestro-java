@@ -16,8 +16,10 @@
 
 package org.maestro.tests;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.exchange.MaestroNoteProcessor;
 import org.maestro.client.notes.*;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.NodeUtils;
 import org.maestro.common.client.notes.GetOption;
 import org.maestro.reports.ReportsDownloader;
@@ -34,8 +36,8 @@ import java.util.Map;
  */
 public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTestProcessor.class);
-    // Default wait time, in seconds, for the workers to flush their data
-    public static final int DEFAULT_WAIT_TIME = 5;
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+    public static final int DEFAULT_WAIT_TIME;
 
     private final ReportsDownloader reportsDownloader;
     private final AbstractTestProfile testProfile;
@@ -45,6 +47,10 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
 
     private int flushWaitSeconds = DEFAULT_WAIT_TIME;
     private Map<String, String> dataServers = new HashMap<>();
+
+    static {
+        DEFAULT_WAIT_TIME = config.getInteger("test.post.processing.wait.time", 5);
+    }
 
     /**
      * Constructor
