@@ -161,11 +161,11 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     private final FixedRateTestProcessor testProcessor;
 
     private int numPeers = 0;
-    private int successNotifications = 0;
-    private int failedNotifications = 0;
-    private boolean running = false;
+    private volatile int successNotifications = 0;
+    private volatile int failedNotifications = 0;
+    private volatile boolean running = false;
     private Instant startTime;
-    private boolean warmUp = false;
+    private volatile boolean warmUp = false;
 
     static {
         coolDownPeriod = config.getLong("test.fixedrate.cooldown.period", 1) * 1000;
@@ -210,8 +210,6 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
                 testProfile.apply(getMaestro());
             }
 
-            testProcessor.resetNotifications();
-
             if (testProfile.getInspectorName() != null) {
                 startServices(testProfile.getInspectorName());
             }
@@ -231,12 +229,18 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
                 }
             }
 
-            if (failedNotifications > 0) {
-                logger.info("Test {} completed unsuccessfully", (warmUp ? "warm-up" : ""));
+            int totalNotifications = getTotalNotifications();
+
+            if (totalNotifications > 0) {
+                if (failedNotifications > 0) {
+                    logger.info("Test {} completed unsuccessfully", (warmUp ? "warm-up" : ""));
+                } else {
+                    logger.info("Test {} completed successfully", (warmUp ? "warm-up" : ""));
+                    return true;
+                }
             }
             else {
-                logger.info("Test {} completed successfully", (warmUp ? "warm-up" : ""));
-                return true;
+                logger.warn("Not enough notifications were received to assert the test completion status");
             }
         }
         catch (Exception e) {
@@ -248,6 +252,26 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         }
 
         return false;
+    }
+
+    private int getTotalNotifications() throws InterruptedException {
+        int totalNotifications;
+        if (running) {
+            int notificationRetries = 10;
+
+            logger.info("Not enough notifications received yet. Backends might be quiescing after the test execution");
+            do {
+                totalNotifications = failedNotifications + successNotifications;
+                if (totalNotifications < numPeers) {
+                    Thread.sleep(500);
+                    notificationRetries--;
+                }
+            } while (totalNotifications < numPeers || notificationRetries > 0);
+        }
+        else {
+            totalNotifications = failedNotifications + successNotifications;
+        }
+        return totalNotifications;
     }
 
     private long getRepeat() {
