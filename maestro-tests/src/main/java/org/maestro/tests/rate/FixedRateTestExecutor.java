@@ -221,7 +221,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             running = true;
             startTime = Instant.now();
 
-            long repeatCounter = getRepeat();;
+            long repeatCounter = getRepeat();
             while (running) {
                 getMaestro().statsRequest();
                 Thread.sleep(1000);
