@@ -197,6 +197,11 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             getMaestro().collect();
 
             updatePeerCount();
+            if (numPeers == 0) {
+                logger.error("There are not enough peers to run the test");
+
+                return false;
+            }
 
             resolveDataServers();
             processReplies(testProcessor, 60, numPeers);
