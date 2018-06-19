@@ -271,7 +271,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
                     Thread.sleep(500);
                     notificationRetries--;
                 }
-            } while (totalNotifications < numPeers || notificationRetries > 0);
+            } while (totalNotifications < numPeers && notificationRetries > 0);
         }
         else {
             totalNotifications = failedNotifications + successNotifications;
