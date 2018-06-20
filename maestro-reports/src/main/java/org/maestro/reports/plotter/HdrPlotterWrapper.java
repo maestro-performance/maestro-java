@@ -69,7 +69,7 @@ public class HdrPlotterWrapper implements PlotterWrapper {
             plotter.getChartProperties().setSeriesName("Percentile");
             plotter.setOutputWidth(1280);
             plotter.setOutputHeight(1024);
-            plotter.plot(hdrData.getPercentile(), hdrData.getValue());
+            plotter.plot(hdrData);
 
             HdrPropertyWriter propertyWriter = new HdrPropertyWriter();
 
