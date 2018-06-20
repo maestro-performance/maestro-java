@@ -20,7 +20,9 @@ import net.orpiske.hhp.plot.HdrData;
 import net.orpiske.hhp.plot.HdrLogProcessorWrapper;
 import net.orpiske.hhp.plot.HdrPropertyWriter;
 import net.orpiske.hhp.plot.HdrReader;
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.io.FilenameUtils;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.test.TestProperties;
 import org.maestro.common.worker.WorkerUtils;
@@ -32,9 +34,14 @@ import java.io.IOException;
 
 public class HdrPlotterWrapper implements PlotterWrapper {
     private static final Logger logger = LoggerFactory.getLogger(HdrPlotterWrapper.class);
-    private static final String DEFAULT_UNIT_RATE = "1000";
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+    private static final String DEFAULT_UNIT_RATE;
 
     private String unitRate;
+
+    static {
+        DEFAULT_UNIT_RATE = config.getString("hdr.plotter.default.unit.rate", "1000");
+    }
 
     public HdrPlotterWrapper() {
         this(DEFAULT_UNIT_RATE);
