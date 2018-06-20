@@ -36,11 +36,13 @@ public class HdrPlotterWrapper implements PlotterWrapper {
     private static final Logger logger = LoggerFactory.getLogger(HdrPlotterWrapper.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
     private static final String DEFAULT_UNIT_RATE;
+    private static final boolean legacyHdrMode;
 
     private String unitRate;
 
     static {
         DEFAULT_UNIT_RATE = config.getString("hdr.plotter.default.unit.rate", "1000");
+        legacyHdrMode = config.getBoolean("hdr.plotter.legacy.mode", false);
     }
 
     public HdrPlotterWrapper() {
@@ -79,21 +81,7 @@ public class HdrPlotterWrapper implements PlotterWrapper {
                 throw new IOException("File " + file.getPath() + " does not exist");
             }
 
-            HdrData hdrData;
-            TestProperties testProperties = loadProperties(file.getParentFile());
-            if (testProperties != null) {
-                final long intervalInNanos = WorkerUtils.getExchangeInterval(testProperties.getRate());
-
-                if (intervalInNanos == 0) {
-                    hdrData = getHdrDataUnbounded(file);
-                }
-                else {
-                    hdrData = getHdrDataBounded(file, intervalInNanos);
-                }
-            }
-            else {
-                hdrData = getHdrDataUnbounded(file);
-            }
+            final HdrData hdrData = getHdrData(file);
 
             // HdrPlotterWrapper
             net.orpiske.hhp.plot.HdrPlotter plotter = new net.orpiske.hhp.plot.HdrPlotter(FilenameUtils.removeExtension(file.getPath()));
@@ -114,6 +102,28 @@ public class HdrPlotterWrapper implements PlotterWrapper {
             handlePlotException(file, t);
             throw new MaestroException(t);
         }
+    }
+
+    private HdrData getHdrData(File file) throws IOException {
+        HdrData hdrData;
+        if (!legacyHdrMode) {
+            TestProperties testProperties = loadProperties(file.getParentFile());
+            if (testProperties != null) {
+                final long intervalInNanos = WorkerUtils.getExchangeInterval(testProperties.getRate());
+
+                if (intervalInNanos == 0) {
+                    hdrData = getHdrDataUnbounded(file);
+                } else {
+                    hdrData = getHdrDataBounded(file, intervalInNanos);
+                }
+            } else {
+                hdrData = getHdrDataUnbounded(file);
+            }
+        }
+        else {
+            hdrData = getHdrDataUnbounded(file);
+        }
+        return hdrData;
     }
 
     private HdrData getHdrDataUnbounded(File file) throws IOException {
