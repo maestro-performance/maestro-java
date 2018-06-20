@@ -28,6 +28,7 @@ import org.maestro.common.jms.SenderClient;
 import org.maestro.common.worker.MaestroSenderWorker;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.common.worker.WorkerStateInfo;
+import org.maestro.common.worker.WorkerUtils;
 import org.maestro.common.writers.OneToOneWorkerChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -214,7 +215,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
     private long getIntervalInNanos() {
-        final long intervalInNanos = this.rate > 0 ? (1_000_000_000L / rate) : 0;
+        final long intervalInNanos = WorkerUtils.getExchangeInterval(this.rate);
 
         if (intervalInNanos > 0) {
             if (logger.isDebugEnabled()) {

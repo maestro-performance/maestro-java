@@ -22,6 +22,8 @@ import net.orpiske.hhp.plot.HdrPropertyWriter;
 import net.orpiske.hhp.plot.HdrReader;
 import org.apache.commons.io.FilenameUtils;
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.test.TestProperties;
+import org.maestro.common.worker.WorkerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +44,25 @@ public class HdrPlotterWrapper implements PlotterWrapper {
         this.unitRate = unitRate;
     }
 
+    private TestProperties loadProperties(final File baseDir) {
+        final File propertiesFile = new File(baseDir, "test.properties");
+
+        if (propertiesFile.exists()) {
+            logger.debug("Loading test.properties file to check for bounded/unbounded rate");
+            TestProperties testProperties = new TestProperties();
+
+            try {
+                testProperties.load(propertiesFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return testProperties;
+        }
+
+        return null;
+    }
+
     @Override
     public boolean plot(final File file) {
         logger.debug("Plotting HDR file {}", file.getPath());
@@ -51,16 +72,21 @@ public class HdrPlotterWrapper implements PlotterWrapper {
                 throw new IOException("File " + file.getPath() + " does not exist");
             }
 
-            final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
-            String csvFile;
+            HdrData hdrData;
+            TestProperties testProperties = loadProperties(file.getParentFile());
+            if (testProperties != null) {
+                final long intervalInNanos = WorkerUtils.getExchangeInterval(testProperties.getRate());
 
-            synchronized (this) {
-                csvFile = processorWrapper.convertLog(file.getPath());
+                if (intervalInNanos == 0) {
+                    hdrData = getHdrDataUnbounded(file);
+                }
+                else {
+                    hdrData = getHdrDataBounded(file, intervalInNanos);
+                }
             }
-
-            // CSV Reader
-            final HdrReader reader = new HdrReader();
-            HdrData hdrData = reader.read(csvFile);
+            else {
+                hdrData = getHdrDataUnbounded(file);
+            }
 
             // HdrPlotterWrapper
             net.orpiske.hhp.plot.HdrPlotter plotter = new net.orpiske.hhp.plot.HdrPlotter(FilenameUtils.removeExtension(file.getPath()));
@@ -81,5 +107,32 @@ public class HdrPlotterWrapper implements PlotterWrapper {
             handlePlotException(file, t);
             throw new MaestroException(t);
         }
+    }
+
+    private HdrData getHdrDataUnbounded(File file) throws IOException {
+        final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
+        String csvFile;
+
+        synchronized (this) {
+            csvFile = processorWrapper.convertLog(file.getPath());
+        }
+
+        // CSV Reader
+        final HdrReader reader = new HdrReader();
+        return reader.read(csvFile);
+    }
+
+
+    private HdrData getHdrDataBounded(File file, final long interval) throws IOException {
+        final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
+        String[] csvFile;
+
+        synchronized (this) {
+            csvFile = processorWrapper.convertLog(file.getPath(), String.valueOf(interval));
+        }
+
+        // CSV Reader
+        final HdrReader reader = new HdrReader();
+        return reader.read(csvFile[0], csvFile[1]);
     }
 }
