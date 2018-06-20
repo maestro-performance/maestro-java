@@ -28,7 +28,7 @@ public class Main {
     private static CommandLine cmdLine;
 
     private static String maestroUrl;
-    private static int port = 9200;
+    private static int port = 9120;
 
     /**
      * Prints the help for the action and exit
@@ -52,7 +52,7 @@ public class Main {
         options.addOption("m", "maestro-url", true,
                 "maestro URL to connect to");
         options.addOption("p", "port", true,
-                "port used to export metrics (default to 9200)");
+                "port used to export metrics (default to 9120)");
 
         try {
             cmdLine = parser.parse(options, args);
