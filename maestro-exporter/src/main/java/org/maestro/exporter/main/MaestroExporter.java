@@ -128,7 +128,6 @@ public class MaestroExporter {
         try {
             server = new HTTPServer(port);
 
-
             boolean running = true;
             while (running) {
                 logger.debug("Sending requests");
