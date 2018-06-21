@@ -19,6 +19,7 @@ package org.maestro.tests.rate.singlepoint;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.duration.DurationCount;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestProfile;
@@ -142,7 +143,12 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
 
     @Override
     public long getEstimatedCompletionTime() {
-        return CompletionTime.estimate(duration, getRate());
+        if (duration instanceof DurationCount) {
+            return CompletionTime.estimate(duration, getRate());
+        }
+        else {
+            return duration.getNumericDuration();
+        }
     }
 
     public long getWarmUpEstimatedCompletionTime() {
