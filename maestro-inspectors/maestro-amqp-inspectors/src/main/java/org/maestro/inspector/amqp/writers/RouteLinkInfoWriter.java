@@ -40,7 +40,6 @@ public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>,
 
     /**
      * Close csv printer
-     * @throws Exception implementation specific
      */
     @Override
     public void close() {

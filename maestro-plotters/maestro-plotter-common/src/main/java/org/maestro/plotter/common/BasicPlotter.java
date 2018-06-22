@@ -40,8 +40,7 @@ public class BasicPlotter<Y extends ReportReader, K extends AbstractPlotter> {
      * A basic plotter wrapping logic
      * @param filename
      * @param outputFile
-     * @throws IOException
-     * @throws EmptyDataSet
+     * @throws MaestroException
      * @throws IncompatibleDataSet
      */
     public void plot(final File filename, final File outputFile, final File propertiesFile) throws MaestroException {

@@ -39,7 +39,6 @@ public class QDMemoryInfoWriter implements InspectorDataWriter<QDMemoryInfo>, Au
 
     /**
      * Close csv printer
-     * @throws Exception implementation specific
      */
     @Override
     public void close() {

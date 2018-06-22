@@ -40,7 +40,6 @@ public class ConnectionsInfoWriter implements InspectorDataWriter<ConnectionsInf
 
     /**
      * Close csv printer
-     * @throws Exception implementation specific
      */
     @Override
     public void close() {

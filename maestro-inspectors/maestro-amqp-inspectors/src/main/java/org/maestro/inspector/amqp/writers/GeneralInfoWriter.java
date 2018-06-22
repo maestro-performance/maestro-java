@@ -40,7 +40,6 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
 
     /**
      * Close csv printer
-     * @throws Exception implementation specific
      */
     @Override
     public void close() {
