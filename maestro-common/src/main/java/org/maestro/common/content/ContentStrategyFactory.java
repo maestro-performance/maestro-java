@@ -25,7 +25,7 @@ public class ContentStrategyFactory {
 
     /**
      * Parse a content size specification string and creates the respective ContentStrategy.
-     * @param sizeSpec The size specification string {@link ContentStrategy#setSize(String)}
+     * @param sizeSpec The size specification string
      * @return A ContentStrategy instance for the size spec string
      */
     public static ContentStrategy parse(final String sizeSpec) {

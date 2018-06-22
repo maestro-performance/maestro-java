@@ -23,7 +23,7 @@ package org.maestro.common;
 public class StringUtils {
 
     /**
-     * Capitalize the first letter of a string (ie.: username -> Username)
+     * Capitalize the first letter of a string (ie.: username becomes Username)
      * @param string the string to capitalize
      * @return the capitalized string
      */
