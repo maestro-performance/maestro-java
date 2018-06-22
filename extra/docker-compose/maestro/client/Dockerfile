@@ -1,7 +1,7 @@
 FROM centos:7 AS buildimg
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 ARG MAESTRO_VERSION
-ENV MAESTRO_VERSION ${MAESTRO_VERSION:-1.3.0-SNAPSHOT
+ENV MAESTRO_VERSION ${MAESTRO_VERSION:-1.3.0
 LABEL MAESTRO_VERSION=${MAESTRO_VERSION}
 RUN yum install -y java-1.8.0-openjdk-devel git which unzip zip ntp
 ENV JAVA_HOME /etc/alternatives/jre
@@ -12,7 +12,7 @@ RUN cd maestro-java && ./mvnw -PPackage clean install
 FROM centos:7 as maestro-client
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 ARG MAESTRO_VERSION
-ENV MAESTRO_VERSION ${MAESTRO_VERSION:-1.3.0-SNAPSHOT}
+ENV MAESTRO_VERSION ${MAESTRO_VERSION:-1.3.0}
 LABEL MAESTRO_VERSION=${MAESTRO_VERSION}
 ENV GROOVY_VERSION 2.4.15
 
