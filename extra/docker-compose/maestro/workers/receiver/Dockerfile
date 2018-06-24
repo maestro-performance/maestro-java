@@ -2,11 +2,13 @@ FROM centos:7 AS buildimg
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 ARG MAESTRO_WORKER_VERSION
 ENV MAESTRO_WORKER_VERSION ${MAESTRO_WORKER_VERSION:-1.3.0}
+ARG MAESTRO_BRANCH
+ENV MAESTRO_BRANCH ${MAESTRO_BRANCH:-devel}
 LABEL MAESTRO_VERSION=${MAESTRO_WORKER_VERSION}
 RUN yum install -y java-1.8.0-openjdk-devel git which unzip zip
 ENV JAVA_HOME /etc/alternatives/jre
 WORKDIR /root/build
-RUN git clone https://github.com/maestro-performance/maestro-java.git --branch devel
+RUN git clone https://github.com/maestro-performance/maestro-java.git --branch ${MAESTRO_BRANCH}
 RUN cd maestro-java && ./mvnw -DskipTests=true -PPackage clean package
 
 FROM centos:7 AS maestro-receiver
