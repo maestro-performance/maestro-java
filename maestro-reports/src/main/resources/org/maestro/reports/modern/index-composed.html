@@ -80,7 +80,7 @@
                 <tr>
                     <th>Date</th>
                     {% for key, value in propertiesList[0].context.items() %}
-                    <th>{{ key }} </th>
+                    <th>{{ key | capitalize }} </th>
                     {% endfor %}
                 </tr>
                 </thead>
