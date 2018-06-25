@@ -88,7 +88,7 @@
                 <tbody>
                 {% for composedProperty in propertiesList %}
                 <tr>
-                    <td><a href="{{ composedProperty.dateTime }}">{{ composedProperty.dateTime }}</a> </td>
+                    <td><a href="{{ composedProperty.parentDir }}">{{ composedProperty.dateTime }}</a> </td>
                     {% for key, value in composedProperty.context.items() %}
                     <td>{{ value }}</td>
                     {% endfor %}
