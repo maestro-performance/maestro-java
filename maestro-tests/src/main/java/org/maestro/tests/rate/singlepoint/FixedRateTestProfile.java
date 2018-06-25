@@ -38,6 +38,7 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     protected int rate;
     protected int warmUpRate;
     protected int parallelCount;
+    protected int warmUpParallelCount;
     private String brokerURL;
 
     private int maximumLatency = 600;
@@ -74,6 +75,18 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
 
     public void setParallelCount(int parallelCount) {
         this.parallelCount = parallelCount;
+
+        setWarmUpParallelCount(parallelCount);
+    }
+
+    private void setWarmUpParallelCount(int parallelCount) {
+        final int ceillingWarmUpPc = config.getInt("warm-up.ceiling.parallel.count", 30);
+        if (parallelCount > ceillingWarmUpPc) {
+            warmUpParallelCount = ceillingWarmUpPc;
+        }
+        else {
+            warmUpParallelCount = parallelCount;
+        }
     }
 
     public int getParallelCount() {
@@ -168,6 +181,9 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
 
             logger.info("Setting warm-up duration to {}", balancedDuration);
             maestro.setDuration(balancedDuration);
+
+            logger.info("Setting warm-up parallel count to {}", this.warmUpParallelCount);
+            maestro.setParallelCount(this.warmUpParallelCount);
         }
         else {
             logger.info("Setting test rate to {}", getRate());
@@ -175,11 +191,10 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
 
             logger.info("Setting test duration to {}", getDuration());
             maestro.setDuration(this.getDuration().toString());
+
+            logger.info("Setting parallel count to {}", this.parallelCount);
+            maestro.setParallelCount(this.parallelCount);
         }
-
-        logger.info("Setting parallel count to {}", this.parallelCount);
-        maestro.setParallelCount(this.parallelCount);
-
 
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
         maestro.setFCL(getMaximumLatency());
