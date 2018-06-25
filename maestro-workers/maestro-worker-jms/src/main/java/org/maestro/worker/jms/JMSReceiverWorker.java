@@ -141,7 +141,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
             runReceiveLoop(client);
 
-            logger.info("Worker {} completed running successfully with {} messages sent", id,
+            logger.info("Worker {} completed running successfully with {} messages received", id,
                     messageCount);
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS, null);
         } catch (InterruptedException e) {
@@ -157,7 +157,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         } finally {
             //the test could be considered already stopped here, but cleaning up JMS resources could take some time anyway
             client.stop();
-            logger.info("Finalized worker {} after sending {} messages", id, messageCount);
+            logger.info("Finalized worker {} after receiving {} messages", id, messageCount);
         }
     }
 
