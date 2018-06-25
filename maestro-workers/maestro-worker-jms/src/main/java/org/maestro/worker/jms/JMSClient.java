@@ -87,11 +87,7 @@ class JMSClient implements Client {
             logger.debug("JMS client is running test with the protocol {}", protocolName);
 
             final ConnectionFactory factory = protocol.createConnectionFactory(connectionUrl);
-            logger.debug("Connection factory created");
-
-            //doesn't need to use any enum yet
-            final String type = urlQuery.getString("type", "queue");
-            logger.debug("Requested destination type: {}", type);
+            logger.trace("Connection factory created");
 
             String destinationName = path.substring(1);
             logger.debug("Requested destination name: {}", destinationName);
@@ -106,14 +102,18 @@ class JMSClient implements Client {
                 if (limitDestinations <= 0) {
                     throw new IllegalArgumentException("limitDestinations must be > 0");
                 }
-                logger.info("Client requested a client-specific limit to the number of destinations: {}", limitDestinations);
+                logger.debug("Client requested a client-specific limit to the number of destinations: {}", limitDestinations);
                 final int destinationId = number % limitDestinations;
                 destinationName = destinationName + '.' + destinationId;
-                logger.info("Requested destination name after using client-specific limit to the number of destinations: {}", destinationName);
+                logger.info("Requested destination name after using client-specific limit to the number of destinations: {}",
+                        destinationName);
             } else {
                 //original behaviour maintained for backward compatibility
                 logger.info("Requested destination name: {}", destinationName);
             }
+
+            //doesn't need to use any enum yet
+            final String type = urlQuery.getString("type", "queue");
 
             switch (type) {
                 case "queue":
