@@ -195,22 +195,36 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     protected void writeTestProperties(final File testLogDir) throws IOException, DurationParseException {
         TestProperties testProperties = new TestProperties();
 
-        testProperties.setBrokerUri(workerOptions.getBrokerURL());
+        final String testNumber = testLogDir.getName();
 
-        testProperties.setDuration(workerOptions.getDuration());
+        final String brokerURL = workerOptions.getBrokerURL();
+        logger.info("Broker URL for test {}: {}", testNumber, brokerURL);
+        testProperties.setBrokerUri(brokerURL);
 
-        testProperties.setParallelCount(workerOptions.getParallelCount());
+        final String duration = workerOptions.getDuration();
+        logger.info("Test duration for test {}: {}", testNumber, duration);
+        testProperties.setDuration(duration);
+
+        final String parallelCount = workerOptions.getParallelCount();
+        logger.info("Parallel count for test {}: {}", testNumber, parallelCount);
+        testProperties.setParallelCount(parallelCount);
 
         // Note: it already sets the variable size flag for variable message sizes
-        testProperties.setMessageSize(workerOptions.getMessageSize());
+        final String messageSize = workerOptions.getMessageSize();
+        logger.info("Message size for test {}: {}", testNumber, messageSize);
+        testProperties.setMessageSize(messageSize);
 
-        testProperties.setRate(workerOptions.getRate());
-        testProperties.setFcl(workerOptions.getFcl());
+        final String rate = workerOptions.getRate();
+        logger.info("Target rate for test {}: {}", testNumber, rate);
+        testProperties.setRate(rate);
 
+        final String fcl = workerOptions.getFcl();
+        logger.info("FCL for test {}: {}", testNumber, fcl);
+        testProperties.setFcl(fcl);
 
         final URLQuery urlQuery;
         try {
-            urlQuery = new URLQuery(workerOptions.getBrokerURL());
+            urlQuery = new URLQuery(brokerURL);
 
             testProperties.setProtocol(urlQuery.getString("protocol", "AMQP"));
             testProperties.setLimitDestinations(urlQuery.getInteger("limitDestinations", 1));
