@@ -17,23 +17,54 @@
 package org.maestro.reports.composed;
 
 import org.maestro.common.PropertyUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.attribute.BasicFileAttributes;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.time.format.DecimalStyle;
+import java.time.format.FormatStyle;
 import java.util.HashMap;
+import java.util.Locale;
 import java.util.Map;
 
 public class ComposedProperties {
+    private static final Logger logger = LoggerFactory.getLogger(ComposedProperties.class);
     private File indexProperties;
+    private String dateTime;
     private Map<String, Object> context = new HashMap<>();
 
     public ComposedProperties(final File indexProperties) {
         this.indexProperties = indexProperties;
 
         PropertyUtils.loadProperties(indexProperties, context);
+
+        BasicFileAttributes attr = null;
+        try {
+            attr = Files.readAttributes(indexProperties.getParentFile().toPath(), BasicFileAttributes.class);
+
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MMM/YYYY HH:mm:ss z")
+                            .withLocale(Locale.getDefault())
+                                                        .withZone(ZoneId.systemDefault());
+
+            dateTime = formatter.format(attr.creationTime().toInstant());
+        } catch (IOException e) {
+            logger.error("Unable to read file creation time for {}: {}", indexProperties, e.getMessage(), e);
+            dateTime = "0000";
+        }
+
     }
 
     public String getParentDir() {
         return indexProperties.getParentFile().getName();
+    }
+
+    public String getDateTime() {
+        return dateTime;
     }
 
     public Map<String, Object> getContext() {
