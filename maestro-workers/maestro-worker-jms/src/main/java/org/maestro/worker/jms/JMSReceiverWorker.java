@@ -132,7 +132,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
     public void start() {
         startedEpochMillis = System.currentTimeMillis();
-        logger.info("Starting the worker");
+        logger.info("Starting the JMS receiver worker");
 
         final ReceiverClient client = clientFactory.get();
         final long id = Thread.currentThread().getId();

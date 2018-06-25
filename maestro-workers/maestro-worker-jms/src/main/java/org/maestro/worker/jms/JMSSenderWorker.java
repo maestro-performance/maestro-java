@@ -135,7 +135,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     public void start() {
         startedEpochMillis = System.currentTimeMillis();
-        logger.info("Starting the worker");
+        logger.info("Starting the JMS sender worker");
 
         final SenderClient client = this.clientFactory.get();
         final long id = Thread.currentThread().getId();
