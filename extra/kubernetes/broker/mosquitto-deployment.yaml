@@ -1,0 +1,56 @@
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: maestro-broker
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      component: broker
+      app: maestro
+  template:
+    metadata:
+      labels:
+        component: broker
+        app: maestro
+    spec:
+      affinity:
+        nodeAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - weight: 1
+              preference:
+                matchExpressions:
+                  - key: nodetype
+                    operator: In
+                    values:
+                      - maestroperf
+      containers:
+        - name: broker
+          image: eclipse-mosquitto:1.4.12
+          ports:
+            - name: mqtt
+              containerPort: 1883
+          volumeMounts:
+            - mountPath: /mosquitto/log
+              name: log
+            - mountPath: /mosquitto/data
+              name: data
+            - mountPath: /mosquitto/config
+              name: config
+      volumes:
+        - name: config
+          configMap:
+            name: broker-config
+        - name: log
+          emptyDir: {}
+        - name: data
+          emptyDir: {}
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: broker-config
+data:
+  mosquitto.conf: |
+    log_dest stdout

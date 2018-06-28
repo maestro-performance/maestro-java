@@ -1,0 +1,10 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: client-config
+data:
+  sendReceiveUrl: amqp://messaging.myproject.svc:5672/q1
+  messageSize: "256"
+  testDuration: "30"
+  testCase: /test-scripts/FixedRateTest.groovy
+  reportFolder: /maestro/reports/test1
