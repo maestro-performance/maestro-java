@@ -57,8 +57,14 @@ public class AbstractMaestroExecutor implements Runnable {
         logger.debug("Connecting the Maestro broker");
         this.topics = topics;
 
+
         maestroPeer.connect();
-        maestroPeer.subscribe(topics);
+        if (topics == null) {
+            logger.error("Trying to subscribe to a null topic");
+        }
+        else {
+            maestroPeer.subscribe(topics);
+        }
     }
 
     /**
