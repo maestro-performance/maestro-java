@@ -16,12 +16,10 @@
 
 package org.maestro.worker.jms;
 
-import org.maestro.common.URLQuery;
 import org.maestro.common.content.ContentStrategy;
 import org.maestro.common.jms.SenderClient;
 
 import javax.jms.*;
-import java.net.URI;
 import java.nio.ByteBuffer;
 
 final class JMSSenderClient extends JMSClient implements SenderClient {
@@ -34,20 +32,19 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
     public void start() throws Exception {
         super.start();
         try {
-            this.session = connection.createSession(false, Session.AUTO_ACKNOWLEDGE);
+            this.session = connection.createSession(false, opts.getSessionMode());
             this.producer = session.createProducer(destination);
-            final URLQuery urlQuery = new URLQuery(new URI(url));
-            final boolean durable = urlQuery.getBoolean("durable", false);
+            final boolean durable = opts.isDurable();
             if (durable) {
                 producer.setDeliveryMode(DeliveryMode.PERSISTENT);
             } else {
                 producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
             }
-            final Integer priority = urlQuery.getInteger("priority", null);
+            final Integer priority = opts.getPriority();
             if (priority != null) {
                 producer.setPriority(priority);
             }
-            final Long ttl = urlQuery.getLong("ttl", null);
+            final Long ttl = opts.getTtl();
             if (ttl != null) {
                 producer.setTimeToLive(ttl);
             }

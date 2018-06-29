@@ -26,7 +26,6 @@
 
 package org.maestro.worker.jms;
 
-import org.maestro.common.URLQuery;
 import org.maestro.common.jms.Client;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -34,7 +33,6 @@ import org.slf4j.LoggerFactory;
 import javax.jms.Connection;
 import javax.jms.ConnectionFactory;
 import javax.jms.Destination;
-import java.net.URI;
 
 /**
  * A basic JMS client
@@ -45,22 +43,9 @@ class JMSClient implements Client {
     protected String url = null;
     protected Destination destination = null;
     protected Connection connection = null;
+    protected JmsOptions opts;
 
     protected int number = -1;
-
-    // JMS urls cannot have the query part
-    private String filterURL() {
-        String filteredUrl;
-
-        int queryStartIndex = url.indexOf('?');
-        if (queryStartIndex != -1) {
-            filteredUrl = url.substring(0, queryStartIndex);
-        } else {
-            filteredUrl = url;
-        }
-
-        return filteredUrl;
-    }
 
     public int getNumber() {
         return number;
@@ -77,22 +62,17 @@ class JMSClient implements Client {
         Destination destination;
         Connection connection = null;
         try {
-            final URI uri = new URI(url);
-            final String path = uri.getPath();
-            final String connectionUrl = filterURL().replace(path,"");
-            final URLQuery urlQuery = new URLQuery(uri);
+            opts = new JmsOptions(url);
+            final JMSProtocol protocol = opts.getProtocol();
+            logger.debug("JMS client is running test with the protocol {}", protocol.name());
 
-            final String protocolName = urlQuery.getString("protocol", JMSProtocol.AMQP.name());
-            final JMSProtocol protocol = JMSProtocol.valueOf(protocolName);
-            logger.debug("JMS client is running test with the protocol {}", protocolName);
-
-            final ConnectionFactory factory = protocol.createConnectionFactory(connectionUrl);
+            final ConnectionFactory factory = protocol.createConnectionFactory(opts.getConnectionUrl());
             logger.trace("Connection factory created");
 
-            String destinationName = path.substring(1);
+            String destinationName = opts.getPath().substring(1);
             logger.debug("Requested destination name: {}", destinationName);
 
-            final Integer configuredLimitDestinations = urlQuery.getInteger("limitDestinations", null);
+            final Integer configuredLimitDestinations = opts.getConfiguredLimitDestinations();
 
             if (configuredLimitDestinations != null) {
                 if (number < 0) {
@@ -113,7 +93,7 @@ class JMSClient implements Client {
             }
 
             //doesn't need to use any enum yet
-            final String type = urlQuery.getString("type", "queue");
+            final String type = opts.getType();
 
             switch (type) {
                 case "queue":
