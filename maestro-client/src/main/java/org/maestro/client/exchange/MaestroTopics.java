@@ -56,6 +56,11 @@ public class MaestroTopics {
     public final static String AGENT_DAEMONS = "/mpt/daemon/agent";
 
     /**
+     * This topic is used to publish the peer responses for a maestro request
+     */
+    public final static String PEER_TOPIC = "/mpt/peer";
+
+    /**
      * These topics are the ones subscribed by a Maestro client
      */
     public final static String[] MAESTRO_TOPICS = {MAESTRO_TOPIC, NOTIFICATION_TOPIC};
@@ -81,4 +86,27 @@ public class MaestroTopics {
     public final static String[] MAESTRO_AGENT_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC, AGENT_DAEMONS};
 
     private MaestroTopics() {}
+
+    /**
+     * Returns the full list of topics for a peer including the public and private topics (those that are specific
+     * to that peer)
+     * @param publicTopics The topics that are public to all peers
+     * @param clientName
+     * @param host
+     * @param id
+     * @return
+     */
+    public static String[] peerTopics(final String[] publicTopics, final String clientName, final String host,
+                                      final String id) {
+        String[] ret = new String[publicTopics.length + 2];
+
+        ret[0] = PEER_TOPIC + "/by-name/" + host + "/" + clientName;
+        ret[1] = PEER_TOPIC + "/by-id" + id;
+
+        for (int i = 0; i < publicTopics.length; i++) {
+            ret[i+2] = publicTopics[i];
+        }
+
+        return ret;
+    }
 }

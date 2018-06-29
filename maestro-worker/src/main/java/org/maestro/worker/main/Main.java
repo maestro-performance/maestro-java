@@ -157,7 +157,10 @@ public class Main {
                     maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDir, clazz, dataServer);
                     executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
-                    executor.start(MaestroTopics.MAESTRO_SENDER_TOPICS);
+                    String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_SENDER_TOPICS, maestroPeer.getClientName(),
+                            host, maestroPeer.getId());
+
+                    executor.start(topics);
                     executor.run();
                     break;
                 }
@@ -167,7 +170,10 @@ public class Main {
                     maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDir, clazz, dataServer);
                     executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
-                    executor.start(MaestroTopics.MAESTRO_RECEIVER_TOPICS);
+                    String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_RECEIVER_TOPICS, maestroPeer.getClientName(),
+                            host, maestroPeer.getId());
+
+                    executor.start(topics);
                     executor.run();
                     break;
                 }
@@ -175,7 +181,10 @@ public class Main {
                     maestroPeer = new VoidWorkerManager(maestroUrl, role, host, dataServer);
                     executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
-                    executor.start(MaestroTopics.MAESTRO_RECEIVER_TOPICS);
+                    String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_RECEIVER_TOPICS, maestroPeer.getClientName(),
+                            host, maestroPeer.getId());
+
+                    executor.start(topics);
                     executor.run();
                     break;
                 }

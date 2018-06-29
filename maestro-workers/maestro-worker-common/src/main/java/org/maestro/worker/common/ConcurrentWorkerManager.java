@@ -353,7 +353,6 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         File[] files = lastLogDir.listFiles();
 
         for (File file : files) {
-//            File testProperties = new File(lastLogDir, "test.properties");
             getClient().logResponse(file);
 
         }

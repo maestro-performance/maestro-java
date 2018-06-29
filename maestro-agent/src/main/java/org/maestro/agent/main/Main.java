@@ -132,7 +132,10 @@ public class Main {
             maestroPeer = new MaestroAgent(maestroUrl, "agent", host, dataServer);
             executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
-            executor.start(MaestroTopics.MAESTRO_AGENT_TOPICS);
+            String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_AGENT_TOPICS, maestroPeer.getClientName(),
+                    host, maestroPeer.getId());
+
+            executor.start(topics);
             executor.run();
 
             System.out.println("Finished execution ...");
