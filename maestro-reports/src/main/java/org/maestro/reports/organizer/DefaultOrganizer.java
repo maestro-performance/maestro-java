@@ -25,10 +25,9 @@ import java.io.File;
  * ${basedir}/${host type}/${result type dir}/${test number}/ (ie.: /tmp/sender/failed/0/)
  */
 public class DefaultOrganizer implements Organizer {
-    private final String baseDir;
-    private TestTracker tracker = new TestTracker();
-
-    private String resultType;
+    protected final String baseDir;
+    protected TestTracker tracker = new TestTracker();
+    protected String resultType;
 
     public DefaultOrganizer(final String baseDir) {
         this.baseDir = baseDir;
@@ -51,12 +50,15 @@ public class DefaultOrganizer implements Organizer {
         return tracker;
     }
 
+    protected String combine(final String hostType, final String host) {
+        return baseDir + File.separator + hostType + File.separator + resultType + File.separator +
+                tracker.currentTestString() + File.separator + host;
+    }
+
     @Override
     public String organize(String address, String hostType) {
         String host = URLUtils.getHostnameFromURL(address);
 
-
-        return baseDir + File.separator + hostType + File.separator + resultType + File.separator +
-                tracker.currentTestString() + File.separator + host;
+        return combine(hostType, host);
     }
 }
