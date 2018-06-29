@@ -16,6 +16,7 @@
 
 package org.maestro.client;
 
+import org.apache.commons.io.FileUtils;
 import org.maestro.client.exchange.MaestroMqttClient;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.notes.*;
@@ -27,6 +28,8 @@ import org.maestro.common.exceptions.MaestroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class MaestroReceiverClient extends MaestroMqttClient implements MaestroReceiver {
@@ -160,6 +163,35 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
             super.publish(MaestroTopics.MAESTRO_TOPIC, getResponse, 0, false);
         } catch (Exception e) {
             logger.error("Unable to publish the get response: {}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Sends log files via Maestro broker
+     * @param logFile
+     */
+    public void logResponse(final File logFile) {
+        LogResponse logResponse = new LogResponse();
+
+        logResponse.setName(clientName + "@" + host);
+        logResponse.setId(id);
+
+
+        try {
+            long fileSize = FileUtils.sizeOf(logFile);
+
+            if (fileSize > Integer.MAX_VALUE) {
+                logger.error("Unable to send file because it is bigger than supported by the protocol");
+                replyInternalError();
+            }
+            else {
+                logResponse.setSize((int) fileSize);
+                logResponse.setData(FileUtils.readFileToByteArray(logFile));
+
+                super.publish(MaestroTopics.MAESTRO_TOPIC, logResponse);
+            }
+        } catch (IOException e) {
+            logger.error("Unable to send file: {}", e.getMessage(), e);
         }
     }
 }

@@ -42,6 +42,7 @@ import java.util.function.Supplier;
  */
 public class JMSSenderWorker implements MaestroSenderWorker {
     private static final Logger logger = LoggerFactory.getLogger(JMSSenderWorker.class);
+
     private ContentStrategy contentStrategy;
     private TestDuration duration;
     private final OneToOneWorkerChannel workerChannel;

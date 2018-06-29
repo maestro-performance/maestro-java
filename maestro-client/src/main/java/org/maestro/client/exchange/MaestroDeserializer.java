@@ -79,6 +79,9 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_USER_COMMAND_1: {
                 return new UserCommand1Response(unpacker);
             }
+            case MAESTRO_NOTE_LOG: {
+                return new LogResponse(unpacker);
+            }
             case MAESTRO_NOTE_START_RECEIVER:
             case MAESTRO_NOTE_STOP_RECEIVER:
             case MAESTRO_NOTE_START_SENDER:
@@ -152,6 +155,9 @@ public class MaestroDeserializer {
             }
             case MAESTRO_NOTE_AGENT_SOURCE: {
                 return new AgentSourceRequest(unpacker);
+            }
+            case MAESTRO_NOTE_LOG: {
+                return new LogRequest();
             }
             default: {
                 throw new MalformedNoteException("Invalid request command: " + tmpCommand);

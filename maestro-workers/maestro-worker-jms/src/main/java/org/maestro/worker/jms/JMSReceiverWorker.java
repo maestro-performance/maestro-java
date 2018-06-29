@@ -40,7 +40,6 @@ import java.util.function.Supplier;
  * A sender worker for JMS-based testing
  */
 public class JMSReceiverWorker implements MaestroReceiverWorker {
-
     private static final Logger logger = LoggerFactory.getLogger(JMSReceiverWorker.class);
 
     private TestDuration duration;

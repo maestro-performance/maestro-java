@@ -346,4 +346,16 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         logger.debug("Stopping test execution after a peer reported a test failure");
         container.stop();
     }
+
+    @Override
+    public void handle(LogRequest note) {
+        File lastLogDir = TestLogUtils.lastTestLogDir(logDir);
+        File[] files = lastLogDir.listFiles();
+
+        for (File file : files) {
+//            File testProperties = new File(lastLogDir, "test.properties");
+            getClient().logResponse(file);
+
+        }
+    }
 }

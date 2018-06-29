@@ -485,6 +485,26 @@ public final class Maestro implements MaestroRequester {
     }
 
     /**
+     * Sends a log request
+     * @throws MaestroConnectionException if unable to send the MQTT request
+     */
+    public void logRequest() throws MaestroConnectionException {
+        logRequest(MaestroTopics.ALL_DAEMONS);
+    }
+
+
+    /**
+     * Sends a log request
+     * @param topic the topic to send the request to
+     * @throws MaestroConnectionException if unable to send the MQTT request
+     */
+    public void logRequest(final String topic) throws MaestroConnectionException {
+        LogRequest maestroNote = new LogRequest();
+
+        maestroClient.publish(topic, maestroNote);
+    }
+
+    /**
      * Collect replies
      * @return A list of serialized maestro replies
      */

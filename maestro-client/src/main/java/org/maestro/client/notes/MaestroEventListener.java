@@ -41,4 +41,6 @@ public interface MaestroEventListener {
 
     void handle(GetRequest note);
 
+    void handle(LogRequest note);
+
 }

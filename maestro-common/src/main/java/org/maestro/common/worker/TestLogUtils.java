@@ -49,6 +49,10 @@ public class TestLogUtils {
         return lastLogDir;
     }
 
+    public static File lastTestLogDir(final File logDir) {
+        return new File(logDir, "last");
+    }
+
     public static File nextTestLogDir(final File logDir) {
         File testLogDir = new File(logDir, "0");
         int count = 0;

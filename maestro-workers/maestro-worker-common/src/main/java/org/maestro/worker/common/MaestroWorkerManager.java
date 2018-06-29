@@ -278,6 +278,11 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
                 client.getResponse(response);
             }
         }
+    }
 
+    @Override
+    public void handle(LogRequest note) {
+        // TODO
+        getClient().replyInternalError();
     }
 }
