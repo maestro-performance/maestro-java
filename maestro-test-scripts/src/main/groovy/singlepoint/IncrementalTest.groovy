@@ -16,7 +16,8 @@
 package singlepoint
 
 import org.maestro.client.Maestro
-import org.maestro.reports.ReportsDownloader
+import org.maestro.reports.downloaders.DefaultDownloader
+import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.incremental.IncrementalTestExecutor
 import org.maestro.tests.incremental.IncrementalTestProfile
 import org.maestro.tests.incremental.singlepoint.SimpleTestProfile
@@ -32,7 +33,7 @@ LogConfigurator.configureLogLevel(logLevel)
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new ReportsDownloader(args[0])
+ReportsDownloader reportsDownloader = new DefaultDownloader(args[0])
 
 IncrementalTestProfile testProfile = new SimpleTestProfile()
 

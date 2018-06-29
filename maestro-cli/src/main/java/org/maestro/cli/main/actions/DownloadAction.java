@@ -23,9 +23,10 @@ import org.maestro.common.LogConfigurator;
 import org.maestro.common.NodeUtils;
 import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.reports.downloaders.DefaultDownloader;
 import org.maestro.reports.InspectorReportResolver;
 import org.maestro.reports.InterconnectInspectorReportResolver;
-import org.maestro.reports.ReportsDownloader;
+import org.maestro.reports.downloaders.ReportsDownloader;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -139,7 +140,7 @@ public class DownloadAction extends Action {
 
         try {
             for (Server server : servers) {
-                ReportsDownloader rd = new ReportsDownloader(directory);
+                ReportsDownloader rd = new DefaultDownloader(directory);
 
                 if (customResolver.equals("InterconnectInspector")) {
                     rd.addReportResolver("inspector", new InterconnectInspectorReportResolver());

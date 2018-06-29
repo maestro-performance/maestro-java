@@ -17,7 +17,7 @@
 package org.maestro.tests.flex;
 
 import org.maestro.client.Maestro;
-import org.maestro.reports.ReportsDownloader;
+import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.AbstractTestProfile;
 import org.slf4j.Logger;

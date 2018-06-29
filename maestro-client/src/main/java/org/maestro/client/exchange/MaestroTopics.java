@@ -109,4 +109,25 @@ public class MaestroTopics {
 
         return ret;
     }
+
+
+    /**
+     * Get the peer specific topic by name and host
+     * @param clientName
+     * @param host
+     * @return
+     */
+    public static String peerTopic(final String clientName, final String host) {
+        return PEER_TOPIC + "/by-name/" + host + "/" + clientName;
+    }
+
+
+    /**
+     * Get the peer specific topic by id
+     * @param id
+     * @return
+     */
+    public static String peerTopic(final String id) {
+        return PEER_TOPIC + "/by-id/" + id;
+    }
 }

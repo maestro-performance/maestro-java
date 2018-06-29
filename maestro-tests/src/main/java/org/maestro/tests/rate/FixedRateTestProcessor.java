@@ -16,7 +16,7 @@
 
 package org.maestro.tests.rate;
 
-import org.maestro.reports.ReportsDownloader;
+import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestProcessor;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.slf4j.Logger;

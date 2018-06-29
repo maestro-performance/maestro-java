@@ -5,10 +5,12 @@ import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
-import java.util.Arrays;
 
 public class LogResponse extends MaestroResponse {
-    private String name;
+    private LocationType locationType;
+    private String fileName;
+    private int index;
+    private int total;
     private int size;
     private byte[] data;
 
@@ -16,23 +18,48 @@ public class LogResponse extends MaestroResponse {
         super(MaestroCommand.MAESTRO_NOTE_LOG);
     }
 
-    public LogResponse(MessageUnpacker unpacker) throws IOException {
+    public LogResponse(final MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_LOG, unpacker);
 
-        this.name = unpacker.unpackString();
+        this.locationType = LocationType.byCode(unpacker.unpackInt());
+        this.fileName = unpacker.unpackString();
+        this.index = unpacker.unpackInt();
+        this.total = unpacker.unpackInt();
         this.size = unpacker.unpackBinaryHeader();
         this.data = new byte[this.size];
         unpacker.readPayload(this.data);
     }
 
-    @Override
-    public String getName() {
-        return name;
+    public LocationType getLocationType() {
+        return locationType;
     }
 
-    @Override
-    public void setName(String name) {
-        this.name = name;
+    public void setLocationType(LocationType locationType) {
+        this.locationType = locationType;
+    }
+
+    public String getFileName() {
+        return fileName;
+    }
+
+    public void setFileName(final String fileName) {
+        this.fileName = fileName;
+    }
+
+    public int getIndex() {
+        return index;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getTotal() {
+        return total;
+    }
+
+    public void setTotal(int total) {
+        this.total = total;
     }
 
     public void setSize(int size) {
@@ -55,7 +82,11 @@ public class LogResponse extends MaestroResponse {
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
-        packer.packString(this.name);
+        packer.packInt(this.locationType.code);
+        packer.packString(this.fileName);
+        packer.packInt(this.index);
+        packer.packInt(this.total);
+
         packer.packBinaryHeader(this.size);
         packer.writePayload(this.data);
 
@@ -65,7 +96,7 @@ public class LogResponse extends MaestroResponse {
     @Override
     public String toString() {
         return "LogResponse{" +
-                "name='" + name + '\'' +
+                "name='" + fileName + '\'' +
                 ", size=" + size +
                 ", data=" + new String(data) + // Arrays.toString(data) +
                 "} " + super.toString();

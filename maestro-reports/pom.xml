@@ -43,6 +43,12 @@
 
         <dependency>
             <groupId>org.maestro</groupId>
+            <artifactId>maestro-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
             <artifactId>maestro-plotter-common</artifactId>
             <version>${project.version}</version>
         </dependency>

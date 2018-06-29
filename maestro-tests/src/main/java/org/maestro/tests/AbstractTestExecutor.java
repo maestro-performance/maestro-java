@@ -23,12 +23,11 @@ import org.maestro.client.notes.PingResponse;
 import org.maestro.common.NodeUtils;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
-import org.maestro.reports.ReportsDownloader;
+import org.maestro.reports.downloaders.ReportsDownloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.function.Predicate;
 
 /**
  * A simple test executor that should be extensible for most usages

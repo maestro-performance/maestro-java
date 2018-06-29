@@ -488,8 +488,8 @@ public final class Maestro implements MaestroRequester {
      * Sends a log request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void logRequest() throws MaestroConnectionException {
-        logRequest(MaestroTopics.ALL_DAEMONS);
+    public void logRequest(final LocationType locationType, final String typeName) throws MaestroConnectionException {
+        logRequest(MaestroTopics.ALL_DAEMONS, locationType, typeName);
     }
 
 
@@ -498,8 +498,13 @@ public final class Maestro implements MaestroRequester {
      * @param topic the topic to send the request to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void logRequest(final String topic) throws MaestroConnectionException {
+    public void logRequest(final String topic, final LocationType locationType, final String typeName) throws MaestroConnectionException {
         LogRequest maestroNote = new LogRequest();
+
+        maestroNote.setLocationType(locationType);
+        if (typeName != null) {
+            maestroNote.setTypeName(typeName);
+        }
 
         maestroClient.publish(topic, maestroNote);
     }

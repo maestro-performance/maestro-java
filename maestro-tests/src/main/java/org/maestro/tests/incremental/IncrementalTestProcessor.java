@@ -16,7 +16,7 @@
 
 package org.maestro.tests.incremental;
 
-import org.maestro.reports.ReportsDownloader;
+import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

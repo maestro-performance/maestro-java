@@ -17,7 +17,7 @@
 package org.maestro.tests.flex;
 
 import org.maestro.client.notes.TestFailedNotification;
-import org.maestro.reports.ReportsDownloader;
+import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestProcessor;
 import org.maestro.tests.AbstractTestProfile;
 

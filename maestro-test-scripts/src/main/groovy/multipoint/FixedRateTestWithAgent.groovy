@@ -20,9 +20,10 @@ import org.maestro.client.Maestro
 import org.maestro.client.exchange.MaestroTopics
 import org.maestro.common.LogConfigurator
 import org.maestro.common.duration.TestDurationBuilder
+import org.maestro.reports.downloaders.DefaultDownloader
 import org.maestro.reports.InspectorReportResolver
 import org.maestro.reports.InterconnectInspectorReportResolver
-import org.maestro.reports.ReportsDownloader
+import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.MultiPointProfile
 import org.maestro.tests.rate.FixedRateTestExecutor
 import org.maestro.tests.rate.multipoint.FixedRateMultipointTestProfile
@@ -89,7 +90,7 @@ LogConfigurator.configureLogLevel(logLevel)
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new ReportsDownloader(args[0])
+ReportsDownloader reportsDownloader = new DefaultDownloader(args[0])
 
 FixedRateMultipointTestProfile testProfile = new FixedRateMultipointTestProfile()
 

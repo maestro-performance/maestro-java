@@ -26,7 +26,7 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.NodeUtils;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.duration.DurationCount;
-import org.maestro.reports.ReportsDownloader;
+import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.slf4j.Logger;

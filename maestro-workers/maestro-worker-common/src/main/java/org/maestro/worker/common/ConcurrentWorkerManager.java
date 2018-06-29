@@ -348,13 +348,35 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     }
 
     @Override
-    public void handle(LogRequest note) {
-        File lastLogDir = TestLogUtils.lastTestLogDir(logDir);
-        File[] files = lastLogDir.listFiles();
+    public void handle(final LogRequest note) {
+        logger.debug("Log request received");
+        File logSubDir;
 
+        switch (note.getLocationType()) {
+            case LAST_FAILED: {
+                logSubDir = TestLogUtils.lastFailedTestLogDir(logDir);
+                break;
+            }
+            case LAST_SUCCESS: {
+                logSubDir = TestLogUtils.lastSuccessfulTestLogDir(logDir);
+                break;
+            }
+
+            case ANY: {
+                String name = note.getTypeName();
+                logSubDir = TestLogUtils.anyTestLogDir(logDir, name);
+                break;
+            }
+            case LAST:
+            default: {
+                logSubDir = TestLogUtils.lastTestLogDir(logDir);
+                break;
+            }
+        }
+
+        File[] files = logSubDir.listFiles();
         for (File file : files) {
-            getClient().logResponse(file);
-
+            getClient().logResponse(file, note.getLocationType());
         }
     }
 }

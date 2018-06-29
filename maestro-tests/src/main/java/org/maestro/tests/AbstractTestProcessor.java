@@ -22,7 +22,7 @@ import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.NodeUtils;
 import org.maestro.common.client.notes.GetOption;
-import org.maestro.reports.ReportsDownloader;
+import org.maestro.reports.downloaders.ReportsDownloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

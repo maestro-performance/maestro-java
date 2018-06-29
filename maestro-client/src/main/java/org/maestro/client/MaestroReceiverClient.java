@@ -170,12 +170,11 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
      * Sends log files via Maestro broker
      * @param logFile
      */
-    public void logResponse(final File logFile) {
+    public void logResponse(final File logFile, final LocationType locationType) {
         LogResponse logResponse = new LogResponse();
 
         logResponse.setName(clientName + "@" + host);
         logResponse.setId(id);
-
 
         try {
             long fileSize = FileUtils.sizeOf(logFile);
@@ -186,6 +185,10 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
             }
             else {
                 logResponse.setSize((int) fileSize);
+                logResponse.setLocationType(locationType);
+                logResponse.setFileName(logFile.getName());
+                logResponse.setIndex(0);
+                logResponse.setTotal(0);
                 logResponse.setData(FileUtils.readFileToByteArray(logFile));
 
                 super.publish(MaestroTopics.MAESTRO_TOPIC, logResponse);

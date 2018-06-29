@@ -18,7 +18,8 @@ package multipoint
 
 import org.maestro.client.Maestro
 import org.maestro.client.exchange.MaestroTopics
-import org.maestro.reports.ReportsDownloader
+import org.maestro.reports.downloaders.DefaultDownloader
+import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.MultiPointProfile
 import org.maestro.tests.incremental.IncrementalTestExecutor
 import org.maestro.tests.incremental.IncrementalTestProfile
@@ -37,7 +38,7 @@ LogConfigurator.configureLogLevel(logLevel)
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new ReportsDownloader(args[0])
+ReportsDownloader reportsDownloader = new DefaultDownloader(args[0])
 
 IncrementalTestProfile testProfile = new SimpleTestProfile()
 

@@ -53,6 +53,18 @@ public class TestLogUtils {
         return new File(logDir, "last");
     }
 
+    public static File lastFailedTestLogDir(final File logDir) {
+        return new File(logDir, "lastFailed");
+    }
+
+    public static File lastSuccessfulTestLogDir(final File logDir) {
+        return new File(logDir, "lastSuccessful");
+    }
+
+    public static File anyTestLogDir(final File logDir, final String name) {
+        return new File(logDir, name);
+    }
+
     public static File nextTestLogDir(final File logDir) {
         File testLogDir = new File(logDir, "0");
         int count = 0;

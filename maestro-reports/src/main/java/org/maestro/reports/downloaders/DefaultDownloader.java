@@ -1,24 +1,12 @@
-/*
- *  Copyright 2017 Otavio R. Piske <angusyoung@gmail.com>
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
-
-package org.maestro.reports;
+package org.maestro.reports.downloaders;
 
 import org.apache.http.HttpStatus;
+import org.maestro.common.HostTypes;
 import org.maestro.contrib.utils.Downloader;
 import org.maestro.contrib.utils.resource.exceptions.ResourceExchangeException;
+import org.maestro.reports.ReceiverReportResolver;
+import org.maestro.reports.ReportResolver;
+import org.maestro.reports.SenderReportResolver;
 import org.maestro.reports.organizer.DefaultOrganizer;
 import org.maestro.reports.organizer.Organizer;
 import org.slf4j.Logger;
@@ -28,15 +16,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-/**
- * A reports downloader that collects the reports after the test is complete or on demand via CLI
- */
-public class ReportsDownloader {
-    private static final Logger logger = LoggerFactory.getLogger(ReportsDownloader.class);
-
-    private static final String SENDER_HOST_TYPE = "sender";
-    private static final String RECEIVER_HOST_TYPE = "receiver";
-    private static final String INSPECTOR_HOST_TYPE = "inspector";
+public class DefaultDownloader implements ReportsDownloader {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultDownloader.class);
 
     private Map<String, ReportResolver> resolverMap = new HashMap<>();
 
@@ -46,29 +27,25 @@ public class ReportsDownloader {
      * Constructor
      * @param baseDir
      */
-    public ReportsDownloader(final String baseDir) {
+    public DefaultDownloader(final String baseDir) {
         this.organizer = new DefaultOrganizer(baseDir);
 
-        resolverMap.put(SENDER_HOST_TYPE, new SenderReportResolver());
-        resolverMap.put(RECEIVER_HOST_TYPE, new ReceiverReportResolver());
+        resolverMap.put(HostTypes.SENDER_HOST_TYPE, new SenderReportResolver());
+        resolverMap.put(HostTypes.RECEIVER_HOST_TYPE, new ReceiverReportResolver());
     }
 
-    public ReportsDownloader(final Organizer organizer) {
+    public DefaultDownloader(final Organizer organizer) {
         this.organizer = organizer;
 
-        resolverMap.put(SENDER_HOST_TYPE, new SenderReportResolver());
-        resolverMap.put(RECEIVER_HOST_TYPE, new ReceiverReportResolver());
+        resolverMap.put(HostTypes.SENDER_HOST_TYPE, new SenderReportResolver());
+        resolverMap.put(HostTypes.RECEIVER_HOST_TYPE, new ReceiverReportResolver());
     }
 
     public Organizer getOrganizer() {
         return organizer;
     }
 
-    /**
-     * Add a new report resolver with the given host type
-     * @param hostType the host type
-     * @param reportResolver the report resolver to use for the host type
-     */
+
     public void addReportResolver(final String hostType, final ReportResolver reportResolver) {
         resolverMap.put(hostType, reportResolver);
     }
@@ -159,7 +136,7 @@ public class ReportsDownloader {
         List<String> files = reportResolver.getTestFiles(host, testNumber);
         for (String url : files) {
             try {
-                downloadReport(url, SENDER_HOST_TYPE);
+                downloadReport(url, HostTypes.SENDER_HOST_TYPE);
             }
             catch (ResourceExchangeException e) {
                 if (e.getCode() == HttpStatus.SC_NOT_FOUND) {

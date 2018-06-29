@@ -157,7 +157,7 @@ public class MaestroDeserializer {
                 return new AgentSourceRequest(unpacker);
             }
             case MAESTRO_NOTE_LOG: {
-                return new LogRequest();
+                return new LogRequest(unpacker);
             }
             default: {
                 throw new MalformedNoteException("Invalid request command: " + tmpCommand);
