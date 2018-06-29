@@ -53,12 +53,8 @@ containing the scripts on creation:
     kubectl create configmap test-scripts --from-file=../../maestro-test-scripts/src/main/groovy/singlepoint
 
 Each test case is run by creating a configmap with the parameters for the test, and creating the pod
-that runs the client and collects the reports. The reports are stored in a persistent volume that
-you can access after running the client.
-
-To create the persistence:
-    
-    kubectl apply -f client/pvc.yaml
+that runs the client and collects the reports. The reports are stored in a pod volume that
+you can access through a sidecar container after running the client.
 
 To run a test:
 
@@ -67,11 +63,12 @@ To run a test:
 
 The test is finished once the job is marked as complete. If the test fails it will be rerun. You can wait for the job to complete with a command like this:
 
-    until kubectl get jobs maestro-client -o jsonpath='{.status.conditions[?(@.type=="Complete")].status}' | grep True ; do sleep 1 ; done
+    until kubectl get pod maestro-client -o jsonpath='{.status.containerStatuses[?(@.name=="client")].state.terminated.reason}' | grep Completed ; do sleep 1; done
     
 Once the job is complete, collect the reports from the persistent volume and delete the job :
 
-    kubectl delete job maestro-client
+    kubectl cp -c idle maestro-client:/maestro/reports/ reports/
+    kubectl delete pod maestro-client
 
 You can now start a new test case by replacing the client-config configmap with a new test case, and
-recreate the job.
+recreate the pod

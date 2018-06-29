@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: sender-config
+data:
+  log4j.properties: |
+    log4j.appender.stdout=org.apache.log4j.ConsoleAppender
+    log4j.appender.stdout.Target=System.out
+    log4j.appender.stdout.layout=org.apache.log4j.PatternLayout
+    log4j.appender.stdout.layout.ConversionPattern=%d{HH:mm:ss,SSS} %c - %m%n
+    log4j.rootLogger=INFO, stdout
+    log4j.additivity.rootLogger=false
+    log4j.logger.org.maestro=DEBUG, stdout
+    log4j.additivity.org.maestro=false
+  maestro-worker.properties: |
+    data.server.port=8000

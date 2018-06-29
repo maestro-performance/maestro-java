@@ -3,8 +3,8 @@ kind: ConfigMap
 metadata:
   name: client-config
 data:
-  sendReceiveUrl: amqp://messaging.myproject.svc:5672/q1
+  sendReceiveUrl: amqp://messaging.myproject.svc:5672/queue
   messageSize: "256"
-  testDuration: "30"
+  testDuration: "0d0h0m30s"
   testCase: /test-scripts/FixedRateTest.groovy
   reportFolder: /maestro/reports/test1
