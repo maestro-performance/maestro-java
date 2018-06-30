@@ -80,7 +80,9 @@ public class MaestroDeserializer {
                 return new UserCommand1Response(unpacker);
             }
             case MAESTRO_NOTE_LOG: {
-                return new LogResponse(unpacker);
+                LogResponseJoiner instance = LogResponseJoiner.getInstance();
+
+                return instance.join(new LogResponse(unpacker));
             }
             case MAESTRO_NOTE_START_RECEIVER:
             case MAESTRO_NOTE_STOP_RECEIVER:

@@ -176,25 +176,10 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         logResponse.setName(clientName + "@" + host);
         logResponse.setId(id);
 
-        try {
-            long fileSize = FileUtils.sizeOf(logFile);
+        logResponse.setLocationType(locationType);
+        logResponse.setFileName(logFile.getName());
+        logResponse.setFile(logFile);
 
-            if (fileSize > Integer.MAX_VALUE) {
-                logger.error("Unable to send file because it is bigger than supported by the protocol");
-                replyInternalError();
-            }
-            else {
-                logResponse.setSize((int) fileSize);
-                logResponse.setLocationType(locationType);
-                logResponse.setFileName(logFile.getName());
-                logResponse.setIndex(0);
-                logResponse.setTotal(0);
-                logResponse.setData(FileUtils.readFileToByteArray(logFile));
-
-                super.publish(MaestroTopics.MAESTRO_TOPIC, logResponse);
-            }
-        } catch (IOException e) {
-            logger.error("Unable to send file: {}", e.getMessage(), e);
-        }
+        super.publish(MaestroTopics.MAESTRO_TOPIC, logResponse);
     }
 }

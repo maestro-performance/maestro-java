@@ -104,23 +104,25 @@ public class MaestroMqttClient implements MaestroClient {
     protected void publish(final String topic, final MaestroNote note, int qos, boolean retained) throws
             MalformedNoteException, MaestroConnectionException
     {
-        final byte[] bytes;
-        try {
-            bytes = note.serialize();
-        } catch (IOException e) {
-            throw new MalformedNoteException(e.getMessage());
-        }
-
-        try {
-            if (!mqttClient.isConnected()) {
-                logger.warn("The client is disconnected ... reconnecting");
-                mqttClient.reconnect();
+        do {
+            final byte[] bytes;
+            try {
+                bytes = note.serialize();
+            } catch (IOException e) {
+                throw new MalformedNoteException(e.getMessage());
             }
 
-            mqttClient.publish(topic, bytes, qos, retained);
-        } catch (MqttException e) {
-            throw new MaestroConnectionException("Unable to publish message: " + e.getMessage(), e);
-        }
+            try {
+                if (!mqttClient.isConnected()) {
+                    logger.warn("The client is disconnected ... reconnecting");
+                    mqttClient.reconnect();
+                }
+
+                mqttClient.publish(topic, bytes, qos, retained);
+            } catch (MqttException e) {
+                throw new MaestroConnectionException("Unable to publish message: " + e.getMessage(), e);
+            }
+        } while (note.hasNext());
     }
 
     /**

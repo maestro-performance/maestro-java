@@ -21,7 +21,7 @@
 @Grab(group='org.maestro', module='maestro-client', version='1.3.2-SNAPSHOT')
 
 import org.maestro.client.Maestro
-import org.maestro.client.notes.LogResponse
+import org.maestro.client.notes.LocationType
 import org.maestro.common.client.notes.MaestroNote
 
 /**
@@ -44,7 +44,7 @@ maestro = new Maestro(maestroURL)
 /**
  * Issue the flush request
  */
-maestro.logRequest()
+maestro.logRequest(LocationType.LAST, null)
 
 /**
  * Collect any available response

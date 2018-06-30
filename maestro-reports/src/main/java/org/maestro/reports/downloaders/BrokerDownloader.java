@@ -67,7 +67,7 @@ public class BrokerDownloader implements ReportsDownloader {
             }
 
             try (FileOutputStream fo = new FileOutputStream(outFile)) {
-                IOUtils.write(logResponse.getData(), fo);
+                IOUtils.copy(logResponse.getLogData(), fo);
             } catch (FileNotFoundException e) {
                 logger.error("Unable to save the file: {}", e.getMessage(), e);
             } catch (IOException e) {
