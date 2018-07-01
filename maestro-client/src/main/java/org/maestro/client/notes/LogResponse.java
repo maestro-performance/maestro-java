@@ -47,6 +47,14 @@ public class LogResponse extends MaestroResponse {
         this.size = unpacker.unpackInt();
         this.fileSize = unpacker.unpackLong();
 
+        int dataSize = unpacker.unpackBinaryHeader();
+        if (size != dataSize) {
+            logger.warn("The note given size {} does not match the actual data size {}. Using the data size instead",
+                    size, dataSize);
+
+            size = dataSize;
+        }
+
         data = new byte[this.size];
         unpacker.readPayload(data);
     }
@@ -132,7 +140,10 @@ public class LogResponse extends MaestroResponse {
             fi = new FileInputStream(file);
         }
 
-        fi.skip(pos);
+        if (pos > 0) {
+            fi.skip(pos);
+        }
+
         fi.read(data, 0, size);
         packer.packBinaryHeader(size);
         packer.writePayload(data, 0, size);
@@ -149,8 +160,6 @@ public class LogResponse extends MaestroResponse {
         if (logger.isTraceEnabled()) {
             logger.trace("Checking if the log response has chunks to be joined: {}", logResponse);
         }
-
-
 
         if (logResponse.index == (this.index + 1)) {
             try {
