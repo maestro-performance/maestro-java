@@ -119,6 +119,7 @@ public class MaestroMqttClient implements MaestroClient {
                 }
 
                 mqttClient.publish(topic, bytes, qos, retained);
+                note.next();
             } catch (MqttException e) {
                 throw new MaestroConnectionException("Unable to publish message: " + e.getMessage(), e);
             }

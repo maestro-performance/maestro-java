@@ -50,6 +50,11 @@ public interface MaestroNote {
 
 
     /**
+     * Moves to the next subsequent note
+     */
+    default void next() {}
+
+    /**
      * Whether the note contains content that cannot be sent
      * in a single exchange. The data navigation is done internally
      * whenever the pack method is called.

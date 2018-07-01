@@ -139,7 +139,6 @@ public class LogResponse extends MaestroResponse {
 
         pos = pos + size;
 
-        index++;
         if (!hasNext()) {
             logger.trace("Completed sending the file chunks. Closing the input stream");
             fi.close();
@@ -155,13 +154,14 @@ public class LogResponse extends MaestroResponse {
             bo = new BufferedOutputStream(new ByteArrayOutputStream());
         }
 
-        if (logResponse.index == this.index + 1) {
+        if (logResponse.index == (this.index + 1)) {
             try {
                 logger.debug("Appending new log response chunk for file {} with index {}/{} to the current one {}",
                         this.getFileName(), logResponse.index, logResponse.total, this.index);
 
                 bo.write(logResponse.data);
-                index++;
+
+                this.pos = logResponse.pos;
             } catch (IOException e) {
                 throw new MaestroException("I/O error while trying to join log responses", e);
             }
@@ -179,8 +179,17 @@ public class LogResponse extends MaestroResponse {
     }
 
     @Override
+    public void next() {
+        index++;
+    }
+
+    @Override
     public boolean hasNext() {
-        return index != total;
+        return (index < total && total > 1);
+    }
+
+    public boolean isLast() {
+        return (index == (total - 1));
     }
 
     @Override
