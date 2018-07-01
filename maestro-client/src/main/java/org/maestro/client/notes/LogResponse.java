@@ -30,7 +30,7 @@ public class LogResponse extends MaestroResponse {
 
     private long pos = 0;
     private FileInputStream fi;
-    private BufferedOutputStream bo;
+    private ByteArrayOutputStream bo;
     private byte[] data;
 
     public LogResponse() {
@@ -150,18 +150,23 @@ public class LogResponse extends MaestroResponse {
             logger.trace("Checking if the log response has chunks to be joined: {}", logResponse);
         }
 
-        if (bo == null) {
-            bo = new BufferedOutputStream(new ByteArrayOutputStream());
-        }
+
 
         if (logResponse.index == (this.index + 1)) {
             try {
+                if (bo == null) {
+                    bo = new ByteArrayOutputStream();
+
+                    bo.write(this.data);
+                }
+
                 logger.debug("Appending new log response chunk for file {} with index {}/{} to the current one {}",
                         this.getFileName(), logResponse.index, logResponse.total, this.index);
 
                 bo.write(logResponse.data);
 
                 this.pos = logResponse.pos;
+                this.data = bo.toByteArray();
             } catch (IOException e) {
                 throw new MaestroException("I/O error while trying to join log responses", e);
             }
