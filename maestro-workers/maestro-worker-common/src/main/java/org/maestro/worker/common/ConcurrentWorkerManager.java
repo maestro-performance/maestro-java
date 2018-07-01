@@ -376,6 +376,8 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
         File[] files = logSubDir.listFiles();
         for (File file : files) {
+            logger.debug("Sending log file {} with location type {}", file.getName(),
+                    note.getLocationType());
             getClient().logResponse(file, note.getLocationType());
         }
     }
