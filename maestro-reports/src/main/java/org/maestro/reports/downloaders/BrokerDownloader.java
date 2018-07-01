@@ -13,7 +13,6 @@ import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.reports.ReceiverReportResolver;
 import org.maestro.reports.ReportResolver;
 import org.maestro.reports.SenderReportResolver;
-import org.maestro.reports.organizer.DefaultOrganizer;
 import org.maestro.reports.organizer.NodeOrganizer;
 import org.maestro.reports.organizer.Organizer;
 import org.maestro.client.Maestro;
