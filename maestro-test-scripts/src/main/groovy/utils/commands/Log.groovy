@@ -21,19 +21,24 @@
 @Grab(group='org.maestro', module='maestro-client', version='1.3.2-SNAPSHOT')
 
 import org.maestro.client.Maestro
-import org.maestro.client.notes.LocationType
+import org.maestro.client.notes.GetResponse
+import org.maestro.common.LogConfigurator
+import org.maestro.common.NodeUtils
 import org.maestro.common.client.notes.MaestroNote
+import org.maestro.reports.downloaders.BrokerDownloader
 
 /**
  * This sample script shows how to use the Maestro client API to send a flush request to
  * the test cluster
  */
 
-
+LogConfigurator.debug()
 /**
  * Get the maestro broker URL via the MAESTRO_BROKER environment variable
  */
 maestroURL = System.getenv("MAESTRO_BROKER")
+
+locationType = System.getenv("LOCATION_TYPE")
 
 /**
  * Connects to the Maestro broker
@@ -41,10 +46,13 @@ maestroURL = System.getenv("MAESTRO_BROKER")
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
+
 /**
- * Issue the flush request
+ * First, register available data servers on the cluster
  */
-maestro.logRequest(LocationType.LAST, null)
+
+maestro.getDataServer();
+
 
 /**
  * Collect any available response
@@ -52,14 +60,44 @@ maestro.logRequest(LocationType.LAST, null)
 println "Collecting replies"
 List<MaestroNote> replies = maestro.collect(1000, 10)
 
+BrokerDownloader downloader = new BrokerDownloader(maestro, "/extra/opiske/tmp/maestro/broker-downloader")
+
 /**
  * Process any response given. There may be none if no peers are attached to the
  * broker
  */
 println "Processing " + replies.size() + " replies"
-replies.each { MaestroNote note ->
-    println "Available responses on the broker: " + note.toString()
+
+if (locationType == null || locationType.equals("success")) {
+
+    downloader.getOrganizer().setResultType("success")
+
+    for (MaestroNote note : replies) {
+        if (note instanceof GetResponse) {
+            GetResponse gr = (GetResponse) note
+
+            String dataServer = gr.getValue()
+            String peerType = NodeUtils.getTypeFromName(gr.getName())
+            downloader.downloadLastSuccessful(peerType, dataServer)
+        }
+    }
 }
+else {
+    downloader.getOrganizer().setResultType("failed")
+
+    for (MaestroNote note : replies) {
+        if (note instanceof GetResponse) {
+            GetResponse gr = (GetResponse) note
+
+            String dataServer = gr.getValue()
+            String peerType = NodeUtils.getTypeFromName(gr.getName())
+            downloader.downloadLastFailed(peerType, dataServer)
+        }
+    }
+}
+
+Thread.sleep(120000)
+
 
 /**
  * Stops the client
