@@ -1,16 +1,17 @@
 package org.maestro.client.notes;
 
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.exceptions.MaestroException;
-import org.msgpack.core.ExtensionTypeHeader;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
 public class LogResponse extends MaestroResponse {
+    private static final Logger logger = LoggerFactory.getLogger(LogResponse.class);
     // Limit payload to 255 Mb because MQTT cannot have a payload bigger than 256Mb
     // 268435456
 
@@ -119,6 +120,10 @@ public class LogResponse extends MaestroResponse {
                 size = (int) fileSize - pos;
             }
         }
+        logger.debug("File {}/{} has is {} bytes and is using {} of maximum payload size", file.getName(), index,
+                fileSize, size);
+
+
         packer.packInt(size);
         packer.packLong(fileSize);
 
@@ -136,18 +141,27 @@ public class LogResponse extends MaestroResponse {
         pos = pos + size;
         index++;
 
-        if (index == total) {
+        if (!hasNext()) {
+            logger.trace("Completed sending the file chunks. Closing the input stream");
             fi.close();
         }
     }
 
     public void join(final LogResponse logResponse) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Checking if the log response has chunks to be joined: {}", logResponse);
+        }
+
+
         if (bo == null) {
             bo = new BufferedOutputStream(new ByteArrayOutputStream());
         }
 
         if (logResponse.index == this.index + 1) {
             try {
+                logger.debug("Appending new log response chunk for file {} with index {} to the current one {}",
+                        this.getFileName(), logResponse.index, this.index);
+
                 bo.write(logResponse.data);
                 index++;
             } catch (IOException e) {
@@ -165,7 +179,7 @@ public class LogResponse extends MaestroResponse {
 
     @Override
     public boolean hasNext() {
-        return index < total;
+        return index < (total - 1);
     }
 
     @Override
