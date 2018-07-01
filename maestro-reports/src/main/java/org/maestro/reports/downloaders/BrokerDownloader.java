@@ -95,18 +95,17 @@ public class BrokerDownloader implements ReportsDownloader {
     private final NodeOrganizer organizer;
 
     public BrokerDownloader(final Maestro maestro, final String baseDir) {
-        this.maestro = maestro;
-        this.organizer = new NodeOrganizer(baseDir);
-
-        resolverMap.put(HostTypes.SENDER_HOST_TYPE, new SenderReportResolver());
-        resolverMap.put(HostTypes.RECEIVER_HOST_TYPE, new ReceiverReportResolver());
-
-        maestro.getCollector().getCallbacks().add(new DownloadCallback(organizer));
+        this(maestro, new NodeOrganizer(baseDir));
     }
 
     public BrokerDownloader(final Maestro maestro, final NodeOrganizer organizer) {
         this.maestro = maestro;
         this.organizer = organizer;
+
+        resolverMap.put(HostTypes.SENDER_HOST_TYPE, new SenderReportResolver());
+        resolverMap.put(HostTypes.RECEIVER_HOST_TYPE, new ReceiverReportResolver());
+
+        maestro.getCollector().getCallbacks().add(new DownloadCallback(organizer));
     }
 
     @Override
