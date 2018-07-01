@@ -28,7 +28,7 @@ public class LogResponse extends MaestroResponse {
 
     private File file;
 
-    private int pos = 0;
+    private long pos = 0;
     private FileInputStream fi;
     private BufferedOutputStream bo;
     private byte[] data;
@@ -117,12 +117,11 @@ public class LogResponse extends MaestroResponse {
             if ((pos + LOG_RESPONSE_MAX_PAYLOAD_SIZE) < fileSize) {
                 size = LOG_RESPONSE_MAX_PAYLOAD_SIZE;
             } else {
-                size = (int) fileSize - pos;
+                size = (int) (fileSize - pos);
             }
         }
         logger.debug("File {}/{} has {} bytes and is using {} of maximum payload size", file.getName(), index,
                 fileSize, size);
-
 
         packer.packInt(size);
         packer.packLong(fileSize);
@@ -139,8 +138,8 @@ public class LogResponse extends MaestroResponse {
         packer.writePayload(data, 0, size);
 
         pos = pos + size;
-        index++;
 
+        index++;
         if (!hasNext()) {
             logger.trace("Completed sending the file chunks. Closing the input stream");
             fi.close();
@@ -151,7 +150,6 @@ public class LogResponse extends MaestroResponse {
         if (logger.isTraceEnabled()) {
             logger.trace("Checking if the log response has chunks to be joined: {}", logResponse);
         }
-
 
         if (bo == null) {
             bo = new BufferedOutputStream(new ByteArrayOutputStream());
@@ -182,7 +180,7 @@ public class LogResponse extends MaestroResponse {
 
     @Override
     public boolean hasNext() {
-        return index < (total - 1);
+        return index != total;
     }
 
     @Override

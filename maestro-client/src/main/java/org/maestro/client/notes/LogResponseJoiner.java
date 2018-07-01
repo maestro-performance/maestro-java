@@ -39,7 +39,7 @@ public class LogResponseJoiner {
             logger.debug("A previous entry for file {} exists", logResponse.getFileName());
             prev.join(logResponse);
 
-            if (!prev.hasNext()) {
+            if (prev.getIndex() == prev.getTotal() - 1) {
                 logger.debug("The last chunk for file {} was successfully joined. Removing from cache and returning",
                         prev.getFileName());
                 cache.remove(prev);
