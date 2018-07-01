@@ -17,7 +17,7 @@ public class LogResponse extends MaestroResponse {
 
     // Use a conservative value of 100000000. ActiveMQ comes w/ 104857600
     // configured as the max frame size which limits the payload size here.
-    private static final int LOG_RESPONSE_MAX_PAYLOAD_SIZE = 1000000;
+    private static final int LOG_RESPONSE_MAX_PAYLOAD_SIZE = 10000000;
 
     private LocationType locationType;
     private String fileName;
@@ -120,7 +120,7 @@ public class LogResponse extends MaestroResponse {
                 size = (int) fileSize - pos;
             }
         }
-        logger.debug("File {}/{} has is {} bytes and is using {} of maximum payload size", file.getName(), index,
+        logger.debug("File {}/{} has {} bytes and is using {} of maximum payload size", file.getName(), index,
                 fileSize, size);
 
 
@@ -159,8 +159,8 @@ public class LogResponse extends MaestroResponse {
 
         if (logResponse.index == this.index + 1) {
             try {
-                logger.debug("Appending new log response chunk for file {} with index {} to the current one {}",
-                        this.getFileName(), logResponse.index, this.index);
+                logger.debug("Appending new log response chunk for file {} with index {}/{} to the current one {}",
+                        this.getFileName(), logResponse.index, logResponse.total, this.index);
 
                 bo.write(logResponse.data);
                 index++;
@@ -169,6 +169,9 @@ public class LogResponse extends MaestroResponse {
             }
         }
         else {
+            logger.error("The file {}/{}/{} is not a sequence to the cached one {}/{}/{}",
+                    logResponse.getFileName(), logResponse.getIndex(), logResponse.getTotal(),
+                    this.getFileName(), this.getIndex(), this.getTotal());
             throw new MaestroException("Out of order log response");
         }
     }
