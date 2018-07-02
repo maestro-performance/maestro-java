@@ -28,7 +28,7 @@ public class LogResponse extends MaestroResponse {
     private File file;
 
     private long pos = 0;
-    private FileInputStream fi;
+    private InputStream fi;
     private ByteArrayOutputStream bo;
     private byte[] data;
 
@@ -40,12 +40,12 @@ public class LogResponse extends MaestroResponse {
         super(MaestroCommand.MAESTRO_NOTE_LOG, unpacker);
 
         this.locationType = LocationType.byCode(unpacker.unpackInt());
-        this.fileName = unpacker.unpackString();
-        this.index = unpacker.unpackInt();
-        this.total = unpacker.unpackInt();
-        this.fileSize = unpacker.unpackLong();
-        int chunkSize = unpacker.unpackBinaryHeader();
+        setFileName(unpacker.unpackString());
+        setIndex(unpacker.unpackInt());
+        setTotal(unpacker.unpackInt());
+        setFileSize(unpacker.unpackLong());
 
+        int chunkSize = unpacker.unpackBinaryHeader();
         data = new byte[chunkSize];
         unpacker.readPayload(data);
     }
@@ -62,8 +62,20 @@ public class LogResponse extends MaestroResponse {
         return fileName;
     }
 
-    private void setFileName(final String fileName) {
+    protected void setFileName(final String fileName) {
         this.fileName = fileName;
+    }
+
+    protected void setFileSize(long fileSize) {
+        this.fileSize = fileSize;
+    }
+
+    protected void setTotal(int total) {
+        this.total = total;
+    }
+
+    protected void setIndex(int index) {
+        this.index = index;
     }
 
     public int getIndex() {
@@ -87,7 +99,7 @@ public class LogResponse extends MaestroResponse {
                 ret = (int) (fileSize - pos);
             }
         }
-        logger.debug("File {}/{} has {} bytes and is using {} of maximum payload chunkSize", file.getName(), index,
+        logger.debug("File {}/{} has {} bytes and is using {} of maximum payload chunkSize", getFileName(), index,
                 fileSize, ret);
 
         return ret;
@@ -99,10 +111,9 @@ public class LogResponse extends MaestroResponse {
 
     public void setFile(File file) {
         this.file = file;
-        fileSize = FileUtils.sizeOf(file);
 
-        total = calculateBlockCount();
-
+        setFileSize(FileUtils.sizeOf(file));
+        setTotal(calculateBlockCount());
         setFileName(file.getName());
     }
 
@@ -127,22 +138,37 @@ public class LogResponse extends MaestroResponse {
 
         packData(packer);
 
+        try {
+            Thread.sleep(500);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
         return packer;
     }
 
-    private void packData(MessageBufferPacker packer) throws IOException {
+
+    protected InputStream initializeInputStream() throws FileNotFoundException {
+        return new FileInputStream(file);
+    }
+
+
+    protected void packData(final MessageBufferPacker packer) throws IOException {
+        if (fi == null) {
+            fi = initializeInputStream();
+        }
+
+        packData(packer, fi);
+    }
+
+
+    protected void packData(final MessageBufferPacker packer, final InputStream inputStream) throws IOException {
+        logger.debug("Skipping {} bytes", pos);
+        inputStream.skip(pos);
+
         int chunkSize = getChunkSize();
         byte[] data = new byte[chunkSize];
-
-        if (fi == null) {
-            fi = new FileInputStream(file);
-        }
-
-        if (pos > 0) {
-            fi.skip(pos);
-        }
-
-        fi.read(data, 0, chunkSize);
+        inputStream.read(data, 0, chunkSize);
         packer.packBinaryHeader(chunkSize);
         packer.writePayload(data, 0, chunkSize);
 
@@ -150,7 +176,7 @@ public class LogResponse extends MaestroResponse {
 
         if (!hasNext()) {
             logger.trace("Completed sending the file chunks. Closing the input stream");
-            fi.close();
+            inputStream.close();
         }
     }
 
