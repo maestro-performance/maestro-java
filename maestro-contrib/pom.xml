@@ -41,6 +41,7 @@
             <version>1.7.25</version>
         </dependency>
 
+        <!-- TODO: upgrade for 1.4 (requires the ancient commons-codec -->
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
@@ -57,6 +58,13 @@
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
             <version>2.5</version>
+        </dependency>
+
+        <!-- TODO: upgrade for 1.4-->
+        <dependency>
+            <groupId>commons-codec</groupId>
+            <artifactId>commons-codec</artifactId>
+            <version>1.6</version>
         </dependency>
 
         <dependency>
