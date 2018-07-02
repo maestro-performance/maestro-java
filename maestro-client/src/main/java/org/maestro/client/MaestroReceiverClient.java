@@ -177,7 +177,6 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         logResponse.setId(id);
 
         logResponse.setLocationType(locationType);
-        logResponse.setFileName(logFile.getName());
         logResponse.setFile(logFile);
 
         super.publish(MaestroTopics.MAESTRO_TOPIC, logResponse);

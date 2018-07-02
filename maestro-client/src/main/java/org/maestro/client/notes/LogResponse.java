@@ -71,7 +71,7 @@ public class LogResponse extends MaestroResponse {
         return fileName;
     }
 
-    public void setFileName(final String fileName) {
+    private void setFileName(final String fileName) {
         this.fileName = fileName;
     }
 
@@ -101,6 +101,8 @@ public class LogResponse extends MaestroResponse {
         else {
             total = 1;
         }
+
+        setFileName(file.getName());
     }
 
     @Override
