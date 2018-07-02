@@ -121,7 +121,6 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
 
         FixedRateTestExecutor executor;
 
-
         public TestNotificationCallBack(FixedRateTestExecutor executor) {
             this.executor = executor;
         }

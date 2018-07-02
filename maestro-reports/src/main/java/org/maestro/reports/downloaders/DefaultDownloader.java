@@ -12,6 +12,7 @@ import org.maestro.reports.organizer.Organizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -22,6 +23,7 @@ public class DefaultDownloader implements ReportsDownloader {
     private Map<String, ReportResolver> resolverMap = new HashMap<>();
 
     private final Organizer organizer;
+    private long lastDownloadedTime;
 
     /**
      * Constructor
@@ -106,6 +108,8 @@ public class DefaultDownloader implements ReportsDownloader {
                 }
             }
         }
+
+        lastDownloadedTime = System.currentTimeMillis();
     }
 
     /**
@@ -129,6 +133,8 @@ public class DefaultDownloader implements ReportsDownloader {
                 }
             }
         }
+
+        lastDownloadedTime = System.currentTimeMillis();
     }
 
 
@@ -163,5 +169,12 @@ public class DefaultDownloader implements ReportsDownloader {
         else {
             logger.warn("There is no report resolver registered for host type {}", type);
         }
+
+        lastDownloadedTime = System.currentTimeMillis();
+    }
+
+    @Override
+    public void waitForComplete() {
+        // NO-OP
     }
 }

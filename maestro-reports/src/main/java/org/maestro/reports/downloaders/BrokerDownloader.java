@@ -1,11 +1,13 @@
 package org.maestro.reports.downloaders;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.maestro.client.callback.MaestroNoteCallback;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.notes.LocationType;
 import org.maestro.client.notes.LogResponse;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.HostTypes;
 import org.maestro.common.NodeUtils;
 import org.maestro.common.URLUtils;
@@ -26,6 +28,7 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -36,6 +39,7 @@ public class BrokerDownloader implements ReportsDownloader {
         private static final Logger logger = LoggerFactory.getLogger(DownloadCallback.class);
         private NodeOrganizer organizer;
         private Sha1Digest digest = new Sha1Digest();
+        private long lastDownloadTime = 0;
 
         DownloadCallback(final NodeOrganizer organizer) {
             this.organizer = organizer;
@@ -106,15 +110,26 @@ public class BrokerDownloader implements ReportsDownloader {
                 else {
                     logger.info("About to download last successful reports");
                 }
-                save(logResponse);
+                try {
+                    save(logResponse);
+                }
+                finally {
+                    lastDownloadTime = System.currentTimeMillis();
+                }
             }
+        }
+
+        public long getLastDownloadTime() {
+            return lastDownloadTime;
         }
     }
 
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
     private Map<String, ReportResolver> resolverMap = new HashMap<>();
     private Maestro maestro;
 
     private final NodeOrganizer organizer;
+    private DownloadCallback downloadCallback;
 
     public BrokerDownloader(final Maestro maestro, final String baseDir) {
         this(maestro, new NodeOrganizer(baseDir));
@@ -129,7 +144,9 @@ public class BrokerDownloader implements ReportsDownloader {
 
 
         maestro.getCollector().subscribe(MaestroTopics.MAESTRO_LOGS_TOPIC, 0);
-        maestro.getCollector().getCallbacks().add(new DownloadCallback(organizer));
+
+        downloadCallback = new DownloadCallback(organizer);
+        maestro.getCollector().getCallbacks().add(downloadCallback);
     }
 
     @Override
@@ -176,6 +193,28 @@ public class BrokerDownloader implements ReportsDownloader {
             maestro.logRequest(topic, LocationType.ANY , testNumber);
         } catch (MalformedURLException e) {
             logger.error("Unable to parse data server URL {}: {}", dataServer, e.getMessage());
+        }
+    }
+
+    private Instant lastDownloadTime() {
+        return Instant.ofEpochMilli(downloadCallback.getLastDownloadTime());
+    }
+
+    @Override
+    public void waitForComplete() {
+        int expiryTime = config.getInt("download.broker.expiry", 60);
+
+        logger.info("Waiting {} seconds until all the files have been downloaded from the broker", expiryTime);
+        Instant last = lastDownloadTime();
+
+
+        while (last.plusSeconds(expiryTime).isAfter(Instant.now())) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                // ok
+                break;
+            }
         }
     }
 }

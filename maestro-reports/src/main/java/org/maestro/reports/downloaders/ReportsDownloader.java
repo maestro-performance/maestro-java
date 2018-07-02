@@ -19,6 +19,8 @@ package org.maestro.reports.downloaders;
 import org.maestro.reports.ReportResolver;
 import org.maestro.reports.organizer.Organizer;
 
+import java.time.Instant;
+
 
 /**
  * A reports downloader that collects the reports after the test is complete or on demand via CLI
@@ -35,4 +37,6 @@ public interface ReportsDownloader {
     void downloadLastSuccessful(final String type, final String host);
     void downloadLastFailed(final String type, final String host);
     void downloadAny(final String type, final String host, final String testNumber);
+
+    void waitForComplete();
 }

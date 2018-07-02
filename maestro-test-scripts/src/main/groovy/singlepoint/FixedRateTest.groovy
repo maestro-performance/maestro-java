@@ -74,14 +74,19 @@ LogConfigurator.configureLogLevel(logLevel)
 
 managementInterface = System.getenv("MANAGEMENT_INTERFACE");
 inspectorName = System.getenv("INSPECTOR_NAME");
+downloaderName = System.getenv("DOWNLOADER_NAME");
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new DefaultDownloader(args[0])
+ReportsDownloader reportsDownloader;
 
-// To use the new broker downloader -> WIP
-//ReportsDownloader reportsDownloader = new BrokerDownloader(maestro, args[0])
+if (downloaderName == null || downloaderName == "default") {
+    reportsDownloader = new DefaultDownloader(args[0])
+}
+else {
+    reportsDownloader = new BrokerDownloader(maestro, args[0])
+}
 
 FixedRateTestProfile testProfile = new FixedRateTestProfile()
 
@@ -115,13 +120,15 @@ else {
 
 
 FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, reportsDownloader, testProfile)
-if (!testExecutor.run()) {
-    maestro.stop()
+boolean ret = testExecutor.run();
 
+reportsDownloader.waitForComplete();
+maestro.stop()
+
+if (!ret) {
     System.exit(1)
 }
 
-maestro.stop()
 System.exit(0)
 
 
