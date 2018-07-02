@@ -60,7 +60,7 @@ maestro.getDataServer();
 println "Collecting replies"
 List<MaestroNote> replies = maestro.collect(1000, 10)
 
-BrokerDownloader downloader = new BrokerDownloader(maestro, "/extra/opiske/tmp/maestro/broker-downloader")
+BrokerDownloader downloader = new BrokerDownloader(maestro, args[0])
 
 /**
  * Process any response given. There may be none if no peers are attached to the
