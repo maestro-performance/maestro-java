@@ -16,6 +16,7 @@
 
 package org.maestro.worker.common;
 
+import org.maestro.client.notes.LogRequest;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.common.ds.MaestroDataServer;
 
@@ -28,5 +29,10 @@ public class VoidWorkerManager extends MaestroWorkerManager {
                              final MaestroDataServer dataServer) throws MaestroException
     {
         super(maestroURL, role, host, dataServer);
+    }
+
+    @Override
+    public void handle(final LogRequest note) {
+        // NO-OP
     }
 }

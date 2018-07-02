@@ -374,4 +374,18 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
             getClient().replyInternalError();
         }
     }
+
+    @Override
+    public void handle(final LogRequest note) {
+        final String logDir = System.getProperty("maestro.log.dir");
+
+        // It might or might not exist. The agent is very loose in this regard
+        File logDirFile = new File(logDir);
+        if (logDirFile.exists()) {
+            super.handle(note, logDirFile);
+        }
+        else {
+            logger.warn("The log directory for the agent does not exist");
+        }
+    }
 }

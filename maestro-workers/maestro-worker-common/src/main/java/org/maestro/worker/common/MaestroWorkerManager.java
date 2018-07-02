@@ -27,7 +27,9 @@ import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.test.TestProperties;
+import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerOptions;
+import org.maestro.contrib.utils.digest.Sha1Digest;
 import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -280,9 +282,56 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         }
     }
 
-    @Override
-    public void handle(LogRequest note) {
-        // TODO
-        getClient().replyInternalError();
+    /**
+     * Handle a log request note
+     * @param note the note to handle
+     * @param logDir the log directory
+     */
+    protected void handle(final LogRequest note, final File logDir) {
+        logger.debug("Log request received");
+        File logSubDir;
+
+        switch (note.getLocationType()) {
+            case LAST_FAILED: {
+                logSubDir = TestLogUtils.lastFailedTestLogDir(logDir);
+                break;
+            }
+            case LAST_SUCCESS: {
+                logSubDir = TestLogUtils.lastSuccessfulTestLogDir(logDir);
+                break;
+            }
+
+            case ANY: {
+                String name = note.getTypeName();
+                logSubDir = TestLogUtils.anyTestLogDir(logDir, name);
+                break;
+            }
+            case LAST:
+            default: {
+                logSubDir = TestLogUtils.lastTestLogDir(logDir);
+                break;
+            }
+        }
+
+        File[] files = logSubDir.listFiles();
+        for (File file : files) {
+            logger.debug("Sending log file {} with location type {}", file.getName(),
+                    note.getLocationType());
+
+            Sha1Digest digest = new Sha1Digest();
+
+            String hash;
+            try {
+                hash = digest.calculate(file);
+            } catch (IOException e) {
+                logger.error("Unable to calculate hash for file {}", file.getName());
+                hash = "";
+            }
+
+            getClient().logResponse(file, note.getLocationType(), hash);
+        }
     }
+
+    @Override
+    abstract public void handle(final LogRequest note);
 }

@@ -137,5 +137,10 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
             inspectorThread = null;
         }
     }
+
+    @Override
+    public void handle(final LogRequest note) {
+        super.handle(note, logDir);
+    }
 }
 

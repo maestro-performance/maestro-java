@@ -351,47 +351,6 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(final LogRequest note) {
-        logger.debug("Log request received");
-        File logSubDir;
-
-        switch (note.getLocationType()) {
-            case LAST_FAILED: {
-                logSubDir = TestLogUtils.lastFailedTestLogDir(logDir);
-                break;
-            }
-            case LAST_SUCCESS: {
-                logSubDir = TestLogUtils.lastSuccessfulTestLogDir(logDir);
-                break;
-            }
-
-            case ANY: {
-                String name = note.getTypeName();
-                logSubDir = TestLogUtils.anyTestLogDir(logDir, name);
-                break;
-            }
-            case LAST:
-            default: {
-                logSubDir = TestLogUtils.lastTestLogDir(logDir);
-                break;
-            }
-        }
-
-        File[] files = logSubDir.listFiles();
-        for (File file : files) {
-            logger.debug("Sending log file {} with location type {}", file.getName(),
-                    note.getLocationType());
-
-            Sha1Digest digest = new Sha1Digest();
-
-            String hash;
-            try {
-                 hash = digest.calculate(file);
-            } catch (IOException e) {
-                logger.error("Unable to calculate hash for file {}", file.getName());
-                hash = "";
-            }
-
-            getClient().logResponse(file, note.getLocationType(), hash);
-        }
+        super.handle(note, logDir);
     }
 }
