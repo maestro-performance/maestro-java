@@ -30,7 +30,7 @@ public class Sha1Digest implements MessageDigest {
     public static final String HASH_NAME = "sha1";
 
     public String calculate(final InputStream inputStream) throws IOException {
-        logger.info("Calculating message digest");
+        logger.trace("Calculating message digest");
         return DigestUtils.shaHex(inputStream);
     }
 
@@ -81,7 +81,7 @@ public class Sha1Digest implements MessageDigest {
      * @see org.ssps.common.digest.MessageDigest#verify(java.lang.String, java.lang.String)
      */
     public boolean verify(String source, String digest) throws IOException {
-        logger.info("Verifying message digest");
+        logger.trace("Verifying message digest");
         String sourceDigest;
 
         sourceDigest = calculate(source);
