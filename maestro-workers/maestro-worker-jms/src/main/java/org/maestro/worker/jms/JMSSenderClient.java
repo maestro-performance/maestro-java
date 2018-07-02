@@ -34,20 +34,10 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
         try {
             this.session = connection.createSession(false, opts.getSessionMode());
             this.producer = session.createProducer(destination);
-            final boolean durable = opts.isDurable();
-            if (durable) {
-                producer.setDeliveryMode(DeliveryMode.PERSISTENT);
-            } else {
-                producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
-            }
-            final Integer priority = opts.getPriority();
-            if (priority != null) {
-                producer.setPriority(priority);
-            }
-            final Long ttl = opts.getTtl();
-            if (ttl != null) {
-                producer.setTimeToLive(ttl);
-            }
+
+            setupMessageDurability();
+            setupPriority();
+            setupTTL();
             producer.setDisableMessageTimestamp(true);
         } catch (Throwable t) {
             JMSResourceUtil.capturingClose(this.producer);
@@ -57,6 +47,47 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
             JMSResourceUtil.capturingClose(this.connection);
             this.connection = null;
             throw t;
+        }
+    }
+
+    private void setupMessageDurability() throws JMSException {
+        final boolean durable = opts.isDurable();
+
+        if (durable) {
+            producer.setDeliveryMode(DeliveryMode.PERSISTENT);
+        } else {
+            producer.setDeliveryMode(DeliveryMode.NON_PERSISTENT);
+        }
+    }
+
+    private void setupTTL() throws JMSException {
+        // Ref: https://docs.oracle.com/cd/E17802_01/products/products/jms/javadoc-102a/javax/jms/MessageProducer.html#setTimeToLive(long)
+        final int defaultTTL = 0;
+
+        final long ttl = opts.getTtl();
+        if (ttl > defaultTTL) {
+            producer.setTimeToLive(ttl);
+        }
+        else {
+            if (ttl < defaultTTL) {
+                throw new IllegalArgumentException("Invalid TTL value: " + ttl);
+            }
+        }
+    }
+
+    private void setupPriority() throws JMSException {
+        // Ref: https://docs.oracle.com/cd/E17802_01/products/products/jms/javadoc-102a/javax/jms/MessageProducer.html#setPriority(int)
+        final int minPriority = 0;
+        final int maxPriority = 0;
+
+        final int priority = opts.getPriority();
+        if (priority > minPriority) {
+            if (priority < maxPriority) {
+                producer.setPriority(priority);
+            }
+            else {
+                throw new IllegalArgumentException("Invalid priority value: " + priority);
+            }
         }
     }
 

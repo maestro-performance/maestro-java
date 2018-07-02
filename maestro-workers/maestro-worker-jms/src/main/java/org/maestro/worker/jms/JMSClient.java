@@ -72,41 +72,8 @@ class JMSClient implements Client {
             String destinationName = opts.getPath().substring(1);
             logger.debug("Requested destination name: {}", destinationName);
 
-            final Integer configuredLimitDestinations = opts.getConfiguredLimitDestinations();
-
-            if (configuredLimitDestinations != null) {
-                if (number < 0) {
-                    throw new IllegalArgumentException("JMSClient::number must be >= 0 when limitDestinations is configured");
-                }
-                final int limitDestinations = configuredLimitDestinations;
-                if (limitDestinations <= 0) {
-                    throw new IllegalArgumentException("limitDestinations must be > 0");
-                }
-                logger.debug("Client requested a client-specific limit to the number of destinations: {}", limitDestinations);
-                final int destinationId = number % limitDestinations;
-                destinationName = destinationName + '.' + destinationId;
-                logger.info("Requested destination name after using client-specific limit to the number of destinations: {}",
-                        destinationName);
-            } else {
-                //original behaviour maintained for backward compatibility
-                logger.info("Requested destination name: {}", destinationName);
-            }
-
-            //doesn't need to use any enum yet
-            final String type = opts.getType();
-
-            switch (type) {
-                case "queue":
-                    logger.debug("Creating a queue-based destination");
-                    destination = protocol.createQueue(destinationName);
-                    break;
-                case "topic":
-                    logger.debug("Creating a topic-based destination");
-                    destination = protocol.createTopic(destinationName);
-                    break;
-                default:
-                    throw new UnsupportedOperationException("not supported destination type: " + type);
-            }
+            destinationName = setupLimitDestinations(destinationName);
+            destination = getDestination(protocol, destinationName);
 
             logger.debug("Creating the connection");
             connection = factory.createConnection();
@@ -120,6 +87,49 @@ class JMSClient implements Client {
         this.destination = destination;
         this.connection = connection;
         this.connection.start();
+    }
+
+    private Destination getDestination(final JMSProtocol protocol, final String destinationName) {
+        Destination destination;//doesn't need to use any enum yet
+        final String type = opts.getType();
+
+        switch (type) {
+            case "queue":
+                logger.debug("Creating a queue-based destination");
+                destination = protocol.createQueue(destinationName);
+                break;
+            case "topic":
+                logger.debug("Creating a topic-based destination");
+                destination = protocol.createTopic(destinationName);
+                break;
+            default:
+                throw new UnsupportedOperationException("not supported destination type: " + type);
+        }
+        return destination;
+    }
+
+    private String setupLimitDestinations(String destinationName) {
+        final int configuredLimitDestinations = opts.getConfiguredLimitDestinations();
+
+        if (configuredLimitDestinations >= 1) {
+            final int limitDestinations = configuredLimitDestinations;
+
+            logger.debug("Client requested a client-specific limit to the number of destinations: {}",
+                    limitDestinations);
+
+            final int destinationId = number % limitDestinations;
+            destinationName = destinationName + '.' + destinationId;
+            logger.info("Requested destination name after using client-specific limit to the number of destinations: {}",
+                    destinationName);
+        } else {
+            if (configuredLimitDestinations < 0) {
+                throw new IllegalArgumentException("Negative number of limit destinations is invalid");
+            }
+
+            //original behaviour maintained for backward compatibility
+            logger.info("Requested destination name: {}", destinationName);
+        }
+        return destinationName;
     }
 
     @Override

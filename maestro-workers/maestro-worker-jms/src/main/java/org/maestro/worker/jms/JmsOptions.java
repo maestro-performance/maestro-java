@@ -64,8 +64,8 @@ class JmsOptions {
             configuredLimitDestinations = urlQuery.getInteger("limitDestinations", 0);
 
             durable = urlQuery.getBoolean("durable", false);
-            priority = urlQuery.getInteger("priority", null);
-            ttl = urlQuery.getLong("ttl", null);
+            priority = urlQuery.getInteger("priority", 0);
+            ttl = urlQuery.getLong("ttl", 0L);
             sessionMode = urlQuery.getInteger("sessionMode", Session.AUTO_ACKNOWLEDGE);
 
             connectionUrl = filterURL().replace(path, "");
