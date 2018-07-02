@@ -38,6 +38,10 @@ public class JMSOptionsTest {
                 jmsOptions.getTtl());
         assertEquals("The default priority does not match the expected value", 0,
                 jmsOptions.getPriority());
+
+        assertEquals("The connection URL does not match the expected one",
+                "amqp://hostname:5672",
+                jmsOptions.getConnectionUrl());
     }
 
     @Test
@@ -55,6 +59,10 @@ public class JMSOptionsTest {
                 jmsOptions.getTtl());
         assertEquals("The default priority does not match the expected value", 0,
                 jmsOptions.getPriority());
+
+        assertEquals("The connection URL does not match the expected one",
+                "amqp://hostname:5672",
+                jmsOptions.getConnectionUrl());
     }
 
 
@@ -73,5 +81,9 @@ public class JMSOptionsTest {
                 jmsOptions.getTtl());
         assertEquals("The default priority does not match the expected value", 0,
                 jmsOptions.getPriority());
+
+        assertEquals("The connection URL does not match the expected one",
+                "amqp://hostname:5672",
+                jmsOptions.getConnectionUrl());
     }
 }

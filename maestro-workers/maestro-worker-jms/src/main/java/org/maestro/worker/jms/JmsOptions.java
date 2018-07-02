@@ -39,7 +39,6 @@ import java.net.URI;
 class JmsOptions {
     private static final Logger logger = LoggerFactory.getLogger(JmsOptions.class);
 
-    private String url;
     private JMSProtocol protocol;
     private int configuredLimitDestinations;
     private String type;
@@ -51,8 +50,7 @@ class JmsOptions {
     private int sessionMode;
     private int priority;
 
-
-    public JmsOptions(String url) {
+    public JmsOptions(final String url) {
         try {
             final URI uri = new URI(url);
             final URLQuery urlQuery = new URLQuery(uri);
@@ -68,7 +66,7 @@ class JmsOptions {
             ttl = urlQuery.getLong("ttl", 0L);
             sessionMode = urlQuery.getInteger("sessionMode", Session.AUTO_ACKNOWLEDGE);
 
-            connectionUrl = filterURL().replace(path, "");
+            connectionUrl = filterURL(url).replace(path, "");
 
 
         } catch (Throwable t) {
@@ -77,7 +75,7 @@ class JmsOptions {
     }
 
     // JMS urls cannot have the query part
-    private String filterURL() {
+    private String filterURL(final String url) {
         String filteredUrl;
 
         int queryStartIndex = url.indexOf('?');
@@ -88,10 +86,6 @@ class JmsOptions {
         }
 
         return filteredUrl;
-    }
-
-    public String getUrl() {
-        return url;
     }
 
     public JMSProtocol getProtocol() {
