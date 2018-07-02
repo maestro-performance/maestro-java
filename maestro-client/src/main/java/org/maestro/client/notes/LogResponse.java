@@ -16,14 +16,13 @@ public class LogResponse extends MaestroResponse {
     // 268435456
 
     // Use a conservative value of 100000000. ActiveMQ comes w/ 104857600
-    // configured as the max frame size which limits the payload size here.
+    // configured as the max frame chunkSize which limits the payload chunkSize here.
     private static final int LOG_RESPONSE_MAX_PAYLOAD_SIZE = 10000000;
 
     private LocationType locationType;
     private String fileName;
     private int index = 0;
     private int total;
-    private int size;
     private long fileSize;
 
     private File file;
@@ -44,18 +43,10 @@ public class LogResponse extends MaestroResponse {
         this.fileName = unpacker.unpackString();
         this.index = unpacker.unpackInt();
         this.total = unpacker.unpackInt();
-        this.size = unpacker.unpackInt();
         this.fileSize = unpacker.unpackLong();
+        int chunkSize = unpacker.unpackBinaryHeader();
 
-        int dataSize = unpacker.unpackBinaryHeader();
-        if (size != dataSize) {
-            logger.warn("The note given size {} does not match the actual data size {}. Using the data size instead",
-                    size, dataSize);
-
-            size = dataSize;
-        }
-
-        data = new byte[this.size];
+        data = new byte[chunkSize];
         unpacker.readPayload(data);
     }
 
@@ -83,8 +74,23 @@ public class LogResponse extends MaestroResponse {
         return total;
     }
 
-    public long getSize() {
-        return size;
+    public int getChunkSize() {
+        int ret;
+
+        if (fileSize < LOG_RESPONSE_MAX_PAYLOAD_SIZE) {
+            ret = (int) fileSize;
+        }
+        else {
+            if ((pos + (long) LOG_RESPONSE_MAX_PAYLOAD_SIZE) < fileSize) {
+                ret = LOG_RESPONSE_MAX_PAYLOAD_SIZE;
+            } else {
+                ret = (int) (fileSize - pos);
+            }
+        }
+        logger.debug("File {}/{} has {} bytes and is using {} of maximum payload chunkSize", file.getName(), index,
+                fileSize, ret);
+
+        return ret;
     }
 
     public File getFile() {
@@ -96,7 +102,6 @@ public class LogResponse extends MaestroResponse {
         fileSize = FileUtils.sizeOf(file);
 
         total = calculateBlockCount();
-
 
         setFileName(file.getName());
     }
@@ -118,8 +123,6 @@ public class LogResponse extends MaestroResponse {
         packer.packInt(this.index);
         packer.packInt(this.total);
 
-        size = calculateSize();
-        packer.packInt(size);
         packer.packLong(fileSize);
 
         packData(packer);
@@ -128,7 +131,8 @@ public class LogResponse extends MaestroResponse {
     }
 
     private void packData(MessageBufferPacker packer) throws IOException {
-        byte[] data = new byte[size];
+        int chunkSize = getChunkSize();
+        byte[] data = new byte[chunkSize];
 
         if (fi == null) {
             fi = new FileInputStream(file);
@@ -138,35 +142,16 @@ public class LogResponse extends MaestroResponse {
             fi.skip(pos);
         }
 
-        fi.read(data, 0, size);
-        packer.packBinaryHeader(size);
-        packer.writePayload(data, 0, size);
+        fi.read(data, 0, chunkSize);
+        packer.packBinaryHeader(chunkSize);
+        packer.writePayload(data, 0, chunkSize);
 
-        pos = pos + size;
+        pos = pos + chunkSize;
 
         if (!hasNext()) {
             logger.trace("Completed sending the file chunks. Closing the input stream");
             fi.close();
         }
-    }
-
-    protected int calculateSize() {
-        int maxSize;
-
-        if (fileSize < LOG_RESPONSE_MAX_PAYLOAD_SIZE) {
-            maxSize = (int) fileSize;
-        }
-        else {
-            if ((pos + LOG_RESPONSE_MAX_PAYLOAD_SIZE) < fileSize) {
-                maxSize = LOG_RESPONSE_MAX_PAYLOAD_SIZE;
-            } else {
-                maxSize = (int) (fileSize - pos);
-            }
-        }
-        logger.debug("File {}/{} has {} bytes and is using {} of maximum payload size", file.getName(), index,
-                fileSize, maxSize);
-
-        return maxSize;
     }
 
     public void join(final LogResponse logResponse) {
@@ -226,7 +211,6 @@ public class LogResponse extends MaestroResponse {
                 ", fileName='" + fileName + '\'' +
                 ", index=" + index +
                 ", total=" + total +
-                ", size=" + size +
                 ", file=" + file +
                 ", fileSize=" + fileSize +
                 ", pos=" + pos +
