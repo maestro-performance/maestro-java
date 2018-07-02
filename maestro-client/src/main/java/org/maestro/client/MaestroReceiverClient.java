@@ -16,12 +16,15 @@
 
 package org.maestro.client;
 
-import org.apache.commons.io.FileUtils;
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.maestro.client.callback.MaestroNoteCallback;
 import org.maestro.client.exchange.MaestroMqttClient;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.MaestroReceiver;
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
 import org.maestro.common.exceptions.MaestroException;
@@ -29,10 +32,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.concurrent.TimeUnit;
 
 public class MaestroReceiverClient extends MaestroMqttClient implements MaestroReceiver {
+    private static class ThrottleCallback implements MaestroNoteCallback {
+        private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+        private static final Logger logger = LoggerFactory.getLogger(ThrottleCallback.class);
+
+        private static int defaultDelay;
+
+        static {
+            defaultDelay = config.getInteger("maestro.worker.throttle.delay", 500);
+        }
+
+        @Override
+        public void call(MaestroNote note) {
+            try {
+                Thread.sleep(defaultDelay);
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted while waiting for the note send delay");
+            }
+        }
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(MaestroReceiverClient.class);
 
     private final EpochMicroClock epochMicroClock;
@@ -179,6 +201,8 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         logResponse.setLocationType(locationType);
         logResponse.setFile(logFile);
 
-        super.publish(MaestroTopics.MAESTRO_TOPIC, logResponse);
+        ThrottleCallback throttleCallback = new ThrottleCallback();
+
+        super.publish(MaestroTopics.MAESTRO_TOPIC, logResponse, 0, false, throttleCallback);
     }
 }

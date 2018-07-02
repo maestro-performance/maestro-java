@@ -20,6 +20,7 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
+import org.maestro.client.callback.MaestroNoteCallback;
 import org.maestro.common.URLUtils;
 import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.exceptions.MalformedNoteException;
@@ -121,6 +122,48 @@ public class MaestroMqttClient implements MaestroClient {
                 }
 
                 mqttClient.publish(topic, bytes, qos, retained);
+                note.next();
+            } catch (MqttException e) {
+                throw new MaestroConnectionException("Unable to publish message: " + e.getMessage(), e);
+            }
+        } while (note.hasNext());
+    }
+
+    /**
+     * Publishes a message in the broker. This is normally used for publishing notifications,
+     * because some of them are set as retained in the broker
+     *
+     * @param topic the topic to publish the message
+     * @param note  the maestro note to publish
+     * @param qos MQTT QoS
+     * @param retained MQTT retained flag
+     * @param postProcessCallback A call back action to be executed after the message was sent
+     * @throws MaestroConnectionException if failed to publish the message
+     * @throws MalformedNoteException     in case of other I/O errors
+     */
+    protected void publish(final String topic, final MaestroNote note, int qos, boolean retained,
+                           final MaestroNoteCallback postProcessCallback) throws
+            MalformedNoteException, MaestroConnectionException
+    {
+        do {
+            final byte[] bytes;
+            try {
+                bytes = note.serialize();
+            } catch (IOException e) {
+                throw new MalformedNoteException(e.getMessage());
+            }
+
+            try {
+                if (!mqttClient.isConnected()) {
+                    logger.warn("The client is disconnected ... reconnecting");
+                    mqttClient.reconnect();
+                }
+
+                mqttClient.publish(topic, bytes, qos, retained);
+                if (postProcessCallback != null) {
+                    postProcessCallback.call(note);
+                }
+
                 note.next();
             } catch (MqttException e) {
                 throw new MaestroConnectionException("Unable to publish message: " + e.getMessage(), e);
