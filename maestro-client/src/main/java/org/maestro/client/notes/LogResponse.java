@@ -170,7 +170,6 @@ public class LogResponse extends MaestroResponse {
 
     protected void packData(final MessageBufferPacker packer, final InputStream inputStream) throws IOException {
         logger.debug("Skipping {} bytes", pos);
-        inputStream.skip(pos);
 
         int chunkSize = getChunkSize();
         byte[] data = new byte[chunkSize];
