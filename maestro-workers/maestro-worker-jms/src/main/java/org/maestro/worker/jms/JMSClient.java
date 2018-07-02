@@ -72,7 +72,7 @@ class JMSClient implements Client {
             String destinationName = opts.getPath().substring(1);
             logger.debug("Requested destination name: {}", destinationName);
 
-            destinationName = setupLimitDestinations(destinationName);
+            destinationName = setupLimitDestinations(destinationName, opts.getConfiguredLimitDestinations(), getNumber());
             destination = getDestination(protocol, destinationName);
 
             logger.debug("Creating the connection");
@@ -108,28 +108,30 @@ class JMSClient implements Client {
         return destination;
     }
 
-    private String setupLimitDestinations(String destinationName) {
-        final int configuredLimitDestinations = opts.getConfiguredLimitDestinations();
+    public static String setupLimitDestinations(final String destinationName, final int limitDestinations,
+                                                 final int clientNumber) {
+        String ret = destinationName;
 
-        if (configuredLimitDestinations >= 1) {
-            final int limitDestinations = configuredLimitDestinations;
-
+        if (limitDestinations >= 1) {
             logger.debug("Client requested a client-specific limit to the number of destinations: {}",
                     limitDestinations);
 
-            final int destinationId = number % limitDestinations;
-            destinationName = destinationName + '.' + destinationId;
+            final int destinationId = clientNumber % limitDestinations;
+            ret = destinationName + '.' + destinationId;
             logger.info("Requested destination name after using client-specific limit to the number of destinations: {}",
-                    destinationName);
+                    ret);
+
+            return ret;
         } else {
-            if (configuredLimitDestinations < 0) {
+            if (limitDestinations < 0) {
                 throw new IllegalArgumentException("Negative number of limit destinations is invalid");
             }
 
             //original behaviour maintained for backward compatibility
             logger.info("Requested destination name: {}", destinationName);
         }
-        return destinationName;
+
+        return ret;
     }
 
     @Override
