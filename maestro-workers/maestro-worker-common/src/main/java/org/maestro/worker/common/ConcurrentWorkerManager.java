@@ -24,11 +24,13 @@ import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.evaluators.SoftLatencyEvaluator;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.*;
+import org.maestro.contrib.utils.digest.Sha1Digest;
 import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -378,7 +380,18 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         for (File file : files) {
             logger.debug("Sending log file {} with location type {}", file.getName(),
                     note.getLocationType());
-            getClient().logResponse(file, note.getLocationType());
+
+            Sha1Digest digest = new Sha1Digest();
+
+            String hash;
+            try {
+                 hash = digest.calculate(file);
+            } catch (IOException e) {
+                logger.error("Unable to calculate hash for file {}", file.getName());
+                hash = "";
+            }
+
+            getClient().logResponse(file, note.getLocationType(), hash);
         }
     }
 }

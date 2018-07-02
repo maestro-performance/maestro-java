@@ -10,6 +10,7 @@ import org.maestro.common.HostTypes;
 import org.maestro.common.NodeUtils;
 import org.maestro.common.URLUtils;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.contrib.utils.digest.Sha1Digest;
 import org.maestro.reports.ReceiverReportResolver;
 import org.maestro.reports.ReportResolver;
 import org.maestro.reports.SenderReportResolver;
@@ -34,6 +35,7 @@ public class BrokerDownloader implements ReportsDownloader {
     private static class DownloadCallback implements MaestroNoteCallback {
         private static final Logger logger = LoggerFactory.getLogger(DownloadCallback.class);
         private NodeOrganizer organizer;
+        private Sha1Digest digest = new Sha1Digest();
 
         DownloadCallback(final NodeOrganizer organizer) {
             this.organizer = organizer;
@@ -71,6 +73,26 @@ public class BrokerDownloader implements ReportsDownloader {
                 logger.error("Unable to save the file: {}", e.getMessage(), e);
             } catch (IOException e) {
                 logger.error("Unable to save the file due to I/O error: {}", e.getMessage(), e);
+            }
+
+            verify(logResponse, outFile);
+        }
+
+        private void verify(LogResponse logResponse, File outFile) {
+            if (logResponse.getFileHash() != null && !logResponse.getFileHash().isEmpty()) {
+                try {
+                    logger.info("Verifying SHA-1 hash for file {}", outFile);
+                    if (!digest.verify(outFile.getPath(), logResponse.getFileHash())) {
+                        logger.error("The SHA-1 hash for file {} does not match the expected one {}",
+                                outFile.getPath(), logResponse.getFileHash());
+                    }
+                } catch (IOException e) {
+                    logger.error("Unable to verify the hash for file {}: {}", outFile.getName(),
+                            e.getMessage());
+                }
+            }
+            else {
+                logger.warn("The peer did not set up a hash for file {}", logResponse.getFileName());
             }
         }
 

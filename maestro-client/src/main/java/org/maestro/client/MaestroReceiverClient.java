@@ -192,7 +192,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
      * Sends log files via Maestro broker
      * @param logFile
      */
-    public void logResponse(final File logFile, final LocationType locationType) {
+    public void logResponse(final File logFile, final LocationType locationType, final String hash) {
         LogResponse logResponse = new LogResponse();
 
         logResponse.setName(clientName + "@" + host);
@@ -200,6 +200,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
 
         logResponse.setLocationType(locationType);
         logResponse.setFile(logFile);
+        logResponse.setFileHash(hash);
 
         ThrottleCallback throttleCallback = new ThrottleCallback();
 
