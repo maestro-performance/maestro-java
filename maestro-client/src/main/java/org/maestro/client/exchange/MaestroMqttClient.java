@@ -98,6 +98,8 @@ public class MaestroMqttClient implements MaestroClient {
      *
      * @param topic the topic to publish the message
      * @param note  the maestro note to publish
+     * @param qos MQTT QoS
+     * @param retained MQTT retained flag
      * @throws MaestroConnectionException if failed to publish the message
      * @throws MalformedNoteException     in case of other I/O errors
      */
