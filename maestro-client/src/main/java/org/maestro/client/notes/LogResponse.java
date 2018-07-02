@@ -96,7 +96,7 @@ public class LogResponse extends MaestroResponse {
         fileSize = FileUtils.sizeOf(file);
 
         total = calculateBlockCount();
-        size = calculateSize();
+
 
         setFileName(file.getName());
     }
@@ -118,6 +118,7 @@ public class LogResponse extends MaestroResponse {
         packer.packInt(this.index);
         packer.packInt(this.total);
 
+        size = calculateSize();
         packer.packInt(size);
         packer.packLong(fileSize);
 
