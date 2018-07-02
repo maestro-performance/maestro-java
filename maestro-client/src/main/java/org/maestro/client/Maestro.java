@@ -615,6 +615,11 @@ public final class Maestro implements MaestroRequester {
         return replies;
     }
 
+
+    /**
+     * Get the collector receiving the messages
+     * @return
+     */
     public MaestroCollector getCollector() {
         return collectorExecutor.getCollector();
     }

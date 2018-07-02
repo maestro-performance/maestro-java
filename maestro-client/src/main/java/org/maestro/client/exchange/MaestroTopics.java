@@ -26,6 +26,11 @@ public class MaestroTopics {
     public final static String MAESTRO_TOPIC = "/mpt/maestro";
 
     /**
+     * The topic used for log publication
+     */
+    public final static String MAESTRO_LOGS_TOPIC = "/mpt/logs";
+
+    /**
      * This topic is used by the peers to send notifications
      */
     public final static String NOTIFICATION_TOPIC = "/mpt/notifications";

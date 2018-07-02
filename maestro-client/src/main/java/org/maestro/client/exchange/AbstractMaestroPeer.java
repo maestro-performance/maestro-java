@@ -139,6 +139,14 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
         }
     }
 
+    public void subscribe(final String topic, int qos) {
+        try {
+            inboundEndPoint.subscribe(topic, qos);
+        } catch (MqttException e) {
+            throw new MaestroConnectionException("Unable to subscribe to Maestro topics: " + e.getMessage(), e);
+        }
+    }
+
     public void subscribe(final String[] topics) throws MaestroConnectionException {
         logger.debug("Subscribing to maestro topics {}", Arrays.toString(topics));
 

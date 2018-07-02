@@ -204,6 +204,6 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
 
         ThrottleCallback throttleCallback = new ThrottleCallback();
 
-        super.publish(MaestroTopics.MAESTRO_TOPIC, logResponse, 0, false, throttleCallback);
+        super.publish(MaestroTopics.MAESTRO_LOGS_TOPIC, logResponse, 0, false, throttleCallback);
     }
 }

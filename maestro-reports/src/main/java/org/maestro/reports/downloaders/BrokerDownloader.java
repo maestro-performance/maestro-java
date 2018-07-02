@@ -127,6 +127,8 @@ public class BrokerDownloader implements ReportsDownloader {
         resolverMap.put(HostTypes.SENDER_HOST_TYPE, new SenderReportResolver());
         resolverMap.put(HostTypes.RECEIVER_HOST_TYPE, new ReceiverReportResolver());
 
+
+        maestro.getCollector().subscribe(MaestroTopics.MAESTRO_LOGS_TOPIC, 0);
         maestro.getCollector().getCallbacks().add(new DownloadCallback(organizer));
     }
 
