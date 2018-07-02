@@ -57,16 +57,18 @@ class JmsOptions {
             final URI uri = new URI(url);
             final URLQuery urlQuery = new URLQuery(uri);
 
-            connectionUrl = filterURL().replace(path, "");
             protocol = JMSProtocol.valueOf(urlQuery.getString("protocol", JMSProtocol.AMQP.name()));
+
             path = uri.getPath();
             type = urlQuery.getString("type", "queue");
-            configuredLimitDestinations = urlQuery.getInteger("limitDestinations", null);
+            configuredLimitDestinations = urlQuery.getInteger("limitDestinations", 0);
 
             durable = urlQuery.getBoolean("durable", false);
             priority = urlQuery.getInteger("priority", null);
             ttl = urlQuery.getLong("ttl", null);
             sessionMode = urlQuery.getInteger("sessionMode", Session.AUTO_ACKNOWLEDGE);
+
+            connectionUrl = filterURL().replace(path, "");
 
 
         } catch (Throwable t) {
