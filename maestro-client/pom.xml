@@ -78,5 +78,14 @@
             <version>4.12</version>
             <scope>test</scope>
         </dependency>
+
+        <!-- This is for test only, because I need to calculate the hash of the test file -->
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-contrib</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
     </dependencies>
 </project>

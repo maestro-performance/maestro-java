@@ -23,10 +23,12 @@ import org.maestro.client.notes.LogResponse;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.MaestroNoteType;
+import org.maestro.contrib.utils.digest.Sha1Digest;
 
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.io.InputStream;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class LogResponseTest {
@@ -48,8 +50,18 @@ public class LogResponseTest {
         }
 
         @Override
-        protected InputStream initializeInputStream() throws FileNotFoundException {
-            return this.getClass().getResourceAsStream("/logresponse/" + getFileName());
+        protected InputStream initializeInputStream() throws IOException {
+            InputStream ret = this.getClass().getResourceAsStream("/logresponse/" + getFileName());
+
+            return ret;
+        }
+
+        public String calculateHash() throws IOException {
+            try (InputStream inputStream = this.getClass().getResourceAsStream("/logresponse/" + getFileName())) {
+                Sha1Digest digest = new Sha1Digest();
+
+                return digest.calculate(inputStream);
+            }
         }
     }
 
@@ -66,6 +78,7 @@ public class LogResponseTest {
         logResponse.setFileSize(333);
         logResponse.setTotal(1);
         logResponse.setLocationType(LocationType.ANY);
+        logResponse.setFileHash(logResponse.calculateHash());
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(logResponse));
 
@@ -73,5 +86,8 @@ public class LogResponseTest {
         assertTrue("Parsed object is not a log response",
                 parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
         assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_LOG);
+
+        final String expectedHash = "ab5313aa600dceff855fdbd62917b62952b39179";
+        assertEquals("The file hashes do not mach", expectedHash, ((LogResponse) parsed).getFileHash());
     }
 }

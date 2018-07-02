@@ -24,6 +24,8 @@ public class LogResponse extends MaestroResponse {
     private int index = 0;
     private int total;
     private long fileSize;
+    // Can be empty default (let the caller decide)
+    private String fileHash = "";
 
     private File file;
 
@@ -44,6 +46,7 @@ public class LogResponse extends MaestroResponse {
         setIndex(unpacker.unpackInt());
         setTotal(unpacker.unpackInt());
         setFileSize(unpacker.unpackLong());
+        setFileHash(unpacker.unpackString());
 
         int chunkSize = unpacker.unpackBinaryHeader();
         data = new byte[chunkSize];
@@ -76,6 +79,14 @@ public class LogResponse extends MaestroResponse {
 
     protected void setIndex(int index) {
         this.index = index;
+    }
+
+    public String getFileHash() {
+        return fileHash;
+    }
+
+    public void setFileHash(String fileHash) {
+        this.fileHash = fileHash;
     }
 
     public int getIndex() {
@@ -129,26 +140,21 @@ public class LogResponse extends MaestroResponse {
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
-        packer.packInt(this.locationType.code);
-        packer.packString(this.fileName);
-        packer.packInt(this.index);
-        packer.packInt(this.total);
+        packer.packInt(locationType.code);
+        packer.packString(fileName);
+        packer.packInt(index);
+        packer.packInt(total);
 
         packer.packLong(fileSize);
+        packer.packString(fileHash);
 
         packData(packer);
-
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
 
         return packer;
     }
 
 
-    protected InputStream initializeInputStream() throws FileNotFoundException {
+    protected InputStream initializeInputStream() throws IOException {
         return new FileInputStream(file);
     }
 
