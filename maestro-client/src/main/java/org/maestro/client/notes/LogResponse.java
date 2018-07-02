@@ -95,14 +95,18 @@ public class LogResponse extends MaestroResponse {
         this.file = file;
         fileSize = FileUtils.sizeOf(file);
 
-        if (fileSize > LOG_RESPONSE_MAX_PAYLOAD_SIZE) {
-            total = (int) Math.ceil((double) fileSize / (double) LOG_RESPONSE_MAX_PAYLOAD_SIZE);
-        }
-        else {
-            total = 1;
-        }
+        total = calculateBlockCount();
+        size = calculateSize();
 
         setFileName(file.getName());
+    }
+
+    private int calculateBlockCount() {
+        if (fileSize > LOG_RESPONSE_MAX_PAYLOAD_SIZE) {
+            return (int) Math.ceil((double) fileSize / (double) LOG_RESPONSE_MAX_PAYLOAD_SIZE);
+        }
+
+        return 1;
     }
 
     @Override
@@ -114,28 +118,15 @@ public class LogResponse extends MaestroResponse {
         packer.packInt(this.index);
         packer.packInt(this.total);
 
+        packer.packInt(size);
+        packer.packLong(fileSize);
+
         packData(packer);
 
         return packer;
     }
 
     private void packData(MessageBufferPacker packer) throws IOException {
-        if (fileSize < LOG_RESPONSE_MAX_PAYLOAD_SIZE) {
-            size = (int) fileSize;
-        }
-        else {
-            if ((pos + LOG_RESPONSE_MAX_PAYLOAD_SIZE) < fileSize) {
-                size = LOG_RESPONSE_MAX_PAYLOAD_SIZE;
-            } else {
-                size = (int) (fileSize - pos);
-            }
-        }
-        logger.debug("File {}/{} has {} bytes and is using {} of maximum payload size", file.getName(), index,
-                fileSize, size);
-
-        packer.packInt(size);
-        packer.packLong(fileSize);
-
         byte[] data = new byte[size];
 
         if (fi == null) {
@@ -156,6 +147,25 @@ public class LogResponse extends MaestroResponse {
             logger.trace("Completed sending the file chunks. Closing the input stream");
             fi.close();
         }
+    }
+
+    protected int calculateSize() {
+        int maxSize;
+
+        if (fileSize < LOG_RESPONSE_MAX_PAYLOAD_SIZE) {
+            maxSize = (int) fileSize;
+        }
+        else {
+            if ((pos + LOG_RESPONSE_MAX_PAYLOAD_SIZE) < fileSize) {
+                maxSize = LOG_RESPONSE_MAX_PAYLOAD_SIZE;
+            } else {
+                maxSize = (int) (fileSize - pos);
+            }
+        }
+        logger.debug("File {}/{} has {} bytes and is using {} of maximum payload size", file.getName(), index,
+                fileSize, maxSize);
+
+        return maxSize;
     }
 
     public void join(final LogResponse logResponse) {
