@@ -34,6 +34,8 @@ import static org.junit.Assert.assertTrue;
 public class LogResponseTest {
 
     static class TestLogResponse extends LogResponse {
+        private int testChunkSize = LogResponse.LOG_RESPONSE_MAX_PAYLOAD_SIZE;
+
         @Override
         public void setFileName(String fileName) {
             super.setFileName(fileName);
@@ -49,11 +51,20 @@ public class LogResponseTest {
             super.setTotal(total);
         }
 
+        public void setTestChunkSize(int testChunkSize) {
+            this.testChunkSize = testChunkSize;
+        }
+
         @Override
         protected InputStream initializeInputStream() throws IOException {
             InputStream ret = this.getClass().getResourceAsStream("/logresponse/" + getFileName());
 
             return ret;
+        }
+
+        @Override
+        public int getChunkSize(int maxChunkSize) {
+            return super.getChunkSize(testChunkSize);
         }
 
         public String calculateHash() throws IOException {
@@ -75,7 +86,7 @@ public class LogResponseTest {
         TestLogResponse logResponse = new TestLogResponse();
 
         logResponse.setFileName("test.properties");
-        logResponse.setFileSize(333);
+        logResponse.setFileSize(318);
         logResponse.setTotal(1);
         logResponse.setLocationType(LocationType.ANY);
         logResponse.setFileHash(logResponse.calculateHash());
@@ -88,6 +99,46 @@ public class LogResponseTest {
         assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_LOG);
 
         final String expectedHash = "ab5313aa600dceff855fdbd62917b62952b39179";
-        assertEquals("The file hashes do not mach", expectedHash, ((LogResponse) parsed).getFileHash());
+
+        Sha1Digest digest = new Sha1Digest();
+        final String logHash = digest.calculate(((LogResponse) parsed).getLogData());
+
+        assertEquals("The file hashes do not mach", expectedHash, logHash);
+    }
+
+    @Test
+    public void serializeLogRequestLarge() throws Exception {
+        TestLogResponse logResponse = new TestLogResponse();
+
+        logResponse.setFileName("sample.txt");
+        logResponse.setFileSize(20);
+        logResponse.setTotal(2);
+        logResponse.setTestChunkSize(10);
+        logResponse.setLocationType(LocationType.ANY);
+        logResponse.setFileHash(logResponse.calculateHash());
+
+
+        byte[] firstChunk = doSerialize(logResponse);
+        logResponse.next();
+        assertTrue("The log response should have subsequent data", logResponse.hasNext());
+        byte[] secondChunk = doSerialize(logResponse);
+
+        MaestroNote note = MaestroDeserializer.deserialize(firstChunk);
+        note = MaestroDeserializer.deserialize(secondChunk);
+
+        assertTrue(note instanceof LogResponse);
+
+        assertTrue("Chunk1 object is not a log response",
+                note.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
+        assertTrue(note.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_LOG);
+
+        final String expectedHash = "f1b27e5c5ede29e941e3d5fb10c3ef275a0f63a8";
+
+        LogResponse fullResponse = (LogResponse) note;
+
+        Sha1Digest digest = new Sha1Digest();
+        final String logHash = digest.calculate(fullResponse.getLogData());
+
+        assertEquals("The file hashes do not mach", expectedHash, logHash);
     }
 }

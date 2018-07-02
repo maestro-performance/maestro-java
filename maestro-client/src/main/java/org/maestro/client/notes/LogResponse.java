@@ -17,7 +17,7 @@ public class LogResponse extends MaestroResponse {
 
     // Use a conservative value of 100000000. ActiveMQ comes w/ 104857600
     // configured as the max frame chunkSize which limits the payload chunkSize here.
-    private static final int LOG_RESPONSE_MAX_PAYLOAD_SIZE = 10000000;
+    protected static final int LOG_RESPONSE_MAX_PAYLOAD_SIZE = 10000000;
 
     private LocationType locationType;
     private String fileName;
@@ -47,6 +47,7 @@ public class LogResponse extends MaestroResponse {
         setTotal(unpacker.unpackInt());
         setFileSize(unpacker.unpackLong());
         setFileHash(unpacker.unpackString());
+
 
         int chunkSize = unpacker.unpackBinaryHeader();
         data = new byte[chunkSize];
@@ -97,15 +98,15 @@ public class LogResponse extends MaestroResponse {
         return total;
     }
 
-    public int getChunkSize() {
+    protected int getChunkSize(int maxChunkSize) {
         int ret;
 
-        if (fileSize < LOG_RESPONSE_MAX_PAYLOAD_SIZE) {
+        if (fileSize < maxChunkSize) {
             ret = (int) fileSize;
         }
         else {
-            if ((pos + (long) LOG_RESPONSE_MAX_PAYLOAD_SIZE) < fileSize) {
-                ret = LOG_RESPONSE_MAX_PAYLOAD_SIZE;
+            if ((pos + (long) maxChunkSize) < fileSize) {
+                ret = maxChunkSize;
             } else {
                 ret = (int) (fileSize - pos);
             }
@@ -124,13 +125,13 @@ public class LogResponse extends MaestroResponse {
         this.file = file;
 
         setFileSize(FileUtils.sizeOf(file));
-        setTotal(calculateBlockCount());
+        setTotal(calculateBlockCount(LOG_RESPONSE_MAX_PAYLOAD_SIZE));
         setFileName(file.getName());
     }
 
-    private int calculateBlockCount() {
-        if (fileSize > LOG_RESPONSE_MAX_PAYLOAD_SIZE) {
-            return (int) Math.ceil((double) fileSize / (double) LOG_RESPONSE_MAX_PAYLOAD_SIZE);
+    private int calculateBlockCount(int maxChunkSize) {
+        if (fileSize > maxChunkSize) {
+            return (int) Math.ceil((double) fileSize / (double) maxChunkSize);
         }
 
         return 1;
@@ -171,7 +172,7 @@ public class LogResponse extends MaestroResponse {
     protected void packData(final MessageBufferPacker packer, final InputStream inputStream) throws IOException {
         logger.debug("Skipping {} bytes", pos);
 
-        int chunkSize = getChunkSize();
+        int chunkSize = getChunkSize(LOG_RESPONSE_MAX_PAYLOAD_SIZE);
         byte[] data = new byte[chunkSize];
         inputStream.read(data, 0, chunkSize);
         packer.packBinaryHeader(chunkSize);
