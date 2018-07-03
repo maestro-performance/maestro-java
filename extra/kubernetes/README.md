@@ -28,7 +28,7 @@ The sender connects to the maestro broker through the service.
 
 To deploy the sender:
 
-    kubectl apply -f sender/sender-deployment.yaml
+    kubectl apply -f sender/
 
 ## Deploy receiver
 
@@ -36,7 +36,7 @@ The receiver connects to the maestro broker through the service.
 
 To deploy the receiver:
 
-    kubectl apply -f receiver/receiver-deployment.yaml
+    kubectl apply -f receiver/
 
 ## Running the client
 
