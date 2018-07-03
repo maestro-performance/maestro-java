@@ -2,7 +2,7 @@
   <configuration default="false" name="CLI - Report Generator" type="Application" factoryName="Application">
     <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.Main" />
     <module name="maestro-cli" />
-    <option name="PROGRAM_PARAMETERS" value="report -d $MODULE_DIR$/target/classes/logs/reports -l debug --with-properties &quot;protocol=AMQP,messageSize=100,parallelCount=3,durable=true,limitDestinations=3,scriptName=FixedRateTest.groovy&quot;" />
+    <option name="PROGRAM_PARAMETERS" value="report -d $MODULE_DIR$/target/classes/reports -l debug --with-properties &quot;protocol=AMQP,messageSize=100,parallelCount=3,durable=true,limitDestinations=3,scriptName=FixedRateTest.groovy&quot;" />
     <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes" />
     <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
     <extension name="coverage">
