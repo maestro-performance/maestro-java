@@ -15,7 +15,8 @@ required for any test is to export the appropriate variables.
 The variables to be exported vary if the software under test is deployed in single or in multi
 node topologies. This different topologies are referenced as singlepoint and multipoint within
 Maestro. Additionally, the variables may vary according to the test - and custom tests may have
-their own variables.
+their own variables. The default set of tests provided with Maestro is documented in greater
+detail in further sections of this document.
 
 Overall, the base set of variables for the tests are: 
 
@@ -46,6 +47,64 @@ Overall, the base set of variables for the tests are:
 | `INSPECTOR_NAME` | `null` | The name of the [inspector](Inspectors.md) |
 
 
+Default Tests
+----
+
+Maestro comes with a set of default tests. Those tests are provided along with the
+Maestro client package and can be found in the script directory of the client install.
+The most relevant tests are:
+
+* Single Point
+  * FixedRateTest.groovy: a test can can send data at a fixed rate.
+  * IncrementalTest.groovy: a test that keeps increasing the rate if the test is successful.
+  * FairIncrementalTest.groovy: a test that keeps increasing the rate in a **fair** way if the test is successful.
+
+* Multi Point
+  * FixedRateTest.groovy: a test can can send data at a fixed rate.
+  * IncrementalTest.groovy: a test that keeps increasing the rate if the test is successful.
+  * FairIncrementalTest.groovy: a test that keeps increasing the rate in a **fair** way if the test is successful.
+
+The different between the incremental tests and the fair incremental test is that the first 
+do not take into consideration the number of connections per worker, whereas the second will
+balance the rate on the SUT according to the number of connections per worker.
+
+Fixed Rate Test Variables
+----
+
+| Variable Name    | Default Value       | Description          |
+|-------------------|---------------------|----------------------|
+| `RATE` | `null` | The rate or 0 for unbounded | 
+| `PARALLEL_COUNT` | `null` | The number of connections per worker |
+| `MAXIMUM_LATENCY` | `null` | Optional maximum latency |
+
+
+Incremental Test Variables
+----
+
+| Variable Name    | Default Value       | Description          |
+|-------------------|---------------------|----------------------|
+| `INITIAL_RATE` | `null` | The initial rate for the test (> 0) |
+| `CEILING_RATE` | `null` | The maximum rate for the test |
+| `RATE_INCREMENT` | `null` | How much to increment the rate after every iteration |
+| `INITIAL_PARALLEL_COUNT` | `null` | The initial number of connections per worker for the test (> 0) |
+| `CEILING_PARALLEL_COUNT` | `null` | The maximum number of connections per worker for the test |
+| `PARALLEL_COUNT_INCREMENT` | `null` | How much to increment the number of connections per worker after every test iteration |
+| `MAXIMUM_LATENCY` | `null` | Mandatory maximum latency |
+
+
+Fair Incremental Test Variables
+----
+
+| Variable Name    | Default Value       | Description          |
+|-------------------|---------------------|----------------------|
+| `COMBINED_INITIAL_RATE` | `null` | The combined initial rate for the test (> 0) |
+| `COMBINED_CEILING_RATE` | `null` | The combined maximum rate for the test |
+| `INITIAL_PARALLEL_COUNT` | `null` | The initial number of connections per worker for the test (> 0) |
+| `CEILING_PARALLEL_COUNT` | `null` | The maximum number of connections per worker for the test |
+| `PARALLEL_COUNT_INCREMENT` | `null` | How much to increment the number of connections per worker after every test iteration |
+| `STEPS` | `null` | Mandatory maximum latency |
+
+
 Usage - Runtime Parameters and Message Customization
 ----
 
@@ -60,6 +119,9 @@ The following parameters can be set for the JMS worker/client:
 | `priority` | null | Message priority |
 | `limitDestinations` | `1` | Distributes the load in a fixed number of queues (<= number of connections) |
   
+
+
+
 
 Running Default Tests
 ----
