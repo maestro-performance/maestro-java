@@ -118,7 +118,8 @@ The following parameters can be set for the JMS worker/client:
 | `durable` | true | Durable flag for the message |
 | `priority` | null | Message priority |
 | `limitDestinations` | `1` | Distributes the load in a fixed number of queues (<= number of connections) |
-  
+| `sessionMode` | `1` | JMS Session mode (1 = Auto ACK, 2 = client ACK, 3 = Dups OK, 0 = session transacted) |
+
 
 Running Default Tests
 ----
