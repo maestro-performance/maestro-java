@@ -135,6 +135,11 @@ public class BrokerDownloader implements ReportsDownloader {
         this(maestro, new NodeOrganizer(baseDir));
     }
 
+    // For the builder. TODO: improve
+    BrokerDownloader(final Maestro maestro, final Organizer organizer) {
+        this(maestro, (NodeOrganizer) organizer);
+    }
+
     public BrokerDownloader(final Maestro maestro, final NodeOrganizer organizer) {
         this.maestro = maestro;
         this.organizer = organizer;
