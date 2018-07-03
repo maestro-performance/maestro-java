@@ -8,7 +8,7 @@
       <env name="MESSAGE_SIZE" value="~200" />
       <env name="PARALLEL_COUNT" value="5" />
       <env name="RATE" value="0" />
-      <env name="TEST_DURATION" value="3m" />
+      <env name="TEST_DURATION" value="90s" />
     </envs>
     <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.Main" />
     <module name="maestro-cli" />
