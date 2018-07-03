@@ -66,6 +66,7 @@ class JMSClient implements Client {
             final JMSProtocol protocol = opts.getProtocol();
             logger.debug("JMS client is running test with the protocol {}", protocol.name());
 
+            logger.debug("JMS client is running with connection url {}", opts.getConnectionUrl());
             final ConnectionFactory factory = protocol.createConnectionFactory(opts.getConnectionUrl());
             logger.trace("Connection factory created");
 

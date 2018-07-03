@@ -31,7 +31,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.Session;
+import java.io.UnsupportedEncodingException;
 import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URLDecoder;
+import java.util.*;
 
 /**
  * A basic JMS options parsed from url
@@ -46,9 +50,24 @@ class JmsOptions {
     private String path;
 
     private long ttl;
+
+    private static final Set<String> maestroOptions = new HashSet<>();
+
+    static {
+        maestroOptions.add("protocol");
+        maestroOptions.add("type");
+        maestroOptions.add("ttl");
+        maestroOptions.add("durable");
+        maestroOptions.add("priority");
+        maestroOptions.add("limitDestinations");
+        maestroOptions.add("sessionMode");
+    }
+
     private boolean durable;
     private int sessionMode;
     private int priority;
+
+
 
     public JmsOptions(final String url) {
         try {
@@ -66,7 +85,7 @@ class JmsOptions {
             ttl = urlQuery.getLong("ttl", 0L);
             sessionMode = urlQuery.getInteger("sessionMode", Session.AUTO_ACKNOWLEDGE);
 
-            connectionUrl = filterURL(url).replace(path, "");
+            connectionUrl = filterJMSURL(uri);
 
 
         } catch (Throwable t) {
@@ -75,17 +94,24 @@ class JmsOptions {
     }
 
     // JMS urls cannot have the query part
-    private String filterURL(final String url) {
-        String filteredUrl;
+    private String filterJMSURL(final URI uri) throws UnsupportedEncodingException, URISyntaxException {
+        URLQuery query = new URLQuery(uri);
 
-        int queryStartIndex = url.indexOf('?');
-        if (queryStartIndex != -1) {
-            filteredUrl = url.substring(0, queryStartIndex);
-        } else {
-            filteredUrl = url;
+        Map<String, String> params = query.getParams();
+        StringBuilder queryStringBuilder = new StringBuilder();
+
+        Iterator<String> it = params.keySet().iterator();
+        while (it.hasNext()) {
+            String key = it.next();
+            if (!maestroOptions.contains(key)) {
+                queryStringBuilder.append(key).append("=").append(params.get(key));
+                if (it.hasNext()) {
+                    queryStringBuilder.append("&");
+                }
+            }
         }
-
-        return filteredUrl;
+        String queryString = queryStringBuilder.length() > 0 ? "?" + queryStringBuilder : "";
+        return uri.getScheme() + "://" + uri.getHost() + ":" + uri.getPort() + queryString;
     }
 
     public JMSProtocol getProtocol() {
