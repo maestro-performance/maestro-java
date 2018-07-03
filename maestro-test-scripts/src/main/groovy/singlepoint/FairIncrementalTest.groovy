@@ -24,35 +24,117 @@ import org.maestro.tests.incremental.singlepoint.SimpleTestProfile
 import org.maestro.common.LogConfigurator
 import org.maestro.common.content.MessageSize
 import org.maestro.common.duration.TestDurationBuilder
+import org.maestro.tests.utils.ManagementInterface
 
 
-downloaderName = System.getenv("DOWNLOADER_NAME");
 maestroURL = System.getenv("MAESTRO_BROKER")
-brokerURL = System.getenv("SEND_RECEIVE_URL")
+if (maestroURL == null) {
+    println "Error: the maestro broker was not given"
+
+    System.exit(1)
+}
+
+sendReceiveURL = System.getenv("SEND_RECEIVE_URL")
+if (sendReceiveURL == null) {
+    println "Error: the send/receive URL was not given"
+
+    System.exit(1)
+}
+
+messageSizeStr = System.getenv("MESSAGE_SIZE")
+if (messageSizeStr == null) {
+    println "Error: the message size was not given"
+
+    System.exit(1)
+}
+if (messageSizeStr.startsWith("~")) {
+    println "Error: fair incremental test requires a fixed message size"
+
+    System.exit(1)
+}
+
+messageSize = Long.parseLong(messageSizeStr)
+
 duration = System.getenv("TEST_DURATION")
-steps = Integer.parseInt(System.getenv("STEPS"))
+if (duration == null) {
+    println "Error: the test duration was not given"
+
+    System.exit(1)
+}
+
+combinedRateStr = System.getenv("COMBINED_INITIAL_RATE")
+if (combinedRateStr == null) {
+    println "Error: the combined rate was not given"
+
+    System.exit(1)
+}
+combinedRate = Integer.parseInt(combinedRateStr)
+
+combinedCeilingRateStr = System.getenv("COMBINED_CEILING_RATE")
+if (combinedCeilingRateStr == null) {
+    println "Error: the combined ceiling rate was not given"
+
+    System.exit(1)
+}
+combinedCeilingRate = Integer.parseInt(combinedCeilingRateStr)
+
+initialParallelCountStr = System.getenv("INITIAL_PARALLEL_COUNT")
+if (initialParallelCountStr == null) {
+    println "Error: the test parallel count was not given"
+
+    System.exit(1)
+}
+initialParallelCount = Integer.parseInt(initialParallelCountStr)
+
+ceilingParallelCountStr = System.getenv("CEILING_PARALLEL_COUNT")
+if (ceilingParallelCountStr == null) {
+    println "Error: the test parallel count was not given"
+
+    System.exit(1)
+}
+ceilingParallelCount = Integer.parseInt(ceilingParallelCountStr)
 
 
-messageSize = Long.parseLong(System.getenv("MESSAGE_SIZE"))
+parallelCountIncrementStr = System.getenv("PARALLEL_COUNT_INCREMENT")
+if (parallelCountIncrementStr == null) {
+    println "Error: the test parallel count was not given"
 
-combinedRate = Integer.parseInt(System.getenv("COMBINED_INITIAL_RATE"))
-combinedCeilingRate = Integer.parseInt(System.getenv("COMBINED_CEILING_RATE"))
+    System.exit(1)
+}
+parallelCountIncrement = Integer.parseInt(parallelCountIncrementStr)
 
-parallelCount = Integer.parseInt(System.getenv("INITIAL_PARALLEL_COUNT"))
-ceilingParallelCount = Integer.parseInt(System.getenv("CEILING_PARALLEL_COUNT"))
-parallelCountIncrement = Integer.parseInt(System.getenv("PARALLEL_COUNT_INCREMENT"))
+stepsStr = System.getenv("STEPS")
+if (stepsStr == null) {
+    println "Error: the number of test steps were not given"
+
+    System.exit(1)
+}
+steps = Integer.parseInt(stepsStr)
+
+maxLatency = System.getenv("MAXIMUM_LATENCY")
+if (maxLatency == null) {
+    println "Error: the maximum acceptable latency (FCL) was not given"
+
+    System.exit(1)
+}
+
+logLevel = System.getenv("LOG_LEVEL")
+LogConfigurator.configureLogLevel(logLevel)
+
+managementInterface = System.getenv("MANAGEMENT_INTERFACE");
+inspectorName = System.getenv("INSPECTOR_NAME");
+downloaderName = System.getenv("DOWNLOADER_NAME");
 
 
-rate = (combinedRate / parallelCount ) * (1 - (Math.log10(messageSize.doubleValue())) / 10)
+rate = (combinedRate / initialParallelCount ) * (1 - (Math.log10(messageSize.doubleValue())) / 10)
 println "Calculated base rate $rate"
 
-ceilingRate = (combinedCeilingRate / parallelCount ) * (1 - (Math.log10(messageSize.doubleValue())) / 10)
+ceilingRate = (combinedCeilingRate / initialParallelCount ) * (1 - (Math.log10(messageSize.doubleValue())) / 10)
 println "Calculated ceiling rate $ceilingRate"
 
 rateIncrement = (ceilingRate - rate) / steps
 println "Calculated rate increment $rateIncrement"
 
-LogConfigurator.debug()
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
@@ -61,10 +143,15 @@ ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, ma
 
 IncrementalTestProfile testProfile = new SimpleTestProfile();
 
-testProfile.setBrokerURL(brokerURL)
-
+testProfile.setSendReceiveURL(sendReceiveURL)
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(MessageSize.fixed(messageSize))
+testProfile.setInitialRate(rate.intValue());
+testProfile.setCeilingRate(ceilingRate.intValue())
+testProfile.setRateIncrement(rateIncrement.intValue())
+testProfile.setInitialParallelCount(initialParallelCount)
+testProfile.setCeilingParallelCount(ceilingParallelCount)
+testProfile.setParallelCountIncrement(parallelCountIncrement)
 
 maxLatencyStr = System.getenv("MAXIMUM_LATENCY");
 if (maxLatencyStr != null) {
@@ -72,13 +159,8 @@ if (maxLatencyStr != null) {
     testProfile.setMaximumLatency(maxLatency)
 }
 
-testProfile.setInitialRate(rate.intValue());
-testProfile.setCeilingRate(ceilingRate.intValue())
-testProfile.setRateIncrement(rateIncrement.intValue())
-
-testProfile.setInitialParallelCount(parallelCount)
-testProfile.setCeilingParallelCount(ceilingParallelCount)
-testProfile.setParallelCountIncrement(parallelCountIncrement)
+ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
+ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
 
