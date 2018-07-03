@@ -17,10 +17,9 @@
 package singlepoint
 
 import org.maestro.client.Maestro
-import org.maestro.reports.downloaders.BrokerDownloader
-import org.maestro.reports.downloaders.DefaultDownloader
 import org.maestro.reports.InspectorReportResolver
 import org.maestro.reports.InterconnectInspectorReportResolver
+import org.maestro.reports.downloaders.DownloaderBuilder
 import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.rate.FixedRateTestExecutor
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile
@@ -79,14 +78,7 @@ downloaderName = System.getenv("DOWNLOADER_NAME");
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader;
-
-if (downloaderName == null || downloaderName == "default") {
-    reportsDownloader = new DefaultDownloader(args[0])
-}
-else {
-    reportsDownloader = new BrokerDownloader(maestro, args[0])
-}
+ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
 
 FixedRateTestProfile testProfile = new FixedRateTestProfile()
 

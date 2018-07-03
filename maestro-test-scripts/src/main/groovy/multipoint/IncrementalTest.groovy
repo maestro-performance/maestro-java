@@ -18,7 +18,7 @@ package multipoint
 
 import org.maestro.client.Maestro
 import org.maestro.client.exchange.MaestroTopics
-import org.maestro.reports.downloaders.DefaultDownloader
+import org.maestro.reports.downloaders.DownloaderBuilder
 import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.MultiPointProfile
 import org.maestro.tests.incremental.IncrementalTestExecutor
@@ -31,6 +31,7 @@ import org.maestro.common.duration.TestDurationBuilder
 maestroURL = System.getenv("MAESTRO_BROKER")
 senderBrokerURL = System.getenv("SEND_URL")
 receiveBrokerURL = System.getenv("RECEIVE_URL")
+downloaderName = System.getenv("DOWNLOADER_NAME");
 
 logLevel = System.getenv("LOG_LEVEL")
 LogConfigurator.configureLogLevel(logLevel)
@@ -38,7 +39,7 @@ LogConfigurator.configureLogLevel(logLevel)
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new DefaultDownloader(args[0])
+ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
 
 IncrementalTestProfile testProfile = new SimpleTestProfile()
 

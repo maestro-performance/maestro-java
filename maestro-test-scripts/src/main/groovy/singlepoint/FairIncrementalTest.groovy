@@ -16,7 +16,7 @@
 package singlepoint
 
 import org.maestro.client.Maestro
-import org.maestro.reports.downloaders.DefaultDownloader
+import org.maestro.reports.downloaders.DownloaderBuilder
 import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.incremental.IncrementalTestExecutor
 import org.maestro.tests.incremental.IncrementalTestProfile
@@ -26,6 +26,7 @@ import org.maestro.common.content.MessageSize
 import org.maestro.common.duration.TestDurationBuilder
 
 
+downloaderName = System.getenv("DOWNLOADER_NAME");
 maestroURL = System.getenv("MAESTRO_BROKER")
 brokerURL = System.getenv("SEND_RECEIVE_URL")
 duration = System.getenv("TEST_DURATION")
@@ -56,7 +57,7 @@ LogConfigurator.debug()
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new DefaultDownloader(args[0]);
+ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
 
 IncrementalTestProfile testProfile = new SimpleTestProfile();
 

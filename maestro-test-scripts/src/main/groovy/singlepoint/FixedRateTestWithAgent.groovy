@@ -19,9 +19,9 @@ package singlepoint
 import org.maestro.client.Maestro
 import org.maestro.common.LogConfigurator
 import org.maestro.common.duration.TestDurationBuilder
-import org.maestro.reports.downloaders.DefaultDownloader
 import org.maestro.reports.InspectorReportResolver
 import org.maestro.reports.InterconnectInspectorReportResolver
+import org.maestro.reports.downloaders.DownloaderBuilder
 import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.rate.FixedRateTestExecutor
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile
@@ -74,6 +74,7 @@ extPointCommand = System.getenv("EXT_POINT_COMMAND")
 
 managementInterface = System.getenv("MANAGEMENT_INTERFACE");
 inspectorName = System.getenv("INSPECTOR_NAME");
+downloaderName = System.getenv("DOWNLOADER_NAME");
 
 logLevel = System.getenv("LOG_LEVEL")
 LogConfigurator.configureLogLevel(logLevel)
@@ -81,7 +82,7 @@ LogConfigurator.configureLogLevel(logLevel)
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new DefaultDownloader(args[0])
+ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
 
 FixedRateTestProfile testProfile = new FixedRateTestProfile()
 
