@@ -23,6 +23,7 @@ import org.maestro.tests.incremental.IncrementalTestProfile
 import org.maestro.tests.incremental.singlepoint.SimpleTestProfile
 import org.maestro.common.LogConfigurator
 import org.maestro.common.duration.TestDurationBuilder
+import org.maestro.tests.utils.ManagementInterface
 
 maestroURL = System.getenv("MAESTRO_BROKER")
 if (maestroURL == null) {
@@ -101,9 +102,12 @@ if (maxLatency == null) {
     System.exit(1)
 }
 
-downloaderName = System.getenv("DOWNLOADER_NAME");
 logLevel = System.getenv("LOG_LEVEL")
 LogConfigurator.configureLogLevel(logLevel)
+
+managementInterface = System.getenv("MANAGEMENT_INTERFACE");
+inspectorName = System.getenv("INSPECTOR_NAME");
+downloaderName = System.getenv("DOWNLOADER_NAME");
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
@@ -122,6 +126,9 @@ testProfile.setRateIncrement(Integer.parseInt(rateIncrement))
 testProfile.setParallelCountIncrement(Integer.parseInt(parallelCountIncrement))
 testProfile.setInitialParallelCount(Integer.parseInt(initialParallelCount))
 testProfile.setCeilingParallelCount(Integer.parseInt(ceilingParallelCount))
+
+ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
+ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
 

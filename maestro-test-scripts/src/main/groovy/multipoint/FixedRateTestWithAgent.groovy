@@ -27,6 +27,7 @@ import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.MultiPointProfile
 import org.maestro.tests.rate.FixedRateTestExecutor
 import org.maestro.tests.rate.multipoint.FixedRateMultipointTestProfile
+import org.maestro.tests.utils.ManagementInterface
 
 maestroURL = System.getenv("MAESTRO_BROKER")
 if (maestroURL == null) {
@@ -114,26 +115,8 @@ testProfile.setExtPointSource(extPointSource)
 testProfile.setExtPointBranch(extPointBranch)
 testProfile.setExtPointCommand(extPointCommand)
 
-if (managementInterface != null) {
-    if (inspectorName != null) {
-        testProfile.setInspectorName(inspectorName)
-        testProfile.setManagementInterface(managementInterface)
-
-        if(inspectorName == "InterconnectInspector") {
-            reportsDownloader.addReportResolver("inspector", new InterconnectInspectorReportResolver())
-        }
-        else {
-            reportsDownloader.addReportResolver("inspector", new InspectorReportResolver())
-        }
-    }
-    else {
-        println "A management interface was provided by no inspector name was given. Ignoring ..."
-    }
-}
-else {
-    println "No management interface address was given"
-}
-
+ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
+ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
 FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, reportsDownloader, testProfile)
 if (!testExecutor.run()) {
