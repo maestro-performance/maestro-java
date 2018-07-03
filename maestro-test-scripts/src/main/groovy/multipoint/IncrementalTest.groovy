@@ -25,16 +25,100 @@ import org.maestro.tests.incremental.IncrementalTestExecutor
 import org.maestro.tests.incremental.IncrementalTestProfile
 import org.maestro.tests.incremental.multipoint.SimpleTestProfile
 import org.maestro.common.LogConfigurator
-import org.maestro.common.content.MessageSize
 import org.maestro.common.duration.TestDurationBuilder
+import org.maestro.tests.utils.ManagementInterface
 
 maestroURL = System.getenv("MAESTRO_BROKER")
-senderBrokerURL = System.getenv("SEND_URL")
-receiveBrokerURL = System.getenv("RECEIVE_URL")
-downloaderName = System.getenv("DOWNLOADER_NAME");
+if (maestroURL == null) {
+    println "Error: the maestro broker was not given"
+
+    System.exit(1)
+}
+
+
+sendURL = System.getenv("SEND_URL")
+if (sendURL == null) {
+    println "Error: the send URL was not given"
+
+    System.exit(1)
+}
+
+receiveURL = System.getenv("RECEIVE_URL")
+if (receiveURL == null) {
+    println "Error: the receive URL was not given"
+
+    System.exit(1)
+}
+
+messageSize = System.getenv("MESSAGE_SIZE")
+if (messageSize == null) {
+    println "Error: the message size was not given"
+
+    System.exit(1)
+}
+
+duration = System.getenv("TEST_DURATION")
+if (duration == null) {
+    println "Error: the test duration was not given"
+
+    System.exit(1)
+}
+
+rate = System.getenv("INITIAL_RATE")
+if (rate == null) {
+    println "Error: the test rate was not given"
+
+    System.exit(1)
+}
+
+ceilingRate = System.getenv("CEILING_RATE")
+if (ceilingRate == null) {
+    println "Error: the test ceiling rate was not given"
+
+    System.exit(1)
+}
+
+rateIncrement = System.getenv("RATE_INCREMENT")
+if (rateIncrement == null) {
+    println "Error: the rate increment was not given"
+
+    System.exit(1)
+}
+
+initialParallelCount = System.getenv("INITIAL_PARALLEL_COUNT")
+if (initialParallelCount == null) {
+    println "Error: the test parallel count was not given"
+
+    System.exit(1)
+}
+
+ceilingParallelCount = System.getenv("CEILING_PARALLEL_COUNT")
+if (ceilingParallelCount == null) {
+    println "Error: the test ceiling parallel count was not given"
+
+    System.exit(1)
+}
+
+parallelCountIncrement = System.getenv("PARALLEL_COUNT_INCREMENT")
+if (parallelCountIncrement == null) {
+    println "Error: the test parallel count increment was not given"
+
+    System.exit(1)
+}
+
+maxLatency = System.getenv("MAXIMUM_LATENCY")
+if (maxLatency == null) {
+    println "Error: the maximum acceptable latency (FCL) was not given"
+
+    System.exit(1)
+}
 
 logLevel = System.getenv("LOG_LEVEL")
 LogConfigurator.configureLogLevel(logLevel)
+
+managementInterface = System.getenv("MANAGEMENT_INTERFACE");
+inspectorName = System.getenv("INSPECTOR_NAME");
+downloaderName = System.getenv("DOWNLOADER_NAME");
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
@@ -43,20 +127,21 @@ ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, ma
 
 IncrementalTestProfile testProfile = new SimpleTestProfile()
 
-testProfile.addEndPoint(new MultiPointProfile.EndPoint("sender", MaestroTopics.SENDER_DAEMONS, senderBrokerURL))
-testProfile.addEndPoint(new MultiPointProfile.EndPoint("receiver", MaestroTopics.RECEIVER_DAEMONS, receiveBrokerURL))
+testProfile.addEndPoint(new MultiPointProfile.EndPoint("sender", MaestroTopics.SENDER_DAEMONS, sendURL))
+testProfile.addEndPoint(new MultiPointProfile.EndPoint("receiver", MaestroTopics.RECEIVER_DAEMONS, receiveURL))
 
-testProfile.setInitialRate(500)
-testProfile.setCeilingRate(600)
+testProfile.setDuration(TestDurationBuilder.build(duration))
+testProfile.setMessageSize(messageSize)
+testProfile.setMaximumLatency(Integer.parseInt(maxLatency))
+testProfile.setInitialRate(Integer.parseInt(rate))
+testProfile.setCeilingRate(Integer.parseInt(ceilingRate))
+testProfile.setRateIncrement(Integer.parseInt(rateIncrement))
+testProfile.setParallelCountIncrement(Integer.parseInt(parallelCountIncrement))
+testProfile.setInitialParallelCount(Integer.parseInt(initialParallelCount))
+testProfile.setCeilingParallelCount(Integer.parseInt(ceilingParallelCount))
 
-testProfile.setRateIncrement(100)
-
-testProfile.setInitialParallelCount(2)
-testProfile.setCeilingParallelCount(2)
-
-testProfile.setDuration(TestDurationBuilder.build("120s"))
-testProfile.setMessageSize(MessageSize.variable(256))
-testProfile.setMaximumLatency(200)
+ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
+ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
 
@@ -68,5 +153,3 @@ if (!testExecutor.run()) {
 
 maestro.stop()
 System.exit(0)
-
-
