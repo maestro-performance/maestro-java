@@ -16,10 +16,15 @@
 
 package org.maestro.common.worker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Represents the options set on the worker by the front-end
  */
 public class WorkerOptions {
+    private static final Logger logger = LoggerFactory.getLogger(WorkerOptions.class);
+
     private String brokerURL;
     private String duration;
     private String logLevel;
@@ -137,12 +142,12 @@ public class WorkerOptions {
 
 
     public Double getFclAsDouble() {
-        if (fcl != null) {
+        if (fcl != null && !fcl.equals("0")) {
             try {
                 return Double.parseDouble(fcl);
             }
             catch (Exception e) {
-
+                logger.warn("Unable to parse the provided FCL {}", fcl);
             }
         }
 
@@ -154,7 +159,7 @@ public class WorkerOptions {
      * Sets the fail-condition-on-latency fail condition
      * @param fcl
      */
-    public void setFcl(String fcl) {
+    public void setFcl(final String fcl) {
         this.fcl = fcl;
     }
 }

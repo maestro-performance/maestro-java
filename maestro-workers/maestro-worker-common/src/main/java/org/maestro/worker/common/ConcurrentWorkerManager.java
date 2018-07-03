@@ -178,6 +178,8 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
                 e.printStackTrace();
             }
         }
+
+        this.latencyEvaluator = null;
     }
 
     private static boolean awaitWorkers(long startWaitingWorkersEpochMillis, final List<WorkerRuntimeInfo> workers) {
