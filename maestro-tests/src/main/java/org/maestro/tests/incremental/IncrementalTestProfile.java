@@ -144,7 +144,7 @@ public abstract class IncrementalTestProfile extends AbstractTestProfile {
             logger.info("Reached the virtual ceiling");
             parallelCount += parallelCountIncrement;
 
-            if (parallelCount == ceilingParallelCount) {
+            if (parallelCount >= ceilingParallelCount) {
                 logger.info("Reached the virtual ceiling for the parallel count and the test is complete");
             }
             else {
