@@ -120,9 +120,6 @@ The following parameters can be set for the JMS worker/client:
 | `limitDestinations` | `1` | Distributes the load in a fixed number of queues (<= number of connections) |
   
 
-
-
-
 Running Default Tests
 ----
 
@@ -133,13 +130,13 @@ run with one of the following commands:
 maestro-cli exec -s ../scripts/singlepoint/IncrementalTest.groovy -d /path/to/save/reports
 ```
 
-```
-cd /path/to/scripts/singlepoint/ && groovy IncrementalTest.groovy /path/to/save/reports
-```
+Some test might need to be run directly via Groovy. This is the case for the tests
+that require specific dependencies for processing their data. For example, to run
+the Quiver test:
 
-The only difference is that the first will use builtin dependencies resulting in a much quicker test
-start up time. 
-
+```
+cd /path/to/scripts/singlepoint/ && groovy QuiverTest.groovy /path/to/save/reports
+```
 
 Generating the Reports
 ----
