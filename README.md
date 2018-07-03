@@ -49,3 +49,9 @@ Demos
 ---- 
 
 Some demonstration about using Maestro, focused on the front-end, is available [here](extra/doc/Demos.md).
+
+
+Development
+---- 
+
+Some tips and tricks for developing and debugging Maestro are available [here](extra/doc/Development.md).
