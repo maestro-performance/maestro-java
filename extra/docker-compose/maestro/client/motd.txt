@@ -25,9 +25,6 @@
 ####
 #### To generate the test report:
 #### /opt/maestro/maestro-cli/bin/maestro-cli report -l info -d /maestro/reports/
-#### 
-#### Note: the execution takes a while to run on the first time because
-#### Groovy/Grape must download all the dependencies required to run the 
-#### test
+####
 #### 
 ##########################################################################################
