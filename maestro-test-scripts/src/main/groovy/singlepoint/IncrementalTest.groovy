@@ -32,8 +32,8 @@ if (maestroURL == null) {
     System.exit(1)
 }
 
-brokerURL = System.getenv("SEND_RECEIVE_URL")
-if (brokerURL == null) {
+sendReceiveURL = System.getenv("SEND_RECEIVE_URL")
+if (sendReceiveURL == null) {
     println "Error: the send/receive URL was not given"
 
     System.exit(1)
@@ -116,7 +116,7 @@ ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, ma
 
 IncrementalTestProfile testProfile = new SimpleTestProfile()
 
-testProfile.setBrokerURL(brokerURL)
+testProfile.setSendReceiveURL(sendReceiveURL)
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(messageSize)
 testProfile.setMaximumLatency(Integer.parseInt(maxLatency))
