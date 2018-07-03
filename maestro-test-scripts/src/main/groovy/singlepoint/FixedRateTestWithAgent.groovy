@@ -68,6 +68,8 @@ if (parallelCount == null) {
     System.exit(1)
 }
 
+maxLatency = System.getenv("MAXIMUM_LATENCY")
+
 extPointSource = System.getenv("EXT_POINT_SOURCE")
 extPointBranch = System.getenv("EXT_POINT_BRANCH")
 extPointCommand = System.getenv("EXT_POINT_COMMAND")
@@ -89,7 +91,11 @@ FixedRateTestProfile testProfile = new FixedRateTestProfile()
 testProfile.setBrokerURL(brokerURL)
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(messageSize)
-testProfile.setMaximumLatency(20000)
+
+if (maxLatency != null) {
+    testProfile.setMaximumLatency(Integer.parseInt(maxLatency))
+}
+
 testProfile.setRate(Integer.parseInt(rate))
 testProfile.setParallelCount(Integer.parseInt(parallelCount))
 

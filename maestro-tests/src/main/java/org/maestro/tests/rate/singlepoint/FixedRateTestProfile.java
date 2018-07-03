@@ -41,7 +41,7 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     protected int warmUpParallelCount;
     private String brokerURL;
 
-    private int maximumLatency = 600;
+    private int maximumLatency = 0;
     private TestDuration duration;
     private String messageSize;
 

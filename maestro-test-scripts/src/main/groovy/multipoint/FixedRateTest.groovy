@@ -77,6 +77,8 @@ if (parallelCount == null) {
     System.exit(1)
 }
 
+maxLatency = System.getenv("MAXIMUM_LATENCY")
+
 managementInterface = System.getenv("MANAGEMENT_INTERFACE");
 inspectorName = System.getenv("INSPECTOR_NAME");
 downloaderName = System.getenv("DOWNLOADER_NAME");
@@ -96,7 +98,11 @@ testProfile.addEndPoint(new MultiPointProfile.EndPoint("receiver", MaestroTopics
 
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(messageSize)
-testProfile.setMaximumLatency(20000)
+
+if (maxLatency != null) {
+    testProfile.setMaximumLatency(Integer.parseInt(maxLatency))
+}
+
 testProfile.setRate(Integer.parseInt(rate))
 testProfile.setParallelCount(Integer.parseInt(parallelCount))
 

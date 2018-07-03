@@ -71,6 +71,8 @@ if (parallelCount == null) {
 logLevel = System.getenv("LOG_LEVEL")
 LogConfigurator.configureLogLevel(logLevel)
 
+maxLatency = System.getenv("MAXIMUM_LATENCY")
+
 managementInterface = System.getenv("MANAGEMENT_INTERFACE");
 inspectorName = System.getenv("INSPECTOR_NAME");
 downloaderName = System.getenv("DOWNLOADER_NAME");
@@ -85,7 +87,11 @@ FixedRateTestProfile testProfile = new FixedRateTestProfile()
 testProfile.setBrokerURL(brokerURL)
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(messageSize)
-testProfile.setMaximumLatency(20000)
+
+if (maxLatency != null) {
+    testProfile.setMaximumLatency(Integer.parseInt(maxLatency))
+}
+
 testProfile.setRate(Integer.parseInt(rate))
 testProfile.setParallelCount(Integer.parseInt(parallelCount))
 
