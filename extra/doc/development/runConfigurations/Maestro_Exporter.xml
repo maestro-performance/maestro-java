@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Maestro Exporter" type="Application" factoryName="Application" singleton="true">
+    <log_file alias="Exporter Log" path="$PROJECT_DIR$/maestro-exporter/target/classes/logs/exporter.log" />
+    <option name="MAIN_CLASS_NAME" value="org.maestro.exporter.main.Main" />
+    <module name="maestro-exporter" />
+    <option name="PROGRAM_PARAMETERS" value="-m mqtt://localhost:1884" />
+    <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes" />
+    <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.maestro.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method />
+  </configuration>
+</component>

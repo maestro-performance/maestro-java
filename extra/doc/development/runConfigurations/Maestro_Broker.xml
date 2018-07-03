@@ -1,0 +1,26 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Maestro Broker" type="docker-deploy" factoryName="docker-image" server-name="Docker">
+    <deployment type="docker-image">
+      <settings>
+        <option name="JSONFilePath" value="" />
+        <option name="command" value="" />
+        <option name="commandLineOptions" value="" />
+        <option name="containerName" value="maestro-broker" />
+        <option name="entrypoint" value="" />
+        <option name="imageTag" value="sha256:7e8e8bd0784a448f3916a0cac10f4d0a20414afc46e8c7b3d139486ba5ea2e81" />
+        <option name="portBindings">
+          <list>
+            <DockerPortBindingImpl>
+              <option name="containerPort" value="1883" />
+              <option name="hostPort" value="1884" />
+            </DockerPortBindingImpl>
+          </list>
+        </option>
+        <option name="startBrowserSettings">
+          <browser url="http://127.0.0.1" />
+        </option>
+      </settings>
+    </deployment>
+    <method />
+  </configuration>
+</component>

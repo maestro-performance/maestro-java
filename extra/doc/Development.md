@@ -75,3 +75,10 @@ PARALLEL_COUNT=5
 RATE=0
 TEST_DURATION=3m
 ```
+
+
+Run Configurations for IntelliJ
+----
+
+Some tips and tricks for developing and debugging Maestro are available [here](development/runConfigurations). To use
+those, you can copy all the XML files to your ```${project.dir}/.idea/runConfigurations``` directory

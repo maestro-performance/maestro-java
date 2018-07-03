@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="ShortTestCount" type="GroovyScriptRunConfiguration" factoryName="Groovy">
+    <module name="maestro-test-scripts" />
+    <setting name="path" value="file://$PROJECT_DIR$/maestro-test-scripts/src/main/groovy/singlepoint/ShortTestCount.groovy" />
+    <setting name="vmparams" value="" />
+    <setting name="params" value="" />
+    <setting name="workDir" value="file://$PROJECT_DIR$/maestro-test-scripts/src" />
+    <setting name="debug" value="false" />
+    <env name="BROKER_URL" value="amqp://localhost/test.performance.queue?priority=variable&amp;appendClientNumber=${APPEND_CLIENT_NUMBER}" />
+    <env name="MAESTRO_BROKER" value="mqtt://localhost:1884" />
+    <env name="MANAGEMENT_INTERFACE" value="http://admin:admin@localhost:8161/console/jolokia" />
+    <method>
+      <option name="Make" enabled="false" />
+    </method>
+  </configuration>
+</component>

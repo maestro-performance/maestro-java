@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="CLI  - Help" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.Main" />
+    <module name="maestro-cli" />
+    <option name="PROGRAM_PARAMETERS" value="help" />
+    <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes" />
+    <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.maestro.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method />
+  </configuration>
+</component>

@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Maestro Agent" type="Application" factoryName="Application">
+    <log_file alias="Agent Logs" path="$PROJECT_DIR$/maestro-agent/src/main/resources/logs/agent.log" />
+    <option name="MAIN_CLASS_NAME" value="org.maestro.agent.main.Main" />
+    <module name="maestro-agent" />
+    <option name="PROGRAM_PARAMETERS" value="m mqtt://localhost:1884 -H localhost -l $MODULE_DIR$/target/classes/agent-logs/" />
+    <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes/" />
+    <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.maestro.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method />
+  </configuration>
+</component>

@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Maestro Worker: Data Server" type="Application" factoryName="Application">
+    <log_file alias="$PROJECT_DIR$/maestro-worker/src/main/resources/logs/data-server.log" path="$PROJECT_DIR$/maestro-worker/src/main/resources/logs/data-server.log" />
+    <option name="MAIN_CLASS_NAME" value="org.maestro.worker.main.Main" />
+    <module name="maestro-worker" />
+    <option name="PROGRAM_PARAMETERS" value="-m mqtt://localhost:1884 -r data-server -H localhost -l $MODULE_DIR$/target/classes/dataserver-logs/" />
+    <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes" />
+    <option name="WORKING_DIRECTORY" value="file://$MODULE_DIR$" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.maestro.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method />
+  </configuration>
+</component>
