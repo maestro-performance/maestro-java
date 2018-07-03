@@ -36,7 +36,7 @@ steps = Integer.parseInt(System.getenv("STEPS"))
 messageSize = Long.parseLong(System.getenv("MESSAGE_SIZE"))
 
 combinedRate = Integer.parseInt(System.getenv("COMBINED_INITIAL_RATE"))
-combiniedCeilingRate = Integer.parseInt(System.getenv("COMBINED_CEILING_RATE"))
+combinedCeilingRate = Integer.parseInt(System.getenv("COMBINED_CEILING_RATE"))
 
 parallelCount = Integer.parseInt(System.getenv("INITIAL_PARALLEL_COUNT"))
 ceilingParallelCount = Integer.parseInt(System.getenv("CEILING_PARALLEL_COUNT"))
@@ -46,7 +46,7 @@ parallelCountIncrement = Integer.parseInt(System.getenv("PARALLEL_COUNT_INCREMEN
 rate = (combinedRate / parallelCount ) * (1 - (Math.log10(messageSize.doubleValue())) / 10)
 println "Calculated base rate $rate"
 
-ceilingRate = (combiniedCeilingRate / parallelCount ) * (1 - (Math.log10(messageSize.doubleValue())) / 10)
+ceilingRate = (combinedCeilingRate / parallelCount ) * (1 - (Math.log10(messageSize.doubleValue())) / 10)
 println "Calculated ceiling rate $ceilingRate"
 
 rateIncrement = (ceilingRate - rate) / steps
