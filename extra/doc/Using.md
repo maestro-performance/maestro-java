@@ -28,7 +28,7 @@ Overall, the base set of variables for the tests are:
 | `SEND_RECEIVE_URL` | `null` | The URL for the SUT (ie.: ```amqp://testhost/queue```) with options (see below) |
 | `MESSAGE_SIZE` | `null` | The [message size](MessageSize.md) |
 | `TEST_DURATION` | `null` | The [test duration](TestDuration.md) |
-| `LOG_LEVEL` | `null` | Optional log level |
+| `LOG_LEVEL` | `null` | Optional log level (see below) |
 | `MANAGEMENT_INTERFACE` | `null` | The URL for the [management interface](Inspectors.md) |
 | `INSPECTOR_NAME` | `null` | The name of the [inspector](Inspectors.md) |
 | `DOWNLOADER_NAME` | `null` | The report download method (see below) |
@@ -43,7 +43,7 @@ Overall, the base set of variables for the tests are:
 | `RECEIVE_URL` | `null` | The URL for receiving data from the SUT (ie.: ```amqp://testhost/queue```) with options (see below) |
 | `MESSAGE_SIZE` | `null` | The [message size](MessageSize.md) |
 | `TEST_DURATION` | `null` | The [test duration](TestDuration.md) |
-| `LOG_LEVEL` | `null` | Optional log level |
+| `LOG_LEVEL` | `null` | Optional log level (see below) |
 | `MANAGEMENT_INTERFACE` | `null` | The URL for the [management interface](Inspectors.md) |
 | `INSPECTOR_NAME` | `null` | The name of the [inspector](Inspectors.md) |
 | `DOWNLOADER_NAME` | `null` | The report download method (see below) |
@@ -69,6 +69,17 @@ The most relevant tests are:
 The different between the incremental tests and the fair incremental test is that the first 
 do not take into consideration the number of connections per worker, whereas the second will
 balance the rate on the SUT according to the number of connections per worker.
+
+**Log Level**
+
+Log level can be adjusted by setting the LOG_LEVEL variable to one of the following values:
+
+* trace
+* debug
+* info
+* warn
+
+The default log level is "info".
 
 **Report Downloaders**
 
