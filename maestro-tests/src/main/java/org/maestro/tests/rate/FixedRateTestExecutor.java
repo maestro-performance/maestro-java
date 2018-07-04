@@ -259,9 +259,11 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     }
 
     private int getTotalNotifications() throws InterruptedException {
+        int timeoutStopWorkerMillis = config.getInt("maestro.worker.stop.timeout", 1000);
+
         int totalNotifications;
         if (running) {
-            int notificationRetries = 10;
+            int notificationRetries = (testProfile.getParallelCount() * (timeoutStopWorkerMillis / 1000) * 2) + 1;
 
             do {
                 totalNotifications = failedNotifications + successNotifications;
@@ -269,7 +271,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
                     logger.info("Not enough notifications received yet: received {} of {}", totalNotifications, numPeers);
                     logger.info("Backends might be quiescing after the test execution");
                     notificationRetries--;
-                    Thread.sleep(500);
+                    Thread.sleep(1000);
                 }
                 else {
                     logger.info("Received all the required notifications: {} of {}", totalNotifications, numPeers);
