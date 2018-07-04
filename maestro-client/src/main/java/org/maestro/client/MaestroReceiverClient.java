@@ -96,7 +96,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         try {
             super.publish(MaestroTopics.MAESTRO_TOPIC, errResponse);
         } catch (Exception e) {
-            logger.error("Unable to publish the OK response: {}", e.getMessage(), e);
+            logger.error("Unable to publish the internal error response: {}", e.getMessage(), e);
         }
     }
 
