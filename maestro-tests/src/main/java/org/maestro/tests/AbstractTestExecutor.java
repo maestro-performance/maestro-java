@@ -27,7 +27,9 @@ import org.maestro.reports.downloaders.ReportsDownloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedHashSet;
 import java.util.List;
+import java.util.Set;
 
 /**
  * A simple test executor that should be extensible for most usages
@@ -118,8 +120,6 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      * @throws InterruptedException
      */
     protected int getNumPeers(String ...types) throws MaestroConnectionException, InterruptedException {
-        int numPeers = 0;
-
         logger.debug("Collecting responses to ensure topic is clean prior to pinging nodes");
         maestro.collect();
 
@@ -129,21 +129,25 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         Thread.sleep(5000);
 
         List<MaestroNote> replies = maestro.collect();
+        Set<String> knownPeers = new LinkedHashSet<>(replies.size());
+
         for (MaestroNote note : replies) {
             if (note instanceof PingResponse) {
                 if (types != null) {
                     for (String type : types) {
                         String nodeType = NodeUtils.getTypeFromName(((PingResponse) note).getName());
                         if (type.equals(nodeType)) {
-                            numPeers++;
-                            continue;
+                            String name = ((PingResponse) note).getName();
+                            logger.debug("Accounting peer: {}/{}", name, ((PingResponse) note).getId());
+                            knownPeers.add(((PingResponse) note).getId());
                         }
                     }
                 }
             }
         }
 
-        return numPeers;
+        logger.info("Known peers recorded: ", knownPeers.size());
+        return knownPeers.size();
     }
 
 

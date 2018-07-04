@@ -262,14 +262,20 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         int totalNotifications;
         if (running) {
             int notificationRetries = 10;
-
-            logger.info("Not enough notifications received yet. Backends might be quiescing after the test execution");
+            
             do {
                 totalNotifications = failedNotifications + successNotifications;
                 if (totalNotifications < numPeers) {
-                    Thread.sleep(500);
+                    logger.info("Not enough notifications received yet: received {} of {}", totalNotifications, numPeers);
+                    logger.info("Backends might be quiescing after the test execution");
                     notificationRetries--;
+                    Thread.sleep(500);
                 }
+                else {
+                    logger.info("Received all the required notifications: {} of {}", totalNotifications, numPeers);
+                    break;
+                }
+
             } while (totalNotifications < numPeers && notificationRetries > 0);
         }
         else {
