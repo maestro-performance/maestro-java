@@ -37,6 +37,7 @@ ENV MESSAGE_SIZE 256
 ENV TEST_DURATION 90s
 ENV RATE 0
 ENV PARALLEL_COUNT 2
+ENV DOWNLOADER_NAME broker
 
 ADD motd.txt /etc/motd
 RUN echo "cat /etc/motd" >> $HOME/.bashrc

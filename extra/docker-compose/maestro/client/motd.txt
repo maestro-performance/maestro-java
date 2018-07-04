@@ -19,6 +19,10 @@
 #### INSPECTOR_NAME, MANAGEMENT_INTERFACE (or just use one of the
 #### setup-*-inspector.sh scripts)
 ####
+#### Note: the client container is configured to use broker download by default.
+#### if you don't that behavior, run:
+#### export DOWNLOADER_NAME=default
+####
 #### To run a sample test case: 
 #### - cd /opt/maestro/maestro-cli/bin/
 #### - ./maestro-cli exec -s ../singlepoint/FixedRateTest.groovy -d /maestro/reports
