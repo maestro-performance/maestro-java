@@ -313,6 +313,14 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
             }
         }
 
+        if (!logSubDir.exists()) {
+            logger.error("The client requested the log files for location {} but they don't exist at {} ",
+                    note.getLocationType().toString(), logDir);
+
+            getClient().replyInternalError();
+            return;
+        }
+
         File[] files = logSubDir.listFiles();
         for (File file : files) {
             logger.debug("Sending log file {} with location type {}", file.getName(),
