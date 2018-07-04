@@ -146,7 +146,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
             }
         }
 
-        logger.info("Known peers recorded: ", knownPeers.size());
+        logger.info("Known peers recorded: {}", knownPeers.size());
         return knownPeers.size();
     }
 
