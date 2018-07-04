@@ -10,16 +10,16 @@ client:
 	cd client && docker build -t maestroperf/maestro-client:${MAESTRO_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
 
 worker-sender:
-	cd workers/sender && docker build -t maestroperf/maestro-sender:${MAESTRO_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
+	cd workers/sender && docker build -t maestroperf/maestro-sender:${MAESTRO_VERSION} --build-arg MAESTRO_WORKER_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
 
 worker-receiver:
-	cd workers/receiver && docker build -t maestroperf/maestro-receiver:${MAESTRO_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
+	cd workers/receiver && docker build -t maestroperf/maestro-receiver:${MAESTRO_VERSION} --build-arg MAESTRO_WORKER_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
 
 agent:
-	cd workers/agent && docker build -t maestroperf/maestro-agent:${MAESTRO_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
+	cd workers/agent && docker build -t maestroperf/maestro-agent:${MAESTRO_VERSION} --build-arg MAESTRO_WORKER_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
 
 inspector:
-	cd workers/inspector && docker build -t maestroperf/maestro-inspector:${MAESTRO_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
+	cd workers/inspector && docker build -t maestroperf/maestro-inspector:${MAESTRO_VERSION} --build-arg MAESTRO_WORKER_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
 
 build: broker client worker-sender worker-receiver agent inspector
 
