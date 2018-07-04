@@ -262,7 +262,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         int totalNotifications;
         if (running) {
             int notificationRetries = 10;
-            
+
             do {
                 totalNotifications = failedNotifications + successNotifications;
                 if (totalNotifications < numPeers) {
@@ -276,12 +276,22 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
                     break;
                 }
 
-            } while (totalNotifications < numPeers && notificationRetries > 0);
+            } while (canWait(totalNotifications, notificationRetries));
         }
         else {
             totalNotifications = failedNotifications + successNotifications;
         }
         return totalNotifications;
+    }
+
+    private boolean canWait(int totalNotifications, int notificationRetries) {
+        if (totalNotifications < numPeers) {
+           if (notificationRetries > 0) {
+               return true;
+           }
+        }
+
+        return false;
     }
 
     private long getRepeat() {
