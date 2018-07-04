@@ -41,7 +41,7 @@ import static org.maestro.worker.common.WorkerStateInfoUtil.isCleanExit;
  */
 public class ConcurrentWorkerManager extends MaestroWorkerManager implements MaestroReceiverEventListener,MaestroSenderEventListener {
     private static final Logger logger = LoggerFactory.getLogger(ConcurrentWorkerManager.class);
-    private static final long TIMEOUT_STOP_WORKER_MILLIS = 1_000;
+    private static final long TIMEOUT_STOP_WORKER_MILLIS;
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
     private final WorkerContainer container;
@@ -50,6 +50,10 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     private Thread latencyWriterThread;
     private Thread rateWriterThread;
     private LatencyEvaluator latencyEvaluator;
+
+    static {
+        TIMEOUT_STOP_WORKER_MILLIS = config.getLong("maestro.worker.stop.timeout", 1000);
+    }
 
     /**
      * Constructor
