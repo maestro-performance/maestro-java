@@ -19,6 +19,7 @@ package org.maestro.client.exchange;
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
+import org.eclipse.paho.client.mqttv3.MqttTopic;
 import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.maestro.client.callback.MaestroNoteCallback;
 import org.maestro.common.URLUtils;
@@ -121,7 +122,9 @@ public class MaestroMqttClient implements MaestroClient {
                     mqttClient.reconnect();
                 }
 
-                mqttClient.publish(topic, bytes, qos, retained);
+                MqttTopic mqttTopic = mqttClient.getTopic(topic);
+
+                mqttTopic.publish(bytes, qos, retained);
                 note.next();
             } catch (MqttException e) {
                 throw new MaestroConnectionException("Unable to publish message: " + e.getMessage(), e);
@@ -159,7 +162,9 @@ public class MaestroMqttClient implements MaestroClient {
                     mqttClient.reconnect();
                 }
 
-                mqttClient.publish(topic, bytes, qos, retained);
+                MqttTopic mqttTopic = mqttClient.getTopic(topic);
+
+                mqttTopic.publish(bytes, qos, retained);
                 if (postProcessCallback != null) {
                     postProcessCallback.call(note);
                 }
