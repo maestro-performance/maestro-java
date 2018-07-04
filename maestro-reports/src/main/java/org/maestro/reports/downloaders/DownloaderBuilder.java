@@ -20,7 +20,7 @@ public class DownloaderBuilder {
      * @return The reports downloader
      */
     public static ReportsDownloader build(final String name, final Maestro maestro, final String baseDir) {
-        if (name == null || name.equals("broker")) {
+        if (name != null && name.toLowerCase().equals("broker")) {
             return new BrokerDownloader(maestro, baseDir);
         }
 
@@ -37,7 +37,7 @@ public class DownloaderBuilder {
      * @return The reports downloader
      */
     public static ReportsDownloader build(final String name, final Maestro maestro, final Organizer organizer) {
-        if (name == null || name.equals("broker")) {
+        if (name != null && name.toLowerCase().equals("broker")) {
             return new BrokerDownloader(maestro, organizer);
         }
 
