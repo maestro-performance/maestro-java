@@ -112,6 +112,7 @@ Configuring the Report Download Method
 * Broker method via MQTT
   * Used whenever the environment variable DOWNLOADER_NAME is set to "broker"
   * Optional client configuration is available on ```maestro-cli.properties```.
+  * Optional worker configuration is available on ```maestro-worker.properties```.
 
 Fixed Rate Test Variables
 ----
