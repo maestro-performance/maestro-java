@@ -62,9 +62,10 @@ final class JMSReceiverClient extends JMSClient implements ReceiverClient {
 
         if (message == null) {
             return ReceiverClient.noMessagePayload();
-        }else if (acknowledge) {
+        } else if (acknowledge) {
             message.acknowledge();
         }
+
         final int readBytes = getReadBytes((BytesMessage) message);
         if (readBytes == PAYLOAD_SIZE || readBytes == -1) {
             //can read the timestamp using the default endianness of the content strategy
