@@ -69,3 +69,16 @@ Run the ping command to check if the test cluster was deployed correctly:
 ```
 maestro-cli maestro -c ping -m mqtt://host:1883
 ```
+
+The output should be similar to this:
+
+```
+12:33:20,167 Connecting to Maestro Broker
+12:33:20,187 Connected to Maestro Broker
+12:33:20,189 Connection to tcp://broker:1883 completed (reconnect = false)
+12:33:20,189 Subscribing to maestro topics [/mpt/maestro, /mpt/notifications]
+Reply: PingResponse{elapsed=7} MaestroResponse{id='b83eb781-2624-4e5a-985e-f6c3a08bba52', name='receiver@receiver'} MaestroNote{noteType=MAESTRO_TYPE_RESPONSE, maestroCommand=MAESTRO_NOTE_PING}
+Reply: PingResponse{elapsed=7} MaestroResponse{id='5d2f6fb7-d7c2-473a-85f4-ed4f1cf31f97', name='sender@sender'} MaestroNote{noteType=MAESTRO_TYPE_RESPONSE, maestroCommand=MAESTRO_NOTE_PING}
+Reply: PingResponse{elapsed=7} MaestroResponse{id='1f883236-90b5-4390-82b7-9d06ba536a1b', name='agent@agent'} MaestroNote{noteType=MAESTRO_TYPE_RESPONSE, maestroCommand=MAESTRO_NOTE_PING}
+Reply: PingResponse{elapsed=7} MaestroResponse{id='78d1db88-38e3-40c0-b1c9-5df2fa7dedb1', name='inspector@inspector'} MaestroNote{noteType=MAESTRO_TYPE_RESPONSE, maestroCommand=MAESTRO_NOTE_PING}
+```
