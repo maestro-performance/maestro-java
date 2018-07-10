@@ -168,7 +168,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         final boolean isClientAck = isClientAcknowledge(opts);
 
         while (duration.canContinue(this) && isRunning()) {
-            final long sendTimeEpochMicros = client.receiveMessages(isClientAck && count % opts.getBatchAcknowledge() == 0);
+            final long sendTimeEpochMicros = client.receiveMessages(isAcknowledge(count, opts, isClientAck));
 
             if (sendTimeEpochMicros != ReceiverClient.noMessagePayload()) {
                 final long nowInMicros = epochMicroClock.microTime();
@@ -191,6 +191,10 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
                 messageCount.lazySet(count);
             }
         }
+    }
+
+    private boolean isAcknowledge(long count, JmsOptions opts, boolean isClientAck) {
+        return isClientAck && count % opts.getBatchAcknowledge() == 0;
     }
 
     private void doClientStartup(final ReceiverClient client) throws Exception {
