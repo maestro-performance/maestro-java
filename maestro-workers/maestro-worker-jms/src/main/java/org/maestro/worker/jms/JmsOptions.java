@@ -61,11 +61,13 @@ class JmsOptions {
         maestroOptions.add("priority");
         maestroOptions.add("limitDestinations");
         maestroOptions.add("sessionMode");
+        maestroOptions.add("batchAcknowledge");
     }
 
     private boolean durable;
     private int sessionMode;
     private int priority;
+    private int batchAcknowledge;
 
 
 
@@ -84,6 +86,7 @@ class JmsOptions {
             priority = urlQuery.getInteger("priority", 0);
             ttl = urlQuery.getLong("ttl", 0L);
             sessionMode = urlQuery.getInteger("sessionMode", Session.AUTO_ACKNOWLEDGE);
+            batchAcknowledge = urlQuery.getInteger("batchAcknowledge", 0);
 
             connectionUrl = filterJMSURL(uri);
 
@@ -148,5 +151,9 @@ class JmsOptions {
 
     public String getPath() {
         return path;
+    }
+
+    public int getBatchAcknowledge() {
+        return batchAcknowledge;
     }
 }

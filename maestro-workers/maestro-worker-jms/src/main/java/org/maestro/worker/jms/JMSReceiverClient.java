@@ -19,11 +19,11 @@ package org.maestro.worker.jms;
 import org.maestro.common.content.ContentStrategy;
 import org.maestro.common.jms.ReceiverClient;
 
-import javax.jms.BytesMessage;
-import javax.jms.Message;
-import javax.jms.MessageConsumer;
-import javax.jms.Session;
+import javax.jms.*;
+import java.lang.IllegalStateException;
 import java.nio.ByteBuffer;
+import java.util.LinkedList;
+import java.util.List;
 
 final class JMSReceiverClient extends JMSClient implements ReceiverClient {
     private static final long RECEIVE_TIMEOUT_MILLIS = 1000L;
@@ -51,11 +51,13 @@ final class JMSReceiverClient extends JMSClient implements ReceiverClient {
 
 
     @Override
-    public long receiveMessages() throws Exception {
+    public long receiveMessages(boolean acknowledge) throws Exception {
         final Message message = consumer.receive(RECEIVE_TIMEOUT_MILLIS);
 
         if (message == null) {
             return ReceiverClient.noMessagePayload();
+        }else if (acknowledge) {
+            message.acknowledge();
         }
         final BytesMessage bytesMessage = (BytesMessage) message;
         //just read the benchmark minimum payload

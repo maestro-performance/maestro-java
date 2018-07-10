@@ -55,6 +55,10 @@ class JMSClient implements Client {
         this.number = number;
     }
 
+    public JmsOptions getOpts() {
+        return opts;
+    }
+
     @Override
     public void start() throws Exception {
         logger.debug("Starting the JMS client");

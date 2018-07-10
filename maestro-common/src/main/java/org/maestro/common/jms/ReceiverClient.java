@@ -25,5 +25,5 @@ public interface ReceiverClient extends Client {
     /**
      * Returns the epoch micros of the current received message or {@link #noMessagePayload()} if isn't received any message.
      */
-    long receiveMessages() throws Exception;
+    long receiveMessages(boolean acknowledge) throws Exception;
 }

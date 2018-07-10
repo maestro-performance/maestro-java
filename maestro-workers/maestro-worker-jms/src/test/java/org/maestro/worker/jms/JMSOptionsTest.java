@@ -25,7 +25,7 @@ public class JMSOptionsTest {
 
     @Test
     public void testUrlWithoutProtocol() {
-        final String url = "amqp://hostname:5672/test.performance.queue?durable=false&limitDestinations=5";
+        final String url = "amqp://hostname:5672/test.performance.queue?durable=false&limitDestinations=5&batchAcknowledge=100";
 
         JmsOptions jmsOptions = new JmsOptions(url);
 
@@ -38,6 +38,7 @@ public class JMSOptionsTest {
                 jmsOptions.getTtl());
         assertEquals("The default priority does not match the expected value", 0,
                 jmsOptions.getPriority());
+        assertEquals("The backAcknowledge does not match the expected value", 100, jmsOptions.getBatchAcknowledge());
 
         assertEquals("The connection URL does not match the expected one",
                 "amqp://hostname:5672",

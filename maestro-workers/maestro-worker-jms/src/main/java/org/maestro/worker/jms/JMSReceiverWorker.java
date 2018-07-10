@@ -31,6 +31,7 @@ import org.maestro.common.writers.OneToOneWorkerChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.Session;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
@@ -163,9 +164,13 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     private void runReceiveLoop(final ReceiverClient client) throws Exception {
         final EpochMicroClock epochMicroClock = EpochClocks.exclusiveMicro();
         long count = 0;
+        final JmsOptions opts = ((JMSClient)client).getOpts();
 
         while (duration.canContinue(this) && isRunning()) {
-            final long sendTimeEpochMicros = client.receiveMessages();
+            final boolean ack = opts.getSessionMode() == Session.CLIENT_ACKNOWLEDGE &&
+                    opts.getBatchAcknowledge() > 0 &&
+                    count % opts.getBatchAcknowledge() == 0;
+            final long sendTimeEpochMicros = client.receiveMessages(ack);
 
             if (sendTimeEpochMicros != ReceiverClient.noMessagePayload()) {
                 final long nowInMicros = epochMicroClock.microTime();
