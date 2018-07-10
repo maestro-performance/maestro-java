@@ -67,5 +67,5 @@ Maestro Deployment: Verifying the Test Cluster
 Run the ping command to check if the test cluster was deployed correctly: 
 
 ```
-maestro-cli maestro -c ping -m mqtt://host:1883'
+maestro-cli maestro -c ping -m mqtt://host:1883
 ```
