@@ -1,0 +1,68 @@
+version: '3'
+networks:
+    cluster:
+      driver: bridge
+    test:
+          driver: bridge
+services:
+  broker:
+    image: maestroperf/maestro-broker:1.3.2-SNAPSHOT
+    networks:
+      - cluster
+    ports:
+      - "18161:8161"
+  receiver:
+    image: maestroperf/maestro-receiver:1.3.2-SNAPSHOT
+    ports:
+      - "18000:8000"
+    volumes:
+      - ${HOME}/tmp/maestro:/maestro
+    networks:
+      - cluster
+      - test
+    depends_on:
+      - broker
+      - sut
+  sender:
+    image: maestroperf/maestro-sender:1.3.2-SNAPSHOT
+    ports:
+      - "28000:8000"
+    volumes:
+      - ${HOME}/tmp/maestro:/maestro
+    networks:
+      - cluster
+      - test
+    depends_on:
+      - receiver
+  inspector:
+      image: maestroperf/maestro-inspector:1.3.2-SNAPSHOT
+      ports:
+        - "38000:8000"
+      volumes:
+        - ${HOME}/tmp/maestro:/maestro
+      networks:
+        - cluster
+        - test
+      depends_on:
+        - receiver
+  agent:
+      image: maestroperf/maestro-agent:1.3.2-SNAPSHOT
+      ports:
+        - "48000:8000"
+      volumes:
+        - ${HOME}/tmp/maestro:/maestro
+      networks:
+        - cluster
+        - test
+      depends_on:
+        - broker
+  exporter:
+      image: maestroperf/maestro-exporter:1.3.2-SNAPSHOT
+      volumes:
+        - ${HOME}/tmp/maestro:/maestro
+      networks:
+        - cluster
+      ports:
+        - "9120:9120"
+      depends_on:
+        - broker
