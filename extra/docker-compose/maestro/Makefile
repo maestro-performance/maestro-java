@@ -1,13 +1,16 @@
 MAESTRO_VERSION=1.3.2-SNAPSHOT
 MAESTRO_BRANCH=devel
 
-.PHONY: broker clean all client
+.PHONY: broker clean all client exporter
 
 broker:
 	cd broker && docker build -t maestroperf/maestro-broker:${MAESTRO_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} .
 
 client:
 	cd client && docker build -t maestroperf/maestro-client:${MAESTRO_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
+
+exporter:
+	cd exporter && docker build -t maestroperf/maestro-exporter:${MAESTRO_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
 
 worker-sender:
 	cd workers/sender && docker build -t maestroperf/maestro-sender:${MAESTRO_VERSION} --build-arg MAESTRO_WORKER_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
