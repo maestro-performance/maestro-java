@@ -165,12 +165,10 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         final EpochMicroClock epochMicroClock = EpochClocks.exclusiveMicro();
         long count = 0;
         final JmsOptions opts = ((JMSClient)client).getOpts();
+        final boolean isClientAck = isClientAcknowledge(opts);
 
         while (duration.canContinue(this) && isRunning()) {
-            final boolean ack = opts.getSessionMode() == Session.CLIENT_ACKNOWLEDGE &&
-                    opts.getBatchAcknowledge() > 0 &&
-                    count % opts.getBatchAcknowledge() == 0;
-            final long sendTimeEpochMicros = client.receiveMessages(ack);
+            final long sendTimeEpochMicros = client.receiveMessages(isClientAck && count % opts.getBatchAcknowledge() == 0);
 
             if (sendTimeEpochMicros != ReceiverClient.noMessagePayload()) {
                 final long nowInMicros = epochMicroClock.microTime();
@@ -201,6 +199,10 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         workerStateInfo.setState(true, null, null);
         client.setNumber(number);
         client.start();
+    }
+
+    private boolean isClientAcknowledge(JmsOptions opts) {
+        return opts.getSessionMode() == Session.CLIENT_ACKNOWLEDGE && opts.getBatchAcknowledge() > 0;
     }
 
     @Override

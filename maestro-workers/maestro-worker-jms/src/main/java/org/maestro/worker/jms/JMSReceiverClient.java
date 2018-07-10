@@ -49,6 +49,12 @@ final class JMSReceiverClient extends JMSClient implements ReceiverClient {
         }
     }
 
+    private int getReadBytes(BytesMessage message) throws JMSException {
+        final BytesMessage bytesMessage = message;
+        //just read the benchmark minimum payload
+        return bytesMessage.readBytes(payloadBytes.array(), PAYLOAD_SIZE);
+    }
+
 
     @Override
     public long receiveMessages(boolean acknowledge) throws Exception {
@@ -59,9 +65,7 @@ final class JMSReceiverClient extends JMSClient implements ReceiverClient {
         }else if (acknowledge) {
             message.acknowledge();
         }
-        final BytesMessage bytesMessage = (BytesMessage) message;
-        //just read the benchmark minimum payload
-        final int readBytes = bytesMessage.readBytes(payloadBytes.array(), PAYLOAD_SIZE);
+        final int readBytes = getReadBytes((BytesMessage) message);
         if (readBytes == PAYLOAD_SIZE || readBytes == -1) {
             //can read the timestamp using the default endianness of the content strategy
             return payloadBytes.getLong(0);
