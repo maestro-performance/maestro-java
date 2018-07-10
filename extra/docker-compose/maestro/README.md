@@ -125,5 +125,5 @@ Supposing a volume named `maestro` is already created. You can just run:
 
 ```
 docker rm -f maestro_client
-docker run -it -h maestro-client -v maestro:/maestro --network=maestro -p 8000:8000 maestro_client
+docker run -it -h maestro-client -v maestro:/maestro --network=maestro_cluster -p 8000:8000 maestro_client
 ```
