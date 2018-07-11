@@ -66,6 +66,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
     public void stop() throws MaestroConnectionException {
+        logger.debug("Thread {} is stopping Maestro execution", Thread.currentThread());
         maestroClient.disconnect();
         collectorExecutor.stop();
         try {
