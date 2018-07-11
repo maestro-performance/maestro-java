@@ -60,7 +60,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         super(maestroURL, role, MaestroDeserializer::deserializeEvent);
 
         logger.debug("Creating the receiver client");
-        client = new MaestroReceiverClient(maestroURL, clientName, host, id);
+        client = new MaestroReceiverClient(maestroURL, clientName, host, getId());
 
         workerOptions = new WorkerOptions();
         this.dataServer = dataServer;

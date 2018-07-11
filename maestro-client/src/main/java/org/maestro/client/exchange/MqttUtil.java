@@ -21,7 +21,7 @@ import org.eclipse.paho.client.mqttv3.MqttException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-class MqttUtil {
+public class MqttUtil {
     private static final Logger logger = LoggerFactory.getLogger(MqttUtil.class);
 
     /**

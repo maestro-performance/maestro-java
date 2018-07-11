@@ -17,8 +17,7 @@
 package org.maestro.client.exchange;
 
 import org.eclipse.paho.client.mqttv3.*;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
-import org.maestro.common.URLUtils;
+import org.maestro.client.exchange.mqtt.MqttClientInstance;
 import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
@@ -27,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
-import java.util.UUID;
 
 
 /**
@@ -44,37 +42,19 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
 
     private MqttClient inboundEndPoint;
     protected String clientName;
-    protected String id;
     private final MaestroNoteDeserializer<? extends T> deserializer;
 
     public AbstractMaestroPeer(final String url, final String clientName, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
-
-        String adjustedUrl = URLUtils.sanitizeURL(url);
-
-        UUID uuid = UUID.randomUUID();
-        String clientId = uuid.toString();
-        MemoryPersistence memoryPersistence = new MemoryPersistence();
-
-        this.id = clientId;
-        this.clientName = clientName;
-
-        try {
-            inboundEndPoint = new MqttClient(adjustedUrl, clientName + ".inbound." + clientId, memoryPersistence);
-            inboundEndPoint.setCallback(this);
-
-            // Runtime.getRuntime().addShutdownHook(new Thread(this::terminate));
-            Runtime.getRuntime().addShutdownHook(new Thread(this::terminate));
-        }
-        catch (MqttException e) {
-            throw new MaestroConnectionException("Unable create a MQTT client instance : " + e.getMessage(),
-                    e);
-        }
-
-        this.deserializer = deserializer;
+        this(MqttClientInstance.getInstance(url).getClient(), clientName, deserializer);
     }
 
-    private void terminate() {
-        MqttUtil.terminate(inboundEndPoint);
+    protected AbstractMaestroPeer(final MqttClient inboundEndPoint, final String clientName, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
+        this.clientName = clientName;
+
+        this.inboundEndPoint = inboundEndPoint;
+        this.inboundEndPoint.setCallback(this);
+
+        this.deserializer = deserializer;
     }
 
     public String getClientName() {
@@ -86,18 +66,12 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     }
 
     public String getId() {
-        return id;
-    }
-
-    public void setId(String id) {
-        this.id = id;
+        return inboundEndPoint.getClientId();
     }
 
     public void connectionLost(Throwable throwable) {
         logger.warn("Connection lost");
     }
-
-
 
     public boolean isConnected() {
         return inboundEndPoint.isConnected();
@@ -110,14 +84,13 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
 
     public void connect() throws MaestroConnectionException {
         logger.info("Connecting to Maestro Broker");
-        MqttConnectOptions connOpts = new MqttConnectOptions();
-
-        connOpts.setCleanSession(true);
-        connOpts.setKeepAliveInterval(15000);
-        connOpts.setAutomaticReconnect(true);
-
         try {
-            inboundEndPoint.connect(connOpts);
+            final MqttConnectOptions connOpts = MqttClientInstance.getConnectionOptions();
+
+            if (!inboundEndPoint.isConnected()) {
+                inboundEndPoint.connect(connOpts);
+            }
+
             logger.debug("Connected to Maestro Broker");
         }
         catch (MqttException e) {
@@ -139,7 +112,9 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
         logger.debug("Disconnecting from Maestro Broker");
 
         try {
-            inboundEndPoint.disconnect();
+            if (inboundEndPoint.isConnected()) {
+                inboundEndPoint.disconnect();
+            }
         }
         catch (MqttException e) {
             throw new MaestroConnectionException("Unable to disconnect cleanly from Maestro: " + e.getMessage(), e);

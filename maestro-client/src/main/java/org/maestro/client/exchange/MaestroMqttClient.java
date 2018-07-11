@@ -20,9 +20,8 @@ import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
-import org.eclipse.paho.client.mqttv3.persist.MemoryPersistence;
 import org.maestro.client.callback.MaestroNoteCallback;
-import org.maestro.common.URLUtils;
+import org.maestro.client.exchange.mqtt.MqttClientInstance;
 import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.MaestroNote;
@@ -32,7 +31,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
-import java.util.UUID;
 
 public class MaestroMqttClient implements MaestroClient {
     private static final Logger logger = LoggerFactory.getLogger(MaestroClient.class);
@@ -45,25 +43,16 @@ public class MaestroMqttClient implements MaestroClient {
      * @throws MaestroException if unable to create the client
      */
     public MaestroMqttClient(final String url) throws MaestroException {
-        String adjustedUrl = URLUtils.sanitizeURL(url);
-
-        UUID uuid = UUID.randomUUID();
-        String clientId = uuid.toString();
-        MemoryPersistence memoryPersistence = new MemoryPersistence();
-
-        try {
-            mqttClient = new MqttClient(adjustedUrl, "maestro-java-" + clientId, memoryPersistence);
-
-            Runtime.getRuntime().addShutdownHook(new Thread(this::terminate));
-        }
-        catch (MqttException e) {
-            throw new MaestroException("Unable create a MQTT client instance : " + e.getMessage(),
-                    e);
-        }
+        mqttClient = MqttClientInstance.getInstance(url).getClient();
     }
 
-    private void terminate() {
-        MqttUtil.terminate(mqttClient);
+    /**
+     * Constructor (for testing)
+     * @param mqttClient Maestro broker URL
+     * @throws MaestroException if unable to create the client
+     */
+    protected MaestroMqttClient(final MqttClient mqttClient) throws MaestroException {
+        this.mqttClient = mqttClient;
     }
 
     /**
@@ -71,12 +60,10 @@ public class MaestroMqttClient implements MaestroClient {
      * @throws MaestroConnectionException if unable to connect to the broker
      */
     public void connect() throws MaestroConnectionException {
-        MqttConnectOptions connOpts = new MqttConnectOptions();
-
-        connOpts.setCleanSession(true);
-
         try {
             if (!mqttClient.isConnected()) {
+                final MqttConnectOptions connOpts = MqttClientInstance.getConnectionOptions();
+
                 mqttClient.connect(connOpts);
             }
         }

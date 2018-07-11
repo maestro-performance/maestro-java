@@ -60,8 +60,18 @@ public class ScriptTest extends EndToEndTest {
     protected Maestro maestro;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         LogConfigurator.silent();
+        System.setProperty("maestro.mqtt.no.reuse", "true");
+
+        miniSendingPeer.start();
+        miniReceivingPeer.start();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        miniSendingPeer.stop();
+        miniReceivingPeer.stop();
     }
 
     @Test
@@ -98,7 +108,7 @@ public class ScriptTest extends EndToEndTest {
         List<? extends MaestroNote> replies = maestro.setMessageSize("~100")
                 .get(10, TimeUnit.SECONDS);
 
-        assertTrue(replies.size() == 2);
+        assertTrue("Current size = " + replies.size(), replies.size() == 2);
 
         MaestroNote note = replies.get(0);
         assertEquals(note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);
@@ -150,7 +160,6 @@ public class ScriptTest extends EndToEndTest {
     /*
      * Deliberately marked as ignored because this feature is not yet complete
      */
-    @Ignore
     @Test
     public void testStatsRequest() throws InterruptedException, ExecutionException, TimeoutException {
         System.out.println("Sending the stats request");
