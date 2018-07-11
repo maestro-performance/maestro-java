@@ -3,6 +3,15 @@ MAESTRO_BRANCH=devel
 
 .PHONY: broker clean all client exporter
 
+clean:
+    docker rmi -f maestroperf/maestro-broker:${MAESTRO_VERSION}
+    docker rmi -f maestroperf/maestro-client:${MAESTRO_VERSION}
+    docker rmi -f maestroperf/maestro-sender:${MAESTRO_VERSION}
+    docker rmi -f maestroperf/maestro-receiver:${MAESTRO_VERSION}
+    docker rmi -f maestroperf/maestro-agent:${MAESTRO_VERSION}
+    docker rmi -f maestroperf/maestro-inspector:${MAESTRO_VERSION}
+    docker rmi -f maestroperf/maestro-exporter:${MAESTRO_VERSION}
+
 broker:
 	cd broker && docker build -t maestroperf/maestro-broker:${MAESTRO_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} .
 
