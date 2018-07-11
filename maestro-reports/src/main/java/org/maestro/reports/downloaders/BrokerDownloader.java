@@ -19,6 +19,7 @@ import org.maestro.reports.SenderReportResolver;
 import org.maestro.reports.organizer.NodeOrganizer;
 import org.maestro.reports.organizer.Organizer;
 import org.maestro.client.Maestro;
+import org.maestro.reports.organizer.ResultStrings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,11 +52,11 @@ public class BrokerDownloader implements ReportsDownloader {
 
             switch (logResponse.getLocationType()) {
                 case LAST_SUCCESS: {
-                    organizer.setResultType("success");
+                    organizer.setResultType(ResultStrings.SUCCESS);
                     break;
                 }
                 default: {
-                    organizer.setResultType("failed");
+                    organizer.setResultType(ResultStrings.FAILED);
                     break;
                 }
             }

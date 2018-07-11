@@ -117,7 +117,6 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
 
             waitForFlush();
 
-            reportsDownloader.getOrganizer().setResultType(resultType);
             reportsDownloader.downloadLastSuccessful(type, host);
 
             notifications++;

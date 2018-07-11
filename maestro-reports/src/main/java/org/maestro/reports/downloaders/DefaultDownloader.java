@@ -9,10 +9,10 @@ import org.maestro.reports.ReportResolver;
 import org.maestro.reports.SenderReportResolver;
 import org.maestro.reports.organizer.DefaultOrganizer;
 import org.maestro.reports.organizer.Organizer;
+import org.maestro.reports.organizer.ResultStrings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -92,8 +92,10 @@ public class DefaultDownloader implements ReportsDownloader {
      * @param type the type of the peer (sender, receiver, inspector, etc)
      * @param host the host to download the files from
      */
-    public void downloadLastSuccessful(final String type, final String host) {
+    public synchronized void downloadLastSuccessful(final String type, final String host) {
         ReportResolver reportResolver = resolverMap.get(type);
+
+        getOrganizer().setResultType(ResultStrings.SUCCESS);
 
         List<String> files = reportResolver.getSuccessFiles(host);
         for (String url : files) {
@@ -119,6 +121,8 @@ public class DefaultDownloader implements ReportsDownloader {
      */
     public void downloadLastFailed(final String type, final String host) {
         ReportResolver reportResolver = resolverMap.get(type);
+
+        getOrganizer().setResultType(ResultStrings.FAILED);
 
         List<String> files = reportResolver.getFailedFiles(host);
         for (String url : files) {
