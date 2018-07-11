@@ -53,11 +53,17 @@ public class MaestroMqttClient implements MaestroClient {
 
         try {
             mqttClient = new MqttClient(adjustedUrl, "maestro-java-" + clientId, memoryPersistence);
+
+            Runtime.getRuntime().addShutdownHook(new Thread(this::terminate));
         }
         catch (MqttException e) {
             throw new MaestroException("Unable create a MQTT client instance : " + e.getMessage(),
                     e);
         }
+    }
+
+    private void terminate() {
+        MqttUtil.terminate(mqttClient);
     }
 
     /**
@@ -86,7 +92,9 @@ public class MaestroMqttClient implements MaestroClient {
      */
     public void disconnect() throws MaestroConnectionException {
         try {
-            mqttClient.disconnect();
+            if (mqttClient.isConnected()) {
+                mqttClient.disconnect();
+            }
         }
         catch (MqttException e) {
             throw new MaestroConnectionException("Unable to disconnect cleanly from Maestro: " + e.getMessage(), e);

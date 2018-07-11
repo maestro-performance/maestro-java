@@ -61,6 +61,9 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
         try {
             inboundEndPoint = new MqttClient(adjustedUrl, clientName + ".inbound." + clientId, memoryPersistence);
             inboundEndPoint.setCallback(this);
+
+            // Runtime.getRuntime().addShutdownHook(new Thread(this::terminate));
+            Runtime.getRuntime().addShutdownHook(new Thread(this::terminate));
         }
         catch (MqttException e) {
             throw new MaestroConnectionException("Unable create a MQTT client instance : " + e.getMessage(),
@@ -68,6 +71,10 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
         }
 
         this.deserializer = deserializer;
+    }
+
+    private void terminate() {
+        MqttUtil.terminate(inboundEndPoint);
     }
 
     public String getClientName() {
