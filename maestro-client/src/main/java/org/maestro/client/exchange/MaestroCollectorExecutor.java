@@ -56,11 +56,11 @@ public class MaestroCollectorExecutor extends AbstractMaestroExecutor {
     }
 
     public void stop() {
-        super.stop();
-
         MaestroCollector maestroCollector = (MaestroCollector) super.getMaestroPeer();
 
         maestroCollector.setRunning(false);
+
+        super.stop();
     }
 
     public MaestroCollector getCollector() {

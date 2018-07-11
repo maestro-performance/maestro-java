@@ -67,12 +67,16 @@ public final class Maestro implements MaestroRequester {
      */
     public void stop() throws MaestroConnectionException {
         logger.debug("Thread {} is stopping Maestro execution", Thread.currentThread());
-        maestroClient.disconnect();
-        collectorExecutor.stop();
+
         try {
+            collectorExecutor.stop();
             collectorThread.join();
         } catch (InterruptedException e) {
             logger.warn("Interrupted while stopping Maestro {}", e.getMessage(), e);
+        }
+        finally {
+            logger.info("Disconnecting the Maestro client");
+            maestroClient.disconnect();
         }
     }
 
