@@ -72,6 +72,12 @@ for jarfile in "$installdir"/lib/ext/*.jar ; do
     fi
 done
 
+
+export MAESTRO_CLI_DEBUG_ARGS=""
+if [  "$MAESTRO_DEBUG" == "y" ] ; then
+    MAESTRO_CLI_DEBUG_ARGS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+fi
+
 mainclass=org.maestro.cli.main.Main
 
-java -classpath ${MAESTRO_CLASSPATH} -Dorg.maestro.home="$installdir" -Djava.awt.headless=true "$mainclass" $@
+java -classpath ${MAESTRO_CLASSPATH} ${MAESTRO_CLI_DEBUG_ARGS} -Dorg.maestro.home="$installdir" -Djava.awt.headless=true "$mainclass" $@

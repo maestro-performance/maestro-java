@@ -51,7 +51,12 @@ if [ -z "$JAVA_OPTS" ] ; then
     MAESTRO_JAVA_OPTS="$JAVA_OPTS"
 fi
 
+export MAESTRO_WORKER_DEBUG_ARGS=""
+if [  "$MAESTRO_DEBUG" == "y" ] ; then
+    MAESTRO_WORKER_DEBUG_ARGS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+fi
+
 mainclass=org.maestro.worker.main.Main
 pid_file="$installdir"/tmp/maestro-worker.pid
 
-java -classpath "$installdir"/bin/*maestro-worker-*.jar -Dorg.maestro.home="$installdir" $MAESTRO_JAVA_OPTS "$mainclass" $@
+java -classpath ${MAESTRO_WORKER_DEBUG_ARGS} "$installdir"/bin/*maestro-worker-*.jar -Dorg.maestro.home="$installdir" $MAESTRO_JAVA_OPTS "$mainclass" $@
