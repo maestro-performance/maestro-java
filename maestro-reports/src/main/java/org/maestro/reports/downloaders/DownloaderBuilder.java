@@ -2,12 +2,15 @@ package org.maestro.reports.downloaders;
 
 import org.maestro.client.Maestro;
 import org.maestro.reports.organizer.Organizer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Utility class to build the reports downloader
  */
 
 public class DownloaderBuilder {
+    private static final Logger logger = LoggerFactory.getLogger(DownloaderBuilder.class);
 
     private DownloaderBuilder() {}
 
@@ -21,9 +24,11 @@ public class DownloaderBuilder {
      */
     public static ReportsDownloader build(final String name, final Maestro maestro, final String baseDir) {
         if (name != null && name.toLowerCase().equals("broker")) {
+            logger.debug("Using the broker report downloader");
             return new BrokerDownloader(maestro, baseDir);
         }
 
+        logger.debug("Using the default (HTTP) report downloader");
         return new DefaultDownloader(baseDir);
     }
 
