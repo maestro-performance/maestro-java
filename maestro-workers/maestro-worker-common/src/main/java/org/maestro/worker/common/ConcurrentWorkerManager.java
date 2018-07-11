@@ -357,6 +357,10 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(final LogRequest note) {
+        if (container.isTestInProgress()) {
+            logger.warn("Request a log but a test execution is in progress. Files will be from older tests");
+        }
+
         super.handle(note, logDir);
     }
 }
