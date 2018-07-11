@@ -47,9 +47,6 @@ public class BrokerDownloader implements ReportsDownloader {
         }
 
         private void save(final LogResponse logResponse) {
-            String type = NodeUtils.getTypeFromName(logResponse.getName());
-            String destDir = organizer.organize(logResponse.getName(), type);
-
             switch (logResponse.getLocationType()) {
                 case LAST_SUCCESS: {
                     organizer.setResultType(ResultStrings.SUCCESS);
@@ -61,6 +58,8 @@ public class BrokerDownloader implements ReportsDownloader {
                 }
             }
 
+            String type = NodeUtils.getTypeFromName(logResponse.getName());
+            String destDir = organizer.organize(logResponse.getName(), type);
             File outFile = new File(destDir, logResponse.getFileName());
 
             logger.info("Saving file {} to {}", logResponse.getFileName(), outFile);
