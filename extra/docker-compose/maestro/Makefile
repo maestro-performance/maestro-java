@@ -24,7 +24,7 @@ agent:
 inspector:
 	cd workers/inspector && docker build -t maestroperf/maestro-inspector:${MAESTRO_VERSION} --build-arg MAESTRO_WORKER_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
 
-build: broker client worker-sender worker-receiver agent inspector
+build: exporter broker client worker-sender worker-receiver agent inspector
 
 push: build
 	docker push maestroperf/maestro-broker:${MAESTRO_VERSION}
@@ -33,6 +33,6 @@ push: build
 	docker push maestroperf/maestro-sender:${MAESTRO_VERSION}
 	docker push maestroperf/maestro-agent:${MAESTRO_VERSION}
 	docker push maestroperf/maestro-inspector:${MAESTRO_VERSION}
-
+	docker push maestroperf/maestro-exporter:${MAESTRO_VERSION}
 
 all: push
