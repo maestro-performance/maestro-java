@@ -82,3 +82,10 @@ Run Configurations for IntelliJ
 
 Some tips and tricks for developing and debugging Maestro are available [here](development/runConfigurations). To use
 those, you can copy all the XML files to your ```${project.dir}/.idea/runConfigurations``` directory
+
+
+Remote Debugging 
+----
+
+To enable remote debugging, export the variable MAESTRO_DEBUG and set it to "y". The test for the variable is case 
+sensitive. The debug port is set to 8000 for all components.
