@@ -110,7 +110,7 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
         connOpts.setAutomaticReconnect(true);
 
         try {
-            inboundEndPoint.connect();
+            inboundEndPoint.connect(connOpts);
             logger.debug("Connected to Maestro Broker");
         }
         catch (MqttException e) {

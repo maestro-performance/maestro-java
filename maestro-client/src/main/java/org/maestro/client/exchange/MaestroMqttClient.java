@@ -71,7 +71,7 @@ public class MaestroMqttClient implements MaestroClient {
 
         try {
             if (!mqttClient.isConnected()) {
-                mqttClient.connect();
+                mqttClient.connect(connOpts);
             }
         }
         catch (MqttException e) {
