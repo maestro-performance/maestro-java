@@ -348,10 +348,18 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     }
 
     @Override
-    public void handle(TestFailedNotification note) {
+    public void handle(final TestFailedNotification note) {
         super.handle(note);
 
         logger.debug("Stopping test execution after a peer reported a test failure");
+        container.stop();
+    }
+
+    @Override
+    public void handle(final TestSuccessfulNotification note) {
+        super.handle(note);
+
+        logger.debug("Stopping test execution after a peer reported a test success");
         container.stop();
     }
 
