@@ -196,7 +196,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     /**
      * return sessionMode number according to acknowledge type (TRANSACTED/CLIENTS_ACK)
      *
-     * @param count current cound of messages
+     * @param count current count of messages
      * @param opts Jms Options
      * @param isClientAck is acknowledge enabled
      * @return number of session mode, else -1
