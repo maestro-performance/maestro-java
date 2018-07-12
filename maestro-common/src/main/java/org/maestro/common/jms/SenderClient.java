@@ -20,7 +20,7 @@ package org.maestro.common.jms;
 import org.maestro.common.content.ContentStrategy;
 
 public interface SenderClient extends Client {
-    void sendMessages(long sendTimeEpochInMicros) throws Exception;
+    void sendMessages(long sendTimeEpochInMicros, boolean commitTransaction) throws Exception;
 
     void setContentStrategy(ContentStrategy contentStrategy);
 }

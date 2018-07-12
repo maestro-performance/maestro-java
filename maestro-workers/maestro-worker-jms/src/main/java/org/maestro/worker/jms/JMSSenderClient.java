@@ -32,7 +32,7 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
     public void start() throws Exception {
         super.start();
         try {
-            this.session = connection.createSession(false, opts.getSessionMode());
+            this.session = connection.createSession(opts.getSessionMode() == Session.SESSION_TRANSACTED, opts.getSessionMode());
             this.producer = session.createProducer(destination);
 
             setupMessageDurability();
@@ -92,7 +92,7 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
     }
 
     @Override
-    public void sendMessages(long sendTimeEpochInMicros) throws JMSException {
+    public void sendMessages(long sendTimeEpochInMicros, boolean commitTransaction) throws JMSException {
         //prepare the message content
         final ByteBuffer content = contentStrategy.prepareContent();
         final byte[] bytes = content.array();
@@ -105,6 +105,9 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
         //copy the whole message content (including the benchmark payload ie timestamp)
         message.writeBytes(bytes, offset, length);
         producer.send(message);
+        if (commitTransaction) {
+            session.commit();
+        }
     }
 
     @Override

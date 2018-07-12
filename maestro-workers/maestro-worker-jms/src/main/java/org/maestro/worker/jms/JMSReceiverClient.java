@@ -22,8 +22,6 @@ import org.maestro.common.jms.ReceiverClient;
 import javax.jms.*;
 import java.lang.IllegalStateException;
 import java.nio.ByteBuffer;
-import java.util.LinkedList;
-import java.util.List;
 
 final class JMSReceiverClient extends JMSClient implements ReceiverClient {
     private static final long RECEIVE_TIMEOUT_MILLIS = 1000L;
@@ -36,7 +34,7 @@ final class JMSReceiverClient extends JMSClient implements ReceiverClient {
     public void start() throws Exception {
         super.start();
         try {
-            session = connection.createSession(false, opts.getSessionMode());
+            session = connection.createSession(opts.getSessionMode() == Session.SESSION_TRANSACTED, opts.getSessionMode());
             consumer = session.createConsumer(destination);
             payloadBytes = ByteBuffer.allocate(PAYLOAD_SIZE).order(ContentStrategy.CONTENT_ENDIANNESS);
         } catch (Throwable t) {
@@ -57,14 +55,17 @@ final class JMSReceiverClient extends JMSClient implements ReceiverClient {
 
 
     @Override
-    public long receiveMessages(boolean acknowledge) throws Exception {
+    public long receiveMessages(int sessionMode) throws Exception {
         final Message message = consumer.receive(RECEIVE_TIMEOUT_MILLIS);
 
         if (message == null) {
             return ReceiverClient.noMessagePayload();
-        } else if (acknowledge) {
+        } else if (sessionMode == Session.CLIENT_ACKNOWLEDGE) {
             message.acknowledge();
+        } else if (sessionMode == Session.SESSION_TRANSACTED) {
+            session.commit();
         }
+
 
         final int readBytes = getReadBytes((BytesMessage) message);
         if (readBytes == PAYLOAD_SIZE || readBytes == -1) {

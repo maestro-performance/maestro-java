@@ -164,7 +164,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     private void runReceiveLoop(final ReceiverClient client) throws Exception {
         final EpochMicroClock epochMicroClock = EpochClocks.exclusiveMicro();
         long count = 0;
-        final JmsOptions opts = ((JMSClient)client).getOpts();
+        final JmsOptions opts = ((JMSClient) client).getOpts();
         final boolean isClientAck = isClientAcknowledge(opts);
 
         while (duration.canContinue(this) && isRunning()) {
@@ -193,8 +193,16 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         }
     }
 
-    private boolean isAcknowledge(long count, JmsOptions opts, boolean isClientAck) {
-        return isClientAck && count % opts.getBatchAcknowledge() == 0;
+    /**
+     * return sessionMode number according to acknowledge type (TRANSACTED/CLIENTS_ACK)
+     *
+     * @param count current cound of messages
+     * @param opts Jms Options
+     * @param isClientAck is acknowledge enabled
+     * @return number of session mode, else -1
+     */
+    private int isAcknowledge(long count, JmsOptions opts, boolean isClientAck) {
+        return isClientAck && count % opts.getBatchAcknowledge() == 0 ? opts.getSessionMode() : -1;
     }
 
     private void doClientStartup(final ReceiverClient client) throws Exception {
@@ -206,7 +214,8 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     }
 
     private boolean isClientAcknowledge(JmsOptions opts) {
-        return opts.getSessionMode() == Session.CLIENT_ACKNOWLEDGE && opts.getBatchAcknowledge() > 0;
+        return (opts.getSessionMode() == Session.CLIENT_ACKNOWLEDGE || opts.getSessionMode() == Session.SESSION_TRANSACTED)
+                && opts.getBatchAcknowledge() > 0;
     }
 
     @Override

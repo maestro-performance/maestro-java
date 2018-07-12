@@ -33,6 +33,7 @@ import org.maestro.common.writers.OneToOneWorkerChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.Session;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.concurrent.locks.LockSupport;
 import java.util.function.Supplier;
@@ -175,6 +176,8 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         long elapsedIntervalsNanos = 0;
 
         long nextFireTime = System.nanoTime() + intervalInNanos;
+        final JmsOptions opts = ((JMSClient) client).getOpts();
+        final boolean isSessionTransacted = isSessionTransacted(opts);
 
         while (duration.canContinue(this) && isRunning()) {
             if (intervalInNanos > 0) {
@@ -194,12 +197,20 @@ public class JMSSenderWorker implements MaestroSenderWorker {
                 expectedSendTimeEpochMicros = sendTimeEpochMicros;
             }
 
-            client.sendMessages(sendTimeEpochMicros);
+            client.sendMessages(sendTimeEpochMicros, commitTransaction(count, opts, isSessionTransacted));
             workerChannel.emitRate(expectedSendTimeEpochMicros, sendTimeEpochMicros);
             count++;
             //update message sent count
             this.messageCount.lazySet(count);
         }
+    }
+
+    private boolean commitTransaction(long count, JmsOptions opts, boolean isSessionTransacted) {
+        return isSessionTransacted && count % opts.getBatchAcknowledge() == 0;
+    }
+
+    private boolean isSessionTransacted(JmsOptions opts) {
+        return opts.getSessionMode() == Session.SESSION_TRANSACTED && opts.getBatchAcknowledge() > 0;
     }
 
     private void doClientStartup(final SenderClient client) throws Exception {
