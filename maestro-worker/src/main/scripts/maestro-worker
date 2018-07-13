@@ -47,7 +47,7 @@ fi
 
 
 MAESTRO_JAVA_OPTS=""
-if [ -z "$JAVA_OPTS" ] ; then
+if [ ! -z "$JAVA_OPTS" ] ; then
     MAESTRO_JAVA_OPTS="$JAVA_OPTS"
 fi
 
