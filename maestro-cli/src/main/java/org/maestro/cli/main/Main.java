@@ -43,6 +43,7 @@ public class Main {
         System.out.println("   extension-point");
         System.out.println("   maestro");
         System.out.println("   exec");
+        System.out.println("   aggregate");
         System.out.println("----------");
         System.out.println("   help");
         System.out.println("   --version");
@@ -98,6 +99,10 @@ public class Main {
             }
             case "exec": {
                 action = new ExecAction(newArgs);
+                break;
+            }
+            case "aggregate": {
+                action = new AggregateAction(newArgs);
                 break;
             }
             default: {
