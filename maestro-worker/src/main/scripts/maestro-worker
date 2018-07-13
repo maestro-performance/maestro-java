@@ -45,18 +45,15 @@ if [ "$installdir" = "." ] ; then
 	installdir=".."
 fi
 
+source "$installdir/config/maestro-worker.jvm.conf"
 
-MAESTRO_JAVA_OPTS=""
-if [ ! -z "$JAVA_OPTS" ] ; then
-    MAESTRO_JAVA_OPTS="$JAVA_OPTS"
-fi
+export MAESTRO_JVM_FLAGS="${MAESTRO_JVM_OTHER_OPTS} ${MAESTRO_JVM_MEM_OPTS}"
 
-export MAESTRO_WORKER_DEBUG_ARGS=""
-if [  "$MAESTRO_DEBUG" == "y" ] ; then
-    MAESTRO_WORKER_DEBUG_ARGS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
+if [ "${MAESTRO_DEBUG}" == "y" ] ; then
+    MAESTRO_JVM_FLAGS="${MAESTRO_JVM_FLAGS} ${MAESTRO_WORKER_DEBUG_ARGS}"
 fi
 
 mainclass=org.maestro.worker.main.Main
 pid_file="$installdir"/tmp/maestro-worker.pid
 
-java -classpath ${MAESTRO_WORKER_DEBUG_ARGS} "$installdir"/bin/*maestro-worker-*.jar -Dorg.maestro.home="$installdir" $MAESTRO_JAVA_OPTS "$mainclass" $@
+java ${MAESTRO_JVM_FLAGS} -classpath "$installdir"/bin/*maestro-worker-*.jar -Dorg.maestro.home="$installdir" $MAESTRO_JAVA_OPTS "$mainclass" $@
