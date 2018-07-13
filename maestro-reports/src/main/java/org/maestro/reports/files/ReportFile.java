@@ -97,8 +97,8 @@ public class ReportFile {
         return testSuccessful;
     }
 
-    public String getReportDir() {
-        return normalizedFile.getParent();
+    public File getReportDir() {
+        return sourceFile.getParentFile();
     }
 
     public File getNormalizedFile() {

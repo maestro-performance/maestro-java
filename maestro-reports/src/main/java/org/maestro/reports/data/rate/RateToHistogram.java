@@ -15,7 +15,7 @@
   limitations under the License.
  */
 
-package org.maestro.cli.data.rate;
+package org.maestro.reports.data.rate;
 
 import org.HdrHistogram.Histogram;
 import org.apache.commons.csv.CSVFormat;
@@ -60,14 +60,14 @@ public class RateToHistogram {
         }
 
         try (Reader in = new InputStreamReader(inputStream)) {
-            rebuildHistogram(in, histogram, inputStream);
+            rebuildHistogram(in, histogram);
         }
         finally {
             IOUtils.closeQuietly(inputStream);
         }
     }
 
-    private static void rebuildHistogram(Reader in, Histogram histogram, InputStream inputStream) throws IOException {
+    public static void rebuildHistogram(Reader in, Histogram histogram) throws IOException {
         long lines = 0;
 
         Iterable<CSVRecord> records = CSVFormat.RFC4180

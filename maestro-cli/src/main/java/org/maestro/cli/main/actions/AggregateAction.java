@@ -13,34 +13,29 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-
 package org.maestro.cli.main.actions;
 
 import org.apache.commons.cli.*;
-import org.maestro.reports.data.rate.RateToHistogram;
+import org.maestro.common.LogConfigurator;
+import org.maestro.reports.ReportAggregator;
 
-import java.io.*;
+public class AggregateAction extends Action {
 
-public class DataAction extends Action {
     private CommandLine cmdLine;
+    private String directory;
 
-    private String input;
-    private String output;
-
-    public DataAction(String[] args) {
+    public AggregateAction(String[] args) {
         processCommand(args);
     }
 
-    @Override
+
     protected void processCommand(String[] args) {
         CommandLineParser parser = new DefaultParser();
 
         Options options = new Options();
 
         options.addOption("h", "help", false, "prints the help");
-        options.addOption("a", "action", true, "the action to execute [rate-to-histogram]");
-        options.addOption("i", "input", true, "the input filename");
-        options.addOption("o", "output", true, "the output filename (if none, will print to stdout)");
+        options.addOption("d", "directory", true, "the directory to generate the report");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -53,44 +48,28 @@ public class DataAction extends Action {
             help(options, 0);
         }
 
-        input = cmdLine.getOptionValue('i');
-        if (input == null) {
-            System.err.println("The input filename is a required option");
+        directory = cmdLine.getOptionValue('d');
+        if (directory == null) {
+            System.err.println("The input directory is a required option");
             help(options, 1);
         }
 
-        output = cmdLine.getOptionValue('o');
+        String logLevel = cmdLine.getOptionValue('l');
+        if (logLevel != null) {
+            LogConfigurator.configureLogLevel(logLevel);
+        }
+
     }
 
-    @Override
     public int run() {
-        PrintStream ps = System.out;
-        if (output != null) {
-            File outputFile = new File(output);
-            FileOutputStream fos;
-            try {
-                fos = new FileOutputStream(outputFile);
-            } catch (FileNotFoundException e) {
-                e.printStackTrace();
-
-                return 1;
-            }
-
-            ps = new PrintStream(fos);
-        }
-
         try {
-            RateToHistogram.convert(input, ps);
 
+            new ReportAggregator(directory).aggregate();
             return 0;
-        } catch (IOException e) {
-            System.err.println("Error converting rate to histogram: " + e.getMessage());
-
+        } catch (Exception e) {
+            System.err.println("Unable to aggregate the performance test reports");
             e.printStackTrace();
             return 1;
-        }
-        finally {
-            ps.close();
         }
     }
 }
