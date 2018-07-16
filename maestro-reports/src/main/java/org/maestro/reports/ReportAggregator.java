@@ -80,7 +80,7 @@ public class ReportAggregator {
                 aggregateSet(currentTestNumDir, currentReports);
             }
         } catch (IOException e) {
-            logger.error("Failed to generate aggreated report", e);
+            logger.error("Failed to generate aggregated report", e);
             throw new RuntimeException(e);
         }
     }
