@@ -128,8 +128,9 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
 
         notification.setMessage(message);
 
+        logger.info("KWDEBUG sending {}", notification);
         try {
-            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, true);
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, false);
         } catch (Exception e) {
             logger.error("Unable to publish the success notification: {}", e.getMessage(), e);
         }
@@ -145,8 +146,9 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
 
         notification.setMessage(message);
 
+        logger.info("KWDEBUG sending {}", notification);
         try {
-            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, true);
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, false);
         } catch (Exception e) {
             logger.error("Unable to publish the failure notification: {}", e.getMessage(), e);
         }
