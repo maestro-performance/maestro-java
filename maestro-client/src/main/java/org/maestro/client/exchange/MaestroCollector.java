@@ -22,16 +22,17 @@ import org.maestro.common.exceptions.MaestroConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Queue;
+import java.util.concurrent.ConcurrentLinkedQueue;
 
 
 public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollector.class);
     private boolean running = true;
 
-    private final List<MaestroNote> collected = Collections.synchronizedList(new LinkedList<MaestroNote>());
+    private final Queue<MaestroNote> collected = new ConcurrentLinkedQueue<>();
     private final List<MaestroNoteCallback> callbacks = new LinkedList<>();
 
     public MaestroCollector(final String url) throws MaestroConnectionException {
@@ -57,11 +58,13 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         return running;
     }
 
-    public synchronized List<MaestroNote> collect() {
+    public List<MaestroNote> collect() {
         logger.trace("Collecting messages");
-        List<MaestroNote> ret = new LinkedList<>(collected);
+        List<MaestroNote> ret = new LinkedList<>();
 
-        collected.clear();
+        while(collected.peek() != null) {
+            ret.add(collected.poll());
+        }
 
         logger.trace("Number of messages collected: {}", ret.size());
         return ret;
