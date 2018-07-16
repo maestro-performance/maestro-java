@@ -18,7 +18,7 @@
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
-@Grab(group='org.maestro', module='maestro-client', version='1.3.0')
+@Grab(group='org.maestro', module='maestro-client', version='1.3.2')
 
 import org.maestro.client.Maestro
 

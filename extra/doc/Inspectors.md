@@ -25,7 +25,7 @@ Interconnect Inspector
 
 It is used for Apache Qpid Dispatch Router. It uses the request-response mechanism for collect relative data from AMQP Management which is available on the running Router instance.
 
-Current version of Maestro (1.3.0) collect data about the memory used by Router, 
+Current version of Maestro (1.3.2) collect data about the memory used by Router, 
 active links and connections (accepted messages, unsettled messages, etc.) and general router 
 information such as number of current active connections, neighbor nodes, etc.
 
