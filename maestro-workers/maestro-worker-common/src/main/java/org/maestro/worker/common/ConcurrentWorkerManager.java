@@ -65,7 +65,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
      * @throws MaestroException
      */
     public ConcurrentWorkerManager(final String maestroURL, final String role, final String host, final File logDir,
-                                   final Class<MaestroWorker> workerClass, final MaestroDataServer dataServer) throws MaestroException {
+                                   final Class<MaestroWorker> workerClass, final MaestroDataServer dataServer) {
         super(maestroURL, role, host, dataServer);
 
         this.container = WorkerContainer.getInstance(getClient());

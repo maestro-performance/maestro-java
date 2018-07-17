@@ -62,7 +62,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     private final String host;
     private final String id;
 
-    public MaestroReceiverClient(String url, final String clientName, final String host, final String id) throws MaestroException {
+    public MaestroReceiverClient(String url, final String clientName, final String host, final String id) {
         super(url);
 
         this.clientName = clientName;
