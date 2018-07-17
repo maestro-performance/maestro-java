@@ -233,8 +233,8 @@ There are multiple components and it is possible to choose only the desired one:
 * maestro-worker: backend code that executes the tests (using the one of the workers in maestro-workers)
 * maestro-inspector: backend code that inspects the SUTs (using the one of the inspectors in maestro-inspectors)
 
-The API documentation (javadoc) is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.2/apidocs/). 
-Additional project documentation is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.2/). 
+The API documentation (javadoc) is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.3/apidocs/index.html). 
+Additional project documentation is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.3/). 
 
 **Note**: replace version with the latest available version you wish to use.
 
