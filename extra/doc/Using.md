@@ -224,13 +224,14 @@ Then, the library can be referenced as:
 
 There are multiple components and it is possible to choose only the desired one: 
 
-* maestro-client
-* maestro-common
-* maestro-contrib
-* maestro-exporter
-* maestro-reports
-* maestro-tests
-* maestro-worker
+* maestro-client: provides the API for interacting with the cluster 
+* maestro-common: common code used all over the project
+* maestro-contrib: code from external sources
+* maestro-exporter: monitoring component
+* maestro-reports: reporting code
+* maestro-tests: a basic test API on top of Maestro Client
+* maestro-worker: backend code that executes the tests (using the one of the workers in maestro-workers)
+* maestro-inspector: backend code that inspects the SUTs (using the one of the inspectors in maestro-inspectors)
 
 The API documentation (javadoc) is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.2/apidocs/). 
 Additional project documentation is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.2/). 
