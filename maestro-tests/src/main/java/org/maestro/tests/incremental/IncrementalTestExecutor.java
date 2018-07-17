@@ -22,6 +22,9 @@ import org.maestro.tests.AbstractTestExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * An executor that runs the test ever incrementing the rate and parallel connections as defined by the profile
+ */
 public class IncrementalTestExecutor extends AbstractTestExecutor {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestExecutor.class);
 
@@ -30,6 +33,12 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
     private long coolDownPeriod = 10000;
     private final IncrementalTestProcessor testProcessor;
 
+    /**
+     * Constructor
+     * @param maestro a Maestro client instance
+     * @param reportsDownloader the reports downloader in use for the test
+     * @param testProfile the test profile in use for the test
+     */
     public IncrementalTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
                                    final IncrementalTestProfile testProfile) {
         super(maestro, reportsDownloader);

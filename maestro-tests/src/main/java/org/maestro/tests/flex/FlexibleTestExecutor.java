@@ -40,9 +40,9 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
 
     /**
      * Constructor
-     * @param maestro
-     * @param reportsDownloader
-     * @param testProfile
+     * @param maestro a Maestro client instance
+     * @param reportsDownloader the reports downloader in use for the test
+     * @param testProfile the test profile in use for the test
      */
     public FlexibleTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
                                 final AbstractTestProfile testProfile)
@@ -77,7 +77,7 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
 
     /**
      * Test execution logic
-     * @return
+     * @return true if the test was successful or false otherwise
      */
     public boolean run() {
         try {

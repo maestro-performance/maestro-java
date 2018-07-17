@@ -19,12 +19,17 @@ package org.maestro.worker.common;
 import org.maestro.common.worker.WorkerStateInfo;
 
 
+/**
+ * Utilities for worker state checks
+ */
 public class WorkerStateInfoUtil {
 
     private WorkerStateInfoUtil() {}
 
     /**
      * Utility to check if the workers exited cleanly or not
+     * @param wsi the worker state information
+     * @return true if the worker terminated cleanly (ie.: w/ success or STOP request) or false otherwise
      */
     public static boolean isCleanExit(WorkerStateInfo wsi) {
         if (wsi.getExitStatus() == WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS) {

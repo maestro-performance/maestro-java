@@ -64,7 +64,7 @@ public class ArtemisDataReader {
     /**
      * Reads JVM Heap heap memory information information (might be JVM-specific)
      * @return JVM heap memory information
-     * @throws MalformedObjectNameException
+     * @throws MalformedObjectNameException JMX internal/specific error
      * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
     public JVMMemoryInfo jvmHeapMemory() throws MalformedObjectNameException, J4pException {
@@ -82,7 +82,7 @@ public class ArtemisDataReader {
     /**
      * Reads JVM Heap heap memory information information (might be JVM-specific)
      * @return JVM heap memory information
-     * @throws MalformedObjectNameException
+     * @throws MalformedObjectNameException JMX internal/specific error
      * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
     @SuppressWarnings("unchecked")
@@ -99,7 +99,7 @@ public class ArtemisDataReader {
     /**
      * Reads operating system information information (might be JVM-specific)
      * @return operating system information
-     * @throws MalformedObjectNameException
+     * @throws MalformedObjectNameException JMX internal/specific error
      * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
     @SuppressWarnings("unchecked")
@@ -117,7 +117,7 @@ public class ArtemisDataReader {
     /**
      * Reads runtime information information (might be JVM-specific)
      * @return operating system information
-     * @throws MalformedObjectNameException
+     * @throws MalformedObjectNameException JMX internal/specific error
      * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
     @SuppressWarnings("unchecked")
@@ -134,9 +134,9 @@ public class ArtemisDataReader {
 
     /**
      * Read queue information
-     * @return
-     * @throws MalformedObjectNameException
-     * @throws J4pException
+     * @return queue information
+     * @throws MalformedObjectNameException JMX internal/specific error
+     * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
     @SuppressWarnings("unchecked")
     public QueueInfo queueInformation() throws MalformedObjectNameException, J4pException {
@@ -152,9 +152,9 @@ public class ArtemisDataReader {
 
     /**
      * Read product information
-     * @return
-     * @throws MalformedObjectNameException
-     * @throws J4pException
+     * @return the product information
+     * @throws MalformedObjectNameException JMX internal/specific error
+     * @throws J4pException if unable to read (ie: forbidden to read the value)
      */
     @SuppressWarnings("unchecked")
     public ProductInfo productInformation() throws MalformedObjectNameException, J4pException {

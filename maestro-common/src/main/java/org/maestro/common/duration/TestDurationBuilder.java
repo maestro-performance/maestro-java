@@ -29,7 +29,7 @@ public class TestDurationBuilder {
      * @param durationSpec a duration specifier (either time based such as "1h2m" or
      *                     a numeric string representing the number of messages to send
      * @return The appropriate TestDuration object according to the duration specifier
-     * @throws DurationParseException
+     * @throws DurationParseException if the duration specification is invalid
      */
     public static TestDuration build(final String durationSpec) throws DurationParseException {
         if (durationSpec == null) {

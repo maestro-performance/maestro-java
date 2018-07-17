@@ -44,7 +44,7 @@ public class GeneralInfoData implements ReportData {
 
     /**
      * Number of records
-     * @return
+     * @return the number of records/samples
      */
     public int getNumberOfSamples() {
         return recordSet.size();

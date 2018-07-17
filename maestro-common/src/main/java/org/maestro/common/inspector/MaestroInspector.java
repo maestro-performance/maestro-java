@@ -52,7 +52,7 @@ public interface MaestroInspector extends TestDuration.TestProgress {
      * Inspectors normally don't know how many messages have been
      * exchanged, therefore they should return 0 and handle the
      * success/failure notifications when the test is count-based
-     * @return
+     * @return the message count
      */
     @Override
     default long messageCount() {

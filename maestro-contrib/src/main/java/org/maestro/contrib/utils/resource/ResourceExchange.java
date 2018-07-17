@@ -30,8 +30,8 @@ public interface ResourceExchange {
 	/**
 	 * Gets the resource pointed by an URL into file
 	 * @param uri the resource location/address
-	 * @throws ResourceExchangeException if unable to obtain the resource.
-	 * Check the root cause for details.
+	 * @throws ResourceExchangeException if unable to obtain the resource. Check the root cause for details.
+	 * @return A resource exchange object
 	 */
 	Resource<InputStream> get(final URI uri) throws ResourceExchangeException;
 	
@@ -39,8 +39,8 @@ public interface ResourceExchange {
 	/**
 	 * Gets the resource information pointed by an URL into file
 	 * @param uri the resource location/address
-	 * @throws ResourceExchangeException if unable to obtain the resource. 
-	 * Check the root cause for details.
+	 * @throws ResourceExchangeException if unable to obtain the resource. Check the root cause for details.
+	 * @return the resource information
 	 */
 	ResourceInfo info(final URI uri) throws ResourceExchangeException;
 	

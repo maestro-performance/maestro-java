@@ -63,7 +63,7 @@ public interface MessageDigest {
      * Verify the message digest for a file
      * @param source The (path to the) source file
      * @return true if it matches or false otherwise
-     * @throws IOException
+     * @throws IOException on I/O errors
      */
     boolean verify(final String source) throws IOException;
 

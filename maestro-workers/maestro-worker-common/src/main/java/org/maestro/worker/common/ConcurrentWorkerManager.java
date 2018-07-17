@@ -57,12 +57,12 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
     /**
      * Constructor
-     * @param maestroURL
-     * @param role
-     * @param host
-     * @param logDir
-     * @param workerClass
-     * @throws MaestroException
+     * @param maestroURL Maestro URL
+     * @param role Worker Role
+     * @param host hostname for the worker
+     * @param logDir test log directory
+     * @param workerClass the class for the worker
+     * @param dataServer the data server instance
      */
     public ConcurrentWorkerManager(final String maestroURL, final String role, final String host, final File logDir,
                                    final Class<MaestroWorker> workerClass, final MaestroDataServer dataServer) {
@@ -76,7 +76,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
     /**
      * Starts the workers and add them to a container
-     * @return
+     * @return true if started correctly or false otherwise
      */
     private boolean doWorkerStart() {
         if (container.isTestInProgress()) {

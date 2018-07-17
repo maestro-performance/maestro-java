@@ -24,8 +24,8 @@ import java.util.Map;
  */
 public interface RuntimeInfoType {
     /**
-     * Get OS properties as a map
-     * @return
+     * Get runtime properties as a map
+     * @return a map of runtime properties
      */
     Map<String, Object> getProperties();
 }

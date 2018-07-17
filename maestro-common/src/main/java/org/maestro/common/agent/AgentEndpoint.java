@@ -65,7 +65,7 @@ public interface AgentEndpoint {
 
     /**
      * Gets the worker options
-     * @return
+     * @return the worker options object
      */
     WorkerOptions getWorkerOptions();
 }

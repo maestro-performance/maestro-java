@@ -24,8 +24,8 @@ import java.util.List;
  */
 public interface RouterLinkInfoType {
     /**
-     * Get the queue properties
-     * @return
+     * Get the router link properties
+     * @return the router link properties
      */
     List getRouterLinkProperties();
 }

@@ -187,6 +187,7 @@ public interface MaestroRequester {
 
     /**
      * Sends a start inspector request
+     * @param value the name of the inspector to start
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
     void startInspector(final String value) throws MaestroConnectionException;

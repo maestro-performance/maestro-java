@@ -31,11 +31,14 @@ public interface TestDuration {
          * It represent the start of the test in milliseconds using Unix Epoch in milliseconds.
          * <p>
          * If the test isn't started yet it is an arbitrary negative value.
+         * @return the started time in milliseconds from epoch
          */
         long startedEpochMillis();
 
         /**
          * It represents the works done expressed in unit of time.
+         * @param outputTimeUnit the output time unit (seconds, minutes, etc)
+         * @return the elapsed time in the given time unit
          */
         default long elapsedTime(TimeUnit outputTimeUnit) {
             final long startedEpochMillis = startedEpochMillis();
@@ -49,6 +52,7 @@ public interface TestDuration {
 
         /**
          * It represents the works done expressed in messages processed.
+         * @return the number of messages processed
          */
         long messageCount();
 

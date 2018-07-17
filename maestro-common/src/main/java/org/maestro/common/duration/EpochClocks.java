@@ -54,6 +54,7 @@ public final class EpochClocks {
 
     /**
      * It creates a fresh new {@link EpochMicroClock} instance that could be used safely by many threads.
+     * @return a new {@link EpochMicroClock} instance that could be used safely by many threads.
      */
     public static EpochMicroClock sharedMicro() {
         if (SUPPORT_MICRO_CLOCKS) {
@@ -65,6 +66,7 @@ public final class EpochClocks {
 
     /**
      * It creates a fresh new {@link EpochMicroClock} instance that could be used safely just by 1 thread.
+     * @return a new {@link EpochMicroClock} instance that could be used safely just by 1 thread.
      */
     public static EpochMicroClock exclusiveMicro() {
         if (SUPPORT_MICRO_CLOCKS) {

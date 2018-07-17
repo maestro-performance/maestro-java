@@ -49,7 +49,7 @@ public abstract class LatencyEvaluator implements Evaluator<Histogram> {
 
     /**
      * Get the mean latency as last recorded
-     * @return
+     * @return the last recorded mean latency
      */
     abstract public double getMean();
 

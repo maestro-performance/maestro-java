@@ -25,7 +25,7 @@ import java.util.List;
 public interface QDMemoryInfoType {
     /**
      * Get the memory properties
-     * @return
+     * @return the memory properties
      */
     List getQDMemoryInfoProperties();
 }

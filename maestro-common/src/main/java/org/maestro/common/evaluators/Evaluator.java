@@ -18,7 +18,7 @@ package org.maestro.common.evaluators;
 
 /**
  * Provides an way to evaluate conditions during the test execution
- * @param <T>
+ * @param <T> An evaluator type
  */
 public interface Evaluator<T> {
 

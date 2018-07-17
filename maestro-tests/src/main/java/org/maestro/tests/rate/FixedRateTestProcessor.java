@@ -30,8 +30,8 @@ public class FixedRateTestProcessor extends AbstractTestProcessor {
 
     /**
      * Constructor
-     * @param testProfile
-     * @param reportsDownloader
+     * @param testProfile the test profile in use for the test
+     * @param reportsDownloader the reports downloader in use for the test
      */
     public FixedRateTestProcessor(FixedRateTestProfile testProfile, ReportsDownloader reportsDownloader) {
         super(testProfile, reportsDownloader);
@@ -39,6 +39,10 @@ public class FixedRateTestProcessor extends AbstractTestProcessor {
         setFlushWaitSeconds(AbstractTestProcessor.DEFAULT_WAIT_TIME * testProfile.getParallelCount());
     }
 
+    /**
+     * Whether the test was successful
+     * @return true if successful or false otherwise
+     */
     public boolean isSuccessful() {
         return !super.isFailed();
     }

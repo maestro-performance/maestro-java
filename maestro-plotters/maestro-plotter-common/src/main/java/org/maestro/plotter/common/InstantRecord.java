@@ -24,7 +24,7 @@ import java.time.Instant;
 public interface InstantRecord {
     /**
      * Get the time when the record was read
-     * @return
+     * @return The time when the record was read
      */
     Instant getTimestamp();
 }

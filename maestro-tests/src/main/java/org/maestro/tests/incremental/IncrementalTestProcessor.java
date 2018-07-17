@@ -28,8 +28,8 @@ public class IncrementalTestProcessor extends AbstractTestProcessor {
 
     /**
      * Constructor
-     * @param testProfile
-     * @param reportsDownloader
+     * @param testProfile the test profile in use
+     * @param reportsDownloader the reports downloader in use
      */
     public IncrementalTestProcessor(IncrementalTestProfile testProfile, ReportsDownloader reportsDownloader) {
         super(testProfile, reportsDownloader);

@@ -27,7 +27,7 @@ public class DefaultDownloader implements ReportsDownloader {
 
     /**
      * Constructor
-     * @param baseDir
+     * @param baseDir the base directory for saving the reports
      */
     public DefaultDownloader(final String baseDir) {
         this.organizer = new DefaultOrganizer(baseDir);
@@ -36,6 +36,10 @@ public class DefaultDownloader implements ReportsDownloader {
         resolverMap.put(HostTypes.RECEIVER_HOST_TYPE, new ReceiverReportResolver());
     }
 
+    /**
+     * Constructor
+     * @param organizer the report organizer to use
+     */
     public DefaultDownloader(final Organizer organizer) {
         this.organizer = organizer;
 

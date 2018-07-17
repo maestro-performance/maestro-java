@@ -37,7 +37,7 @@ public class QueueDataSet {
 
     /**
      * Add a record to the data set
-     * @param queuesRecord
+     * @param queuesRecord the queues record to add
      */
     public void add(final QueuesRecord queuesRecord) {
         QueueData queueData = map.get(queuesRecord.getName());
@@ -53,7 +53,7 @@ public class QueueDataSet {
 
     /**
      * Get all records
-     * @return
+     * @return all the records in a map
      */
     @PropertyProvider(name="")
     public Map<String, QueueData> getMap() {
@@ -80,7 +80,7 @@ public class QueueDataSet {
     /**
      * Gets the aggregated statistics for the set on a per period basis. Do not confuse
      * with the statistics returned on a per-queue basis.
-     * @return
+     * @return the statistics in a map
      */
     public Map<Date, Statistics> getStatistics() {
         Map<Instant, SummaryStatistics> calcMap = new HashMap<>();

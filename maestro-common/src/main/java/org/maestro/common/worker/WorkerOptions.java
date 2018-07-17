@@ -44,7 +44,7 @@ public class WorkerOptions {
 
     /**
      * Set the broker url
-     * @param brokerURL
+     * @param brokerURL the broker url
      */
     public void setBrokerURL(String brokerURL) {
         this.brokerURL = brokerURL;
@@ -62,7 +62,7 @@ public class WorkerOptions {
 
     /**
      * Sets the test duration
-     * @param duration
+     * @param duration the test duration
      */
     public void setDuration(String duration) {
         this.duration = duration;
@@ -71,7 +71,7 @@ public class WorkerOptions {
 
     /**
      * Gets the log level
-     * @return
+     * @return the log level
      */
     public String getLogLevel() {
         return logLevel;
@@ -80,24 +80,33 @@ public class WorkerOptions {
 
     /**
      * Set the log level
-     * @param logLevel
+     * @param logLevel the log level
      */
     public void setLogLevel(String logLevel) {
         this.logLevel = logLevel;
     }
 
+    /**
+     * Gets the parallel count
+     * @return the parallel count
+     */
     public String getParallelCount() {
         return parallelCount;
     }
 
     /**
-     * Sets the number of concurrent connections
-     * @param parallelCount
+     * Sets the number of concurrent connections (aka parallel count)
+     * @param parallelCount the parallel count
      */
     public void setParallelCount(String parallelCount) {
         this.parallelCount = parallelCount;
     }
 
+
+    /**
+     * Gets the message size
+     * @return the message size (either in the numeric form or with the variable size format)
+     */
     public String getMessageSize() {
         return messageSize;
     }
@@ -105,24 +114,34 @@ public class WorkerOptions {
 
     /**
      * Sets the message size
-     * @param messageSize
+     * @param messageSize the message size (either in the numeric form or with the variable size format)
      */
     public void setMessageSize(String messageSize) {
         this.messageSize = messageSize;
     }
 
+
+    /**
+     * Gets the throttling
+     * @return the throttling value
+     */
     public String getThrottle() {
         return throttle;
     }
 
     /**
      * Sets the throttling value
-     * @param throttle
+     * @param throttle throttle value
      */
     public void setThrottle(String throttle) {
         this.throttle = throttle;
     }
 
+
+    /**
+     * Gets the target rate
+     * @return the target rate
+     */
     public String getRate() {
         return rate;
     }
@@ -130,17 +149,26 @@ public class WorkerOptions {
 
     /**
      * Sets the target rate
-     * @param rate
+     * @param rate the target rate
      */
     public void setRate(String rate) {
         this.rate = rate;
     }
 
+
+    /**
+     * Gets the FCL value
+     * @return the FCL value
+     */
     public String getFcl() {
         return fcl;
     }
 
 
+    /**
+     * Gets the FCL value as a double
+     * @return the FCL value as a double (or null if unset or invalid)
+     */
     public Double getFclAsDouble() {
         if (fcl != null && !fcl.equals("0")) {
             try {
@@ -156,8 +184,8 @@ public class WorkerOptions {
 
 
     /**
-     * Sets the fail-condition-on-latency fail condition
-     * @param fcl
+     * Sets the fail-condition-on-latency (FCL) fail condition
+     * @param fcl The FCL value
      */
     public void setFcl(final String fcl) {
         this.fcl = fcl;

@@ -28,8 +28,8 @@ public interface Organizer {
     String getResultType();
 
     /**
-     * The result type string
-     * @param resultType
+     * Set the result type string
+     * @param resultType the result type string
      */
     void setResultType(String resultType);
 

@@ -478,6 +478,8 @@ public final class Maestro implements MaestroRequester {
 
     /**
      * Sends a source request to the agent (which causes it to download the given source)
+     * @param sourceUrl the source url (ie.: git://host/path/to/extension-endpoint.git)
+     * @param branch branch to use for the source URL
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
     public void sourceRequest(final String sourceUrl, final String branch) throws MaestroConnectionException {
@@ -491,6 +493,8 @@ public final class Maestro implements MaestroRequester {
 
     /**
      * Sends a log request
+     * @param locationType The location type
+     * @param typeName The optional type name (mandatory if the location type is ANY)
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
     public void logRequest(final LocationType locationType, final String typeName) throws MaestroConnectionException {
@@ -501,6 +505,8 @@ public final class Maestro implements MaestroRequester {
     /**
      * Sends a log request
      * @param topic the topic to send the request to
+     * @param locationType The location type
+     * @param typeName The optional type name (mandatory if the location type is ANY)
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
     public void logRequest(final String topic, final LocationType locationType, final String typeName) throws MaestroConnectionException {
@@ -623,7 +629,7 @@ public final class Maestro implements MaestroRequester {
 
     /**
      * Get the collector receiving the messages
-     * @return
+     * @return the collector receiving the messages
      */
     public MaestroCollector getCollector() {
         return collectorExecutor.getCollector();

@@ -31,8 +31,8 @@ public class NetworkUtils {
     /**
      * Gets the hostname
      * @param option An optional configuration option used to override auto-detection
-     * @return
-     * @throws UnknownHostException
+     * @return The hostname
+     * @throws UnknownHostException if the hostname is invalid or cannot be resolved
      */
     public static final String getHost(final String option) throws UnknownHostException {
         String host = System.getProperty(MAESTRO_HOST_PROPERTY);

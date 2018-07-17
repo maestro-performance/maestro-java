@@ -54,7 +54,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
      * @param maestroURL Maestro broker URL
      * @param role Worker role
      * @param host hostname
-     * @throws MaestroException
+     * @param dataServer the data server instance
      */
     public MaestroWorkerManager(final String maestroURL, final String role, final String host, final MaestroDataServer dataServer) {
         super(maestroURL, role, MaestroDeserializer::deserializeEvent);
