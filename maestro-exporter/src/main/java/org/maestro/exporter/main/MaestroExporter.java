@@ -143,7 +143,8 @@ public class MaestroExporter {
                 try {
                     Thread.sleep(10000);
                 } catch (InterruptedException e) {
-                    e.printStackTrace();
+                    logger.debug("Interrupted. Stopping ...");
+                    break;
                 }
             }
         }
