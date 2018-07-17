@@ -25,7 +25,7 @@ import org.maestro.plotter.common.properties.annotations.PropertyProvider;
  */
 @PropertyName(name="")
 public class Statistics {
-    private SummaryStatistics summaryStatistics;
+    private final SummaryStatistics summaryStatistics;
 
     public Statistics(SummaryStatistics summaryStatistics) {
         this.summaryStatistics = summaryStatistics;

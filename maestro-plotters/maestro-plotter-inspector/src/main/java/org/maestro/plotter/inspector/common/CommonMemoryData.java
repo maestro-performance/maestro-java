@@ -27,7 +27,7 @@ import java.util.*;
  * Heap data container
  */
 public class CommonMemoryData<T extends CommonMemoryRecord> implements ReportData {
-    private Set<T> recordSet = new TreeSet<>();
+    private final Set<T> recordSet = new TreeSet<>();
     private Statistics usedStatistics = null;
     private Statistics committedStatistics = null;
 

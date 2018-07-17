@@ -15,7 +15,7 @@ import java.util.*;
 @PropertyName(name="qdmemory-")
 public class ConnectionsDataSet {
     private static final Logger logger = LoggerFactory.getLogger(ConnectionsDataSet.class);
-    private Map<String, ConnectionsData> map = new HashMap<>();
+    private final Map<String, ConnectionsData> map = new HashMap<>();
 
     /**
      * Add a record to the data set

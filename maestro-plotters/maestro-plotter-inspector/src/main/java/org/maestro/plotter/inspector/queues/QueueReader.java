@@ -32,7 +32,7 @@ import java.io.Reader;
 public class QueueReader extends CsvReader<QueueDataSet> {
     private static final Logger logger = LoggerFactory.getLogger(QueueReader.class);
 
-    private QueueProcessor queueProcessor;
+    private final QueueProcessor queueProcessor;
 
     public QueueReader() {
         this.queueProcessor = new QueueProcessor();

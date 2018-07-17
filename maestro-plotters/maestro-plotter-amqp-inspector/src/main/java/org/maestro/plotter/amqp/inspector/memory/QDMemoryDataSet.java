@@ -20,7 +20,7 @@ import java.util.*;
 @PropertyName(name="qdmemory-")
 public class QDMemoryDataSet {
     private static final Logger logger = LoggerFactory.getLogger(QDMemoryDataSet.class);
-    private Map<String, QDMemoryData> map = new HashMap<>();
+    private final Map<String, QDMemoryData> map = new HashMap<>();
 
     private static final String TOTALALLOCFROMHEAP = "totalallocfromheap";
     private static final String TYPESIZE = "typesize";

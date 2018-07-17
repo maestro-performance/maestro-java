@@ -23,7 +23,7 @@ import org.maestro.inspector.activemq.JolokiaConverter;
 import java.util.Map;
 
 public class MapConverter implements JolokiaConverter {
-    private Map<String, Object> properties;
+    private final Map<String, Object> properties;
 
 
     public MapConverter(Map<String, Object> properties) {

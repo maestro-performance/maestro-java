@@ -33,8 +33,8 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
     private Thread inspectorThread;
     private InspectorContainer inspectorContainer;
     private MaestroInspector inspector;
-    private File logDir;
-    private HashMap<String, String> inspectorMap = new HashMap<>();
+    private final File logDir;
+    private final HashMap<String, String> inspectorMap = new HashMap<>();
     private String url;
 
     public InspectorManager(final String maestroURL, final String host, final MaestroDataServer dataServer, final File logDir) throws MaestroException

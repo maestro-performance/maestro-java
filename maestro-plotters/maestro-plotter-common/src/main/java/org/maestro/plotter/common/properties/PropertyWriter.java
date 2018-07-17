@@ -35,7 +35,7 @@ import java.util.Properties;
  */
 public class PropertyWriter {
     private static final Logger logger = LoggerFactory.getLogger(PropertyWriter.class);
-    private PropertyConverter converter = new DefaultConverter();
+    private final PropertyConverter converter = new DefaultConverter();
 
 
     private boolean canHandle(Object object) {

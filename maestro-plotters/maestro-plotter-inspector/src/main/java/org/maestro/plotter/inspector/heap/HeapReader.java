@@ -29,7 +29,7 @@ import java.io.Reader;
 public class HeapReader extends CsvReader<HeapData> {
     private static final Logger logger = LoggerFactory.getLogger(HeapReader.class);
 
-    private HeapProcessor heapProcessor;
+    private final HeapProcessor heapProcessor;
 
     public HeapReader() {
         this.heapProcessor = new HeapProcessor();

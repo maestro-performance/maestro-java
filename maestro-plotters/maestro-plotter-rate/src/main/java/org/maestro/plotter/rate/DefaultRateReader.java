@@ -32,7 +32,7 @@ import java.io.Reader;
  */
 public class DefaultRateReader extends CompressedCsvReader<RateData> {
     private static final Logger logger = LoggerFactory.getLogger(DefaultRateReader.class);
-    private RateDataProcessor processor;
+    private final RateDataProcessor processor;
 
     public DefaultRateReader(final RateDataProcessor processor) {
         this.processor = processor;

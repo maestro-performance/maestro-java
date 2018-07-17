@@ -40,7 +40,7 @@ class WorkerWatchdog implements Runnable {
     private final MaestroReceiver endpoint;
     private volatile boolean running = false;
     private final Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped;
-    private Evaluator<?> evaluator;
+    private final Evaluator<?> evaluator;
 
 
     /**

@@ -42,7 +42,7 @@ import java.util.stream.Collectors;
 public final class Maestro implements MaestroRequester {
     private static final Logger logger = LoggerFactory.getLogger(Maestro.class);
 
-    private MaestroClient maestroClient;
+    private final MaestroClient maestroClient;
     private final MaestroCollectorExecutor collectorExecutor;
     private final Thread collectorThread;
 

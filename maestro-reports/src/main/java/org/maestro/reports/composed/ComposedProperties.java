@@ -34,7 +34,7 @@ import java.util.Map;
 
 public class ComposedProperties {
     private static final Logger logger = LoggerFactory.getLogger(ComposedProperties.class);
-    private File indexProperties;
+    private final File indexProperties;
     private String dateTime;
     private Map<String, Object> context = new HashMap<>();
 

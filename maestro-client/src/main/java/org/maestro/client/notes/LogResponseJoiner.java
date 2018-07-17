@@ -9,7 +9,7 @@ import java.util.Map;
 public class LogResponseJoiner {
     private static final Logger logger = LoggerFactory.getLogger(LogResponseJoiner.class);
     private static final LogResponseJoiner instance = new LogResponseJoiner();
-    private Map<String, LogResponse> cache = new HashMap<>();
+    private final Map<String, LogResponse> cache = new HashMap<>();
 
     public static final LogResponseJoiner getInstance() {
         return instance;

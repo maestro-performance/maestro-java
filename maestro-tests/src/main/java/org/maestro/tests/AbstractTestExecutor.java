@@ -155,9 +155,8 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     /**
      * Resolve the data servers connected to the test cluster
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
-     * @throws InterruptedException if interrupted
      */
-    protected void resolveDataServers() throws MaestroConnectionException, InterruptedException {
+    protected void resolveDataServers() throws MaestroConnectionException {
         logger.debug("Collecting responses to ensure topic is clean prior to collecting data servers");
         maestro.collect();
 

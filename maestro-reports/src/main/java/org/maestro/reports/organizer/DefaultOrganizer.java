@@ -26,7 +26,7 @@ import java.io.File;
  */
 public class DefaultOrganizer implements Organizer {
     protected final String baseDir;
-    protected TestTracker tracker = new TestTracker();
+    protected final TestTracker tracker = new TestTracker();
     protected String resultType;
 
     public DefaultOrganizer(final String baseDir) {

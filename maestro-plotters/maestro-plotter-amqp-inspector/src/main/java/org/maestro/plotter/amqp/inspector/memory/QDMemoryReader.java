@@ -16,7 +16,7 @@ import java.io.Reader;
 public class QDMemoryReader extends CsvReader<QDMemoryDataSet> {
     private static final Logger logger = LoggerFactory.getLogger(QDMemoryReader.class);
 
-    private QDMemoryProcessor qdMemoryProcessor;
+    private final QDMemoryProcessor qdMemoryProcessor;
 
     public QDMemoryReader() {
         this.qdMemoryProcessor = new QDMemoryProcessor();

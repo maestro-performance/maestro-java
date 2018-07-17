@@ -21,10 +21,10 @@ package org.maestro.common.inspector.types;
  */
 public class JVMMemoryInfo implements InspectorType, JVMMemoryInfoType {
     private final String memoryAreaName;
-    private long initial;
-    private long committed;
-    private long max;
-    private long used;
+    private final long initial;
+    private final long committed;
+    private final long max;
+    private final long used;
 
     public JVMMemoryInfo(final String memoryAreaName, long initial, long committed, long max, long used) {
         this.memoryAreaName = memoryAreaName;

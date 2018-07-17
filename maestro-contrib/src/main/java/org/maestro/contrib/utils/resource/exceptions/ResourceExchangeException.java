@@ -21,7 +21,7 @@ package org.maestro.contrib.utils.resource.exceptions;
 @SuppressWarnings("serial")
 public class ResourceExchangeException extends Exception {
     private int code;
-    private String url;
+    private final String url;
 
     /**
      * Constructor

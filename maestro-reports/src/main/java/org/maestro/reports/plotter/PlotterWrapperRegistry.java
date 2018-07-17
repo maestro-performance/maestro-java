@@ -24,7 +24,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public final class PlotterWrapperRegistry {
-    private Map<Class<?>, PlotterWrapper> registry = new HashMap<>();
+    private final Map<Class<?>, PlotterWrapper> registry = new HashMap<>();
 
     public PlotterWrapperRegistry() {
         registry.put(MptReportFile.class, new RatePlotterWrapper());

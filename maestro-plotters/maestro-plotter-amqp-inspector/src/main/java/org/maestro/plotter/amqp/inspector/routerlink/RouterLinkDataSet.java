@@ -18,7 +18,7 @@ import java.util.*;
 @PropertyName(name="routerLink-")
 public class RouterLinkDataSet {
     private static final Logger logger = LoggerFactory.getLogger(RouterLinkDataSet.class);
-    private Map<String, RouterLinkData> map = new HashMap<>();
+    private final Map<String, RouterLinkData> map = new HashMap<>();
 
     private static final String DELIVERED = "delivered";
     private static final String UNSETTLED = "unsettled";

@@ -33,7 +33,7 @@ import java.util.zip.ZipEntry;
 
 public class ComposedIndexRenderer extends AbstractRenderer {
     private static final Logger logger = LoggerFactory.getLogger(ComposedIndexRenderer.class);
-    private List<String> filteredResources = Arrays.asList("resources");
+    private final List<String> filteredResources = Arrays.asList("resources");
     @Override
     public String render(Map<String, Object> context) throws Exception {
         return super.render("/org/maestro/reports/modern/index-composed.html", context);

@@ -16,7 +16,7 @@ import java.io.Reader;
 public class GeneralInfoReader extends CsvReader<GeneralInfoDataSet> {
     private static final Logger logger = LoggerFactory.getLogger(GeneralInfoReader.class);
 
-    private GeneralInfoProcessor generalInfoProcessor;
+    private final GeneralInfoProcessor generalInfoProcessor;
 
     public GeneralInfoReader() {
         this.generalInfoProcessor = new GeneralInfoProcessor();

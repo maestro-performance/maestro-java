@@ -29,7 +29,7 @@ import java.util.Set;
 
 public class PropertyWriterTest {
 
-    private File dummy = new File(this.getClass().getResource("/").getFile());
+    private final File dummy = new File(this.getClass().getResource("/").getFile());
 
     @Test
     public void testEmptyBean() throws IOException {

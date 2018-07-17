@@ -56,7 +56,7 @@ public class LogResponseTest {
         }
 
         @Override
-        protected InputStream initializeInputStream() throws IOException {
+        protected InputStream initializeInputStream() {
             InputStream ret = this.getClass().getResourceAsStream("/logresponse/" + getFileName());
 
             return ret;

@@ -25,7 +25,7 @@ import org.apache.commons.io.IOUtils;
 import java.io.*;
 
 public class Sha1Digest implements MessageDigest {
-    private static Logger logger = LoggerFactory.getLogger(Sha1Digest.class);
+    private static final Logger logger = LoggerFactory.getLogger(Sha1Digest.class);
 
     public static final String HASH_NAME = "sha1";
 
@@ -86,11 +86,8 @@ public class Sha1Digest implements MessageDigest {
 
         sourceDigest = calculate(source);
 
-        if (sourceDigest.equals(digest)) {
-            return true;
-        }
+        return sourceDigest.equals(digest);
 
-        return false;
     }
 
     /* (non-Javadoc)

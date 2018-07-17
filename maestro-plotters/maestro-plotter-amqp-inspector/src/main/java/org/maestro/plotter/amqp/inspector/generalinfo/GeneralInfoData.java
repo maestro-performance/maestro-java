@@ -16,7 +16,7 @@ import java.util.*;
 public class GeneralInfoData implements ReportData {
     public static final String DEFAULT_FILENAME = "general.properties";
 
-    private Set<GeneralInfoRecord> recordSet = new TreeSet<>();
+    private final Set<GeneralInfoRecord> recordSet = new TreeSet<>();
     private Statistics addressesStatistics = null;
     private Statistics connectionsStatistics = null;
     private Statistics linkRoutesStatistics = null;

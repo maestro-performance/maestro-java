@@ -29,7 +29,7 @@ import java.util.Map;
 public class MemoryAreasDataSet {
     public static final String DEFAULT_FILENAME = "memory-areas.properties";
 
-    private Map<String, MemoryAreasData> map = new HashMap<>();
+    private final Map<String, MemoryAreasData> map = new HashMap<>();
 
     /**
      * Add a record to the data set

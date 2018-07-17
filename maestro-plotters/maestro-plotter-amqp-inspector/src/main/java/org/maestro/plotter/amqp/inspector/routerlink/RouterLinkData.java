@@ -16,7 +16,7 @@ import java.util.*;
 public class RouterLinkData implements ReportData {
     public static final String DEFAULT_FILENAME = "routerLink.properties";
 
-    private Set<RouterLinkRecord> recordSet = new TreeSet<>();
+    private final Set<RouterLinkRecord> recordSet = new TreeSet<>();
     private Statistics deliveredStatistics = null;
     private Statistics undeliveredStatistics = null;
     private Statistics acceptedStatistics = null;

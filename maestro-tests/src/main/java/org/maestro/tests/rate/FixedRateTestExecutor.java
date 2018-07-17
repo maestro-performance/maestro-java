@@ -45,8 +45,8 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     private static final class StatsCallBack implements MaestroNoteCallback {
         private static final Logger logger = LoggerFactory.getLogger(StatsCallBack.class);
 
-        private FixedRateTestExecutor executor;
-        private Map<String, Long> counters = new HashMap<>();
+        private final FixedRateTestExecutor executor;
+        private final Map<String, Long> counters = new HashMap<>();
 
         StatsCallBack(FixedRateTestExecutor executor) {
             this.executor = executor;
@@ -119,7 +119,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     private static final class TestNotificationCallBack implements MaestroNoteCallback {
         private static final Logger logger = LoggerFactory.getLogger(TestNotificationCallBack.class);
 
-        FixedRateTestExecutor executor;
+        final FixedRateTestExecutor executor;
 
         public TestNotificationCallBack(FixedRateTestExecutor executor) {
             this.executor = executor;
@@ -288,9 +288,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
 
     private boolean canWait(int totalNotifications, int notificationRetries) {
         if (totalNotifications < numPeers) {
-           if (notificationRetries > 0) {
-               return true;
-           }
+            return notificationRetries > 0;
         }
 
         return false;

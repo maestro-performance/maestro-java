@@ -34,7 +34,7 @@ public class GroovyClasspathHelper {
 
     private static GroovyClasspathHelper instance;
 
-    private GroovyClassLoader loader;
+    private final GroovyClassLoader loader;
 
     private GroovyClasspathHelper() {
         loader = new GroovyClassLoader(getClass().getClassLoader());

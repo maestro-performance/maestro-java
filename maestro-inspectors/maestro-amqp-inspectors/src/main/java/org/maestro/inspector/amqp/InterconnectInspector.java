@@ -47,7 +47,7 @@ public class InterconnectInspector implements MaestroInspector {
     private WorkerOptions workerOptions;
     private InterconnectReadData interconnectReadData;
 
-    private int interval;
+    private final int interval;
 
     public InterconnectInspector() {
         final AbstractConfiguration config = ConfigurationWrapper.getConfig();
@@ -182,7 +182,7 @@ public class InterconnectInspector implements MaestroInspector {
     }
 
     private void writeInspectorProperties(File logDir, InspectorProperties inspectorProperties,
-                                          GeneralInfoWriter generalInfoWriter) throws MalformedObjectNameException, IOException, JMSException {
+                                          GeneralInfoWriter generalInfoWriter) throws IOException, JMSException {
         setCommonProperties(inspectorProperties, workerOptions);
 
         generalInfoWriter.write(inspectorProperties, interconnectReadData.collectGeneralInfo());

@@ -86,7 +86,7 @@ public class SenderOutOfOrderRateProcessorTest extends CommonRateProcessorTest {
     }
 
     @Test
-    public void testSenderPlot() throws EmptyDataSet, IncompatibleDataSet, IOException {
+    public void testSenderPlot() throws EmptyDataSet, IncompatibleDataSet {
         RatePlotter ratePlotter = new RatePlotter();
 
         File sourceFile = new File(fileName);

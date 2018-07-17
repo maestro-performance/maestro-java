@@ -32,7 +32,7 @@ import java.io.Reader;
 public class MemoryAreasReader extends CsvReader<MemoryAreasDataSet> {
     private static final Logger logger = LoggerFactory.getLogger(MemoryAreasReader.class);
 
-    private MemoryAreasProcessor memoryAreasProcessor;
+    private final MemoryAreasProcessor memoryAreasProcessor;
 
     public MemoryAreasReader() {
         this.memoryAreasProcessor = new MemoryAreasProcessor();

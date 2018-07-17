@@ -18,7 +18,7 @@ import java.util.*;
 @PropertyName(name="routerLink-")
 public class GeneralInfoDataSet {
     private static final Logger logger = LoggerFactory.getLogger(GeneralInfoDataSet.class);
-    private Map<String, GeneralInfoData> map = new HashMap<>();
+    private final Map<String, GeneralInfoData> map = new HashMap<>();
 
     private static final String ADDRESSCOUNT = "addressCount";
     private static final String CONNECTIONSCOUNT = "connectionsCount";

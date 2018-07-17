@@ -24,7 +24,7 @@ import java.time.Instant;
  * Rate information for a given timestamp of time
  */
 class RateRecord implements Comparable<RateRecord>, InstantRecord {
-    private Instant timestamp;
+    private final Instant timestamp;
     private int count;
 
     public RateRecord(Instant timestamp, int count) {

@@ -61,7 +61,7 @@ public class ArtemisInspector implements MaestroInspector {
     private ArtemisDataReader artemisDataReader;
     private J4pClient j4p;
 
-    private int interval;
+    private final int interval;
 
     public ArtemisInspector() {
         final AbstractConfiguration config = ConfigurationWrapper.getConfig();
