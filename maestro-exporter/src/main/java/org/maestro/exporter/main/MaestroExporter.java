@@ -59,7 +59,6 @@ public class MaestroExporter {
         connectionCounter = ConnectionCount.getInstance();
         pingInfo = PingInfo.getInstance();
 
-
         failures = Counter.build()
                  .name("maestro_test_failures")
                  .help("Test failures")
@@ -84,8 +83,6 @@ public class MaestroExporter {
     }
 
     private void processNotes(List<MaestroNote> notes) {
-
-
         for (MaestroNote note : notes) {
             if (note instanceof StatsResponse) {
                 StatsResponse statsResponse = (StatsResponse) note;
