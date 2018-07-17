@@ -19,8 +19,10 @@ package org.maestro.exporter.main;
 
 import io.prometheus.client.Counter;
 import io.prometheus.client.exporter.HTTPServer;
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.notes.*;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
@@ -37,6 +39,7 @@ import java.util.List;
 
 public class MaestroExporter {
     private static final Logger logger = LoggerFactory.getLogger(MaestroExporter.class);
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
     private static final MessageCount messageCounter;
     private static final RateCount rateCounter;
@@ -123,6 +126,7 @@ public class MaestroExporter {
     public int run(int port) throws MaestroConnectionException, IOException {
         logger.info("Exporting metrics on 0.0.0.0:{}", port);
 
+        final int updateInterval = config.getInt("maestro.exporter.update.interval", 100000);
         HTTPServer server = null;
 
         try {
@@ -134,14 +138,15 @@ public class MaestroExporter {
                 maestro.statsRequest();
                 maestro.pingRequest();
 
-                List<MaestroNote> notes = maestro.collect(1000, 5);
+                final int collectionInterval = 1000;
+                List<MaestroNote> notes = maestro.collect(collectionInterval, 5);
 
                 if (notes != null) {
                     processNotes(notes);
                 }
 
                 try {
-                    Thread.sleep(10000);
+                    Thread.sleep(updateInterval);
                 } catch (InterruptedException e) {
                     logger.debug("Interrupted. Stopping ...");
                     break;
