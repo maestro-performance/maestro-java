@@ -21,6 +21,8 @@ import org.maestro.common.worker.WorkerStateInfo;
 
 public class WorkerStateInfoUtil {
 
+    private WorkerStateInfoUtil() {}
+
     /**
      * Utility to check if the workers exited cleanly or not
      */
