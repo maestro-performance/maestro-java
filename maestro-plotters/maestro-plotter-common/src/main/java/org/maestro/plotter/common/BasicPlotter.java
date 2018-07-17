@@ -32,7 +32,7 @@ import java.io.IOException;
  */
 public class BasicPlotter<Y extends ReportReader, K extends AbstractPlotter> {
 
-    private Y reader;
+    private final Y reader;
     private K plotter;
 
     /**

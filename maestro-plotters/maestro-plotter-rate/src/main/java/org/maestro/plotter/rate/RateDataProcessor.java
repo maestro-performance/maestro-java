@@ -31,11 +31,11 @@ import java.util.TreeSet;
 public class RateDataProcessor implements RecordProcessor {
     private static final Logger logger = LoggerFactory.getLogger(RateDataProcessor.class);
 
-    private Map<String, RateRecord> cache = new HashMap<>();
+    private final Map<String, RateRecord> cache = new HashMap<>();
     private long errorCount = 0;
 
     @Override
-    public void process(String... records) throws Exception {
+    public void process(String... records) {
         doProcess(records[1]);
     }
 

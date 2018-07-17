@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class MemoryAreasProcessorTest {
-    private String fileName = this.getClass().getResource("/data-ok/memory-areas.csv").getPath();
+    private final String fileName = this.getClass().getResource("/data-ok/memory-areas.csv").getPath();
     private MemoryAreasDataSet dataSet;
 
     @Before

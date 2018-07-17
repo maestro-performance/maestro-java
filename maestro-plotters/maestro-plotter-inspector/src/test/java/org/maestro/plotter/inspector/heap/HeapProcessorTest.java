@@ -28,7 +28,7 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class HeapProcessorTest {
-    private String fileName = this.getClass().getResource("/data-ok/heap.csv").getPath();
+    private final String fileName = this.getClass().getResource("/data-ok/heap.csv").getPath();
     private HeapData heapData;
 
 

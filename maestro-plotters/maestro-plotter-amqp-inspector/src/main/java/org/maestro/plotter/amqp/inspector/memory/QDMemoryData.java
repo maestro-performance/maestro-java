@@ -16,7 +16,7 @@ import java.util.*;
 public class QDMemoryData implements ReportData {
     public static final String DEFAULT_FILENAME = "qdmemory.properties";
 
-    private Set<QDMemoryRecord> recordSet = new TreeSet<>();
+    private final Set<QDMemoryRecord> recordSet = new TreeSet<>();
     private Statistics totalAllocFromHeapStatistics = null;
     private Statistics typeSizeStatistics = null;
     private Statistics heldByThreadsStatistics = null;

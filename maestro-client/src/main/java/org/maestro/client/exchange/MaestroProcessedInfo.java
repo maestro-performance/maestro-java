@@ -1,7 +1,7 @@
 package org.maestro.client.exchange;
 
 public class MaestroProcessedInfo {
-    private int noteCount;
+    private final int noteCount;
     private int responseCount = 0;
     private int notificationCount = 0;
     private int requestCount = 0;

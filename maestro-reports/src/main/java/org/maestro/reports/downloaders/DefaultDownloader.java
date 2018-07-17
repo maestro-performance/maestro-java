@@ -20,7 +20,7 @@ import java.util.Map;
 public class DefaultDownloader implements ReportsDownloader {
     private static final Logger logger = LoggerFactory.getLogger(DefaultDownloader.class);
 
-    private Map<String, ReportResolver> resolverMap = new HashMap<>();
+    private final Map<String, ReportResolver> resolverMap = new HashMap<>();
 
     private final Organizer organizer;
     private long lastDownloadedTime;

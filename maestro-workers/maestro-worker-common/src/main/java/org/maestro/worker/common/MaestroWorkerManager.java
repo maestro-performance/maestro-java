@@ -47,7 +47,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     private final MaestroReceiverClient client;
     private WorkerOptions workerOptions;
     private boolean running = true;
-    private MaestroDataServer dataServer;
+    private final MaestroDataServer dataServer;
 
     /**
      * Constructor

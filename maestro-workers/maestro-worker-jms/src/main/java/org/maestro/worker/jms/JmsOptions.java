@@ -97,7 +97,7 @@ class JmsOptions {
     }
 
     // JMS urls cannot have the query part
-    private String filterJMSURL(final URI uri) throws UnsupportedEncodingException, URISyntaxException {
+    private String filterJMSURL(final URI uri) {
         URLQuery query = new URLQuery(uri);
 
         Map<String, String> params = query.getParams();

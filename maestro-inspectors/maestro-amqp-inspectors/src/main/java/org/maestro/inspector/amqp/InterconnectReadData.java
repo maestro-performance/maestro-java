@@ -23,12 +23,12 @@ import java.util.Map;
  */
 public class InterconnectReadData {
     private static final Logger logger = LoggerFactory.getLogger(InterconnectReadData.class);
-    private Session session;
-    private Destination destination;
-    private MessageConsumer responseConsumer;
-    private MessageProducer requestProducer;
-    private AbstractConfiguration config = ConfigurationWrapper.getConfig();
-    private long timeout;
+    private final Session session;
+    private final Destination destination;
+    private final MessageConsumer responseConsumer;
+    private final MessageProducer requestProducer;
+    private final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+    private final long timeout;
 
     public InterconnectReadData(Session session,
                                 Destination destination,

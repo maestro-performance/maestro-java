@@ -42,7 +42,7 @@ public class GroovyHandler implements AgentHandler {
 
     private Map<String, Object> context;
     private List<File> fileList;
-    private MaestroReceiverClient client;
+    private final MaestroReceiverClient client;
 
     private MaestroNote maestroNote;
     private WorkerOptions workerOptions;

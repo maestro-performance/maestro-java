@@ -14,7 +14,7 @@ import java.util.*;
 public class ConnectionsData implements ReportData {
     public static final String DEFAULT_FILENAME = "connections.properties";
 
-    private Set<ConnectionsRecord> recordSet = new TreeSet<>();
+    private final Set<ConnectionsRecord> recordSet = new TreeSet<>();
     private Statistics properties = null;
 
     public void add(ConnectionsRecord record) {

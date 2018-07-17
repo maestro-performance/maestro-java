@@ -38,8 +38,8 @@ public class BrokerDownloader implements ReportsDownloader {
 
     private static class DownloadCallback implements MaestroNoteCallback {
         private static final Logger logger = LoggerFactory.getLogger(DownloadCallback.class);
-        private NodeOrganizer organizer;
-        private Sha1Digest digest = new Sha1Digest();
+        private final NodeOrganizer organizer;
+        private final Sha1Digest digest = new Sha1Digest();
         private long lastDownloadTime = 0;
 
         DownloadCallback(final NodeOrganizer organizer) {
@@ -125,11 +125,11 @@ public class BrokerDownloader implements ReportsDownloader {
     }
 
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
-    private Map<String, ReportResolver> resolverMap = new HashMap<>();
-    private Maestro maestro;
+    private final Map<String, ReportResolver> resolverMap = new HashMap<>();
+    private final Maestro maestro;
 
     private final NodeOrganizer organizer;
-    private DownloadCallback downloadCallback;
+    private final DownloadCallback downloadCallback;
 
     public BrokerDownloader(final Maestro maestro, final String baseDir) {
         this(maestro, new NodeOrganizer(baseDir));

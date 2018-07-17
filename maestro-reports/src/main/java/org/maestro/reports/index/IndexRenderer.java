@@ -35,7 +35,7 @@ import java.util.zip.ZipEntry;
 public class IndexRenderer extends AbstractRenderer {
     private static final Logger logger = LoggerFactory.getLogger(IndexRenderer.class);
 
-    private List<String> filteredResources = Arrays.asList("resources");
+    private final List<String> filteredResources = Arrays.asList("resources");
 
     public IndexRenderer() {
         super();

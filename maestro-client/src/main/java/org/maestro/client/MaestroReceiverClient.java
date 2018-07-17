@@ -39,7 +39,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
         private static final Logger logger = LoggerFactory.getLogger(ThrottleCallback.class);
 
-        private static int defaultDelay;
+        private static final int defaultDelay;
 
         static {
             defaultDelay = config.getInteger("maestro.worker.throttle.delay", 500);

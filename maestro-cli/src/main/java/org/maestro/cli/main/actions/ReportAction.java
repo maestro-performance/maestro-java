@@ -32,7 +32,7 @@ public class ReportAction extends Action {
 
     private String directory;
     private boolean clean;
-    private Map<String,String> indexProperties = new HashMap<>();
+    private final Map<String,String> indexProperties = new HashMap<>();
     private boolean composed;
 
 

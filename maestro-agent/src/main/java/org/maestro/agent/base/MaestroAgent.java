@@ -52,8 +52,8 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
 
     private static final Logger logger = LoggerFactory.getLogger(MaestroAgent.class);
     private final GroovyHandler groovyHandler;
-    private AbstractConfiguration config = ConfigurationWrapper.getConfig();
-    private List<ExtensionPoint> extensionPoints = new LinkedList<>();
+    private final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+    private final List<ExtensionPoint> extensionPoints = new LinkedList<>();
     private Thread thread;
 
     private final String sourceRoot;

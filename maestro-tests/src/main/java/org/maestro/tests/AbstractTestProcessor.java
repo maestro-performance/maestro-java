@@ -46,7 +46,7 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     private int notifications = 0;
 
     private int flushWaitSeconds = DEFAULT_WAIT_TIME;
-    private Map<String, String> dataServers = new HashMap<>();
+    private final Map<String, String> dataServers = new HashMap<>();
 
     static {
         DEFAULT_WAIT_TIME = config.getInteger("test.post.processing.wait.time", 3);

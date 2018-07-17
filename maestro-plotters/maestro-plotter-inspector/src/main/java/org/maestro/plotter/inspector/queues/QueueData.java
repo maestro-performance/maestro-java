@@ -33,7 +33,7 @@ import java.util.*;
 public class QueueData implements ReportData {
     public static final String DEFAULT_FILENAME = "queue.properties";
 
-    private Set<QueuesRecord> recordSet = new TreeSet<>();
+    private final Set<QueuesRecord> recordSet = new TreeSet<>();
     private Statistics countStatistics = null;
     private Statistics consumerStatistics = null;
     private Statistics addedStatistics = null;

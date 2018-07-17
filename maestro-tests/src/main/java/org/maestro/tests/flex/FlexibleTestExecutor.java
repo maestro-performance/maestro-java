@@ -29,11 +29,11 @@ import org.slf4j.LoggerFactory;
  */
 public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
     private static final Logger logger = LoggerFactory.getLogger(FlexibleTestExecutor.class);
-    private Maestro maestro;
+    private final Maestro maestro;
 
-    private FlexibleTestProcessor testProcessor;
-    private ReportsDownloader reportsDownloader;
-    private AbstractTestProfile testProfile;
+    private final FlexibleTestProcessor testProcessor;
+    private final ReportsDownloader reportsDownloader;
+    private final AbstractTestProfile testProfile;
 
     private int notificationRetries = 2;
 

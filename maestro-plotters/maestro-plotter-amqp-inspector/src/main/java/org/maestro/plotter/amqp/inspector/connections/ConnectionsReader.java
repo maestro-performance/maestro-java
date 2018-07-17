@@ -16,7 +16,7 @@ import java.io.Reader;
 public class ConnectionsReader extends CsvReader<ConnectionsDataSet> {
     private static final Logger logger = LoggerFactory.getLogger(ConnectionsReader.class);
 
-    private ConnectionsProcessor connectionsProcessor;
+    private final ConnectionsProcessor connectionsProcessor;
 
     public ConnectionsReader() {
         this.connectionsProcessor = new ConnectionsProcessor();

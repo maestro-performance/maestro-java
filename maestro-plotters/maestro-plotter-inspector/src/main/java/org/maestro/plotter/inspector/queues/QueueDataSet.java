@@ -33,7 +33,7 @@ import java.util.*;
 @PropertyName(name="queue-")
 public class QueueDataSet {
     private static final Logger logger = LoggerFactory.getLogger(QueueDataSet.class);
-    private Map<String, QueueData> map = new HashMap<>();
+    private final Map<String, QueueData> map = new HashMap<>();
 
     /**
      * Add a record to the data set

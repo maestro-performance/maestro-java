@@ -26,7 +26,7 @@ public enum LocationType {
      */
     LAST(3);
 
-    int code;
+    final int code;
 
     /**
      * Constructor

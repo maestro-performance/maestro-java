@@ -47,7 +47,7 @@ public class ReportGenerator {
 
     // Probably this is not the best way to do what I want (to be able to create different types of
     // plotter objects) but it gives the flexibility I need now.
-    private PlotterWrapperRegistry registry = new PlotterWrapperRegistry();
+    private final PlotterWrapperRegistry registry = new PlotterWrapperRegistry();
 
     private final IndexRenderer indexRenderer = new IndexRenderer();
     private final NodeReportRenderer reportRenderer = new NodeReportRenderer();

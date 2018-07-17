@@ -32,9 +32,9 @@ import java.util.Collection;
  */
 public class GroovyClasspathWalker extends DirectoryWalker<File> {
 
-    private static Logger logger = LoggerFactory.getLogger(GroovyClasspathWalker.class);
+    private static final Logger logger = LoggerFactory.getLogger(GroovyClasspathWalker.class);
 
-    private GroovyClassLoader loader;
+    private final GroovyClassLoader loader;
 
     public GroovyClasspathWalker(final GroovyClassLoader loader) {
         this.loader = loader;

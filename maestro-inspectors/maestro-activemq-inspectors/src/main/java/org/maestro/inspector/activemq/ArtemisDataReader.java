@@ -41,7 +41,7 @@ public class ArtemisDataReader {
     private static final Logger logger = LoggerFactory.getLogger(ArtemisDataReader.class);
     private final DefaultJolokiaParser defaultJolokiaParser = new DefaultJolokiaParser();
 
-    private J4pClient j4pClient;
+    private final J4pClient j4pClient;
 
     public ArtemisDataReader(J4pClient j4pClient) {
         this.j4pClient = j4pClient;

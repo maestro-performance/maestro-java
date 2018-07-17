@@ -16,7 +16,7 @@ import java.io.Reader;
 public class RouterLinkReader extends CsvReader<RouterLinkDataSet> {
     private static final Logger logger = LoggerFactory.getLogger(RouterLinkReader.class);
 
-    private RouterLinkProcessor routerLinkProcessor;
+    private final RouterLinkProcessor routerLinkProcessor;
 
     public RouterLinkReader() {
         this.routerLinkProcessor = new RouterLinkProcessor();
