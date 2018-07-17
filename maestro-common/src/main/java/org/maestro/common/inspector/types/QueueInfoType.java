@@ -25,7 +25,7 @@ import java.util.Map;
 public interface QueueInfoType {
     /**
      * Get the queue properties
-     * @return
+     * @return the queue properties
      */
     Map<String, Object> getQueueProperties();
 }

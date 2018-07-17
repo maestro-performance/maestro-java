@@ -48,6 +48,7 @@ public class MaestroDataServer implements Runnable {
     /**
      * Constructor
      * @param logDir log directory to serve
+     * @param host the hostname to bind this data server to or null for auto-detection or use the one from the config
      */
     public MaestroDataServer(final File logDir, final String host) {
         this.logDir = logDir;
@@ -85,7 +86,7 @@ public class MaestroDataServer implements Runnable {
      * Adds a new context to be served via data server
      * @param contextPath the context path (ie.: /path/to/file)
      * @param location the location to serve
-     * @throws Exception
+     * @throws Exception on multiple circumstances if unable to add the context root
      */
     public void addContext(final String contextPath, final String location) throws Exception {
         logger.debug("Serving files from location {} on context {}", location, contextPath);

@@ -29,7 +29,7 @@ public interface TestExecutor {
 
     /**
      * Gets the amount of time (in milliseconds) to wait for the SUT to cool down
-     * @return
+     * @return the cool down period in milliseconds
      */
     long getCoolDownPeriod();
 }

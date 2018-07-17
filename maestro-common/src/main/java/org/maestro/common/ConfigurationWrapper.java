@@ -43,8 +43,8 @@ public class ConfigurationWrapper {
 	 * 			  The configuration directory containing the configuration file
 	 * @param fileName
 	 *            The name of the configuration file
-	 * @throws FileNotFoundException
-	 * @throws ConfigurationException
+	 * @throws FileNotFoundException If the file does not exist
+	 * @throws ConfigurationException if the configuration file contains errors
 	 */
 	public static void initConfiguration(final String configDir,
 			final String fileName) throws FileNotFoundException,

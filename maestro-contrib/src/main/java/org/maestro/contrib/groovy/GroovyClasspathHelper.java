@@ -54,6 +54,7 @@ public class GroovyClasspathHelper {
     /**
      * Adds a file or directory to the classpath
      * @param file the file object pointing to the file or directory
+     * @throws IOException for all sorts of I/O errors
      */
     public void addClasspath(final File file) throws IOException {
         if (file.exists()) {

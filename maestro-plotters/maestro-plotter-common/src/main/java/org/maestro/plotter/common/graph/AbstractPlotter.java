@@ -53,7 +53,7 @@ public abstract class AbstractPlotter<T> {
 
     /**
      * Gets the output width
-     * @return
+     * @return the output width
      */
     public int getOutputWidth() {
         return outputWidth;
@@ -70,7 +70,7 @@ public abstract class AbstractPlotter<T> {
 
     /**
      * Gets the output height
-     * @return
+     * @return the output height
      */
     public int getOutputHeight() {
         return outputHeight;
@@ -86,13 +86,17 @@ public abstract class AbstractPlotter<T> {
     }
 
 
+    /**
+     * Checks whether the grid lines are set to visible or not
+     * @return true if visible or false otherwise
+     */
     public boolean isPlotGridLinesVisible() {
         return plotGridLinesVisible;
     }
 
     /**
      * Get the chart properties
-     * @return
+     * @return The chart properties object
      */
     public ChartProperties getChartProperties() {
         return chartProperties;
@@ -100,7 +104,7 @@ public abstract class AbstractPlotter<T> {
 
     /**
      * Set the chart properties
-     * @param chartProperties
+     * @param chartProperties the chart properties object
      */
     public void setChartProperties(ChartProperties chartProperties) {
         this.chartProperties = chartProperties;
@@ -174,6 +178,7 @@ public abstract class AbstractPlotter<T> {
 
         return chart;
     }
+
 
     abstract public void plot(final T reportData, final File outputFile) throws MaestroException;
 }

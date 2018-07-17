@@ -33,7 +33,7 @@ public class MemoryAreasDataSet {
 
     /**
      * Add a record to the data set
-     * @param memoryAreasRecord
+     * @param memoryAreasRecord memory areas record
      */
     public void add(final MemoryAreasRecord memoryAreasRecord) {
         MemoryAreasData memoryAreasData = map.get(memoryAreasRecord.getName());
@@ -49,7 +49,7 @@ public class MemoryAreasDataSet {
 
     /**
      * Get all records
-     * @return
+     * @return a map containing all the records in this set
      */
     @PropertyProvider(name="")
     public Map<String, MemoryAreasData> getMap() {

@@ -62,7 +62,7 @@ public class QueueData implements ReportData {
 
     /**
      * Number of records
-     * @return
+     * @return the number of samples/records in the data set
      */
     public int getNumberOfSamples() {
         return recordSet.size();

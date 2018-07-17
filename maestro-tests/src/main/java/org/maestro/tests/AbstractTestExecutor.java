@@ -58,7 +58,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     /**
      * Start connected peers
-     * @throws MaestroConnectionException
+     * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
     protected void startServices() throws MaestroConnectionException {
         maestro.startReceiver();
@@ -68,7 +68,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     /**
      * Start connected peers
      * @param inspectorName the name of the inspector to use
-     * @throws MaestroConnectionException
+     * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
     protected void startServices(final String inspectorName) throws MaestroConnectionException {
         maestro.startInspector(inspectorName);
@@ -78,7 +78,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     /**
      * Stop connected peers
-     * @throws MaestroConnectionException
+     * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
     protected void stopServices() throws MaestroConnectionException {
         maestro.stopSender();
@@ -89,8 +89,8 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     /**
      * Try to guess the number of connected peers
      * @return the number of connected peers (best guess)
-     * @throws MaestroConnectionException
-     * @throws InterruptedException
+     * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
+     * @throws InterruptedException if interrupted
      */
     protected int getNumPeers() throws MaestroConnectionException, InterruptedException {
         int numPeers = 0;
@@ -115,9 +115,10 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     /**
      * Try to guess the number of connected peers
+     * @param types A variable argument list of peer types to count
      * @return the number of connected peers (best guess)
-     * @throws MaestroConnectionException
-     * @throws InterruptedException
+     * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
+     * @throws InterruptedException if interrupted
      */
     protected int getNumPeers(String ...types) throws MaestroConnectionException, InterruptedException {
         logger.debug("Collecting responses to ensure topic is clean prior to pinging nodes");
@@ -153,8 +154,8 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     /**
      * Resolve the data servers connected to the test cluster
-     * @throws MaestroConnectionException
-     * @throws InterruptedException
+     * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
+     * @throws InterruptedException if interrupted
      */
     protected void resolveDataServers() throws MaestroConnectionException, InterruptedException {
         logger.debug("Collecting responses to ensure topic is clean prior to collecting data servers");

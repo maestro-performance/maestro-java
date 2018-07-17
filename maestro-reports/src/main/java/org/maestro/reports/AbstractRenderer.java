@@ -95,7 +95,7 @@ public abstract class AbstractRenderer {
      * @param path the path to copy to
      * @param resource the resource name
      * @param destinationName the destination name
-     * @throws IOException
+     * @throws IOException on multiple I/O related errors
      */
     protected void copyResources(final File path, final String resource, final String destinationName) throws IOException {
         InputStream inputStream = null;

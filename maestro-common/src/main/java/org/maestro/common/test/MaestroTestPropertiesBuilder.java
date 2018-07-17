@@ -16,7 +16,7 @@ public class MaestroTestPropertiesBuilder {
      * Build the MaestroTestProperties object
      * @param directory the directory containing the properties file
      * @return An instance of MaestroTestProperties or null if unable to determine the appropriate
-     * @throws IOException
+     * @throws IOException on I/O errors (ie.: unable to read the properties file)
      */
     public static MaestroTestProperties build(final File directory) throws IOException {
         final File testPropertiesFile = new File(directory, TestProperties.FILENAME);

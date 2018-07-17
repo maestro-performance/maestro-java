@@ -34,9 +34,6 @@ import java.net.URISyntaxException;
 
 /**
  * Implements the download function.
- *
- *
- *
  */
 public class Downloader {
 
@@ -132,6 +129,7 @@ public class Downloader {
 	/**
 	 * Download a file
 	 * @param url the URL to the file
+	 * @param destDir destination directory
 	 * @param overwrite whether or not to overwrite existent files
 	 * @throws ResourceExchangeException if unable to download the file
 	 */
@@ -188,6 +186,7 @@ public class Downloader {
 	/**
 	 * Download a file overwriting existent ones
 	 * @param url the URL to the file
+	 * @param destDir destination directory
 	 * @throws ResourceExchangeException if unable to download the file
 	 */
 	public static void download(final String url, final String destDir) throws ResourceExchangeException {

@@ -96,10 +96,10 @@ public class MaestroTopics {
      * Returns the full list of topics for a peer including the public and private topics (those that are specific
      * to that peer)
      * @param publicTopics The topics that are public to all peers
-     * @param clientName
-     * @param host
-     * @param id
-     * @return
+     * @param clientName the client name
+     * @param host the hostname for the peer
+     * @param id the peer ID
+     * @return an array with the topics for the given peer
      */
     public static String[] peerTopics(final String[] publicTopics, final String clientName, final String host,
                                       final String id) {
@@ -118,9 +118,9 @@ public class MaestroTopics {
 
     /**
      * Get the peer specific topic by name and host
-     * @param clientName
-     * @param host
-     * @return
+     * @param clientName the client name
+     * @param host the hostname for the peer
+     * @return The peer-specific topic (for that client name)
      */
     public static String peerTopic(final String clientName, final String host) {
         return PEER_TOPIC + "/by-name/" + host + "/" + clientName;
@@ -129,8 +129,8 @@ public class MaestroTopics {
 
     /**
      * Get the peer specific topic by id
-     * @param id
-     * @return
+     * @param id the peer id
+     * @return The peer-specific topic (for that client name)
      */
     public static String peerTopic(final String id) {
         return PEER_TOPIC + "/by-id/" + id;

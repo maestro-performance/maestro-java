@@ -71,6 +71,7 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
      * It is the single consumer channel that emit event of the worker.
      * <p>
      * It can be {@code null} if not emission is supported.
+     * @return The one-to-one channel used for statistics communication
      */
     default OneToOneWorkerChannel workerChannel() {
         return null;

@@ -27,7 +27,7 @@ import java.io.OutputStream;
 /**
  * Writes the latency data in the HdrHistogram data format.
  *
- * @see <a href="https://github.com/HdrHistogram/HdrHistogram/">HdrHistogram</a> documentation
+ * @see <a href="https://github.com/HdrHistogram/HdrHistogram">HdrHistogram</a>
  */
 public final class LatencyWriter implements AutoCloseable {
 
@@ -38,13 +38,17 @@ public final class LatencyWriter implements AutoCloseable {
      * Constructor
      *
      * @param path file path
-     * @throws IOException
+     * @throws IOException on I/O errors
      */
     public LatencyWriter(final File path) throws IOException {
         out = new FileOutputStream(path);
         logWriter = new HistogramLogWriter(this.out);
     }
 
+    /**
+     * Writes the legend for the HDR file
+     * @param startedEpochMillis the time the test started (in milliseconds from epoch)
+     */
     public void outputLegend(long startedEpochMillis) {
         logWriter.outputComment("[mpt]");
         logWriter.outputLogFormatVersion();
@@ -52,6 +56,10 @@ public final class LatencyWriter implements AutoCloseable {
         logWriter.outputLegend();
     }
 
+    /**
+     * Sets up the output interval histogram
+     * @param histogram the output interval histogram
+     */
     public void outputIntervalHistogram(EncodableHistogram histogram) {
         logWriter.outputIntervalHistogram(histogram);
     }

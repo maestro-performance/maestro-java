@@ -192,7 +192,9 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
 
     /**
      * Sends log files via Maestro broker
-     * @param logFile
+     * @param logFile the log file to send
+     * @param locationType the location type
+     * @param hash the hash for the file being sent
      */
     public void logResponse(final File logFile, final LocationType locationType, final String hash) {
         LogResponse logResponse = new LogResponse();

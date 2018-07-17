@@ -24,6 +24,9 @@ public interface ReceiverClient extends Client {
 
     /**
      * Returns the epoch micros of the current received message or {@link #noMessagePayload()} if isn't received any message.
+     * @param acknowledge the number of messages to receive before sending the ACK (when applicable)
+     * @return the epoch micros of the current received message or {@link #noMessagePayload()} if isn't received any message.
+     * @throws Exception client specific exceptions
      */
     long receiveMessages(int acknowledge) throws Exception;
 }

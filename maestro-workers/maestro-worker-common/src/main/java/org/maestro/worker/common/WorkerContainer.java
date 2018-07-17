@@ -53,7 +53,8 @@ public final class WorkerContainer {
 
     /**
      * Gets and instance of the container
-     * @return
+     * @param endpoint the maestro receiver endpoint
+     * @return the instance of the container
      */
     public synchronized static WorkerContainer getInstance(MaestroReceiver endpoint) {
         if (instance == null) {
@@ -75,7 +76,9 @@ public final class WorkerContainer {
     /**
      * Start the execution of the workers for a predefined class
      * @param clazz The class associated with the workers
+     * @param workers The collection to contain the workers
      * @param onWorkersStopped callback that will be called when the workers will stop
+     * @param evaluator The evaluator that is run along w/ the worker watchdog (ie.: to evaluate the FCL/latency)
      * @throws IllegalAccessException if unable to access the worker constructor
      * @throws InstantiationException if unable to instantiate the worker
      */
@@ -141,7 +144,7 @@ public final class WorkerContainer {
 
     /**
      * Checks whether the test is in progress or not
-     * @return
+     * @return true if a test is in progress or false otherwise
      */
     public boolean isTestInProgress() {
         if (!watchdogRunning()) {

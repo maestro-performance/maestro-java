@@ -21,7 +21,7 @@ import org.maestro.plotter.common.ReportData;
 
 /**
  * A default histogram plotter
- * @param <T>
+ * @param <T> ReportData type
  */
 public abstract class DefaultHistogramPlotter<T extends ReportData> extends AbstractPlotter<T> {
 

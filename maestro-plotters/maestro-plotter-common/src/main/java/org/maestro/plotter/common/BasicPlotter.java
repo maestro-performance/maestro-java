@@ -25,11 +25,21 @@ import org.maestro.plotter.common.properties.PropertyWriter;
 import java.io.File;
 import java.io.IOException;
 
+/**
+ * Basic/Common plotting class
+ * @param <Y> Reader type
+ * @param <K> Plotter type
+ */
 public class BasicPlotter<Y extends ReportReader, K extends AbstractPlotter> {
 
     private Y reader;
     private K plotter;
 
+    /**
+     * Constructor
+     * @param reader data reader object
+     * @param plotter data plotter object
+     */
     public BasicPlotter(Y reader, K plotter) {
         this.reader = reader;
         this.plotter = plotter;
@@ -38,10 +48,11 @@ public class BasicPlotter<Y extends ReportReader, K extends AbstractPlotter> {
 
     /**
      * A basic plotter wrapping logic
-     * @param filename
-     * @param outputFile
-     * @throws MaestroException
-     * @throws IncompatibleDataSet
+     * @param filename The source filename to plot
+     * @param outputFile The output filename (it: the images file)
+     * @param propertiesFile An optional plotting properties file
+     * @throws MaestroException Wrapping for I/O errors
+     * @throws IncompatibleDataSet If the data set is incompatible or invalid
      */
     public void plot(final File filename, final File outputFile, final File propertiesFile) throws MaestroException {
         try {

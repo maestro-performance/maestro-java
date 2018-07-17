@@ -27,6 +27,7 @@ public class ResourceExchangeException extends Exception {
      * Constructor
      *
      * @param message error message
+     * @param url URL that caused the exception
      * @param t       root cause
      */
     public ResourceExchangeException(final String message, final String url, Throwable t) {
@@ -39,6 +40,8 @@ public class ResourceExchangeException extends Exception {
      * Constructor
      *
      * @param message error message
+     * @param url URL that caused the exception
+     * @param code error code
      */
     public ResourceExchangeException(final String message, final String url, final int code) {
         super(message);
@@ -52,6 +55,7 @@ public class ResourceExchangeException extends Exception {
      * Constructor
      *
      * @param message error message
+     * @param url URL that caused the exception
      */
     public ResourceExchangeException(final String message, final String url) {
         super(message);
@@ -59,10 +63,19 @@ public class ResourceExchangeException extends Exception {
         this.url = url;
     }
 
+    /**
+     * Get the error code
+     * @return the error code
+     */
     public int getCode() {
         return code;
     }
 
+
+    /**
+     * Get the URL that caused the exception
+     * @return the URL as a string
+     */
     public String getUrl() {
         return url;
     }

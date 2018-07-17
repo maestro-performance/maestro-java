@@ -32,10 +32,10 @@ public class ManagementInterface {
     private ManagementInterface() {}
 
     /**
-     * Setup the management interface when provided
-     * @param managementInterfaceUrl
-     * @param inspectorName
-     * @param testProfile
+     * Setups the management interface when provided
+     * @param managementInterfaceUrl the URL for the management interface
+     * @param inspectorName the name of the inspector to use
+     * @param testProfile the test profile
      */
     public static void setupInterface(final String managementInterfaceUrl, final String inspectorName,
                                final AbstractTestProfile testProfile)  {
@@ -56,8 +56,8 @@ public class ManagementInterface {
 
     /**
      * Setup the report resolver for the management interface (when provided)
-     * @param inspectorName
-     * @param reportsDownloader
+     * @param inspectorName the name of the inspector to use
+     * @param reportsDownloader the reports downloader in use for the test
      */
     public static void setupResolver(final String inspectorName, final ReportsDownloader reportsDownloader) {
         if (inspectorName == null) {

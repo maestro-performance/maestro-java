@@ -44,7 +44,7 @@ public interface MaestroNote {
 
     /**
      * Converts the note to string for debugging purposes
-     * @return
+     * @return the note in String format
      */
     String toString();
 
@@ -59,7 +59,7 @@ public interface MaestroNote {
      * in a single exchange. The data navigation is done internally
      * whenever the pack method is called.
      * This should repeat until it returns false
-     * @return
+     * @return true if there's a subsequent note to be processed or false otherwise
      */
     default boolean hasNext() {
         return false;

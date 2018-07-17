@@ -25,7 +25,7 @@ import java.util.Map;
 public interface OSInfoType {
     /**
      * Get the OS properties as a map
-     * @return
+     * @return the OS properties as a map
      */
     Map<String, Object> getOsProperties();
 }

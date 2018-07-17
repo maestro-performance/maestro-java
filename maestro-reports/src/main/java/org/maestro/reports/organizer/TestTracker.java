@@ -24,7 +24,7 @@ public class TestTracker {
 
     /**
      * The test number as a String
-     * @return
+     * @return gets the test number as a String
      */
     public String currentTestString() {
         return java.lang.Integer.toString(currentTest);
