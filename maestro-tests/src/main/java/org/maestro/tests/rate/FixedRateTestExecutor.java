@@ -237,9 +237,9 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
 
             if (totalNotifications > 0) {
                 if (failedNotifications > 0) {
-                    logger.info("Test {} completed unsuccessfully", (warmUp ? "warm-up" : ""));
+                    logger.info("Test {} completed unsuccessfully", (warmUp ? "warm-up" : "run"));
                 } else {
-                    logger.info("Test {} completed successfully", (warmUp ? "warm-up" : ""));
+                    logger.info("Test {} completed successfully", (warmUp ? "warm-up" : "run"));
                     return true;
                 }
             }
