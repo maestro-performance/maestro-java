@@ -72,7 +72,6 @@ public class MaestroExporter {
         abnormal = Counter.build().name("maestro_peer_abnormal_disconnect")
                 .help("Abnormal disconnect count")
                 .register();
-
     }
 
     public MaestroExporter(final String maestroUrl) throws MaestroException {
@@ -154,7 +153,13 @@ public class MaestroExporter {
             }
         }
         finally {
+            if (maestro != null) {
+                logger.info("Stopping Maestro client");
+                maestro.stop();
+            }
+
             if (server != null) {
+                logger.info("Stopping HTTP server");
                 server.stop();
             }
         }
