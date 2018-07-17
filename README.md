@@ -47,6 +47,12 @@ Components: Inspectors
 Documentation about the Inspectors is available [here](extra/doc/Inspectors.md).
 
 
+Components: Exporter (Monitoring)
+---- 
+
+Some tips and tricks for monitoring a Maestro test cluster are available [here](extra/doc/Monitoring.md).
+
+
 Demos
 ---- 
 
@@ -57,3 +63,4 @@ Development
 ---- 
 
 Some tips and tricks for developing and debugging Maestro are available [here](extra/doc/Development.md).
+
