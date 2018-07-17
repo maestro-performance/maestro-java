@@ -16,7 +16,7 @@ Add this to your `prometheus.yml` file:
 ```  - job_name: 'maestro'
        scrape_interval: "15s"
        static_configs:
-         - targets: ["maestro.exporter.host.com:9200"]
+         - targets: ["maestro.exporter.host.com:9120"]
 ```
 
 
