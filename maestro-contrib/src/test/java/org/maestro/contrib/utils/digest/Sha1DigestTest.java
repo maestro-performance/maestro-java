@@ -25,7 +25,6 @@ import java.net.URL;
 import org.junit.Test;
 
 /**
- * @author Otavio R. Piske <angusyoung@gmail.com>
  *
  */
 public class Sha1DigestTest {
