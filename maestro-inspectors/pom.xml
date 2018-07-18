@@ -21,7 +21,7 @@
     <parent>
         <groupId>org.maestro</groupId>
         <artifactId>maestro-java</artifactId>
-        <version>1.3.3-SNAPSHOT</version>
+        <version>1.3.3</version>
     </parent>
 
     <artifactId>maestro-inspectors</artifactId>
