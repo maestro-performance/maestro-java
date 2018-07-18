@@ -35,7 +35,7 @@ import org.maestro.client.notes.PingResponse
  */
 class PingProcessor extends MaestroNoteProcessor {
     @Override
-    protected void processPingResponse(PingResponse note) {
+    protected boolean processPingResponse(PingResponse note) {
         println  "Elapsed time from " + note.getName() + ": " + note.getElapsed() + " ms"
     }
 }
