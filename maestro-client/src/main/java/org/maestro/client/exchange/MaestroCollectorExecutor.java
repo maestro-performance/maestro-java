@@ -40,8 +40,7 @@ public class MaestroCollectorExecutor extends AbstractMaestroExecutor {
 
         logger.trace("Created a new maestro collector executor");
 
-        getMaestroPeer().connect();
-        getMaestroPeer().subscribe(MaestroTopics.MAESTRO_TOPICS);
+        super.start(MaestroTopics.MAESTRO_TOPICS);
     }
 
 
