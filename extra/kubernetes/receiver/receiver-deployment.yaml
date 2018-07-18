@@ -45,7 +45,7 @@ spec:
               name: config-store
       containers:
         - name: receiver
-          image: maestroperf/maestro-receiver:1.3.2
+          image: maestroperf/maestro-receiver:1.3.3
           env:
             - name: MAESTRO_BROKER
               value: mqtt://broker
