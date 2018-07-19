@@ -25,5 +25,5 @@ public interface MaestroReceiverEventListener {
 
     void handle(StartReceiver note);
 
-    void handle(StopReceiver note);
+    void handle(StopWorker note);
 }

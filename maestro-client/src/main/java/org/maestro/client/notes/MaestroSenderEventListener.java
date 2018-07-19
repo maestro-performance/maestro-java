@@ -25,5 +25,5 @@ public interface MaestroSenderEventListener {
 
     void handle(StartSender note);
 
-    void handle(StopSender note);
+    void handle(StopWorker note);
 }

@@ -382,7 +382,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
     public void stopSender() throws MaestroConnectionException {
-        StopSender maestroNote = new StopSender();
+        StopWorker maestroNote = new StopWorker();
 
         maestroClient.publish(MaestroTopics.SENDER_DAEMONS, maestroNote);
     }
@@ -403,7 +403,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
     public void stopReceiver() throws MaestroConnectionException {
-        StopReceiver maestroNote = new StopReceiver();
+        StopWorker maestroNote = new StopWorker();
 
         maestroClient.publish(MaestroTopics.RECEIVER_DAEMONS, maestroNote);
     }

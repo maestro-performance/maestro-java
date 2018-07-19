@@ -17,19 +17,21 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageUnpacker;
 
-public class StartReceiver extends MaestroRequest<MaestroReceiverEventListener> {
+import java.io.IOException;
+
+public class StartReceiver extends StartWorker<MaestroReceiverEventListener> {
     public StartReceiver() {
         super(MaestroCommand.MAESTRO_NOTE_START_RECEIVER);
     }
 
-    @Override
-    public void notify(MaestroReceiverEventListener visitor) {
-        visitor.handle(this);
+    public StartReceiver(final MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_START_RECEIVER, unpacker);
     }
 
     @Override
-    public String toString() {
-        return "StartReceiver{} " + super.toString();
+    public void notify(final MaestroReceiverEventListener visitor) {
+        visitor.handle(this);
     }
 }

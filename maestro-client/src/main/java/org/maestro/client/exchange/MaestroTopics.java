@@ -71,6 +71,11 @@ public class MaestroTopics {
     public final static String[] MAESTRO_TOPICS = {MAESTRO_TOPIC, NOTIFICATION_TOPIC};
 
     /**
+     * Generic topics for workers
+     */
+    public final static String[] MAESTRO_WORKER_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC};
+
+    /**
      * These topics are the ones subscribed by a Maestro sender
      */
     public final static String[] MAESTRO_SENDER_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC, SENDER_DAEMONS};

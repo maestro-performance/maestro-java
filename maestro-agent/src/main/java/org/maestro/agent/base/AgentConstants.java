@@ -56,9 +56,7 @@ class AgentConstants {
 
     static final String STOP_INSPECTOR = "stopinspector";
 
-    static final String STOP_RECEIVER = "stopreceiver";
-
-    static final String STOP_SENDER = "stopsender";
+    static final String STOP_WORKER = "stopworker";
 
     static final String START_AGENT = "startagent";
 

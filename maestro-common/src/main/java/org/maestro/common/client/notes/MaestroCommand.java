@@ -22,10 +22,9 @@ import org.slf4j.LoggerFactory;
 public enum MaestroCommand {
     /** Receiver execution **/
     MAESTRO_NOTE_START_RECEIVER(0),
-    MAESTRO_NOTE_STOP_RECEIVER(1),
+    MAESTRO_NOTE_STOP_WORKER(1),
     /** Sender execution */
     MAESTRO_NOTE_START_SENDER(2),
-    MAESTRO_NOTE_STOP_SENDER(3),
     /** Inspector execution **/
     MAESTRO_NOTE_START_INSPECTOR(4),
     MAESTRO_NOTE_STOP_INSPECTOR(5),
@@ -67,9 +66,8 @@ public enum MaestroCommand {
     public static MaestroCommand from(long value) {
         switch ((int) value) {
             case 0: return MAESTRO_NOTE_START_RECEIVER;
-            case 1: return MAESTRO_NOTE_STOP_RECEIVER;
+            case 1: return MAESTRO_NOTE_STOP_WORKER;
             case 2: return MAESTRO_NOTE_START_SENDER;
-            case 3: return MAESTRO_NOTE_STOP_SENDER;
             case 4: return MAESTRO_NOTE_START_INSPECTOR;
             case 5: return MAESTRO_NOTE_STOP_INSPECTOR;
             case 6: return MAESTRO_NOTE_FLUSH;

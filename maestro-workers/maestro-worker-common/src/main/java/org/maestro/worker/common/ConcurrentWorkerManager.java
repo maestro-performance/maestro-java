@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Objects;
 
@@ -43,11 +44,12 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
     private final WorkerContainer container;
-    private final Class<MaestroWorker> workerClass;
     private final File logDir;
     private Thread latencyWriterThread;
     private Thread rateWriterThread;
     private LatencyEvaluator latencyEvaluator;
+
+    private final HashMap<String, String> workersMap = new HashMap<>();
 
     static {
         TIMEOUT_STOP_WORKER_MILLIS = config.getLong("maestro.worker.stop.timeout", 1000);
@@ -59,15 +61,17 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
      * @param role Worker Role
      * @param host hostname for the worker
      * @param logDir test log directory
-     * @param workerClass the class for the worker
      * @param dataServer the data server instance
      */
     public ConcurrentWorkerManager(final String maestroURL, final String role, final String host, final File logDir,
-                                   final Class<MaestroWorker> workerClass, final MaestroDataServer dataServer) {
+                                   final MaestroDataServer dataServer) {
         super(maestroURL, role, host, dataServer);
 
-        this.container = WorkerContainer.getInstance();
-        this.workerClass = workerClass;
+        this.container = WorkerContainer.getInstance(getClient());
+
+        workersMap.put("JmsSender", "org.maestro.worker.jms.JMSSenderWorker");
+        workersMap.put("JmsReceiver", "org.maestro.worker.jms.JMSReceiverWorker");
+
         this.logDir = logDir;
     }
 
@@ -76,7 +80,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
      * Starts the workers and add them to a container
      * @return true if started correctly or false otherwise
      */
-    private boolean doWorkerStart() {
+    private boolean doWorkerStart(final Class<MaestroWorker> workerClass) {
         if (container.isTestInProgress()) {
             logger.warn("Trying to start a new test, but a test execution is already in progress");
             getClient().notifyFailure("Test already in progress");
@@ -303,10 +307,26 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     public void handle(StartReceiver note) {
         logger.info("Start receiver request received");
 
-        if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
-            if (!doWorkerStart()) {
-                logger.warn("::handle {} can't start worker", note);
+        String workerName = note.getWorkerName();
+        String workerClassName = workersMap.get(workerName);
+
+        if (workerClassName == null) {
+            logger.error("Unknown worker class");
+            getClient().replyInternalError();
+        }
+
+        try {
+            Class<MaestroWorker> workerClass = (Class<MaestroWorker>) Class.forName(workerClassName);
+
+            if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
+                if (!doWorkerStart(workerClass)) {
+                    logger.warn("Cannot start worker {}", workerClassName);
+                }
             }
+
+        } catch (ClassNotFoundException e) {
+            logger.error("Class not found: {}", e.getMessage(), e);
+            getClient().replyInternalError();
         }
     }
 
@@ -314,32 +334,34 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     public void handle(StartSender note) {
         logger.info("Start sender request received");
 
-        if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
-            if (!doWorkerStart()) {
-                logger.warn("::handle {} can't start worker", note);
+        String workerName = note.getWorkerName();
+        String workerClassName = workersMap.get(workerName);
+
+        if (workerClassName == null) {
+            logger.error("Unknown worker class");
+            getClient().replyInternalError();
+        }
+
+        try {
+            Class<MaestroWorker> workerClass = (Class<MaestroWorker>) Class.forName(workerClassName);
+
+            if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
+                if (!doWorkerStart(workerClass)) {
+                    logger.warn("Cannot start worker {}", workerClassName);
+                }
             }
+
+        } catch (ClassNotFoundException e) {
+            logger.error("Class not found: {}", e.getMessage(), e);
+            getClient().replyInternalError();
         }
     }
 
     @Override
-    public void handle(StopReceiver note) {
+    public void handle(StopWorker note) {
         logger.info("Stop receiver request received");
 
-        if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
-            container.stop();
-        }
-
-        getClient().replyOk();
-    }
-
-    @Override
-    public void handle(StopSender note) {
-        logger.info("Stop sender request received");
-
-        if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
-            container.stop();
-        }
-
+        container.stop();
         getClient().replyOk();
     }
 

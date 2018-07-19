@@ -150,56 +150,18 @@ public class Main {
             MaestroWorkerExecutor executor;
             AbstractMaestroPeer maestroPeer;
 
-            switch (role) {
-                case "sender": {
-                    Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
+            maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDir, dataServer);
+            executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
-                    maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDir, clazz, dataServer);
-                    executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
+//            String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_SENDER_TOPICS, maestroPeer.getClientName(),
+//                    host, maestroPeer.getId());
 
-                    String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_SENDER_TOPICS, maestroPeer.getClientName(),
-                            host, maestroPeer.getId());
-
-                    executor.start(topics);
-                    executor.run();
-                    break;
-                }
-                case "receiver": {
-                    Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
-
-                    maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDir, clazz, dataServer);
-                    executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
-
-                    String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_RECEIVER_TOPICS, maestroPeer.getClientName(),
-                            host, maestroPeer.getId());
-
-                    executor.start(topics);
-                    executor.run();
-                    break;
-                }
-                case "data-server": {
-                    maestroPeer = new VoidWorkerManager(maestroUrl, role, host, dataServer);
-                    executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
-
-                    String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_RECEIVER_TOPICS, maestroPeer.getClientName(),
-                            host, maestroPeer.getId());
-
-                    executor.start(topics);
-                    executor.run();
-                    break;
-                }
-                default: {
-                    System.err.println("Invalid role name: " + role);
-                    System.exit(1);
-                    break;
-                }
-            }
+            executor.start(MaestroTopics.MAESTRO_WORKER_TOPICS);
+            executor.run();
 
             System.out.println("Finished execution ...");
         } catch (MaestroException e) {
             System.err.println(e.getMessage());
-            e.printStackTrace();
-        } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
 

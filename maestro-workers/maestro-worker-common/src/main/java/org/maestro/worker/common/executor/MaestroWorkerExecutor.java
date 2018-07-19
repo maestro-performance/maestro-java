@@ -40,8 +40,8 @@ public class MaestroWorkerExecutor extends AbstractMaestroExecutor {
     }
 
     public MaestroWorkerExecutor(final String url, final String role, final String host, final File logDir,
-                                 final Class<MaestroWorker> workerClass, final MaestroDataServer dataServer) throws MaestroException {
-        super(new ConcurrentWorkerManager(url, role, host, logDir, workerClass, dataServer));
+                                 final MaestroDataServer dataServer) throws MaestroException {
+        super(new ConcurrentWorkerManager(url, role, host, logDir, dataServer));
 
         initDataServer(dataServer);
     }

@@ -18,9 +18,9 @@ package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
 
-public class StopReceiver extends MaestroRequest<MaestroReceiverEventListener> {
-    public StopReceiver() {
-        super(MaestroCommand.MAESTRO_NOTE_STOP_RECEIVER);
+public class StopWorker extends MaestroRequest<MaestroReceiverEventListener> {
+    public StopWorker() {
+        super(MaestroCommand.MAESTRO_NOTE_STOP_WORKER);
     }
 
     @Override
@@ -30,6 +30,6 @@ public class StopReceiver extends MaestroRequest<MaestroReceiverEventListener> {
 
     @Override
     public String toString() {
-        return "StopReceiver{} " + super.toString();
+        return "StopWorker{} " + super.toString();
     }
 }

@@ -128,20 +128,13 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
 
     /**
      * Stop receiver handler
-     * @param note StopReceiver note
+     * @param note StopWorker note
      */
     @Override
-    public void handle(StopReceiver note) {
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_RECEIVER, note));
+    public void handle(StopWorker note) {
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_WORKER, note));
     }
 
-    /**
-     * Stop sender handler
-     * @param note StopSender note
-     */
-    public void handle(StopSender note) {
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_SENDER, note));
-    }
 
     /**
      * Stats request handler

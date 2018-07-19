@@ -85,9 +85,8 @@ public class MaestroDeserializer {
                 return instance.join(new LogResponse(unpacker));
             }
             case MAESTRO_NOTE_START_RECEIVER:
-            case MAESTRO_NOTE_STOP_RECEIVER:
+            case MAESTRO_NOTE_STOP_WORKER:
             case MAESTRO_NOTE_START_SENDER:
-            case MAESTRO_NOTE_STOP_SENDER:
             case MAESTRO_NOTE_START_INSPECTOR:
             case MAESTRO_NOTE_STOP_INSPECTOR:
             case MAESTRO_NOTE_FLUSH:
@@ -122,14 +121,11 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_START_RECEIVER: {
                 return new StartReceiver();
             }
-            case MAESTRO_NOTE_STOP_RECEIVER: {
-                return new StopReceiver();
+            case MAESTRO_NOTE_STOP_WORKER: {
+                return new StopWorker();
             }
             case MAESTRO_NOTE_START_SENDER: {
                 return new StartSender();
-            }
-            case MAESTRO_NOTE_STOP_SENDER: {
-                return new StopSender();
             }
             case MAESTRO_NOTE_START_INSPECTOR: {
                 return new StartInspector(unpacker);

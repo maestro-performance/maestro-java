@@ -35,18 +35,12 @@ function eerror() {
 }
 
 function start() {
-    if [[ "$MAESTRO_WORKER_ROLE" == "sender" ]] ; then
-        export MAESTRO_WORKER="$MAESTRO_SENDER_WORKER"
-    else
-        export MAESTRO_WORKER="$MAESTRO_RECEIVER_WORKER"
-    fi
-
     if [[ -z "$MAESTRO_LOCAL_HOSTNAME" ]] ; then
         MAESTRO_LOCAL_HOSTNAME=$(hostname -f)
     fi
 
     echo -en "Starting the $MAESTRO_WORKER_ROLE daemon: "
-    nohup "$installdir"/bin/maestro-worker -m "$MAESTRO_BROKER" -w "$MAESTRO_WORKER" -l "$MAESTRO_LOG_DIR" -r "$MAESTRO_WORKER_ROLE" -H "$MAESTRO_LOCAL_HOSTNAME" $@ > /dev/null 2> /dev/null &
+    nohup "$installdir"/bin/maestro-worker -m "$MAESTRO_BROKER" -l "$MAESTRO_LOG_DIR" -H "$MAESTRO_LOCAL_HOSTNAME" $@ > /dev/null 2> /dev/null &
     if [ $? -ne 0 ] ; then
         eerror "failed to daemonize the Maestro worker"
         exit 1

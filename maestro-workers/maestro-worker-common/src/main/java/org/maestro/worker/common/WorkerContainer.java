@@ -42,6 +42,7 @@ public final class WorkerContainer {
     private Thread watchDogThread;
     private LocalDateTime startTime;
     private Evaluator<?> evaluator;
+    private Class<MaestroWorker> workerClass;
 
     private WorkerContainer() {
     }
@@ -79,6 +80,7 @@ public final class WorkerContainer {
     public void start(final Class<MaestroWorker> clazz, Collection<? super MaestroWorker> workers,
                       Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped, Evaluator<?> evaluator)
             throws IllegalAccessException, InstantiationException {
+        this.workerClass = workerClass;
         final int parallelCount = Integer.parseInt(workerOptions.getParallelCount());
         this.workerRuntimeInfos.clear();
         this.evaluator = evaluator;
