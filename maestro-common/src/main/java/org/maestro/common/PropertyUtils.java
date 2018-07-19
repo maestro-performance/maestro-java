@@ -85,7 +85,7 @@ public class PropertyUtils {
         }
 
         String protocol = (String) context.get("protocol");
-        if (protocol.equals("amqps")) {
+        if (protocol != null && protocol.equals("amqps")) {
             context.put("encrypted", "true");
         }
 
