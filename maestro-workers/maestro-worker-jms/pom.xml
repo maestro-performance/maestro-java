@@ -26,7 +26,7 @@
     <artifactId>maestro-worker-jms</artifactId>
 
     <properties>
-        <qpid-jms-client.version>0.27.0</qpid-jms-client.version>
+        <qpid-jms-client.version>0.34.0</qpid-jms-client.version>
         <artemis-jms-client.version>2.4.0</artemis-jms-client.version>
         <activemq-client.version>5.15.2</activemq-client.version>
         <rabbitmq-jms.version>1.8.1</rabbitmq-jms.version>
