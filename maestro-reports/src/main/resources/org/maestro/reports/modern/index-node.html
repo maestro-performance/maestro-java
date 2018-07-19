@@ -158,13 +158,36 @@
 
                                 <tr>
                                     <td>Session Mode</td>
-                                    <td>{{ sessionMode | default ('1') }}</td>
+                                    {% set sessionModeStr = "Auto Acknowledge" %}
+                                    {% if sessionMode == "2" %}
+                                        {% set sessionModeStr = "Client Acknowledge" %}
+                                    {% else %}
+                                        {% if sessionMode == "3" %}
+                                            {% set sessionModeStr = "Dups OK" %}
+                                        {% else %}
+                                            {% if sessionMode == "0" %}
+                                                {% set sessionModeStr = "Session Transacted" %}
+                                            {% endif %}
+                                        {% endif %}
+                                    {% endif %}
+                                    <td>{{ sessionModeStr }}</td>
                                 </tr>
+
+                                {% if sessionMode == "0" %}
+                                <tr>
+                                    <td>Batch Size</td>
+                                    <td>{{ batchAcknowledge | default ('0') }}</td>
+                                </tr>
+                                {% endif %}
+
+                                {% if encrypted == "true" %}
 
                                 <tr>
                                     <td>Encrypted</td>
-                                    <td>{{ encrypted | default ('false') }} (likely client-specific)</td>
+                                    <td>{{ encrypted }} {{ protocol }} </td>
                                 </tr>
+
+                                {% endif %}
 
                                 {% endif %}
                             </tbody>
