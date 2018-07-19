@@ -141,8 +141,10 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
         final SenderClient client = this.clientFactory.get();
         final long id = Thread.currentThread().getId();
+        boolean started = false;
         try {
             doClientStartup(client);
+            started = true;
 
             runLoadLoop(client);
 
@@ -155,7 +157,12 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
         } catch (Exception e) {
-            logger.error("Unable to start the sender worker: {}", e.getMessage(), e);
+            if (!started) {
+                logger.error("Unable to start the sender worker: {}", e.getMessage(), e);
+            }
+            else {
+                logger.error("Unexpected error while running the sender worker: {}", e.getMessage(), e);
+            }
 
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
         } finally {
