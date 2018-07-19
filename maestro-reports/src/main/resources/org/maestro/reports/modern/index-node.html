@@ -140,6 +140,32 @@
                                     <td>Limit Destinations</td>
                                     <td>{{ limitDestinations | default('1') }}</td>
                                 </tr>
+
+                                <tr>
+                                    <td>Durable</td>
+                                    <td>{{ durable | default ('unknown') }}</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Priority</td>
+                                    <td>{{ priority | default ('0') }}</td>
+                                </tr>
+
+                                <tr>
+                                    <td>TTL</td>
+                                    <td>{{ ttl | default ('0') }}</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Session Mode</td>
+                                    <td>{{ sessionMode | default ('1') }}</td>
+                                </tr>
+
+                                <tr>
+                                    <td>Batch ACK</td>
+                                    <td>{{ batchAcknowledge | default ('0') }}</td>
+                                </tr>
+
                                 {% endif %}
                             </tbody>
                         </table>
