@@ -23,6 +23,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.Properties;
 
@@ -45,10 +46,7 @@ public class PropertyUtils {
             try (FileInputStream in = new FileInputStream(testProperties)) {
                 prop.load(in);
 
-                prop.forEach((key, value) -> {
-                    logger.trace("Adding entry {} with value {}", key, value);
-                    context.put((String) key, value);
-                });
+                prop.forEach((key, value) -> addToContext(context, key, value));
             } catch (FileNotFoundException e) {
                 logger.error("File not found error: {}", e.getMessage(), e);
             } catch (IOException e) {
@@ -58,6 +56,26 @@ public class PropertyUtils {
         else {
             logger.debug("There are no properties file at {}", testProperties.getPath());
         }
+    }
+
+    private static void addToContext(Map<String, Object> context, Object key, Object value) {
+        logger.trace("Adding entry {} with value {}", key, value);
+        if (key.equals("brokerUri")) {
+            try {
+                URLQuery urlQuery = new URLQuery((String) value);
+
+                Map<String, String> params = urlQuery.getParams();
+
+                context.putAll(params);
+            } catch (URISyntaxException e) {
+                e.printStackTrace();
+            }
+        }
+        else {
+            context.put((String) key, value);
+        }
+
+
     }
 
 }
