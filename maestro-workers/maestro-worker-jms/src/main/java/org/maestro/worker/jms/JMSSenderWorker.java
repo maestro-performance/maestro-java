@@ -186,6 +186,10 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         final JmsOptions opts = ((JMSClient) client).getOpts();
         final boolean isSessionTransacted = isSessionTransacted(opts);
 
+        if (isSessionTransacted) {
+            logger.info("This test is using transactions");
+        }
+
         while (duration.canContinue(this) && isRunning()) {
             if (intervalInNanos > 0) {
                 final long now = waitNanoInterval(nextFireTime, intervalInNanos);
