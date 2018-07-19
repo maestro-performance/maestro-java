@@ -18,7 +18,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
-import javax.management.MalformedObjectNameException;
 import java.io.File;
 import java.io.IOException;
 import java.time.LocalDateTime;
@@ -106,9 +105,31 @@ public class InterconnectInspector implements MaestroInspector {
         responseConsumer = session.createConsumer(tempDest);
     }
 
+    private void checkCleanupErrorPolicy(final JMSException e) throws JMSException {
+        final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+        final boolean cleanupErrorsIsFailure = config.getBoolean("inspector.cleanup.error.is.failure", false);
+
+        if (cleanupErrorsIsFailure) {
+            throw e;
+        }
+    }
+
     private void closeConnection() throws JMSException {
-        session.close();
-        connection.close();
+        try {
+            session.close();
+        }
+        catch (JMSException e) {
+            logger.warn("Error closing the JMS session: {}", e.getMessage(), e);
+            checkCleanupErrorPolicy(e);
+        }
+
+        try {
+            connection.close();
+        }
+        catch (JMSException e) {
+            logger.warn("Error closing the JMS connection: {}", e.getMessage(), e);
+            checkCleanupErrorPolicy(e);
+        }
     }
 
     /**
