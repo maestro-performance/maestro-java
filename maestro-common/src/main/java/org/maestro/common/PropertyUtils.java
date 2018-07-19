@@ -60,6 +60,15 @@ public class PropertyUtils {
 
     private static void addToContext(Map<String, Object> context, Object key, Object value) {
         logger.trace("Adding entry {} with value {}", key, value);
+
+        /*
+         TODO: review and improve properties processing
+
+         Ideally we should unify this somehow: by picking properties from the URI
+         we are also overwriting previous values saved directly from the backends.
+         IMHO, if possible we should either save everything as a property or just
+         leave the the URI.
+         */
         if (key.equals("brokerUri")) {
             try {
                 URLQuery urlQuery = new URLQuery((String) value);
@@ -73,6 +82,11 @@ public class PropertyUtils {
         }
         else {
             context.put((String) key, value);
+        }
+
+        String protocol = (String) context.get("protocol");
+        if (protocol.equals("amqps")) {
+            context.put("encrypted", "true");
         }
 
 
