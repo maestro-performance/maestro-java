@@ -72,6 +72,18 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         this.epochMicroClock = EpochClocks.exclusiveMicro();
     }
 
+    public String getClientName() {
+        return clientName;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public String getId() {
+        return id;
+    }
+
     public void replyOk() {
         logger.trace("Sending the OK response from {}", this.toString());
         OkResponse okResponse = new OkResponse();

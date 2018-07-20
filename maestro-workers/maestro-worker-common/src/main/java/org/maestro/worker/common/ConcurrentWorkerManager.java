@@ -17,6 +17,7 @@
 package org.maestro.worker.common;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.evaluators.HardLatencyEvaluator;
@@ -268,6 +269,14 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
             setWorkerOptions(new WorkerOptions());
 
+            getClient().unsubscribe(MaestroTopics.RECEIVER_DAEMONS);
+
+            final String topicByName = MaestroTopics.peerTopic(getClientName(), getClient().getHost());
+            getClient().unsubscribe(topicByName);
+
+            final String topicById = MaestroTopics.peerTopic(getId());
+            getClient().unsubscribe(topicById);
+
             workers.clear();
         }
     }
@@ -322,6 +331,15 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
                 if (!doWorkerStart(workerClass)) {
                     logger.warn("Cannot start worker {}", workerClassName);
                 }
+                else {
+                    getClient().subscribe(MaestroTopics.RECEIVER_DAEMONS, 0);
+
+                    final String topicByName = MaestroTopics.peerTopic(getClientName(), getClient().getHost());
+                    getClient().subscribe(topicByName, 0);
+
+                    final String topicById = MaestroTopics.peerTopic(getId());
+                    getClient().subscribe(topicById, 0);
+                }
             }
 
         } catch (ClassNotFoundException e) {
@@ -349,12 +367,23 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
                 if (!doWorkerStart(workerClass)) {
                     logger.warn("Cannot start worker {}", workerClassName);
                 }
+                else {
+                    getClient().subscribe(MaestroTopics.SENDER_DAEMONS, 0);
+
+                    final String topicByName = MaestroTopics.peerTopic(getClientName(), getClient().getHost());
+                    getClient().subscribe(topicByName, 0);
+
+                    final String topicById = MaestroTopics.peerTopic(getId());
+                    getClient().subscribe(topicById, 0);
+                }
             }
 
         } catch (ClassNotFoundException e) {
             logger.error("Class not found: {}", e.getMessage(), e);
             getClient().replyInternalError();
         }
+
+
     }
 
     @Override
