@@ -27,7 +27,6 @@ import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
-import org.maestro.common.exceptions.MaestroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,12 +77,23 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         return id;
     }
 
+    private String getRole() {
+        return "undefined";
+    }
+
+    private String getName() {
+        return "worker";
+    }
+
     public void replyOk() {
         logger.trace("Sending the OK response from {}", this.toString());
         OkResponse okResponse = new OkResponse();
 
-        okResponse.setName("worker@" + host);
+        okResponse.setName(getName());
         okResponse.setId(id);
+
+        okResponse.setRole(getRole());
+        okResponse.setHost(getHost());
 
         try {
             super.publish(MaestroTopics.MAESTRO_TOPIC, okResponse);
@@ -96,8 +106,11 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         logger.trace("Sending the internal error response from {}", this.toString());
         InternalError errResponse = new InternalError();
 
-        errResponse.setName("worker@" + host);
+        errResponse.setName(getName());
         errResponse.setId(id);
+
+        errResponse.setRole(getRole());
+        errResponse.setHost(getHost());
 
         try {
             super.publish(MaestroTopics.MAESTRO_TOPIC, errResponse);
@@ -117,8 +130,11 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         PingResponse response = new PingResponse();
 
         response.setElapsed(TimeUnit.MICROSECONDS.toMillis(elapsedMicros));
-        response.setName("worker@" + host);
+        response.setName(getName());
         response.setId(id);
+
+        response.setRole(getRole());
+        response.setHost(getHost());
 
         super.publish(MaestroTopics.MAESTRO_TOPIC, response);
     }
@@ -129,8 +145,11 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         logger.trace("Sending the test success notification from {}", this.toString());
         TestSuccessfulNotification notification = new TestSuccessfulNotification();
 
-        notification.setName("worker@" + host);
+        notification.setName(getName());
         notification.setId(id);
+
+        notification.setRole(getRole());
+        notification.setHost(getHost());
 
         notification.setMessage(message);
 
@@ -146,8 +165,11 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         logger.trace("Sending the test success notification from {}", this.toString());
         TestFailedNotification notification = new TestFailedNotification();
 
-        notification.setName("worker@" + host);
+        notification.setName(getName());
         notification.setId(id);
+
+        notification.setRole(getRole());
+        notification.setHost(getHost());
 
         notification.setMessage(message);
 
@@ -168,8 +190,11 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
      * @param statsResponse the stats response to publish
      */
     public void statsResponse(final StatsResponse statsResponse) {
-        statsResponse.setName("worker@" + host);
+        statsResponse.setName(getName());
         statsResponse.setId(id);
+
+        statsResponse.setRole(getRole());
+        statsResponse.setHost(getHost());
 
         try {
             super.publish(MaestroTopics.MAESTRO_TOPIC, statsResponse, 0, false);
@@ -184,8 +209,11 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
      * @param getResponse the get response to publish
      */
     public void getResponse(final GetResponse getResponse) {
-        getResponse.setName("worker@" + host);
+        getResponse.setName(getName());
         getResponse.setId(id);
+
+        getResponse.setRole(getRole());
+        getResponse.setHost(getHost());
 
         try {
             super.publish(MaestroTopics.MAESTRO_TOPIC, getResponse, 0, false);
@@ -203,8 +231,11 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     public void logResponse(final File logFile, final LocationType locationType, final String hash) {
         LogResponse logResponse = new LogResponse();
 
-        logResponse.setName("worker@" + host);
+        logResponse.setName(getName());
         logResponse.setId(id);
+
+        logResponse.setRole(getRole());
+        logResponse.setHost(getHost());
 
         logResponse.setLocationType(locationType);
         logResponse.setFile(logFile);
