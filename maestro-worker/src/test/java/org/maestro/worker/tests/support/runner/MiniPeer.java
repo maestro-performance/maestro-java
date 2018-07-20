@@ -65,7 +65,7 @@ public class MiniPeer {
         logDir = new File(logPath);
 
 
-        executor = new MaestroWorkerExecutor(maestroUrl, role, host, logDir, null);
+        executor = new MaestroWorkerExecutor(maestroUrl, host, logDir, null);
 
         if (role.equals("sender")) {
             executor.start(MaestroTopics.MAESTRO_SENDER_TOPICS);

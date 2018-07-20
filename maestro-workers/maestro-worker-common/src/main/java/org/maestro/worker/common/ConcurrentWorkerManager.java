@@ -59,14 +59,13 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     /**
      * Constructor
      * @param maestroURL Maestro URL
-     * @param role Worker Role
      * @param host hostname for the worker
      * @param logDir test log directory
      * @param dataServer the data server instance
      */
-    public ConcurrentWorkerManager(final String maestroURL, final String role, final String host, final File logDir,
+    public ConcurrentWorkerManager(final String maestroURL, final String host, final File logDir,
                                    final MaestroDataServer dataServer) {
-        super(maestroURL, role, host, dataServer);
+        super(maestroURL, host, dataServer);
 
         this.container = WorkerContainer.getInstance(getClient());
 
@@ -271,7 +270,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
             getClient().unsubscribe(MaestroTopics.RECEIVER_DAEMONS);
 
-            final String topicByName = MaestroTopics.peerTopic(getClientName(), getClient().getHost());
+            final String topicByName = MaestroTopics.peerTopic("sender", getClient().getHost());
             getClient().unsubscribe(topicByName);
 
             final String topicById = MaestroTopics.peerTopic(getId());
@@ -334,7 +333,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
                 else {
                     getClient().subscribe(MaestroTopics.RECEIVER_DAEMONS, 0);
 
-                    final String topicByName = MaestroTopics.peerTopic(getClientName(), getClient().getHost());
+                    final String topicByName = MaestroTopics.peerTopic("receiver", getClient().getHost());
                     getClient().subscribe(topicByName, 0);
 
                     final String topicById = MaestroTopics.peerTopic(getId());
@@ -370,7 +369,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
                 else {
                     getClient().subscribe(MaestroTopics.SENDER_DAEMONS, 0);
 
-                    final String topicByName = MaestroTopics.peerTopic(getClientName(), getClient().getHost());
+                    final String topicByName = MaestroTopics.peerTopic("sender", getClient().getHost());
                     getClient().subscribe(topicByName, 0);
 
                     final String topicById = MaestroTopics.peerTopic(getId());
@@ -410,7 +409,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         }
 
         // Explanation: the role is the name as the role (ie: clientName@host)
-        statsResponse.setRole(getClientName());
+        statsResponse.setRole("worker");
 
         LatencyStats latencyStats = container.latencyStats();
         if (latencyStats != null) {

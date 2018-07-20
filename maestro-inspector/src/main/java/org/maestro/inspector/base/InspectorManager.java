@@ -29,7 +29,6 @@ import java.util.HashMap;
 
 public class InspectorManager extends MaestroWorkerManager implements MaestroInspectorEventListener {
     private static final Logger logger = LoggerFactory.getLogger(InspectorManager.class);
-    private static final String INSPECTOR_ROLE = "inspector";
     private Thread inspectorThread;
     private InspectorContainer inspectorContainer;
     private MaestroInspector inspector;
@@ -39,7 +38,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
 
     public InspectorManager(final String maestroURL, final String host, final MaestroDataServer dataServer, final File logDir) throws MaestroException
     {
-        super(maestroURL, INSPECTOR_ROLE, host, dataServer);
+        super(maestroURL, host, dataServer);
 
         this.logDir = logDir;
 

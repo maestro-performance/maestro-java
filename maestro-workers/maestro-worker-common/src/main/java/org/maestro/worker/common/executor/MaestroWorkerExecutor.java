@@ -39,9 +39,9 @@ public class MaestroWorkerExecutor extends AbstractMaestroExecutor {
         initDataServer(dataServer);
     }
 
-    public MaestroWorkerExecutor(final String url, final String role, final String host, final File logDir,
+    public MaestroWorkerExecutor(final String url, final String host, final File logDir,
                                  final MaestroDataServer dataServer) throws MaestroException {
-        super(new ConcurrentWorkerManager(url, role, host, logDir, dataServer));
+        super(new ConcurrentWorkerManager(url, host, logDir, dataServer));
 
         initDataServer(dataServer);
     }

@@ -25,10 +25,10 @@ import org.maestro.worker.common.ds.MaestroDataServer;
  */
 public class VoidWorkerManager extends MaestroWorkerManager {
 
-    public VoidWorkerManager(final String maestroURL, final String role, final String host,
+    public VoidWorkerManager(final String maestroURL, final String host,
                              final MaestroDataServer dataServer) throws MaestroException
     {
-        super(maestroURL, role, host, dataServer);
+        super(maestroURL, host, dataServer);
     }
 
     @Override

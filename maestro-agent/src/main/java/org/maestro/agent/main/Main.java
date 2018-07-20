@@ -129,10 +129,10 @@ public class Main {
             MaestroWorkerExecutor executor;
             AbstractMaestroPeer<MaestroEvent> maestroPeer;
 
-            maestroPeer = new MaestroAgent(maestroUrl, "agent", host, dataServer);
+            maestroPeer = new MaestroAgent(maestroUrl, host, dataServer);
             executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
-            String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_AGENT_TOPICS, maestroPeer.getClientName(),
+            String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_AGENT_TOPICS, "agent",
                     host, maestroPeer.getId());
 
             executor.start(topics);

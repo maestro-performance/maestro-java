@@ -150,11 +150,8 @@ public class Main {
             MaestroWorkerExecutor executor;
             AbstractMaestroPeer maestroPeer;
 
-            maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDir, dataServer);
+            maestroPeer = new ConcurrentWorkerManager(maestroUrl, host, logDir, dataServer);
             executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
-
-//            String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_SENDER_TOPICS, maestroPeer.getClientName(),
-//                    host, maestroPeer.getId());
 
             executor.start(MaestroTopics.MAESTRO_WORKER_TOPICS);
             executor.run();

@@ -67,8 +67,8 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param dataServer data server object
      * @throws MaestroException if unable to create agent instance
      */
-    public MaestroAgent(String maestroURL, String role, String host, MaestroDataServer dataServer) throws MaestroException {
-        super(maestroURL, role, host, dataServer);
+    public MaestroAgent(String maestroURL, String host, MaestroDataServer dataServer) throws MaestroException {
+        super(maestroURL, host, dataServer);
 
         String pathStr = config.getString("maestro.agent.ext.path.override", null);
 

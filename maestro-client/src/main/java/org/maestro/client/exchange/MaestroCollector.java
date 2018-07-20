@@ -36,7 +36,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     private final List<MaestroNoteCallback> callbacks = new LinkedList<>();
 
     public MaestroCollector(final String url) throws MaestroConnectionException {
-        super(url, "maestro-java-collector",MaestroDeserializer::deserialize);
+        super(url, MaestroDeserializer::deserialize);
     }
 
 

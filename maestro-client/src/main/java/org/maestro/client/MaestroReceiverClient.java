@@ -58,22 +58,16 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     private static final Logger logger = LoggerFactory.getLogger(MaestroReceiverClient.class);
 
     private final EpochMicroClock epochMicroClock;
-    private final String clientName;
     private final String host;
     private final String id;
 
-    public MaestroReceiverClient(String url, final String clientName, final String host, final String id) {
+    public MaestroReceiverClient(final String url, final String host, final String id) {
         super(url);
 
-        this.clientName = clientName;
         this.host = host;
         this.id = id;
         //it is supposed to be used just by one thread
         this.epochMicroClock = EpochClocks.exclusiveMicro();
-    }
-
-    public String getClientName() {
-        return clientName;
     }
 
     public String getHost() {
@@ -88,7 +82,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         logger.trace("Sending the OK response from {}", this.toString());
         OkResponse okResponse = new OkResponse();
 
-        okResponse.setName(clientName + "@" + host);
+        okResponse.setName("worker@" + host);
         okResponse.setId(id);
 
         try {
@@ -102,7 +96,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         logger.trace("Sending the internal error response from {}", this.toString());
         InternalError errResponse = new InternalError();
 
-        errResponse.setName(clientName + "@" + host);
+        errResponse.setName("worker@" + host);
         errResponse.setId(id);
 
         try {
@@ -123,7 +117,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         PingResponse response = new PingResponse();
 
         response.setElapsed(TimeUnit.MICROSECONDS.toMillis(elapsedMicros));
-        response.setName(clientName + "@" + host);
+        response.setName("worker@" + host);
         response.setId(id);
 
         super.publish(MaestroTopics.MAESTRO_TOPIC, response);
@@ -135,7 +129,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         logger.trace("Sending the test success notification from {}", this.toString());
         TestSuccessfulNotification notification = new TestSuccessfulNotification();
 
-        notification.setName(clientName + "@" + host);
+        notification.setName("worker@" + host);
         notification.setId(id);
 
         notification.setMessage(message);
@@ -152,7 +146,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         logger.trace("Sending the test success notification from {}", this.toString());
         TestFailedNotification notification = new TestFailedNotification();
 
-        notification.setName(clientName + "@" + host);
+        notification.setName("worker@" + host);
         notification.setId(id);
 
         notification.setMessage(message);
@@ -174,7 +168,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
      * @param statsResponse the stats response to publish
      */
     public void statsResponse(final StatsResponse statsResponse) {
-        statsResponse.setName(clientName + "@" + host);
+        statsResponse.setName("worker@" + host);
         statsResponse.setId(id);
 
         try {
@@ -190,7 +184,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
      * @param getResponse the get response to publish
      */
     public void getResponse(final GetResponse getResponse) {
-        getResponse.setName(clientName + "@" + host);
+        getResponse.setName("worker@" + host);
         getResponse.setId(id);
 
         try {
@@ -209,7 +203,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     public void logResponse(final File logFile, final LocationType locationType, final String hash) {
         LogResponse logResponse = new LogResponse();
 
-        logResponse.setName(clientName + "@" + host);
+        logResponse.setName("worker@" + host);
         logResponse.setId(id);
 
         logResponse.setLocationType(locationType);

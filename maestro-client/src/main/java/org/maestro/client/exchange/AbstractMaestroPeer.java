@@ -43,11 +43,10 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroPeer.class);
 
     private MqttClient inboundEndPoint;
-    protected String clientName;
     protected String id;
     private final MaestroNoteDeserializer<? extends T> deserializer;
 
-    public AbstractMaestroPeer(final String url, final String clientName, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
+    public AbstractMaestroPeer(final String url, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
 
         String adjustedUrl = URLUtils.sanitizeURL(url);
 
@@ -56,10 +55,9 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
         MemoryPersistence memoryPersistence = new MemoryPersistence();
 
         this.id = clientId;
-        this.clientName = clientName;
 
         try {
-            inboundEndPoint = new MqttClient(adjustedUrl, clientName + ".inbound." + clientId, memoryPersistence);
+            inboundEndPoint = new MqttClient(adjustedUrl, "maestro.inbound." + clientId, memoryPersistence);
             inboundEndPoint.setCallback(this);
 
             // Runtime.getRuntime().addShutdownHook(new Thread(this::terminate));
@@ -75,14 +73,6 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
 
     private void terminate() {
         MqttUtil.terminate(inboundEndPoint);
-    }
-
-    public String getClientName() {
-        return clientName;
-    }
-
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
     }
 
     public String getId() {

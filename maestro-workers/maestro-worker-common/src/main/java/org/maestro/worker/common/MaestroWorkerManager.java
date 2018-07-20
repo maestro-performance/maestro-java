@@ -52,15 +52,14 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     /**
      * Constructor
      * @param maestroURL Maestro broker URL
-     * @param role Worker role
      * @param host hostname
      * @param dataServer the data server instance
      */
-    public MaestroWorkerManager(final String maestroURL, final String role, final String host, final MaestroDataServer dataServer) {
-        super(maestroURL, role, MaestroDeserializer::deserializeEvent);
+    public MaestroWorkerManager(final String maestroURL, final String host, final MaestroDataServer dataServer) {
+        super(maestroURL, MaestroDeserializer::deserializeEvent);
 
         logger.debug("Creating the receiver client");
-        client = new MaestroReceiverClient(maestroURL, clientName, host, id);
+        client = new MaestroReceiverClient(maestroURL, host, id);
 
         workerOptions = new WorkerOptions();
         this.dataServer = dataServer;
@@ -130,7 +129,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         }
 
         // Explanation: the role is the name as the role (ie: clientName@host)
-        statsResponse.setRole(getClientName());
+        statsResponse.setRole("worker");
         statsResponse.setLatency(0);
         statsResponse.setRate(0);
         statsResponse.setRoleInfo("");
