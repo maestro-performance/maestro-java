@@ -136,10 +136,8 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
         final ReceiverClient client = clientFactory.get();
         final long id = Thread.currentThread().getId();
-        boolean started = false;
         try {
             doClientStartup(client);
-            started = true;
 
             runReceiveLoop(client);
 
@@ -153,7 +151,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
         }
         catch (Exception e) {
-            if (!started) {
+            if (!workerStateInfo.isRunning()) {
                 logger.error("Unable to start the receiver worker: {}", e.getMessage(), e);
             }
             else {
@@ -214,10 +212,10 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
     private void doClientStartup(final ReceiverClient client) throws Exception {
         client.setUrl(url);
-
-        workerStateInfo.setState(true, null, null);
         client.setNumber(number);
         client.start();
+
+        workerStateInfo.setState(true, null, null);
     }
 
     private boolean isClientAcknowledge(JmsOptions opts) {
