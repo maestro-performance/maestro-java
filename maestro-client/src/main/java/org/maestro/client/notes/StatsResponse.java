@@ -24,7 +24,6 @@ import java.io.IOException;
 
 public class StatsResponse extends MaestroResponse {
     private int childCount;
-    private String role;
     private String roleInfo;
     private short statsType;
 
@@ -41,7 +40,6 @@ public class StatsResponse extends MaestroResponse {
         super(MaestroCommand.MAESTRO_NOTE_STATS, unpacker);
 
         childCount = unpacker.unpackInt();
-        role = unpacker.unpackString();
         roleInfo = unpacker.unpackString();
         statsType = unpacker.unpackShort();
 
@@ -56,7 +54,6 @@ public class StatsResponse extends MaestroResponse {
         MessageBufferPacker packer = super.pack();
 
         packer.packLong(this.childCount);
-        packer.packString(this.role);
         packer.packString(this.roleInfo);
         packer.packShort(this.statsType);
         packer.packString(this.timestamp);
@@ -87,9 +84,6 @@ public class StatsResponse extends MaestroResponse {
         return childCount;
     }
 
-    public String getRole() {
-        return role;
-    }
 
     public String getRoleInfo() {
         return roleInfo;
@@ -101,10 +95,6 @@ public class StatsResponse extends MaestroResponse {
 
     public void setChildCount(int childCount) {
         this.childCount = childCount;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
     }
 
     public void setRoleInfo(String roleInfo) {
@@ -135,7 +125,6 @@ public class StatsResponse extends MaestroResponse {
     public String toString() {
         return "StatsResponse{" +
                 "childCount=" + childCount +
-                ", role='" + role + '\'' +
                 ", roleInfo='" + roleInfo + '\'' +
                 ", statsType=" + statsType +
                 ", timestamp='" + timestamp + '\'' +

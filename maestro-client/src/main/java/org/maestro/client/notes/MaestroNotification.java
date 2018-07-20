@@ -26,6 +26,8 @@ import java.io.IOException;
 public abstract class MaestroNotification extends MaestroEvent<MaestroEventListener> {
     private String id;
     private String name;
+    private String role;
+    private String host;
 
     public MaestroNotification(MaestroCommand maestroCommand) {
         super(MaestroNoteType.MAESTRO_TYPE_NOTIFICATION, maestroCommand);
@@ -36,6 +38,8 @@ public abstract class MaestroNotification extends MaestroEvent<MaestroEventListe
 
         id = unpacker.unpackString();
         name = unpacker.unpackString();
+        role = unpacker.unpackString();
+        host = unpacker.unpackString();
     }
 
     public String getId() {
@@ -54,12 +58,30 @@ public abstract class MaestroNotification extends MaestroEvent<MaestroEventListe
         this.name = name;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
     @Override
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
         packer.packString(this.id);
         packer.packString(this.name);
+        packer.packString(this.role);
+        packer.packString(this.host);
 
         return packer;
     }
@@ -69,6 +91,8 @@ public abstract class MaestroNotification extends MaestroEvent<MaestroEventListe
         return "MaestroNotification{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
+                ", role='" + role + '\'' +
+                ", host='" + host + '\'' +
                 "} " + super.toString();
     }
 }
