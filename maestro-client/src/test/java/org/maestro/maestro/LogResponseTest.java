@@ -83,6 +83,11 @@ public class LogResponseTest {
     public void serializeLogRequest() throws Exception {
         TestLogResponse logResponse = new TestLogResponse();
 
+        logResponse.setId("testid");
+        logResponse.setName("test");
+        logResponse.setRole("unittest");
+        logResponse.setHost("localhost");
+
         logResponse.setFileName("test.properties");
         logResponse.setFileSize(318);
         logResponse.setTotal(1);
@@ -107,6 +112,11 @@ public class LogResponseTest {
     @Test
     public void serializeLogRequestLarge() throws Exception {
         TestLogResponse logResponse = new TestLogResponse();
+
+        logResponse.setId("testid");
+        logResponse.setName("test");
+        logResponse.setRole("unittest");
+        logResponse.setHost("localhost");
 
         logResponse.setFileName("sample.txt");
         logResponse.setFileSize(20);

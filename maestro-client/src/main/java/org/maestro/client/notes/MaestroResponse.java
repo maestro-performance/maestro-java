@@ -24,8 +24,10 @@ import org.msgpack.core.MessageUnpacker;
 import java.io.IOException;
 
 public class MaestroResponse extends AbstractMaestroNote {
-    private String id = "";
-    private String name = "";
+    private String id;
+    private String name;
+    private String role;
+    private String host;
 
     public MaestroResponse(MaestroCommand maestroCommand) {
         super(MaestroNoteType.MAESTRO_TYPE_RESPONSE, maestroCommand);
@@ -36,6 +38,8 @@ public class MaestroResponse extends AbstractMaestroNote {
 
         id = unpacker.unpackString();
         name = unpacker.unpackString();
+        role = unpacker.unpackString();
+        host = unpacker.unpackString();
     }
 
     public String getId() {
@@ -54,12 +58,30 @@ public class MaestroResponse extends AbstractMaestroNote {
         this.name = name;
     }
 
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public void setHost(String host) {
+        this.host = host;
+    }
+
     @Override
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
         packer.packString(this.id);
         packer.packString(this.name);
+        packer.packString(this.role);
+        packer.packString(this.host);
 
         return packer;
     }
@@ -69,6 +91,8 @@ public class MaestroResponse extends AbstractMaestroNote {
         return "MaestroResponse{" +
                 "id='" + id + '\'' +
                 ", name='" + name + '\'' +
+                ", role='" + role + '\'' +
+                ", host='" + host + '\'' +
                 "} " + super.toString();
     }
 }

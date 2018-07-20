@@ -61,10 +61,6 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
         return clientName;
     }
 
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
-    }
-
     public String getId() {
         return inboundEndPoint.getClientId();
     }

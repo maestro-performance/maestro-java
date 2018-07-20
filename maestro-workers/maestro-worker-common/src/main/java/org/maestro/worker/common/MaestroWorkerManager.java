@@ -273,6 +273,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
                 response.setOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
                 response.setValue(dataServerAddress);
+                response.correlate(note);
 
                 client.getResponse(response);
             }

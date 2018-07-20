@@ -62,7 +62,14 @@ public class MaestroProtocolTest {
 
     @Test
     public void serializeOkResponse() throws Exception {
-        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(new OkResponse()));
+        OkResponse okResponse = new OkResponse();
+
+        okResponse.setId("testid");
+        okResponse.setName("test");
+        okResponse.setRole("unittest");
+        okResponse.setHost("localhost");
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(okResponse));
 
         assertTrue(parsed instanceof OkResponse);
         assertTrue("Parsed object is not a OK response",
@@ -76,7 +83,9 @@ public class MaestroProtocolTest {
         TestSuccessfulNotification tsn = new TestSuccessfulNotification();
 
         tsn.setId("asfas45");
-        tsn.setName("unittest@localhost");
+        tsn.setName("test");
+        tsn.setRole("unittest");
+        tsn.setHost("localhost");
         tsn.setMessage("Test completed successfully");
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(tsn));
@@ -92,7 +101,9 @@ public class MaestroProtocolTest {
         TestFailedNotification tsn = new TestFailedNotification();
 
         tsn.setId("asfas45");
-        tsn.setName("unittest@localhost");
+        tsn.setName("test");
+        tsn.setRole("unittest");
+        tsn.setHost("localhost");
         tsn.setMessage("Test failed");
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(tsn));
@@ -121,6 +132,13 @@ public class MaestroProtocolTest {
     public void serializeGetResponse() throws Exception {
         final String url = "http://0.0.0.0:8101/";
         GetResponse getResponse = new GetResponse();
+
+
+        getResponse.setId("testid");
+        getResponse.setName("test");
+        getResponse.setRole("unittest");
+        getResponse.setHost("localhost");
+
         getResponse.setOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
         getResponse.setValue(url);
 
@@ -152,6 +170,11 @@ public class MaestroProtocolTest {
 
         statsResponse.setChildCount(0);
 
+        statsResponse.setId("testid");
+        statsResponse.setName("test");
+        statsResponse.setRole("unittest");
+        statsResponse.setHost("localhost");
+
         statsResponse.setRole("tester");
         statsResponse.setLatency(1.123);
         statsResponse.setRate(1122);
@@ -175,8 +198,10 @@ public class MaestroProtocolTest {
         DrainCompleteNotification note = new DrainCompleteNotification();
 
         note.setId("asfas45");
-        note.setName("unittest@localhost");
+        note.setName("unittest");
         note.setMessage("Test failed");
+        note.setRole("tester");
+        note.setHost("localhost");
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
 
@@ -191,8 +216,10 @@ public class MaestroProtocolTest {
         InternalError note = new InternalError("Something bad happened");
 
         note.setId("asfas45");
-        note.setName("unittest@localhost");
+        note.setName("unittest");
         note.setMessage("Test failed");
+        note.setRole("tester");
+        note.setHost("localhost");
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
 
