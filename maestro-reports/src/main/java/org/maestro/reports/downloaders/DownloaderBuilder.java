@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 
 public class DownloaderBuilder {
     private static final Logger logger = LoggerFactory.getLogger(DownloaderBuilder.class);
+    public static final String POOLED = "pooled-";
 
     private DownloaderBuilder() {}
 
@@ -41,11 +42,20 @@ public class DownloaderBuilder {
      * @param organizer Report directory organizer (must be NodeOrganizer for "broker")
      * @return The reports downloader
      */
-    public static ReportsDownloader build(final String name, final Maestro maestro, final Organizer organizer) {
-        if (name != null && name.toLowerCase().equals("broker")) {
-            return new BrokerDownloader(maestro, organizer);
+    public static ReportsDownloader build(String name, final Maestro maestro, final Organizer organizer) {
+        boolean pool = false;
+        if (name != null && name.toLowerCase().startsWith(POOLED)) {
+            name = name.substring(POOLED.length());
+            pool = true;
         }
 
-        return new DefaultDownloader(organizer);
+        final ReportsDownloader reportsDownloader;
+        if (name != null && name.toLowerCase().equals("broker")) {
+            reportsDownloader = new BrokerDownloader(maestro, organizer);
+        } else {
+            reportsDownloader = new DefaultDownloader(organizer);
+        }
+
+        return pool ? new PooledDownloaderDecorator(reportsDownloader) : reportsDownloader;
     }
 }
