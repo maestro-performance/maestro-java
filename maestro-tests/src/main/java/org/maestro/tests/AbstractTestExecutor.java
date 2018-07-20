@@ -16,10 +16,12 @@
 
 package org.maestro.tests;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.MaestroProcessedInfo;
 import org.maestro.client.notes.MaestroNotification;
 import org.maestro.client.notes.PingResponse;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.NodeUtils;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
@@ -36,6 +38,7 @@ import java.util.Set;
  */
 public abstract class AbstractTestExecutor implements TestExecutor {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTestExecutor.class);
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
     private final Maestro maestro;
     private final ReportsDownloader reportsDownloader;
@@ -80,8 +83,29 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      * Stop connected peers
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
-    protected void stopServices() throws MaestroConnectionException {
+    final protected void stopServices() throws MaestroConnectionException {
         maestro.stopSender();
+
+        /**
+         * This is based on a discussion I had with Qpid Dispatch Router developers: if the
+         * receiver disconnects before the sender, some messages from the sender will be
+         * inflight on the router, but since the receiver will be shutting down they may not
+         * be acknowledged. This causes their delivery status to be unknown on the router and
+         * the disposition of this messages is then sent back to the sender as
+         * MODIFIED/undeliberable. This may cause JMSExceptions to be thrown by the sender.
+         *
+         * By forcing a small delay between sender/router shutdown, it tries to reduce the
+         * occurrences of unknown inflight messages.
+         *
+         * Ref: https://github.com/maestro-performance/maestro-java/issues/96
+         *
+         */
+        final int inFlightDelay = config.getInt("executor.inflight.delay", 250);
+        try {
+            Thread.sleep(inFlightDelay);
+        } catch (InterruptedException e) {
+
+        }
         maestro.stopReceiver();
         maestro.stopInspector();
     }
