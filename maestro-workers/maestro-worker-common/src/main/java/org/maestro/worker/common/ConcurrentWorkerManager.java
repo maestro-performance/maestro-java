@@ -66,7 +66,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
                                    final Class<MaestroWorker> workerClass, final MaestroDataServer dataServer) {
         super(maestroURL, role, host, dataServer);
 
-        this.container = WorkerContainer.getInstance(getClient());
+        this.container = WorkerContainer.getInstance();
         this.workerClass = workerClass;
         this.logDir = logDir;
     }
