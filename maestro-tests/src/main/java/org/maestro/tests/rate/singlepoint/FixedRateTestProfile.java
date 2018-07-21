@@ -80,9 +80,9 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     }
 
     private void setWarmUpParallelCount(int parallelCount) {
-        final int ceillingWarmUpPc = config.getInt("warm-up.ceiling.parallel.count", 30);
-        if (parallelCount > ceillingWarmUpPc) {
-            warmUpParallelCount = ceillingWarmUpPc;
+        final int ceilingWarmUpPc = config.getInt("warm-up.ceiling.parallel.count", 30);
+        if (parallelCount > ceilingWarmUpPc) {
+            warmUpParallelCount = ceilingWarmUpPc;
         }
         else {
             warmUpParallelCount = parallelCount;
