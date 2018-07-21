@@ -29,7 +29,6 @@ import org.maestro.common.duration.DurationCount;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
-import org.maestro.tests.utils.SyncUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -189,10 +188,6 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         failedNotifications = 0;
         running = false;
         warmUp = false;
-
-        if (SyncUtils.flushWaitResetCheck(testProfile.getParallelCount(), testProfile.getMessageSize())) {
-            testProcessor.resetFlushWaitSeconds(testProfile);
-        }
     }
 
     private boolean runTest() {
