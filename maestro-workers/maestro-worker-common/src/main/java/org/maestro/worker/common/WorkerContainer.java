@@ -19,10 +19,8 @@ package org.maestro.worker.common;
 import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.evaluators.Evaluator;
 import org.maestro.common.evaluators.LatencyEvaluator;
-import org.maestro.common.worker.LatencyStats;
-import org.maestro.common.worker.MaestroWorker;
-import org.maestro.common.worker.ThroughputStats;
-import org.maestro.common.worker.WorkerOptions;
+import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.worker.*;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -125,6 +123,19 @@ public final class WorkerContainer {
     public void stop() {
         for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
             ri.worker.stop();
+        }
+
+        if (workerWatchdog != null) {
+            workerWatchdog.setRunning(false);
+        }
+
+        startTime = null;
+    }
+
+    public void fail(final String message) {
+        MaestroException exception = new MaestroException(message);
+        for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
+            ri.worker.fail(exception);
         }
 
         if (workerWatchdog != null) {

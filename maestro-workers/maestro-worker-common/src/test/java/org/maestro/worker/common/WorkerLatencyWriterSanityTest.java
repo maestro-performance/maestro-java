@@ -68,6 +68,11 @@ public class WorkerLatencyWriterSanityTest {
         }
 
         @Override
+        public void fail(Exception exception) {
+            throw new UnsupportedOperationException();
+        }
+
+        @Override
         public void halt() {
             throw new UnsupportedOperationException();
         }
