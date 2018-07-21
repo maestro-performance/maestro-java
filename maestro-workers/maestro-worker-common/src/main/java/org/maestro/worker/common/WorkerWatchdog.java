@@ -18,13 +18,11 @@ package org.maestro.worker.common;
 
 import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.evaluators.Evaluator;
-import org.maestro.common.worker.WorkerStateInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 import java.util.function.Consumer;
 
 import static org.maestro.worker.common.WorkerStateInfoUtil.isCleanExit;
@@ -37,6 +35,7 @@ class WorkerWatchdog implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(WorkerWatchdog.class);
 
     private final List<WorkerRuntimeInfo> workers;
+    @Deprecated
     private final MaestroReceiver endpoint;
     private volatile boolean running = false;
     private final Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped;
@@ -80,17 +79,22 @@ class WorkerWatchdog implements Runnable {
     public void run() {
         logger.info("Running the worker watchdog");
         running = true;
-        boolean successful = true;
-        String exceptionMessage = null;
 
         try {
             while (running && workersRunning()) {
                 try {
                     if (evaluator != null) {
                         if (!evaluator.eval()) {
-                            endpoint.notifyFailure("The evaluation of the latency condition failed");
                             WorkerContainer container = WorkerContainer.getInstance(null);
-                            container.stop();
+
+                            /*
+                             Note: shot at distance warning. This one will eventually reset
+                             the value of the running flag above.
+
+                             TODO: fix this shot-at-distance
+                             */
+
+                            container.fail("The evaluation of the latency condition failed");
                         }
                     }
 
@@ -101,38 +105,10 @@ class WorkerWatchdog implements Runnable {
                     break;
                 }
             }
-
-
-            // NOTE: flushing the data and creating the symlinks must happen before
-            // the notification. Otherwise, the front-end risk collecting outdated
-            // records/logs
-            for (WorkerRuntimeInfo ri : workers) {
-                WorkerStateInfo wsi = ri.worker.getWorkerState();
-
-                if (!wsi.isRunning()) {
-                    if (!isCleanExit(wsi)) {
-                        successful = false;
-                        exceptionMessage = Objects.requireNonNull(wsi.getException()).getMessage();
-
-                        break;
-                    }
-                }
-            }
         } finally {
             logger.debug("Waiting for flushing workers's data");
             this.onWorkersStopped.accept(workers);
 
-            if (successful) {
-                endpoint.notifySuccess("Test completed successfully");
-            }
-            else {
-                if (exceptionMessage != null) {
-                    endpoint.notifyFailure(exceptionMessage);
-                }
-                else {
-                    endpoint.notifyFailure("Unhandled worker error");
-                }
-            }
             setRunning(false);
         }
 

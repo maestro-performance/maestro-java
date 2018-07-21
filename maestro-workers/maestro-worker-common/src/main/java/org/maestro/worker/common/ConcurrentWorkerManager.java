@@ -30,6 +30,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 
 import static org.maestro.worker.common.WorkerStateInfoUtil.isCleanExit;
 
@@ -210,6 +211,9 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
      * It should be called by a different thread/concurrently too (eg WatchDog) so it can't modify any this.* members or workers too.
      */
     private void onStoppedWorkers(List<WorkerRuntimeInfo> workers) {
+        boolean failed = false;
+        String exceptionMessage = null;
+
         try {
             if (this.rateWriterThread != null || this.latencyWriterThread != null) {
                 final long startWaitingWorkers = System.currentTimeMillis();
@@ -225,20 +229,41 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
                 logger.info("Awaiting workers and shutting down writers took {} ms", elapsedMillis);
             }
 
-            boolean failed = false;
             for (WorkerRuntimeInfo ri : workers) {
                 WorkerStateInfo wsi = ri.worker.getWorkerState();
 
+                if (ri.thread != null && ri.thread.isAlive()) {
+                    logger.warn("Worker {} is reportedly still alive", ri.thread.getId());
+                }
+
                 if (!isCleanExit(wsi)) {
                     failed = true;
+                    exceptionMessage = Objects.requireNonNull(wsi.getException()).getMessage();
+
                     break;
                 }
             }
-
-            TestLogUtils.createSymlinks(logDir, failed);
         } finally {
-            //reset it for new incoming tests
+            TestLogUtils.createSymlinks(logDir, failed);
+
+            sendTestNotification(failed, exceptionMessage);
+
             setWorkerOptions(new WorkerOptions());
+        }
+    }
+
+    private void sendTestNotification(boolean failed, String exceptionMessage) {
+
+        if (failed) {
+            if (exceptionMessage != null) {
+                getClient().notifyFailure(exceptionMessage);
+            }
+            else {
+                getClient().notifyFailure("Unhandled worker error");
+            }
+        }
+        else {
+            getClient().notifySuccess("Test completed successfully");
         }
     }
 

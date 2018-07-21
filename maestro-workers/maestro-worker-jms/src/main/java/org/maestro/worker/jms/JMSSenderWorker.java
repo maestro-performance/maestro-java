@@ -146,10 +146,6 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             doClientStartup(client);
 
             runLoadLoop(client);
-
-            logger.info("Worker {} completed running successfully with {} messages sent", id,
-                    messageCount);
-            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS, null);
         } catch (InterruptedException e) {
             logger.error("JMS sender worker {} interrupted while sending messages: {}", id,
                     e.getMessage());
@@ -165,9 +161,21 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
         } finally {
+            exitStateCheck(id);
+
             //the test could be considered already stopped here, but cleaning up JMS resources could take some time anyway
             client.stop();
             logger.info("Finalized worker {} after sending {} messages", id, messageCount);
+        }
+    }
+
+    private void exitStateCheck(long id) {
+        if (workerStateInfo.getExitStatus() != WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE) {
+            logger.info("Worker {} completed running successfully with {} messages sent", id,
+                    messageCount);
+            if (workerStateInfo.getExitStatus() != WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED) {
+                workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS, null);
+            }
         }
     }
 
@@ -260,6 +268,11 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     @Override
     public void stop() {
         workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED, null);
+    }
+
+    @Override
+    public void fail(Exception exception) {
+        workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, exception);
     }
 
     @Override

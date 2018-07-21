@@ -62,6 +62,12 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
 
 
     /**
+     * Stops the test execution with a failure condition (ie.: to fail due to external causes)
+     */
+    void fail(Exception exception);
+
+
+    /**
      * Halt the daemons
      */
     void halt();
