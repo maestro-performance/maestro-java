@@ -24,9 +24,7 @@ import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.NetworkUtils;
 import org.maestro.common.exceptions.MaestroException;
-import org.maestro.common.worker.MaestroWorker;
 import org.maestro.worker.common.ConcurrentWorkerManager;
-import org.maestro.worker.common.VoidWorkerManager;
 import org.maestro.worker.common.ds.MaestroDataServer;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
@@ -38,8 +36,6 @@ public class Main {
     private static CommandLine cmdLine;
 
     private static String maestroUrl;
-    private static String worker;
-    private static String role;
     private static String host;
     private static File logDir;
 
@@ -64,10 +60,6 @@ public class Main {
         options.addOption("h", "help", false, "prints the help");
         options.addOption("m", "maestro-url", true,
                 "maestro URL to connect to");
-        options.addOption("w", "worker", true,
-                "maestro worker to use");
-        options.addOption("r", "role", true,
-                "worker role (sender or receiver)");
         options.addOption("H", "host", true,
                 "optional hostname (to override auto-detection)");
         options.addOption("l", "log-dir", true,
@@ -87,22 +79,6 @@ public class Main {
         if (maestroUrl == null) {
             System.err.println("Maestro URL is missing (option -m)");
             help(options, -1);
-        }
-
-
-        role = cmdLine.getOptionValue('r');
-        if (role == null) {
-            System.err.println("The worker role is missing (option -r)");
-            help(options, -1);
-        }
-        System.setProperty("maestro.worker.role", role);
-
-        worker = cmdLine.getOptionValue('w');
-        if (worker == null) {
-            if (!role.equals("data-server")) {
-                System.err.println("The worker class is missing (option -w)");
-                help(options, -1);
-            }
         }
 
         host = cmdLine.getOptionValue('H');
@@ -127,8 +103,6 @@ public class Main {
     /**
      * Running this as a debug is something like:
      * java -m mqtt://maestro-broker:1883
-     *      -r sender
-     *      -w org.maestro.mpt.maestro.worker.jms.JMSSenderWorker
      *      -l /storage/tmp/maestro-java/sender
      */
     public static void main(String[] args) {
