@@ -89,6 +89,10 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
         return flushWaitSeconds;
     }
 
+    /**
+     * How long to wait for the backends to flush the data, close the connections, cleanup, etc
+     * @param flushWaitSeconds the number of seconds to wait
+     */
     protected void setFlushWaitSeconds(int flushWaitSeconds) {
         this.flushWaitSeconds = flushWaitSeconds;
     }
