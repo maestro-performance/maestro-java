@@ -16,7 +16,6 @@
 
 package org.maestro.worker.common;
 
-import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.evaluators.Evaluator;
 import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.exceptions.MaestroException;
@@ -41,12 +40,10 @@ public final class WorkerContainer {
 
     private WorkerWatchdog workerWatchdog;
     private Thread watchDogThread;
-    private final MaestroReceiver endpoint;
     private LocalDateTime startTime;
     private Evaluator<?> evaluator;
 
-    private WorkerContainer(MaestroReceiver endpoint) {
-        this.endpoint = endpoint;
+    private WorkerContainer() {
     }
 
     /**
@@ -54,9 +51,9 @@ public final class WorkerContainer {
      * @param endpoint the maestro receiver endpoint
      * @return the instance of the container
      */
-    public synchronized static WorkerContainer getInstance(MaestroReceiver endpoint) {
+    public synchronized static WorkerContainer getInstance() {
         if (instance == null) {
-            instance = new WorkerContainer(endpoint);
+            instance = new WorkerContainer();
         }
 
         return instance;
@@ -114,7 +111,7 @@ public final class WorkerContainer {
             workerRuntimeInfos.add(ri);
         }
 
-        workerWatchdog = new WorkerWatchdog(workerRuntimeInfos, endpoint, onWorkersStopped, evaluator);
+        workerWatchdog = new WorkerWatchdog(workerRuntimeInfos, onWorkersStopped, evaluator);
 
         watchDogThread = new Thread(workerWatchdog);
         watchDogThread.start();

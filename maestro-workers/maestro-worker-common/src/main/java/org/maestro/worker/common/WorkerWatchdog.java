@@ -16,7 +16,6 @@
 
 package org.maestro.worker.common;
 
-import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.evaluators.Evaluator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,8 +34,6 @@ class WorkerWatchdog implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(WorkerWatchdog.class);
 
     private final List<WorkerRuntimeInfo> workers;
-    @Deprecated
-    private final MaestroReceiver endpoint;
     private volatile boolean running = false;
     private final Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped;
     private final Evaluator<?> evaluator;
@@ -47,11 +44,10 @@ class WorkerWatchdog implements Runnable {
      * @param workers A list of workers to inspect
      * @param endpoint The maestro endpoint that is to be notified of the worker status
      */
-    public WorkerWatchdog(List<WorkerRuntimeInfo> workers, MaestroReceiver endpoint,
+    public WorkerWatchdog(List<WorkerRuntimeInfo> workers,
                           Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped, final Evaluator<?> evaluator) {
         this.workers = new ArrayList<>(workers);
         this.onWorkersStopped = onWorkersStopped;
-        this.endpoint = endpoint;
         this.evaluator = evaluator;
     }
 
@@ -85,7 +81,7 @@ class WorkerWatchdog implements Runnable {
                 try {
                     if (evaluator != null) {
                         if (!evaluator.eval()) {
-                            WorkerContainer container = WorkerContainer.getInstance(null);
+                            WorkerContainer container = WorkerContainer.getInstance();
 
                             /*
                              Note: shot at distance warning. This one will eventually reset
