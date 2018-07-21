@@ -22,15 +22,12 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.evaluators.HardLatencyEvaluator;
 import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.evaluators.SoftLatencyEvaluator;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.*;
-import org.maestro.contrib.utils.digest.Sha1Digest;
 import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
