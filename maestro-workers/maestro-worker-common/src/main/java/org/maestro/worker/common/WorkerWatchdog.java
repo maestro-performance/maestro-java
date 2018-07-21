@@ -42,7 +42,6 @@ class WorkerWatchdog implements Runnable {
     /**
      * Constructor
      * @param workers A list of workers to inspect
-     * @param endpoint The maestro endpoint that is to be notified of the worker status
      */
     public WorkerWatchdog(List<WorkerRuntimeInfo> workers,
                           Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped, final Evaluator<?> evaluator) {

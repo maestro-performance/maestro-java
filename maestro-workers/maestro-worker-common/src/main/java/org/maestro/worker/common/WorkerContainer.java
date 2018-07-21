@@ -48,7 +48,6 @@ public final class WorkerContainer {
 
     /**
      * Gets and instance of the container
-     * @param endpoint the maestro receiver endpoint
      * @return the instance of the container
      */
     public synchronized static WorkerContainer getInstance() {
