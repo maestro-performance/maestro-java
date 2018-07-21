@@ -55,6 +55,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     private int number;
 
     private final Supplier<? extends SenderClient> clientFactory;
+    private volatile WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     public JMSSenderWorker() {
         this(JMSSenderClient::new, 128 * 1024);
@@ -70,7 +71,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         return workerChannel;
     }
 
-    private final WorkerStateInfo workerStateInfo = new WorkerStateInfo();
+
 
     @Override
     public long startedEpochMillis() {

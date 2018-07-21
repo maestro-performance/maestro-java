@@ -52,7 +52,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     //TODO the size need to be configured
     private final OneToOneWorkerChannel workerChannel = new OneToOneWorkerChannel(128 * 1024);
 
-    private final WorkerStateInfo workerStateInfo = new WorkerStateInfo();
+    private volatile WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     private String url;
     private final Supplier<? extends ReceiverClient> clientFactory;
