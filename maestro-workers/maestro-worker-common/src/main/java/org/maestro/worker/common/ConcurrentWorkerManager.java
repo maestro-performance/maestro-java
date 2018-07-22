@@ -170,14 +170,14 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             try {
                 this.rateWriterThread.join();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("Rate writer thread was interrupted: {}", e.getMessage(), e);
             }
         }
         if (this.latencyWriterThread != null) {
             try {
                 this.latencyWriterThread.join();
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.error("Latency writer thread was interrupted: {}", e.getMessage(), e);
             }
         }
 
