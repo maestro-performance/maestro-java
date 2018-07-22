@@ -184,27 +184,43 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         this.latencyEvaluator = null;
     }
 
-    private static boolean awaitWorkers(long startWaitingWorkersEpochMillis, final List<WorkerRuntimeInfo> workers) {
-        final long deadLine = startWaitingWorkersEpochMillis + (workers.size() * TIMEOUT_STOP_WORKER_MILLIS * 2);
-        //workers are being stopped, just need to check if they have finished their jobs
-        boolean allFinished = false;
-        while (!allFinished && System.currentTimeMillis() < deadLine) {
-            allFinished = true;
-            for (int i = 0, size = workers.size(); i < size; i++) {
-                final WorkerRuntimeInfo workerRuntimeInfo = workers.get(i);
-                try {
-                    workerRuntimeInfo.thread.join(TIMEOUT_STOP_WORKER_MILLIS);
-                } catch (InterruptedException e) {
-                    //no op, just retry
-                } finally {
-                    allFinished = !workerRuntimeInfo.thread.isAlive();
-                    if (!allFinished) {
-                        break;
-                    }
-                }
+    private static long awaitWorkers(long startWaitingWorkersEpochMillis, final List<WorkerRuntimeInfo> workers) {
+        if (workers.isEmpty()) {
+            return 0;
+        }
+
+        int runningCount = workers.size();
+        final long deadLine = startWaitingWorkersEpochMillis + (runningCount * TIMEOUT_STOP_WORKER_MILLIS * 2);
+
+        // workers are being stopped, just need to check if they have finished their jobs
+        long activeThreads = runningCount;
+        while (activeThreads > 0 && System.currentTimeMillis() < deadLine) {
+            workers.stream()
+                    .filter(workerRuntimeInfo -> workerRuntimeInfo.thread.isAlive())
+                    .parallel()
+                    .forEach(workerRuntimeInfo -> finishWorkers(workerRuntimeInfo));
+
+            activeThreads = workers.stream()
+                    .filter(workerRuntimeInfo -> workerRuntimeInfo.thread.isAlive())
+                    .count();
+
+            logger.info("There are {} workers threads still alive", activeThreads);
+        }
+
+        return activeThreads;
+    }
+
+    private static void finishWorkers(final WorkerRuntimeInfo workerRuntimeInfo) {
+        try {
+            logger.debug("Waiting for worker thread {}", workerRuntimeInfo.thread.getId());
+            workerRuntimeInfo.thread.join(TIMEOUT_STOP_WORKER_MILLIS);
+        } catch (InterruptedException e) {
+            //no op, just retry
+        } finally {
+            if (workerRuntimeInfo.thread.isAlive()) {
+                logger.debug("Worker thread {} is still alive", workerRuntimeInfo.thread.getId());
             }
         }
-        return allFinished;
     }
 
     /**
@@ -217,11 +233,8 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         try {
             if (this.rateWriterThread != null || this.latencyWriterThread != null) {
                 final long startWaitingWorkers = System.currentTimeMillis();
-                if (!workers.isEmpty()) {
-                    final boolean allFinished = awaitWorkers(startWaitingWorkers, workers);
-                    if (!allFinished) {
-                        logger.warn("The writer will be forced to stop with alive workers");
-                    }
+                if (awaitWorkers(startWaitingWorkers, workers) > 0) {
+                    logger.warn("The writer will be forced to stop with alive workers");
                 }
 
                 shutdownAndWaitWriters();
@@ -249,6 +262,8 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             sendTestNotification(failed, exceptionMessage);
 
             setWorkerOptions(new WorkerOptions());
+
+            workers.clear();
         }
     }
 
