@@ -145,7 +145,7 @@ class JMSClient implements Client {
         final Throwable t = JMSResourceUtil.capturingClose(connection);
         this.connection = null;
         if (t != null) {
-            t.printStackTrace();
+            logger.warn("Error closing the connection: {}", t.getMessage(), t);
         }
     }
 
