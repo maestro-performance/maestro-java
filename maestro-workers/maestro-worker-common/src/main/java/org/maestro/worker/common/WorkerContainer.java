@@ -117,28 +117,33 @@ public final class WorkerContainer {
     }
 
     public void stop() {
-        for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
-            ri.worker.stop();
-        }
-
         if (workerWatchdog != null) {
-            workerWatchdog.setRunning(false);
-        }
+            if (workerWatchdog.isRunning()) {
+                for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
+                    ri.worker.stop();
+                }
 
-        startTime = null;
+                workerWatchdog.setRunning(false);
+            }
+
+            startTime = null;
+        }
     }
 
     public void fail(final String message) {
-        MaestroException exception = new MaestroException(message);
-        for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
-            ri.worker.fail(exception);
-        }
-
         if (workerWatchdog != null) {
-            workerWatchdog.setRunning(false);
-        }
+            if (workerWatchdog.isRunning()) {
+                MaestroException exception = new MaestroException(message);
 
-        startTime = null;
+                for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
+                    ri.worker.fail(exception);
+                }
+
+                workerWatchdog.setRunning(false);
+            }
+
+            startTime = null;
+        }
     }
 
     private boolean watchdogRunning() {
