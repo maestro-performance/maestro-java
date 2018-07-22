@@ -247,6 +247,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
                 if (ri.thread != null && ri.thread.isAlive()) {
                     logger.warn("Worker {} is reportedly still alive", ri.thread.getId());
+                    ri.thread.interrupt();
                 }
 
                 if (!isCleanExit(wsi)) {
