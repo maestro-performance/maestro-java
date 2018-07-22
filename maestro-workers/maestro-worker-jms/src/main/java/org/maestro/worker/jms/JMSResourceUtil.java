@@ -39,6 +39,7 @@ final class JMSResourceUtil {
             try {
                 closeable.close();
             } catch (Throwable t) {
+                logger.warn("Error closing the producer: {}", t.getMessage(), t);
                 return t;
             }
         }
@@ -52,6 +53,7 @@ final class JMSResourceUtil {
             try {
                 closeable.close();
             } catch (Throwable t) {
+                logger.warn("Error closing the session: {}", t.getMessage(), t);
                 return t;
             }
         }
@@ -65,6 +67,7 @@ final class JMSResourceUtil {
             try {
                 closeable.close();
             } catch (Throwable t) {
+                logger.warn("Error closing the consumer: {}", t.getMessage(), t);
                 return t;
             }
         }
@@ -78,6 +81,7 @@ final class JMSResourceUtil {
             try {
                 closeable.close();
             } catch (Throwable t) {
+                logger.warn("Error closing the connection: {}", t.getMessage(), t);
                 return t;
             }
         }
