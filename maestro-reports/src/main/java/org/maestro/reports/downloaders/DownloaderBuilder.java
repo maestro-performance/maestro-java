@@ -23,14 +23,24 @@ public class DownloaderBuilder {
      * @param baseDir Directory where to save the files
      * @return The reports downloader
      */
-    public static ReportsDownloader build(final String name, final Maestro maestro, final String baseDir) {
+    public static ReportsDownloader build(String name, final Maestro maestro, final String baseDir) {
+        boolean pool = false;
+        if (name != null && name.toLowerCase().startsWith(POOLED)) {
+            name = name.substring(POOLED.length());
+            pool = true;
+        }
+
+        final ReportsDownloader reportsDownloader;
         if (name != null && name.toLowerCase().equals("broker")) {
             logger.debug("Using the broker report downloader");
-            return new BrokerDownloader(maestro, baseDir);
+            reportsDownloader = new BrokerDownloader(maestro, baseDir);
+        } else {
+            reportsDownloader = new DefaultDownloader(baseDir);
+            logger.debug("Using the default (HTTP) report downloader");
         }
 
         logger.debug("Using the default (HTTP) report downloader");
-        return new DefaultDownloader(baseDir);
+        return pool ? new PooledDownloaderDecorator(reportsDownloader) : reportsDownloader;
     }
 
 
