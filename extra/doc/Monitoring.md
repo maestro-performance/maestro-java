@@ -84,7 +84,7 @@ This instructs Prometheus service to scrap the data that is exported by the Maes
 At this point, you should be able to see the Maestro metrics as exported from Prometheus Graph UI: 
 
 
-![Prometheus Graph UI](prometheus-graph-ui.png)
+![Prometheus Graph UI](figures/prometheus-graph-ui.png)
 
 
 Grafana Integration
@@ -93,4 +93,4 @@ Grafana Integration
 To setup the Grafana Dashboard, use the Dashboard import feature and import the dashboard provided with the code base.
 The dashboard file is available [here](../../maestro-exporter/extras/grafana/dashboard/maestro_test_cluster.json).
 
-![Prometheus Dashboard](prometheus-dashboard.png).
+![Prometheus Dashboard](figures/prometheus-dashboard.png).

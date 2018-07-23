@@ -11,6 +11,10 @@ the inspector of the given name.
 The Inspector continuously sending requests to the SUT every few seconds. This interval can be changed in the Inspector configuration file: 
 `~/maestro-inspector/config/maestro-inspector.properties` by value `inspector.sleep.interval` (default: 5s)
 
+The following Figure mapps the whole process of SUT inspecting by Maestro Inspector.
+
+![Inspector Process](figures/inspector_process.png)
+
 Artemis Inspector
 ----
 
@@ -20,7 +24,7 @@ system details, and others.
 **Name**: ArtemisInspector
 **URL Format**: ```http://user:password@host:8161/console/jolokia```
 
-Interconnect Inspector
+AMQP Inspector
 ----
 
 It is used for Apache Qpid Dispatch Router. It uses the request-response mechanism for collect relative data from AMQP Management which is available on the running Router instance.
@@ -32,3 +36,7 @@ information such as number of current active connections, neighbor nodes, etc.
 
 **Name**: InterconnectInspector
 **URL Format**: ```amqp://host/```
+
+An example of AMQP Inspector start before the test execution is depicted in the following figure.
+
+![Inspector Start](figures/inspector_start.png)
