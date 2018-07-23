@@ -8,7 +8,7 @@ Maestro works by coordinating the work of multiple nodes to generate load and si
 hitting the software under test (SUT). The set represented by the Maestro client, its nodes (aka backends)
 and the Maestro cluster is referenced as the Maestro Test Cluster.   
 
-![Maestro Overview](maestro-overview.png)
+![Maestro Overview](figures/maestro_architecture.png)
 
 Maestro can be used for both low-scale as well as large scale tests. For large scale tests, the recommended
 way is to deploy multiple nodes, each on a dedicated environment. For small scale and local tests, the docker
@@ -33,6 +33,8 @@ For example:
 
 This is a much more complex deployment model, but usually desired as it can be made to 
 represent real messaging use case scenarios involving multiple hosts.
+
+![Maestro Deployment Overview](figures/maestro_deployment.png)
 
 Maestro Deployment: Single-host deployment via Docker Compose
 ----

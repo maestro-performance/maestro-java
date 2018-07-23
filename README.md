@@ -64,3 +64,8 @@ Development
 
 Some tips and tricks for developing and debugging Maestro are available [here](extra/doc/Development.md).
 
+
+Another information source
+----
+An additional information about Maestro, Maestro Agent, Maestro Inspector and the usage of Maestro for 
+the performance testing and analysis can be found in this [thesis](http://www.fit.vutbr.cz/study/DP/DP.php.cs?id=21191&file=t).

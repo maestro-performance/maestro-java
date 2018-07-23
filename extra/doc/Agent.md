@@ -21,9 +21,12 @@ The user need to specify few environmental variables for the test:
 The example of extension point code is available in [maestro-agent-sample-extpoints](https://github.com/maestro-performance/maestro-agent-sample-extpoints) or 
 [maestro-agent-expoints-dispatch](https://github.com/maestro-performance/maestro-agent-extpoints-dispatch) repositories.
 
+In the following Figure one can see the example of node with active Maestro Agent next to the SUT.
+
+![Maestro Agent Scenario](figures/agent_scenario.png)
+
 Time Specification
 ---- 
 The agent does not care about the specific time of execution. It's only download the code and perform it. However, we want to
 perform the code at some specific time, not only on the start of the test. This time has to be specified in the script itself with a sleep command.
 For example if user want to perform script code on the 3rd minute of the test, one should use `sleep(180000);` in te script.
-
