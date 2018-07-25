@@ -111,6 +111,12 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         logger.debug("Stop inspector request received");
 
         if (inspectorThread != null) {
+            try {
+                inspector.stop();
+            } catch (Exception e) {
+                logger.warn("Unable to stop the inspector in a clean way: {}", e.getMessage(), e);
+            }
+
             inspectorThread.interrupt();
             inspectorThread = null;
         }
@@ -122,10 +128,11 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
 
         if (inspectorThread != null) {
             logger.debug("Stopping the inspection as a result of a test failure notification by one of the peers");
-            inspectorThread.interrupt();
-            inspectorThread = null;
+            stopInspectorThread();
         }
     }
+
+
 
     @Override
     public void handle(TestSuccessfulNotification note) {
@@ -133,9 +140,30 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
 
         if (inspectorThread != null) {
             logger.debug("Stopping the inspection as a result of a test success notification by one of the peers");
-            inspectorThread.interrupt();
-            inspectorThread = null;
+            stopInspectorThread();
         }
+    }
+
+    private void stopInspectorThread() {
+        try {
+            inspector.stop();
+        } catch (Exception e) {
+            logger.warn("Unable to stop the inspector in a clean way: {}", e.getMessage(), e);
+        }
+
+        try {
+            inspectorThread.join(1000);
+        } catch (InterruptedException e) {
+            logger.debug("Interrupted the inspector thread", e);
+        }
+
+        if (inspectorThread.isAlive()) {
+            logger.warn("The inspector thread is still alive. Forcing it to stop");
+
+            inspectorThread.interrupt();
+        }
+
+        inspectorThread = null;
     }
 
     @Override
