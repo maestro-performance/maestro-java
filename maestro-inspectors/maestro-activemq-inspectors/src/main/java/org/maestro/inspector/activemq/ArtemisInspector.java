@@ -185,7 +185,7 @@ public class ArtemisInspector implements MaestroInspector {
         } catch (InterruptedException eie) {
             TestLogUtils.createSymlinks(this.baseLogDir, false);
             endpoint.notifySuccess("Inspector finished successfully");
-            throw eie;
+            return 0;
         }
         catch (Exception e) {
             TestLogUtils.createSymlinks(this.baseLogDir, true);
