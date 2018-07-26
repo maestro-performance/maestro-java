@@ -158,7 +158,7 @@ public class ReportGenerator {
     }
 
     private boolean isMaestroReport(ReportFile item) {
-        String[] maestroFilesExt = { "csv.gz", "csv", "hdr"};
+        String[] maestroFilesExt = { "csv.gz", "csv", "hdr", "dat"};
 
         for (String maestroFileExt : maestroFilesExt) {
             if (item.getSourceFile().getName().endsWith(maestroFileExt)) {

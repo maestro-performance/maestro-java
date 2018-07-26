@@ -58,9 +58,9 @@ public class RateData implements ReportData {
         return list;
     }
 
-    public List<Integer> getRateValues()
+    public List<Long> getRateValues()
     {
-        return recordSet.stream().mapToInt(RateRecord::getCount).boxed().collect(Collectors.toList());
+        return recordSet.stream().mapToLong(RateRecord::getCount).boxed().collect(Collectors.toList());
     }
 
     @Override

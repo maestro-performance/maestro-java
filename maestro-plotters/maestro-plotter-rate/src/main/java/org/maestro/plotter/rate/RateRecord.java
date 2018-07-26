@@ -25,9 +25,9 @@ import java.time.Instant;
  */
 class RateRecord implements Comparable<RateRecord>, InstantRecord {
     private final Instant timestamp;
-    private int count;
+    private long count;
 
-    public RateRecord(Instant timestamp, int count) {
+    public RateRecord(Instant timestamp, long count) {
         this.timestamp = timestamp;
         this.count = count;
     }
@@ -36,11 +36,11 @@ class RateRecord implements Comparable<RateRecord>, InstantRecord {
         return timestamp;
     }
 
-    void setCount(int count) {
+    void setCount(long count) {
         this.count = count;
     }
 
-    public int getCount() {
+    public long getCount() {
         return count;
     }
 

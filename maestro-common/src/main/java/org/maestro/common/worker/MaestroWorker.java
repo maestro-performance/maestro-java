@@ -18,7 +18,6 @@ package org.maestro.common.worker;
 
 import org.HdrHistogram.Histogram;
 import org.maestro.common.duration.TestDuration;
-import org.maestro.common.writers.OneToOneWorkerChannel;
 
 /**
  * A common interface for any type of Maestro worker.
@@ -71,17 +70,6 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
      * Halt the daemons
      */
     void halt();
-
-
-    /**
-     * It is the single consumer channel that emit event of the worker.
-     * <p>
-     * It can be {@code null} if not emission is supported.
-     * @return The one-to-one channel used for statistics communication
-     */
-    default OneToOneWorkerChannel workerChannel() {
-        return null;
-    }
 
 
     /**

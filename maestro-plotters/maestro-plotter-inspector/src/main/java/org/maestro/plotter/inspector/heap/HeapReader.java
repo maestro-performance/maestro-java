@@ -19,14 +19,14 @@ package org.maestro.plotter.inspector.heap;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.QuoteMode;
-import org.maestro.plotter.common.readers.CsvReader;
+import org.maestro.plotter.common.readers.StreamReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.io.Reader;
 
-public class HeapReader extends CsvReader<HeapData> {
+public class HeapReader extends StreamReader<HeapData> {
     private static final Logger logger = LoggerFactory.getLogger(HeapReader.class);
 
     private final HeapProcessor heapProcessor;

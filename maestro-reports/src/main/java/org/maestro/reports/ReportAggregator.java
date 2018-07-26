@@ -16,14 +16,18 @@
 
 package org.maestro.reports;
 
-import org.HdrHistogram.Histogram;
+import org.HdrHistogram.*;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVParser;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.csv.QuoteMode;
+import org.apache.commons.io.FileUtils;
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.io.data.common.FileHeader;
+import org.maestro.common.io.data.writers.BinaryRateUpdater;
+import org.maestro.common.io.data.writers.BinaryRateWriter;
 import org.maestro.common.test.TestProperties;
-import org.maestro.common.writers.LatencyWriter;
+import org.maestro.common.io.data.writers.LatencyWriter;
 import org.maestro.reports.data.rate.RateToHistogram;
 import org.maestro.reports.files.MptReportFile;
 import org.maestro.reports.files.ReportFile;
@@ -88,75 +92,57 @@ public class ReportAggregator {
     private void aggregateSet(File currentTestNumDir, Set<MptReportFile> currentReports) throws IOException {
         logger.info("Producing aggregated report for directory : {} ({} report(s))", currentTestNumDir, currentReports.size());
 
-        CSVPrinter csvPrinter = null;
         NodeType nodeType = null;
-        File aggregatedReport = null;
         File aggregatedReportRoot = new File(currentTestNumDir, AGGREGATED_REPORT_DIRNAME);
         Properties props = null;
+
+        BinaryRateUpdater binaryRateUpdater = null;
+        Histogram aggregatedHistogram = null;
+
         try {
             for (MptReportFile currentReport : currentReports) {
+                nodeType = currentReport.getNodeType();
+
+                if (binaryRateUpdater == null) {
+                    binaryRateUpdater = getBinaryRateUpdater(nodeType, aggregatedReportRoot);
+                }
+
                 logger.debug("Processing {}", currentReport.getSourceFile());
 
-                final String name = currentReport.getSourceFile().getName();
-                final boolean compressed = name.endsWith(".gz");
                 final String fileName = currentReport.getSourceFile().getPath();
-                final File file = new File(fileName);
 
-                try (Reader in = getReader(file, compressed)) {
-                    CSVParser parser = CSVFormat.RFC4180
-                            .withCommentMarker('#')
-                            .withFirstRecordAsHeader()
-                            .withQuote('"')
-                            .withQuoteMode(QuoteMode.NON_NUMERIC).parse(in);
+                BinaryRateUpdater.joinFile(binaryRateUpdater, new File(fileName));
 
-                    String[] headers = getCsvHeaders(parser);
-
-                    if (csvPrinter == null) {
-                        aggregatedReportRoot.mkdirs();
-
-                        aggregatedReport = new File(aggregatedReportRoot, name);
-                        Writer reportWriter = getWriter(aggregatedReport, compressed);
-
-                        csvPrinter = new CSVPrinter(reportWriter, CSVFormat.RFC4180
-                                .withQuote('"')
-                                .withQuoteMode(QuoteMode.NON_NUMERIC)
-                                .withHeader(headers));
-                    } else {
-                        String[] outputHeaders = getCsvHeaders(parser);
-
-                        if (!Arrays.equals(outputHeaders, headers)) {
-                            throw new MaestroException(String.format("Header row %s from CSV report '%s' does not match" +
-                                            " the header row already established for this aggregated report : %s",
-                                    Arrays.toString(headers), name, Arrays.toString(outputHeaders)));
-                        }
+                if (nodeType == NodeType.RECEIVER) {
+                    if (aggregatedHistogram == null) {
+                        aggregatedHistogram = new Histogram(3);
                     }
 
-                    csvPrinter.printRecords(parser);
+                    joinHistograms(aggregatedHistogram, currentReport.getReportDir());
+                }
 
-                    nodeType = currentReport.getNodeType();
-
-                    if (props == null) {
-                        File testProps = new File(currentReport.getReportDir(), TestProperties.FILENAME);
-                        if (testProps.isFile()) {
-                            props = new Properties();
-                            try (InputStream is = new FileInputStream(testProps)) {
-                                props.load(is);
-                            }
+                if (props == null) {
+                    File testProps = new File(currentReport.getReportDir(), TestProperties.FILENAME);
+                    if (testProps.isFile()) {
+                        props = new Properties();
+                        try (InputStream is = new FileInputStream(testProps)) {
+                            props.load(is);
                         }
                     }
-                } catch (IOException e) {
-                    throw new IOException(String.format("Failed to aggregate '%s'", fileName), e);
                 }
             }
 
         } finally {
-            if (csvPrinter != null) {
-                csvPrinter.close();
+            if (binaryRateUpdater != null) {
+                binaryRateUpdater.close();
             }
-        }
 
-        if (nodeType == NodeType.RECEIVER) {
-            createHistogram(aggregatedReportRoot, aggregatedReport);
+            if (aggregatedHistogram != null) {
+                LatencyWriter latencyWriter = new LatencyWriter(new File(aggregatedReportRoot, "receiverd-latency.hdr"));
+
+                latencyWriter.outputIntervalHistogram(aggregatedHistogram);
+                latencyWriter.close();
+            }
         }
 
         if (props != null) {
@@ -168,36 +154,32 @@ public class ReportAggregator {
 
     }
 
-    private void createHistogram(File aggregateReportRoot, File aggregatedReport) throws IOException {
-        File aggregatedHistogram = new File(aggregateReportRoot, "receiverd-latency.hdr");
-        logger.info("Creating aggregated histogram : {}", aggregatedHistogram);
-
-        try (LatencyWriter writer = new LatencyWriter(aggregatedHistogram)) {
-            final Histogram histogram = new Histogram(3);
-            String fileName = aggregatedReport.getPath();
-            final boolean compressed = fileName.endsWith(".gz");
-            final File file = new File(fileName);
-
-            try (Reader in = getReader(file, compressed)) {
-                RateToHistogram.rebuildHistogram(in, histogram);
-            }
-            writer.outputLegend(0);
-            writer.outputIntervalHistogram(histogram);
+    private BinaryRateUpdater getBinaryRateUpdater(NodeType nodeType, File aggregatedReportRoot) throws IOException {
+        File output = null;
+        if (nodeType == NodeType.RECEIVER) {
+            output = new File(aggregatedReportRoot, "receiver.dat");
+        } else {
+            output = new File(aggregatedReportRoot, "sender.dat");
         }
+
+        FileUtils.forceMkdirParent(output);
+        return new BinaryRateUpdater(output, false);
     }
 
-    private static Reader getReader(File file, boolean compressed) throws IOException {
-        InputStream is = compressed ? new GZIPInputStream(new FileInputStream(file)) : new FileInputStream(file);
-        return new InputStreamReader(new BufferedInputStream(is));
-    }
+    private void joinHistograms(Histogram dest, File sourceDir) throws FileNotFoundException {
+        HistogramLogReader logReader = new HistogramLogReader(new File(sourceDir, "receiverd-latency.hdr"));
 
-    private Writer getWriter(File file, boolean compressed) throws IOException {
-        final OutputStream os = compressed ? new GZIPOutputStream(new FileOutputStream(file)) : new FileOutputStream(file);
-        return new OutputStreamWriter(new BufferedOutputStream(os));
-    }
+        while (logReader.hasNext()) {
+            EncodableHistogram eh = logReader.nextIntervalHistogram();
+            if (eh instanceof AbstractHistogram) {
+                AbstractHistogram ah = (AbstractHistogram) eh;
 
-    private String[] getCsvHeaders(CSVParser parser) {
-        List<String> orderedHeaders = new ArrayList<>(parser.getHeaderMap().keySet());
-        return orderedHeaders.toArray(new String[orderedHeaders.size()]);
+                dest.add(ah);
+            }
+            else {
+                // Maestro-generated histograms should always be AbstractHistogram, so this shouldn't happen
+                throw new MaestroException("The histogram type does not allow it to be aggregated");
+            }
+        }
     }
 }

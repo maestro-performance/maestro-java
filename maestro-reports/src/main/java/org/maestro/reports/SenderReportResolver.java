@@ -19,7 +19,7 @@ package org.maestro.reports;
 import org.maestro.common.test.TestProperties;
 
 public class SenderReportResolver extends AbstractReportResolver {
-    private static final String[] FILES = { "senderd-rate.csv.gz", TestProperties.FILENAME};
+    private static final String[] FILES = { "sender.dat", TestProperties.FILENAME};
 
     public SenderReportResolver() {
         super(FILES);

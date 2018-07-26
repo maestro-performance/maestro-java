@@ -29,7 +29,6 @@ import org.maestro.common.worker.MaestroSenderWorker;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.common.worker.WorkerStateInfo;
 import org.maestro.common.worker.WorkerUtils;
-import org.maestro.common.writers.OneToOneWorkerChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,7 +45,6 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     private ContentStrategy contentStrategy;
     private TestDuration duration;
-    private final OneToOneWorkerChannel workerChannel;
     private final AtomicLong messageCount = new AtomicLong(0);
     private volatile long startedEpochMillis = Long.MIN_VALUE;
 
@@ -58,19 +56,12 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     private volatile WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     public JMSSenderWorker() {
-        this(JMSSenderClient::new, 128 * 1024);
+        this(JMSSenderClient::new);
     }
 
-    public JMSSenderWorker(Supplier<? extends SenderClient> clientFactory, int channelCapacity) {
+    public JMSSenderWorker(Supplier<? extends SenderClient> clientFactory) {
         this.clientFactory = clientFactory;
-        this.workerChannel = new OneToOneWorkerChannel(channelCapacity);
     }
-
-    @Override
-    public OneToOneWorkerChannel workerChannel() {
-        return workerChannel;
-    }
-
 
 
     @Override
@@ -216,7 +207,6 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             }
 
             client.sendMessages(sendTimeEpochMicros, commitTransaction(count, opts, isSessionTransacted));
-            workerChannel.emitRate(expectedSendTimeEpochMicros, sendTimeEpochMicros);
             count++;
             //update message sent count
             this.messageCount.lazySet(count);

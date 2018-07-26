@@ -38,7 +38,7 @@ public class RatePlotter extends DefaultHistogramPlotter<RateData> {
         // Create Chart
         XYChart chart = createChart();
 
-        List<Integer> rateValues = reportData.getRateValues();
+        List<Long> rateValues = reportData.getRateValues();
         validateDataSet(reportData.getPeriods(), rateValues);
 
         // Series

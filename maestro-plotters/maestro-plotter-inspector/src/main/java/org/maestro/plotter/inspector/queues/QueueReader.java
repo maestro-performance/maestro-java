@@ -19,7 +19,7 @@ package org.maestro.plotter.inspector.queues;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.QuoteMode;
-import org.maestro.plotter.common.readers.CsvReader;
+import org.maestro.plotter.common.readers.StreamReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +29,7 @@ import java.io.Reader;
 /**
  * The reader for the recorded queue data
  */
-public class QueueReader extends CsvReader<QueueDataSet> {
+public class QueueReader extends StreamReader<QueueDataSet> {
     private static final Logger logger = LoggerFactory.getLogger(QueueReader.class);
 
     private final QueueProcessor queueProcessor;

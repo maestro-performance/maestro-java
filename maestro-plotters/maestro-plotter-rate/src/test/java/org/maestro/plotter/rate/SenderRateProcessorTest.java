@@ -17,6 +17,7 @@
 package org.maestro.plotter.rate;
 
 import org.junit.Before;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.maestro.plotter.common.properties.PropertyWriter;
 import org.maestro.plotter.common.statistics.Statistics;
@@ -28,38 +29,63 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class SenderRateProcessorTest extends CommonRateProcessorTest {
-    private final String fileName = this.getClass().getResource("/data-ok/senderd-rate-01.csv.gz").getPath();
-    private RateData rateData;
-
-    @Before
-    public void setUp() throws Exception {
-        RateDataProcessor queueProcessor = new RateDataProcessor();
-        DefaultRateReader queueReader = new DefaultRateReader(queueProcessor);
-
-        rateData = queueReader.read(fileName);
-    }
 
     @Test
-    public void testRecordCount() {
-        final int periodCount = 8;
+    public void testRecordCount() throws Exception {
+        RateData rateData = getData("/data-ok/sender.dat");
+
+        final int periodCount = 60;
         super.testRecordCount(periodCount, rateData);
     }
 
     @Test
-    public void testStatistics() {
+    public void testStatistics() throws Exception {
+        RateData rateData = getData("/data-ok/sender.dat");
 
         Statistics statistics = rateData.rateStatistics();
 
-        assertEquals("Unexpected average value for the max", 110.0,
+        assertEquals("Unexpected value for the max", 59,
                 statistics.getMax(), 0.0000);
 
-        assertEquals("Unexpected average value for the min", 100,
+        assertEquals("Unexpected value for the min", 0,
                 statistics.getMin(), 0.0000);
+
+        /*
+         For sender.dat is is 0 because the record contains 0 and it is being
+         mathematically strict
+         */
+        assertEquals("Unexpected value for the geometric mean", 0,
+                statistics.getGeometricMean(), 0.0000);
+
+        assertEquals("Unexpected value for the average mean", 29.5,
+                statistics.getMean(), 0.0000);
+    }
+
+    @Ignore
+    @Test
+    public void testStatisticsNonZero() throws Exception {
+        RateData rateData = getData("/data-ok/sender-non-zero.dat");
+
+        Statistics statistics = rateData.rateStatistics();
+
+        assertEquals("Unexpected value for the max", 59,
+                statistics.getMax(), 0.0000);
+
+        assertEquals("Unexpected value for the min", 0,
+                statistics.getMin(), 0.0000);
+
+        assertEquals("Unexpected value for the geometric mean", 23.191,
+                statistics.getGeometricMean(), 0.0000);
+
+        assertEquals("Unexpected value for the average mean", 30.5,
+                statistics.getMean(), 0.0000);
     }
 
     @Test
-    public void testProperties() throws IOException {
-        File sourceFile = new File(fileName);
+    public void testProperties() throws Exception {
+        RateData rateData = getData("/data-ok/sender.dat");
+
+        File sourceFile = new File(this.getClass().getResource("/data-ok/sender.dat").getPath());
         File outputFile = new File(sourceFile.getParentFile(), "rate.properties");
 
         PropertyWriter propertyWriter = new PropertyWriter();

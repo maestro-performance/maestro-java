@@ -113,8 +113,8 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
                 this.latencyWriterThread = new Thread(latencyWriter);
 
                 logger.debug("Creating the rate writer thread");
-                WorkerChannelWriter rateWriter = new WorkerChannelWriter(testLogDir, workers);
-                this.rateWriterThread = new Thread(rateWriter);
+                WorkerRateWriter workerRateWriter = new WorkerRateWriter(testLogDir, workers);
+                this.rateWriterThread = new Thread(workerRateWriter);
 
                 logger.debug("Starting the writers threads");
                 this.latencyWriterThread.start();

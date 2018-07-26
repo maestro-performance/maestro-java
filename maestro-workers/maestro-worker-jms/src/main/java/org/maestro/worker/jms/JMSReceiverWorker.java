@@ -27,7 +27,6 @@ import org.maestro.common.jms.ReceiverClient;
 import org.maestro.common.worker.MaestroReceiverWorker;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.common.worker.WorkerStateInfo;
-import org.maestro.common.writers.OneToOneWorkerChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,18 +49,12 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     private static final long HIGHEST_TRACKABLE_VALUE = TimeUnit.HOURS.toMicros(1);
     private final SingleWriterRecorder latencyRecorder = new SingleWriterRecorder(HIGHEST_TRACKABLE_VALUE, 3);
     //TODO the size need to be configured
-    private final OneToOneWorkerChannel workerChannel = new OneToOneWorkerChannel(128 * 1024);
 
     private volatile WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     private String url;
     private final Supplier<? extends ReceiverClient> clientFactory;
     private int number;
-
-    @Override
-    public OneToOneWorkerChannel workerChannel() {
-        return workerChannel;
-    }
 
     @Override
     public long messageCount() {
@@ -199,7 +192,6 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
                     handleInvalidLatency(sendTimeEpochMicros, nowInMicros, elapsedMicros);
                 }
 
-                workerChannel.emitRate(sendTimeEpochMicros, nowInMicros);
                 count++;
                 messageCount.lazySet(count);
             }

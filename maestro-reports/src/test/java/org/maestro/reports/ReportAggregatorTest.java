@@ -107,14 +107,14 @@ public class ReportAggregatorTest {
     }
 
     private void testSenderReportDir(Path aggregateReportNameDir) {
-        Path aggregateReportName = aggregateReportNameDir.resolve("senderd-rate.csv.gz");
+        Path aggregateReportName = aggregateReportNameDir.resolve("sender.dat");
 
         assertTrue(String.format("Aggregate report %s must exist", aggregateReportName),
                 Files.isRegularFile(aggregateReportName));
     }
 
     private void testReceiverReportDir(Path aggregateReportNameDir) {
-        Path aggregateReportName = aggregateReportNameDir.resolve("receiverd-rate.csv.gz");
+        Path aggregateReportName = aggregateReportNameDir.resolve("receiver.dat");
         Path aggregateLatencyReportName = aggregateReportNameDir.resolve("receiverd-latency.hdr");
 
         assertTrue(String.format("Aggregate report %s must exist", aggregateReportName),

@@ -20,7 +20,7 @@ import org.HdrHistogram.Histogram;
 import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.worker.MaestroReceiverWorker;
 import org.maestro.common.worker.MaestroWorker;
-import org.maestro.common.writers.LatencyWriter;
+import org.maestro.common.io.data.writers.LatencyWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
