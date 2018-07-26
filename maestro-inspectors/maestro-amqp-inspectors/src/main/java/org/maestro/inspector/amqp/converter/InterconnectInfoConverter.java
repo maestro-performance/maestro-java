@@ -8,17 +8,20 @@ import java.util.*;
 public class InterconnectInfoConverter {
 
     /**
-     * Parse received message body into better collection
+     * Parse received message body, in a Map format, into a list collection.
+     * Basically it converts a map object containing 2 entries (one for attributes
+     * and another for the attribute values (results)) into a list of maps of
+     * attributes and values. Check InterconnectInfoConverterTest for details.
+     *
      * @param map collected data
      * @return parsed into into list of hash maps
      */
     @SuppressWarnings("unchecked")
     public List parseReceivedMessage(Map map) {
-        List<Map<String, Object>> recordList = new ArrayList<>();
-
         List attributeNames = (List) map.get("attributeNames");
         List<List> results = (List<List>) map.get("results");
 
+        List<Map<String, Object>> recordList = new ArrayList<>();
 
         for (List result : results) {
             Map<String, Object> tmpRecord = new HashMap<>();
