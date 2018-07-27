@@ -195,6 +195,48 @@
                     </div>
                 </div>
 
+                <div class="row">
+                    <h2 id="#system-properties">System Properties</h2>
+                    <div>
+                        <table class="table table-striped table-bordered table-hover" id="system-properties-table">
+                            <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Value</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr>
+                                <td>Operating System</td>
+                                <td>{{ operatingSystemName }} - {{ operatingSystemVersion }}</td>
+                            </tr>
+                            <tr>
+                                <td>CPU Count</td>
+                                <td>{{ systemCpuCount }}</td>
+                            </tr>
+                            <tr>
+                                <td>Memory</td>
+                                <td>{{ systemMemory }}</td>
+                            </tr>
+                            <tr>
+                                <td>Java Verison</td>
+                                <td>{{ javaVersion }}</td>
+                            </tr>
+                            <tr>
+                                <td>Java Home</td>
+                                <td>{{ javaHome }}</td>
+                            </tr>
+                            <tr>
+                                <td>JVM Information</td>
+                                <td>{{ jvmName }} {{ jvmVersion }} {{ jvmPackageVersion }}</td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+
                 {% if nodeType == "receiver" %}
                 <div class="row">
                     <h2 id="lat-main">Latency</h2>
