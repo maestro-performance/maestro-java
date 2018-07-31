@@ -81,10 +81,10 @@ public class FileHeader {
 
     public static final int FORMAT_NAME_SIZE = 8;
 
-    private String formatName;
-    private int fileVersion;
-    private int maestroVersion;
-    private Role role;
+    private final String formatName;
+    private final int fileVersion;
+    private final int maestroVersion;
+    private final Role role;
 
     public static final String MAESTRO_FORMAT_NAME = "maestro";
     public static final int CURRENT_FILE_VERSION = 1;
@@ -116,21 +116,7 @@ public class FileHeader {
         BYTES = FORMAT_NAME_SIZE + Integer.BYTES + Integer.BYTES + Integer.BYTES;
     }
 
-    public FileHeader() {
-    }
-
     public FileHeader(final String formatName, int fileVersion, int maestroVersion, Role role) {
-        setFormatName(formatName);
-        setFileVersion(fileVersion);
-        setMaestroVersion(maestroVersion);
-        setRole(role);
-    }
-
-    public String getFormatName() {
-        return formatName;
-    }
-
-    private void setFormatName(final String formatName) {
         if (formatName == null || formatName.isEmpty() || formatName.length() > FORMAT_NAME_SIZE) {
             throw new InvalidHeaderValueException("The format name '" +
                     (formatName == null ? "null" : formatName) + "' is not valid");
@@ -142,31 +128,25 @@ public class FileHeader {
         else {
             this.formatName = formatName;
         }
+
+        this.fileVersion = fileVersion;
+        this.maestroVersion = maestroVersion;
+        this.role = role;
+    }
+
+    public String getFormatName() {
+        return formatName;
     }
 
     public int getFileVersion() {
         return fileVersion;
     }
 
-    private void setFileVersion(int fileVersion) {
-        this.fileVersion = fileVersion;
-    }
-
     public int getMaestroVersion() {
         return maestroVersion;
-    }
-
-    private void setMaestroVersion(int maestroVersion) {
-        this.maestroVersion = maestroVersion;
     }
 
     public Role getRole() {
         return role;
     }
-
-    private void setRole(Role role) {
-        this.role = role;
-    }
-
-
 }
