@@ -78,6 +78,19 @@ public class BinaryRateWriter implements RateWriter {
      * @throws IOException
      */
     public void write(int metadata, long count, long timestamp) throws IOException {
+        checkBufferCapacity();
+
+        long now = TimeUnit.MICROSECONDS.toSeconds(timestamp);
+
+        checkRecordTimeSlot(now);
+
+        byteBuffer.putInt(metadata);
+        byteBuffer.putLong(count);
+        byteBuffer.putLong(timestamp);
+        last = now;
+    }
+
+    private void checkBufferCapacity() throws IOException {
         final int remaining = byteBuffer.remaining();
 
         if (remaining < RateEntry.BYTES) {
@@ -87,23 +100,18 @@ public class BinaryRateWriter implements RateWriter {
 
             write();
         }
+    }
 
-        long now = TimeUnit.MICROSECONDS.toSeconds(timestamp);
+    private void checkRecordTimeSlot(long now) {
+        if (now <= last) {
+            if (now < last) {
+                logger.error("Cannot save sequential record with a timestamp in the in the past: now {} < {}", now, last);
+                throw new InvalidRecordException("Cannot save sequential record with a timestamp in the in the past");
+            }
 
-        if (now == last) {
             logger.error("Cannot save multiple records for within the same second slot: {} == {}", now, last);
             throw new InvalidRecordException("Cannot save multiple records for within the same second slot");
         }
-
-        if (now < last) {
-            logger.error("Cannot save sequential record with a timestamp in the in the past: now {} < {}", now, last);
-            throw new InvalidRecordException("Cannot save sequential record with a timestamp in the in the past");
-        }
-
-        byteBuffer.putInt(metadata);
-        byteBuffer.putLong(count);
-        byteBuffer.putLong(timestamp);
-        last = now;
     }
 
     /**
