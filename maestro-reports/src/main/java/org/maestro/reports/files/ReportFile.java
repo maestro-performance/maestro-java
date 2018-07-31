@@ -17,6 +17,7 @@
 package org.maestro.reports.files;
 
 import org.apache.commons.io.FilenameUtils;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.node.NodeType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -44,9 +45,21 @@ public class ReportFile {
         nodeType = NodeType.parse(normalizedFile.getName());
 
         File hostDir = normalizedFile.getParentFile();
+        if (hostDir == null) {
+            logger.warn("The host directory is not present for file {}", normalizedFile);
+            throw new MaestroException("Invalid directory structure for file " + sourceFile
+                    + ": host directory not present on the file structure");
+        }
+
         nodeHost = FilenameUtils.getBaseName(hostDir.getName());
 
         File testNumDir = hostDir.getParentFile();
+        if (testNumDir == null) {
+            logger.warn("The test number directory is not present for file {}", normalizedFile);
+            throw new MaestroException("Invalid directory structure for file " + sourceFile
+                    + ": test number directory not present on the file structure");
+        }
+
         try {
             testNum = Integer.parseInt(FilenameUtils.getBaseName(testNumDir.getName()));
         }

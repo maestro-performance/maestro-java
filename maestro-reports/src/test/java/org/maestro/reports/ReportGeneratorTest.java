@@ -19,6 +19,7 @@ package org.maestro.reports;
 import org.junit.Before;
 import org.junit.Test;
 import org.maestro.common.LogConfigurator;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.test.TestProperties;
 import org.maestro.plotter.common.exceptions.EmptyDataSet;
 
@@ -217,5 +218,14 @@ public class ReportGeneratorTest {
 
         validateRoleDirectoryStructure(new File(path),
                 Arrays.asList("inspector"), Arrays.asList());
+    }
+
+    @Test(timeout = 30000, expected = MaestroException.class)
+    public void testInvalidStructure() {
+        String path = this.getClass().getResource("/data-inv-dir-structure").getPath();
+
+        ReportGenerator reportGenerator = new ReportGenerator(path);
+
+        reportGenerator.generate();
     }
 }
