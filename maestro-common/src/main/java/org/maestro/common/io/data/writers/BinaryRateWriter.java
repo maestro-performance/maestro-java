@@ -80,11 +80,11 @@ public class BinaryRateWriter implements RateWriter {
     public void write(int metadata, long count, long timestamp) throws IOException {
         final int remaining = byteBuffer.remaining();
 
-        if (logger.isTraceEnabled()) {
-            logger.trace("Remaining: {}", remaining);
-        }
-
         if (remaining < RateEntry.BYTES) {
+            if (logger.isTraceEnabled()) {
+                logger.trace("There is not enough space on the buffer for a rate entry: {}", remaining);
+            }
+
             write();
         }
 
