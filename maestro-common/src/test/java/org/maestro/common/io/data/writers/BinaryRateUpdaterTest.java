@@ -64,7 +64,9 @@ public class BinaryRateUpdaterTest {
             FileHeader fileHeader = reader.getHeader();
             assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
             assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
-            assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
+
+            // The file was generated w/ when the code was still marked as 1.3.8-SNAPSHOT
+            assertEquals(138, fileHeader.getMaestroVersion());
             assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
 
             long count = 0;
