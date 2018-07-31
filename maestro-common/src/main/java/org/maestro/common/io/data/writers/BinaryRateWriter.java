@@ -84,7 +84,7 @@ public class BinaryRateWriter implements RateWriter {
             logger.trace("Remaining: {}", remaining);
         }
 
-        if (remaining < (Integer.BYTES + Long.BYTES + Long.BYTES)) {
+        if (remaining < RateEntry.BYTES) {
             write();
         }
 
