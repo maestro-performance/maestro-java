@@ -1,7 +1,6 @@
 package org.maestro.common.io.data.writers;
 
 import org.maestro.common.Constants;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.io.data.common.FileHeader;
 import org.maestro.common.io.data.common.RateEntry;
 import org.maestro.common.io.data.common.exceptions.InvalidRecordException;
