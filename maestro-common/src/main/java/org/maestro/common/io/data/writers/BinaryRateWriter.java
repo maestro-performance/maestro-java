@@ -78,7 +78,7 @@ public class BinaryRateWriter implements RateWriter {
      * @throws IOException
      */
     public void write(int metadata, long count, long timestamp) throws IOException {
-        int remaining = byteBuffer.remaining();
+        final int remaining = byteBuffer.remaining();
 
         if (logger.isTraceEnabled()) {
             logger.trace("Remaining: {}", remaining);
