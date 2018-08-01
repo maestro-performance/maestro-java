@@ -50,7 +50,7 @@ public class WorkerRateWriter implements Runnable {
         long currentTime = microClock.microTime();
 
         for (MaestroWorker worker : workers) {
-            if (worker.getClass() == clazz) {
+            if (worker.getClass() == clazz && worker.isRunning()) {
                 currentCount += worker.messageCount();
             }
         }
