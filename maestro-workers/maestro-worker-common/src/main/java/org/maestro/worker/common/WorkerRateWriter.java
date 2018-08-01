@@ -47,15 +47,23 @@ public class WorkerRateWriter implements Runnable {
 
     private void updateForWorker(Class<?> clazz, WriterCache cache) {
         long currentCount = 0;
+        boolean stopped = false;
         long currentTime = microClock.microTime();
 
         for (MaestroWorker worker : workers) {
-            if (worker.getClass() == clazz && worker.isRunning()) {
-                currentCount += worker.messageCount();
+            if (worker.getClass() == clazz) {
+                if (worker.isRunning()) {
+                    currentCount += worker.messageCount();
+                }
+                else {
+                    stopped = true;
+                }
             }
         }
 
-        writeRecord(clazz, cache, currentCount, currentTime);
+        if (!stopped) {
+            writeRecord(clazz, cache, currentCount, currentTime);
+        }
     }
 
     private void writeRecord(Class<?> clazz, WriterCache cache, long currentCount, long currentTime) {
@@ -63,6 +71,7 @@ public class WorkerRateWriter implements Runnable {
 
         try {
             long delta = currentCount - cache.count;
+
             writer.write(0, delta, currentTime);
             cache.count = currentCount;
         } catch (IOException e) {

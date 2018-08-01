@@ -14,18 +14,33 @@
  * limitations under the License.
  */
 
-package org.maestro.client.notes;
+package org.maestro.worker.common.watchdog;
 
+import org.maestro.worker.common.WorkerRuntimeInfo;
+
+import java.util.List;
 
 /**
- * Visitor that handles receiver-specific {@link MaestroEvent} instances.
+ * Actions that are run when the watchdog change state. For now it handles only
+ * start and stop state changes
  */
-@SuppressWarnings("unused")
-public interface MaestroReceiverEventListener {
+public interface WatchdogObserver {
 
-    void handle(StartReceiver note);
+    /**
+     * Actions that run on watchdog start
+     * @return
+     */
+    default boolean onStart() {
+        return true;
+    }
 
-    void handle(StopReceiver note);
+    /**
+     * Actions that run on watchdog stop
+     * @param workerRuntimeInfos
+     * @return
+     */
+    default boolean onStop(final List<WorkerRuntimeInfo> workerRuntimeInfos) {
+        return true;
+    }
 
-    void handle(DrainRequest note);
 }

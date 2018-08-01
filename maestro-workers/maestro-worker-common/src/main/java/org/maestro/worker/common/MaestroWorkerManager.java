@@ -282,6 +282,11 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         }
     }
 
+    @Override
+    public void handle(DrainCompleteNotification note) {
+        // NO-OP
+    }
+
     /**
      * Handle a log request note
      * @param note the note to handle

@@ -27,7 +27,6 @@ import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
-import org.maestro.common.exceptions.MaestroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -207,5 +206,22 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         ThrottleCallback throttleCallback = new ThrottleCallback();
 
         super.publish(MaestroTopics.MAESTRO_LOGS_TOPIC, logResponse, 0, false, throttleCallback);
+    }
+
+
+    public void notifyDrainComplete(final String message) {
+        logger.trace("Sending the drain complete notification from {}", this.toString());
+        DrainCompleteNotification notification = new DrainCompleteNotification();
+
+        notification.setName(clientName + "@" + host);
+        notification.setId(id);
+
+        notification.setMessage(message);
+
+        try {
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, true);
+        } catch (Exception e) {
+            logger.error("Unable to publish the drain complete notification: {}", e.getMessage(), e);
+        }
     }
 }

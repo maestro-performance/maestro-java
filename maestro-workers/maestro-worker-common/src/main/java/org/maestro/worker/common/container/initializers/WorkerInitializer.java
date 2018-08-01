@@ -14,18 +14,12 @@
  * limitations under the License.
  */
 
-package org.maestro.client.notes;
+package org.maestro.worker.common.container.initializers;
+
+import org.maestro.common.worker.MaestroWorker;
 
 
-/**
- * Visitor that handles receiver-specific {@link MaestroEvent} instances.
- */
-@SuppressWarnings("unused")
-public interface MaestroReceiverEventListener {
+public interface WorkerInitializer {
 
-    void handle(StartReceiver note);
-
-    void handle(StopReceiver note);
-
-    void handle(DrainRequest note);
+    MaestroWorker initialize(int number) throws IllegalAccessException, InstantiationException;
 }

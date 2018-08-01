@@ -71,4 +71,6 @@ class AgentConstants {
     static final String PROTOCOL_ERROR = "protocolerror";
 
     static final String INTERNAL_ERROR = "internalerror";
+
+    static final String DRAIN = "drain";
 }

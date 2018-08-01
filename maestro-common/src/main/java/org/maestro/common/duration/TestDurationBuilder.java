@@ -40,6 +40,10 @@ public class TestDurationBuilder {
             return new DurationTime(durationSpec);
         }
         else {
+            if (durationSpec.equals(DurationDrain.DURATION_DRAIN_FORMAT)) {
+                return new DurationDrain();
+            }
+
             return new DurationCount(durationSpec);
         }
     }

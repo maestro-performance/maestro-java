@@ -17,12 +17,12 @@
 package org.maestro.worker.common;
 
 import org.maestro.common.evaluators.Evaluator;
+import org.maestro.worker.common.watchdog.WatchdogObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.function.Consumer;
 
 import static org.maestro.worker.common.WorkerStateInfoUtil.isCleanExit;
 
@@ -33,9 +33,10 @@ import static org.maestro.worker.common.WorkerStateInfoUtil.isCleanExit;
 class WorkerWatchdog implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(WorkerWatchdog.class);
 
+    private final WorkerContainer workerContainer;
     private final List<WorkerRuntimeInfo> workers;
+
     private volatile boolean running = false;
-    private final Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped;
     private final Evaluator<?> evaluator;
 
 
@@ -43,10 +44,12 @@ class WorkerWatchdog implements Runnable {
      * Constructor
      * @param workers A list of workers to inspect
      */
-    public WorkerWatchdog(List<WorkerRuntimeInfo> workers,
-                          Consumer<? super List<WorkerRuntimeInfo>> onWorkersStopped, final Evaluator<?> evaluator) {
+    public WorkerWatchdog(final WorkerContainer workerContainer,
+                          final List<WorkerRuntimeInfo> workers,
+                          final Evaluator<?> evaluator) {
+        this.workerContainer = workerContainer;
         this.workers = new ArrayList<>(workers);
-        this.onWorkersStopped = onWorkersStopped;
+
         this.evaluator = evaluator;
     }
 
@@ -76,11 +79,14 @@ class WorkerWatchdog implements Runnable {
         running = true;
 
         try {
+            for (WatchdogObserver observer : workerContainer.getObservers()) {
+                observer.onStart();
+            }
+
             while (running && workersRunning()) {
                 try {
                     if (evaluator != null) {
                         if (!evaluator.eval()) {
-                            WorkerContainer container = WorkerContainer.getInstance();
 
                             /*
                              Note: shot at distance warning. This one will eventually reset
@@ -89,7 +95,7 @@ class WorkerWatchdog implements Runnable {
                              TODO: fix this shot-at-distance
                              */
 
-                            container.fail("The evaluation of the latency condition failed");
+                            workerContainer.fail("The evaluation of the latency condition failed");
                         }
                     }
 
@@ -102,7 +108,12 @@ class WorkerWatchdog implements Runnable {
             }
         } finally {
             logger.debug("Waiting for flushing workers's data");
-            this.onWorkersStopped.accept(workers);
+
+            for (WatchdogObserver observer : workerContainer.getObservers()) {
+                if (!observer.onStop(workers)) {
+                    logger.debug("Stopping observers because {} returned false", observer.getClass().getName());
+                }
+            }
 
             setRunning(false);
         }

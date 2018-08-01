@@ -520,6 +520,16 @@ public final class Maestro implements MaestroRequester {
         maestroClient.publish(topic, maestroNote);
     }
 
+    public void drainRequest(final String topic, final String duration, final String url, int parallelCount) {
+        DrainRequest drainRequest = new DrainRequest();
+
+        drainRequest.setDuration(duration);
+        drainRequest.setUrl(url);
+        drainRequest.setParallelCount(String.valueOf(parallelCount));
+
+        maestroClient.publish(topic, drainRequest);
+    }
+
     /**
      * Collect replies
      * @return A list of serialized maestro replies

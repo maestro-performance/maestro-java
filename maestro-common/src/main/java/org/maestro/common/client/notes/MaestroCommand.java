@@ -52,7 +52,9 @@ public enum MaestroCommand {
     MAESTRO_NOTE_STOP_AGENT(19),
     MAESTRO_NOTE_AGENT_SOURCE(21),
     MAESTRO_NOTE_USER_COMMAND_1(30),
-    MAESTRO_NOTE_LOG(40);
+    MAESTRO_NOTE_LOG(40),
+    MAESTRO_NOTE_DRAIN(41),
+    MAESTRO_NOTE_NOTIFY_DRAIN_COMPLETE(42);
 
     private final long value;
 
@@ -89,6 +91,8 @@ public enum MaestroCommand {
             case 21: return MAESTRO_NOTE_AGENT_SOURCE;
             case 30: return MAESTRO_NOTE_USER_COMMAND_1;
             case 40: return MAESTRO_NOTE_LOG;
+            case 41: return MAESTRO_NOTE_DRAIN;
+            case 42: return MAESTRO_NOTE_NOTIFY_DRAIN_COMPLETE;
             default: {
                 Logger logger = LoggerFactory.getLogger(MaestroCommand.class);
                 logger.error("The command {} is not implemented. This is a bug in Maestro", value);

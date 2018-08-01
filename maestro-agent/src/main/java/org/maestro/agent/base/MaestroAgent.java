@@ -388,4 +388,9 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
             logger.warn("The log directory for the agent does not exist");
         }
     }
+
+    @Override
+    public void handle(DrainRequest note) {
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.DRAIN, note));
+    }
 }
