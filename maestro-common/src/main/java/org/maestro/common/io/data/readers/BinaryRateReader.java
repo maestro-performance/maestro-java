@@ -15,7 +15,7 @@ public class BinaryRateReader implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(BinaryRateReader.class);
 
     private FileChannel fileChannel;
-    private ByteBuffer byteBuffer = ByteBuffer.allocate(FileHeader.BYTES + (RateEntry.BYTES * 20));
+    private ByteBuffer byteBuffer = ByteBuffer.allocateDirect(FileHeader.BYTES + (RateEntry.BYTES * 20));
 
     private final FileHeader fileHeader;
 

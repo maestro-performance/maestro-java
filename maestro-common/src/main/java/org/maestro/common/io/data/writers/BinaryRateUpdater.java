@@ -43,7 +43,7 @@ public class BinaryRateUpdater implements AutoCloseable {
     private FileChannel fileChannel;
     private FileHeader fileHeader;
 
-    private ByteBuffer byteBuffer = ByteBuffer.allocate(FileHeader.BYTES + 2);
+    private ByteBuffer byteBuffer = ByteBuffer.allocateDirect(FileHeader.BYTES + 2);
     private boolean overlay;
 
     /**

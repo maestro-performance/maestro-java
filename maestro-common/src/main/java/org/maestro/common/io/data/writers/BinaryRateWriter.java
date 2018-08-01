@@ -25,7 +25,7 @@ public class BinaryRateWriter implements RateWriter {
     private long last = 0;
 
     // TODO: size needs to be adjusted accordingly
-    private ByteBuffer byteBuffer = ByteBuffer.allocate(FileHeader.BYTES + (RateEntry.BYTES * 10));
+    private ByteBuffer byteBuffer = ByteBuffer.allocateDirect(FileHeader.BYTES + (RateEntry.BYTES * 10));
 
     /**
      * Constructor
