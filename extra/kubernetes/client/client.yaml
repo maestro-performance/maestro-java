@@ -73,7 +73,7 @@ spec:
               name: client-config
               key: reportFolder
       volumeMounts:
-        - mountPath: /opt/maestro/maestro-cli/config
+        - mountPath: /opt/maestro/maestro-cli/scripts
           name: config
         - mountPath: /maestro
           name: data
