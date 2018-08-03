@@ -19,15 +19,17 @@ package org.maestro.tests.rate;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.callback.MaestroNoteCallback;
-import org.maestro.client.notes.StatsResponse;
+import org.maestro.client.notes.DrainCompleteNotification;
+import org.maestro.client.notes.GetResponse;
 import org.maestro.client.notes.TestFailedNotification;
 import org.maestro.client.notes.TestSuccessfulNotification;
 import org.maestro.common.ConfigurationWrapper;
-import org.maestro.common.NodeUtils;
+import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.common.duration.DurationCount;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
+import org.maestro.tests.callbacks.DownloadCallback;
+import org.maestro.tests.callbacks.StatsCallBack;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -43,122 +45,6 @@ import java.util.concurrent.*;
  * A test executor that uses fixed rates
  */
 public class FixedRateTestExecutor extends AbstractTestExecutor {
-    private static final class StatsCallBack implements MaestroNoteCallback {
-        private static final Logger logger = LoggerFactory.getLogger(StatsCallBack.class);
-
-        private final FixedRateTestExecutor executor;
-        private final Map<String, Long> counters = new HashMap<>();
-
-        StatsCallBack(FixedRateTestExecutor executor) {
-            this.executor = executor;
-        }
-
-        private void reset() {
-            counters.clear();
-        }
-
-        @Override
-        public void call(MaestroNote note) {
-            if (!executor.warmUp || !executor.running) {
-                return;
-            }
-
-            if (note instanceof StatsResponse) {
-                StatsResponse statsResponse = (StatsResponse) note;
-                logger.debug("Received stats {}", statsResponse);
-
-                int targetRate = executor.testProfile.getRate();
-                if (statsResponse.getRate() < (targetRate / 2) && statsResponse.getRate() > 0) {
-                    logger.warn("The warm-up duration might expire of time instead of count because the current " +
-                            "rate {} is much lower than the target rate {}", statsResponse.getRate(),
-                            executor.testProfile.getRate());
-                }
-
-                updateCounters(statsResponse);
-
-                long messageCount = counters.values().stream().mapToLong(Number::longValue).sum();
-                logger.debug("Current message count: {}", messageCount);
-                if (messageCount >= DurationCount.WARM_UP_COUNT) {
-                    logger.info("The warm-up count has been reached: {} of {}",
-                            messageCount, DurationCount.WARM_UP_COUNT);
-                    this.executor.stopServices();
-                    reset();
-                }
-                else {
-                    final int maxDuration = 3;
-                    Instant now = Instant.now();
-
-                    Duration elapsed = Duration.between(now, executor.startTime);
-                    if (elapsed.getSeconds() > (Duration.ofMinutes(maxDuration).getSeconds())) {
-                        logger.warn("Stopping the warm-up because the maximum duration was reached");
-
-                        this.executor.stopServices();
-                        reset();
-                    }
-                }
-            }
-        }
-
-        private void updateCounters(StatsResponse statsResponse) {
-            final String name = statsResponse.getName();
-            String type = NodeUtils.getTypeFromName(name);
-            if (type.equals("inspector") || type.equals("agent")) {
-                return;
-            }
-
-            Long nodeCount = counters.get(name);
-            if (nodeCount == null) {
-                nodeCount = statsResponse.getCount();
-            }
-            else {
-                nodeCount += statsResponse.getCount();
-            }
-            counters.put(name, nodeCount);
-        }
-    }
-
-    private static final class TestNotificationCallBack implements MaestroNoteCallback {
-        private static final Logger logger = LoggerFactory.getLogger(TestNotificationCallBack.class);
-
-        final FixedRateTestExecutor executor;
-
-        public TestNotificationCallBack(FixedRateTestExecutor executor) {
-            this.executor = executor;
-        }
-
-        @Override
-        public void call(MaestroNote note) {
-            if (!executor.running) {
-                return;
-            }
-
-            if (note instanceof TestSuccessfulNotification) {
-                executor.successNotifications++;
-                executor.testProcessor.processNotifySuccess((TestSuccessfulNotification) note);
-
-                executor.executorService.shutdown();
-            }
-            else {
-                if (note instanceof TestFailedNotification) {
-                    executor.failedNotifications++;
-                    executor.testProcessor.processNotifyFail((TestFailedNotification) note);
-
-                    executor.executorService.shutdown();
-                }
-            }
-
-            int totalNotifications = executor.failedNotifications + executor.successNotifications;
-            if (executor.numPeers > 0 && totalNotifications > 0) {
-                if (totalNotifications >= executor.numPeers) {
-                    logger.info("Received the required amount of notifications");
-                    executor.running = false;
-                }
-            }
-
-
-        }
-    }
-
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestExecutor.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
     private final FixedRateTestProfile testProfile;
@@ -167,8 +53,6 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     private final FixedRateTestProcessor testProcessor;
 
     private int numPeers = 0;
-    private volatile int successNotifications = 0;
-    private volatile int failedNotifications = 0;
     private volatile boolean running = false;
     private Instant startTime;
     private volatile boolean warmUp = false;
@@ -188,15 +72,20 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
 
         List<MaestroNoteCallback> callbackList = getMaestro().getCollector().getCallbacks();
         callbackList.add(new StatsCallBack(this));
-        callbackList.add(new TestNotificationCallBack(this));
+        callbackList.add(new DownloadCallback(this));
     }
 
     private void reset() {
         numPeers = 0;
-        successNotifications = 0;
-        failedNotifications = 0;
         running = false;
         warmUp = false;
+    }
+
+    private void addDataServer(GetResponse note) {
+        if (note.getOption() == GetOption.MAESTRO_NOTE_OPT_GET_DS) {
+            logger.info("Registering data server at {}", note.getValue());
+            testProcessor.getDataServers().put(note.getName(), note.getValue());
+        }
     }
 
     private boolean runTest() {
@@ -211,8 +100,10 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
                 return false;
             }
 
-            resolveDataServers();
-            processReplies(testProcessor, 60, numPeers);
+            List<? extends MaestroNote> dataServers = getMaestro().getDataServer().get();
+            dataServers.stream()
+                    .filter(note -> note instanceof GetResponse)
+                    .forEach(note -> addDataServer((GetResponse) note));
 
             if (warmUp) {
                 getReportsDownloader().getOrganizer().getTracker().setCurrentTest(0);
@@ -237,32 +128,63 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             Runnable task = () -> { getMaestro().statsRequest(); };
             executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
 
-            ExecutorService resultService = Executors.newSingleThreadExecutor();
-
-            Future<Boolean> testResultFuture = resultService.submit(() -> getTestResult());
-
             long timeout = getTimeout();
             logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
-            Boolean testResult = testResultFuture.get(timeout, TimeUnit.SECONDS);
+            List<? extends MaestroNote> results = getMaestro()
+                    .waitForNotifications(timeout, numPeers)
+                    .get();
 
-            if (testResult == true) {
-                logger.info("Test {} completed successfully", phaseName());
-                return true;
-            }
-            else {
+            long failed = results.stream()
+                    .filter(note -> isTestFailed(note))
+                    .count();
+
+            if (failed > 0) {
                 logger.info("Test {} completed unsuccessfully", phaseName());
                 return false;
             }
-        }
-        catch (TimeoutException e) {
-            logger.error("The test timed out before notifications were received");
+
+            logger.info("Test {} completed successfully", phaseName());
+            return true;
         }
         catch (Exception e) {
             logger.error("Error: {}", e.getMessage(), e);
         }
         finally {
+            try {
+                final List<? extends MaestroNote> drainReplies = getMaestro().waitForDrain(15000).get();
+
+                drainReplies.stream()
+                        .filter(note -> isFailed(note));
+
+            } catch (ExecutionException | InterruptedException e) {
+                logger.error("Error checking the draining status: {}", e.getMessage(), e);
+            }
+
             reset();
             stopServices();
+        }
+
+        return false;
+    }
+
+    private boolean isFailed(MaestroNote note) {
+        boolean success = true;
+
+        if (note instanceof DrainCompleteNotification) {
+            success = ((DrainCompleteNotification) note).isSuccessful();
+            if (!success) {
+                logger.error("Drained failed for {}", ((DrainCompleteNotification) note).getName());
+            }
+        }
+
+        return success;
+    }
+
+    private boolean isTestFailed(MaestroNote note) {
+        if (note instanceof TestFailedNotification) {
+            TestFailedNotification testFailedNotification = (TestFailedNotification) note;
+            logger.error("Test failed on {}: {}", testFailedNotification.getName(), testFailedNotification.getMessage());
+            return true;
         }
 
         return false;
@@ -272,36 +194,6 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         return warmUp ? "warm-up" : "run";
     }
 
-    private boolean getTestResult() {
-        int totalNotifications = 0;
-
-        do {
-            totalNotifications = failedNotifications + successNotifications;
-            if (totalNotifications < numPeers) {
-                logger.debug("Not enough notifications received yet: received {} of {}", totalNotifications, numPeers);
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    return false;
-                }
-            }
-            else {
-                logger.info("Received all the required notifications: {} of {}", totalNotifications, numPeers);
-                break;
-            }
-
-        } while (true);
-
-        return true;
-    }
-
-    private boolean canWait(int totalNotifications, int notificationRetries) {
-        if (totalNotifications < numPeers) {
-            return notificationRetries > 0;
-        }
-
-        return false;
-    }
 
     private long getTimeout() {
         long repeat;
@@ -348,5 +240,25 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     @Override
     public long getCoolDownPeriod() {
         return coolDownPeriod;
+    }
+
+    public boolean isWarmUp() {
+        return warmUp;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public FixedRateTestProfile getTestProfile() {
+        return testProfile;
+    }
+
+    public FixedRateTestProcessor getTestProcessor() {
+        return testProcessor;
+    }
+
+    public Instant getStartTime() {
+        return startTime;
     }
 }

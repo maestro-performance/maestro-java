@@ -23,6 +23,7 @@ import org.msgpack.core.MessageUnpacker;
 import java.io.IOException;
 
 public class DrainCompleteNotification extends MaestroNotification {
+    private boolean successful;
     private String message;
 
     public DrainCompleteNotification() {
@@ -32,7 +33,16 @@ public class DrainCompleteNotification extends MaestroNotification {
     public DrainCompleteNotification(MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_NOTIFY_DRAIN_COMPLETE, unpacker);
 
+        successful = unpacker.unpackBoolean();
         message = unpacker.unpackString();
+    }
+
+    public boolean isSuccessful() {
+        return successful;
+    }
+
+    public void setSuccessful(boolean successful) {
+        this.successful = successful;
     }
 
     public String getMessage() {
@@ -52,6 +62,7 @@ public class DrainCompleteNotification extends MaestroNotification {
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
+        packer.packBoolean(successful);
         packer.packString(message);
 
         return packer;
@@ -59,8 +70,9 @@ public class DrainCompleteNotification extends MaestroNotification {
 
     @Override
     public String toString() {
-        return "TestFailedNotification{" +
-                "message='" + message + '\'' +
+        return "DrainCompleteNotification{" +
+                "successful=" + successful +
+                ", message='" + message + '\'' +
                 "} " + super.toString();
     }
 }

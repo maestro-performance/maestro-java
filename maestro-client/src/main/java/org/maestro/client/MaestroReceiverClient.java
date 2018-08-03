@@ -209,13 +209,14 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     }
 
 
-    public void notifyDrainComplete(final String message) {
+    public void notifyDrainComplete(boolean status, final String message) {
         logger.trace("Sending the drain complete notification from {}", this.toString());
         DrainCompleteNotification notification = new DrainCompleteNotification();
 
         notification.setName(clientName + "@" + host);
         notification.setId(id);
 
+        notification.setSuccessful(status);
         notification.setMessage(message);
 
         try {

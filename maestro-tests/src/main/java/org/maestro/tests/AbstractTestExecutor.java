@@ -25,6 +25,7 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.NodeUtils;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,6 +33,8 @@ import org.slf4j.LoggerFactory;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 /**
  * A simple test executor that should be extensible for most usages
@@ -42,6 +45,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     private final Maestro maestro;
     private final ReportsDownloader reportsDownloader;
+    private volatile boolean drained;
 
 
     public AbstractTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader) {
@@ -83,7 +87,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      * Stop connected peers
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
-    final protected void stopServices() throws MaestroConnectionException {
+    final public void stopServices() throws MaestroConnectionException {
         maestro.stopSender();
 
         /**
@@ -149,11 +153,14 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         maestro.collect();
 
         logger.debug("Sending ping request");
-        maestro.pingRequest();
+        CompletableFuture<List<? extends MaestroNote>> repliesFuture = maestro.pingRequest();
 
-        Thread.sleep(5000);
-
-        List<MaestroNote> replies = maestro.collect();
+        List<? extends MaestroNote> replies = null;
+        try {
+            replies = repliesFuture.get();
+        } catch (ExecutionException e) {
+            throw new MaestroException("Unable to collect peers", e);
+        }
         Set<String> knownPeers = new LinkedHashSet<>(replies.size());
 
         for (MaestroNote note : replies) {
@@ -180,6 +187,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      * Resolve the data servers connected to the test cluster
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
+    @Deprecated
     protected void resolveDataServers() throws MaestroConnectionException {
         logger.debug("Collecting responses to ensure topic is clean prior to collecting data servers");
         maestro.collect();
@@ -188,6 +196,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         maestro.getDataServer();
     }
 
+    @Deprecated
     protected MaestroProcessedInfo processNotifications(final AbstractTestProcessor testProcessor, long repeat, int numPeers) {
         List<MaestroNote> replies = getMaestro().collect(1000, repeat, numPeers, reply -> reply instanceof MaestroNotification);
 
@@ -195,6 +204,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     }
 
 
+    @Deprecated
     protected MaestroProcessedInfo processReplies(final AbstractTestProcessor testProcessor, long repeat, int numPeers) {
         List<MaestroNote> replies = getMaestro().collect(1000, repeat, numPeers);
 

@@ -64,6 +64,7 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     }
 
     @Override
+    @Deprecated
     protected boolean processGetResponse(GetResponse note) {
         logger.debug("Processing data server response");
         super.processGetResponse(note);
@@ -197,5 +198,9 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
      */
     public void resetNotifications() {
         this.notifications = 0;
+    }
+
+    public Map<String, String> getDataServers() {
+        return dataServers;
     }
 }

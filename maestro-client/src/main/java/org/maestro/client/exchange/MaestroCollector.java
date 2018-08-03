@@ -26,6 +26,8 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
 
 
 public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
@@ -65,6 +67,14 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         while(collected.peek() != null) {
             ret.add(collected.poll());
         }
+
+        logger.trace("Number of messages collected: {}", ret.size());
+        return ret;
+    }
+
+    public List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
+        logger.trace("Collecting messages");
+        List<MaestroNote> ret =  collected.stream().filter(predicate).collect(Collectors.toList());
 
         logger.trace("Number of messages collected: {}", ret.size());
         return ret;

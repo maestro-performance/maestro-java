@@ -45,10 +45,10 @@ public class DrainObserver implements WatchdogObserver {
 
             workerContainer.waitForComplete(drainRetries * 1000);
             logger.info("Drain completed successfully");
-            client.notifyDrainComplete("Drain completed successfully");
+            client.notifyDrainComplete(true, "Drain completed successfully");
         } catch (Throwable t) {
             logger.error("Unable to start drain workers: {}", t.getMessage(), t);
-            client.notifyDrainComplete("Drain completed with warnings");
+            client.notifyDrainComplete(false, "Drain completed with warnings");
         }
 
         return true;

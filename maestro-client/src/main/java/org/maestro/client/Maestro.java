@@ -21,6 +21,7 @@ import org.maestro.client.exchange.MaestroCollectorExecutor;
 import org.maestro.client.exchange.MaestroMqttClient;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.notes.*;
+import org.maestro.client.notes.InternalError;
 import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.MaestroRequester;
 import org.maestro.common.client.notes.GetOption;
@@ -32,7 +33,9 @@ import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
+import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 
@@ -84,8 +87,8 @@ public final class Maestro implements MaestroRequester {
      * Sends a flush request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void flushRequest() throws MaestroConnectionException {
-        flushRequest(MaestroTopics.ALL_DAEMONS);
+    public CompletableFuture<List<? extends MaestroNote>> flushRequest() throws MaestroConnectionException {
+        return flushRequest(MaestroTopics.ALL_DAEMONS);
     }
 
 
@@ -94,18 +97,19 @@ public final class Maestro implements MaestroRequester {
      * @param topic the topic to send the request to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void flushRequest(final String topic) throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> flushRequest(final String topic) throws MaestroConnectionException {
         FlushRequest maestroNote = new FlushRequest();
 
         maestroClient.publish(topic, maestroNote);
+        return getOkErrorCompletableFuture();
     }
 
     /**
      * Sends a ping request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void pingRequest() throws MaestroConnectionException {
-        pingRequest(MaestroTopics.ALL_DAEMONS);
+    public CompletableFuture<List<? extends MaestroNote>> pingRequest() throws MaestroConnectionException {
+        return pingRequest(MaestroTopics.ALL_DAEMONS);
     }
 
 
@@ -114,36 +118,64 @@ public final class Maestro implements MaestroRequester {
      * @param topic the topic to send the request to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void pingRequest(final String topic) throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> pingRequest(final String topic) throws MaestroConnectionException {
         PingRequest maestroNote = new PingRequest();
 
         maestroClient.publish(topic, maestroNote);
+
+        final CompletableFuture<List<? extends MaestroNote>> ret =  CompletableFuture.supplyAsync(
+                new Supplier<List<? extends MaestroNote>>() {
+                    @Override
+                    public List<? extends MaestroNote> get() {
+                        return collect(1000, note -> note instanceof PingResponse);
+                    }
+                }
+        );
+
+        return ret;
     }
 
+    private boolean isSetReply(MaestroNote note) {
+        return note instanceof OkResponse || note instanceof InternalError;
+    }
+
+    private CompletableFuture<List<? extends MaestroNote>> getSetCompletableFuture() {
+        return CompletableFuture.supplyAsync(
+                new Supplier<List<? extends MaestroNote>>() {
+                    @Override
+                    public List<? extends MaestroNote> get() {
+                        return collect(1000, Maestro.this::isSetReply);
+                    }
+                }
+        );
+    }
 
     /**
      * Sends a set broker request
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void setBroker(final String value) throws MaestroConnectionException {
-        setBroker(MaestroTopics.ALL_DAEMONS, value);
+    public CompletableFuture<List<? extends MaestroNote>> setBroker(final String value) throws MaestroConnectionException {
+        return setBroker(MaestroTopics.ALL_DAEMONS, value);
     }
 
 
     /**
      * Sends a set broker request
-     * @param value The value to set the (remote) parameter to
      * @param topic the topic to send the request to
+     * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void setBroker(final String topic, final String value) throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> setBroker(final String topic, final String value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setBroker(value);
 
         maestroClient.publish(topic, maestroNote);
+        return getSetCompletableFuture();
     }
+
+
 
 
     /**
@@ -151,8 +183,8 @@ public final class Maestro implements MaestroRequester {
      * @param value The value to set the (remote) parameter to
      * @throws MaestroException if unable to send the MQTT request
      */
-    public void setDuration(final Object value) throws MaestroException {
-        setDuration(MaestroTopics.ALL_DAEMONS, value);
+    public CompletableFuture<List<? extends MaestroNote>> setDuration(final Object value) throws MaestroException {
+        return setDuration(MaestroTopics.ALL_DAEMONS, value);
     }
 
 
@@ -162,7 +194,7 @@ public final class Maestro implements MaestroRequester {
      * @param value The value to set the (remote) parameter to
      * @throws MaestroException if unable to send the MQTT request
      */
-    public void setDuration(final String topic, final Object value) throws MaestroException {
+    public CompletableFuture<List<? extends MaestroNote>> setDuration(final String topic, final Object value) throws MaestroException {
         SetRequest maestroNote = new SetRequest();
 
         if (value instanceof String) {
@@ -178,6 +210,7 @@ public final class Maestro implements MaestroRequester {
         }
 
         maestroClient.publish(topic, maestroNote);
+        return getSetCompletableFuture();
     }
 
 
@@ -187,8 +220,8 @@ public final class Maestro implements MaestroRequester {
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void setLogLevel(final String value) throws MaestroConnectionException {
-        setLogLevel(MaestroTopics.ALL_DAEMONS, value);
+    public CompletableFuture<List<? extends MaestroNote>> setLogLevel(final String value) throws MaestroConnectionException {
+        return setLogLevel(MaestroTopics.ALL_DAEMONS, value);
     }
 
 
@@ -198,12 +231,13 @@ public final class Maestro implements MaestroRequester {
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void setLogLevel(final String topic, final String value) throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> setLogLevel(final String topic, final String value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setLogLevel(value);
 
         maestroClient.publish(topic, maestroNote);
+        return getSetCompletableFuture();
     }
 
 
@@ -212,8 +246,8 @@ public final class Maestro implements MaestroRequester {
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void setParallelCount(final int value) throws MaestroConnectionException {
-        setParallelCount(MaestroTopics.ALL_DAEMONS, value);
+    public CompletableFuture<List<? extends MaestroNote>> setParallelCount(final int value) throws MaestroConnectionException {
+        return setParallelCount(MaestroTopics.ALL_DAEMONS, value);
     }
 
 
@@ -223,13 +257,14 @@ public final class Maestro implements MaestroRequester {
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void setParallelCount(final String topic, final int value) throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> setParallelCount(final String topic, final int value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
 
         maestroNote.setParallelCount(Integer.toString(value));
 
         maestroClient.publish(topic, maestroNote);
+        return getSetCompletableFuture();
     }
 
     /**
@@ -238,12 +273,13 @@ public final class Maestro implements MaestroRequester {
      * @param value the value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void setMessageSize(final String value) throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> setMessageSize(final String value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setMessageSize(value);
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+        return getSetCompletableFuture();
     }
 
 
@@ -253,12 +289,13 @@ public final class Maestro implements MaestroRequester {
      * @param value the value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void setMessageSize(final long value) throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> setMessageSize(final long value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setMessageSize(Long.toString(value));
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+        return getSetCompletableFuture();
     }
 
 
@@ -267,8 +304,8 @@ public final class Maestro implements MaestroRequester {
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void setThrottle(final int value) throws MaestroConnectionException {
-        setThrottle(MaestroTopics.ALL_DAEMONS, value);
+    public CompletableFuture<List<? extends MaestroNote>> setThrottle(final int value) throws MaestroConnectionException {
+        return setThrottle(MaestroTopics.ALL_DAEMONS, value);
     }
 
 
@@ -278,12 +315,13 @@ public final class Maestro implements MaestroRequester {
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void setThrottle(final String topic, final int value) throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> setThrottle(final String topic, final int value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setThrottle(Integer.toString(value));
 
         maestroClient.publish(topic, maestroNote);
+        return getSetCompletableFuture();
     }
 
 
@@ -292,8 +330,8 @@ public final class Maestro implements MaestroRequester {
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void setRate(final int value) throws MaestroConnectionException {
-        setRate(MaestroTopics.ALL_DAEMONS, value);
+    public CompletableFuture<List<? extends MaestroNote>> setRate(final int value) throws MaestroConnectionException {
+        return setRate(MaestroTopics.ALL_DAEMONS, value);
     }
 
 
@@ -303,12 +341,13 @@ public final class Maestro implements MaestroRequester {
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void setRate(final String topic, final int value) throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> setRate(final String topic, final int value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setRate(Integer.toString(value));
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+        return getSetCompletableFuture();
     }
 
 
@@ -317,12 +356,13 @@ public final class Maestro implements MaestroRequester {
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void setFCL(final int value) throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> setFCL(final int value) throws MaestroConnectionException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setFCL(Integer.toString(value));
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+        return getSetCompletableFuture();
     }
 
 
@@ -331,12 +371,13 @@ public final class Maestro implements MaestroRequester {
      * @param value The management interface URL
      * @throws MaestroException if unable to send the MQTT request
      */
-    public void setManagementInterface(final String value) throws MaestroException {
+    public CompletableFuture<List<? extends MaestroNote>> setManagementInterface(final String value) throws MaestroException {
         SetRequest maestroNote = new SetRequest();
 
         maestroNote.setManagementInterface(value);
 
         maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, maestroNote);
+        return getSetCompletableFuture();
     }
 
 
@@ -346,23 +387,40 @@ public final class Maestro implements MaestroRequester {
      *              command
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void startInspector(final String value) throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> startInspector(final String value) throws MaestroConnectionException {
         StartInspector maestroNote = new StartInspector();
 
         maestroNote.set(value);
 
         maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, maestroNote);
+        return getSetCompletableFuture();
     }
 
+
+    private Predicate<MaestroNote> isOkOrErrorResponse() {
+        return note -> note instanceof OkResponse || note instanceof InternalError;
+    }
+
+    private CompletableFuture<List<? extends MaestroNote>> getOkErrorCompletableFuture() {
+        return CompletableFuture.supplyAsync(
+                new Supplier<List<? extends MaestroNote>>() {
+                    @Override
+                    public List<? extends MaestroNote> get() {
+                        return collect(1000, isOkOrErrorResponse());
+                    }
+                }
+        );
+    }
 
     /**
      * Sends a stop inspector request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void stopInspector() throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> stopInspector() throws MaestroConnectionException {
         StopInspector maestroNote = new StopInspector();
 
         maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, maestroNote);
+        return getOkErrorCompletableFuture();
     }
 
 
@@ -370,10 +428,11 @@ public final class Maestro implements MaestroRequester {
      * Sends a start sender request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void startSender() throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> startSender() throws MaestroConnectionException {
         StartSender maestroNote = new StartSender();
 
         maestroClient.publish(MaestroTopics.SENDER_DAEMONS, maestroNote);
+        return getOkErrorCompletableFuture();
     }
 
 
@@ -381,20 +440,22 @@ public final class Maestro implements MaestroRequester {
      * Sends a stop sender request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void stopSender() throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> stopSender() throws MaestroConnectionException {
         StopSender maestroNote = new StopSender();
 
         maestroClient.publish(MaestroTopics.SENDER_DAEMONS, maestroNote);
+        return getOkErrorCompletableFuture();
     }
 
     /**
      * Sends a start receiver request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void startReceiver() throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> startReceiver() throws MaestroConnectionException {
         StartReceiver maestroNote = new StartReceiver();
 
         maestroClient.publish(MaestroTopics.RECEIVER_DAEMONS, maestroNote);
+        return getOkErrorCompletableFuture();
     }
 
 
@@ -402,10 +463,11 @@ public final class Maestro implements MaestroRequester {
      * Sends a stop receiver request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void stopReceiver() throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> stopReceiver() throws MaestroConnectionException {
         StopReceiver maestroNote = new StopReceiver();
 
         maestroClient.publish(MaestroTopics.RECEIVER_DAEMONS, maestroNote);
+        return getOkErrorCompletableFuture();
     }
 
 
@@ -413,10 +475,11 @@ public final class Maestro implements MaestroRequester {
      * Sends a stats request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void statsRequest() throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> statsRequest() throws MaestroConnectionException {
         StatsRequest maestroNote = new StatsRequest();
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+        return getOkErrorCompletableFuture();
     }
 
 
@@ -424,10 +487,11 @@ public final class Maestro implements MaestroRequester {
      * Sends a halt request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void halt() throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> halt() throws MaestroConnectionException {
         Halt maestroNote = new Halt();
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+        return getOkErrorCompletableFuture();
     }
 
 
@@ -435,45 +499,63 @@ public final class Maestro implements MaestroRequester {
      * Sends a get request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void getDataServer() throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> getDataServer() throws MaestroConnectionException {
         GetRequest maestroNote = new GetRequest();
 
         maestroNote.setGetOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+        return CompletableFuture.supplyAsync(
+                new Supplier<List<? extends MaestroNote>>() {
+                    @Override
+                    public List<? extends MaestroNote> get() {
+                        return collect(1000, note -> note instanceof InternalError || note instanceof GetResponse);
+                    }
+                }
+        );
     }
 
     /**
      * Sends a start agent request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void startAgent() throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> startAgent() throws MaestroConnectionException {
         StartAgent maestroNote = new StartAgent();
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+        return getOkErrorCompletableFuture();
     }
 
     /**
      * Sends a stop agent request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void stopAgent() throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> stopAgent() throws MaestroConnectionException {
         StopAgent maestroNote = new StopAgent();
 
         maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
+        return getOkErrorCompletableFuture();
     }
 
     /**
      * Sends a user command request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void userCommand(final long option, final String payload) throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> userCommand(final long option, final String payload) throws MaestroConnectionException {
         UserCommand1Request maestroNote = new UserCommand1Request();
 
         maestroNote.set(option, payload);
 
 
         maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
+        return CompletableFuture.supplyAsync(
+                new Supplier<List<? extends MaestroNote>>() {
+                    @Override
+                    public List<? extends MaestroNote> get() {
+                        return collect(1000, note -> note instanceof UserCommand1Response || note instanceof InternalError);
+                    }
+                }
+        );
     }
 
     /**
@@ -482,13 +564,21 @@ public final class Maestro implements MaestroRequester {
      * @param branch branch to use for the source URL
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
-    public void sourceRequest(final String sourceUrl, final String branch) throws MaestroConnectionException {
+    public CompletableFuture<List<? extends MaestroNote>> sourceRequest(final String sourceUrl, final String branch) throws MaestroConnectionException {
         AgentSourceRequest maestroNote = new AgentSourceRequest();
 
         maestroNote.setSourceUrl(sourceUrl);
         maestroNote.setBranch(branch);
 
         maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
+        return CompletableFuture.supplyAsync(
+                new Supplier<List<? extends MaestroNote>>() {
+                    @Override
+                    public List<? extends MaestroNote> get() {
+                        return collect(1000, isOkOrErrorResponse());
+                    }
+                }
+        );
     }
 
     /**
@@ -520,7 +610,7 @@ public final class Maestro implements MaestroRequester {
         maestroClient.publish(topic, maestroNote);
     }
 
-    public void drainRequest(final String topic, final String duration, final String url, int parallelCount) {
+    public CompletableFuture<List<? extends MaestroNote>> drainRequest(final String topic, final String duration, final String url, int parallelCount) {
         DrainRequest drainRequest = new DrainRequest();
 
         drainRequest.setDuration(duration);
@@ -528,6 +618,14 @@ public final class Maestro implements MaestroRequester {
         drainRequest.setParallelCount(String.valueOf(parallelCount));
 
         maestroClient.publish(topic, drainRequest);
+        return CompletableFuture.supplyAsync(
+                new Supplier<List<? extends MaestroNote>>() {
+                    @Override
+                    public List<? extends MaestroNote> get() {
+                        return collect(1000,isOkOrErrorResponse());
+                    }
+                }
+        );
     }
 
     /**
@@ -636,6 +734,22 @@ public final class Maestro implements MaestroRequester {
         return replies;
     }
 
+    /**
+     * Collect replies up to a certain limit of retries/timeout
+     * @param wait how much time between each retry
+     * @param predicate Returns only the messages matching the predicate
+     * @return A list of serialized maestro replies or null if none. May return less that expected.
+     */
+    private List<MaestroNote> collect(long wait, Predicate<? super MaestroNote> predicate) {
+        try {
+            Thread.sleep(wait);
+        } catch (InterruptedException e) {
+            logger.warn("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
+        }
+
+        return collectorExecutor.getCollector().collect(predicate);
+    }
+
 
     /**
      * Get the collector receiving the messages
@@ -644,4 +758,32 @@ public final class Maestro implements MaestroRequester {
     public MaestroCollector getCollector() {
         return collectorExecutor.getCollector();
     }
+
+    public CompletableFuture<List<? extends MaestroNote>> waitForDrain(long timeout) {
+        return CompletableFuture.supplyAsync(
+                new Supplier<List<? extends MaestroNote>>() {
+                    @Override
+                    public List<? extends MaestroNote> get() {
+                        return collect(timeout, note -> note instanceof DrainCompleteNotification || note instanceof InternalError);
+                    }
+                }
+        );
+    }
+
+
+    public CompletableFuture<List<? extends MaestroNote>> waitForNotifications(long timeout, int expect) {
+        return CompletableFuture.supplyAsync(
+                new Supplier<List<? extends MaestroNote>>() {
+                    @Override
+                    public List<? extends MaestroNote> get() {
+                        return collect(1000, timeout, expect, maestroNotificationPredicate());
+                    }
+                }
+        );
+    }
+
+    private Predicate<MaestroNote> maestroNotificationPredicate() {
+        return note -> note instanceof TestSuccessfulNotification || note instanceof InternalError || note instanceof TestFailedNotification;
+    }
+
 }
