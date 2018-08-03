@@ -37,6 +37,7 @@ import java.time.Instant;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.*;
 
 /**
  * A test executor that uses fixed rates
@@ -134,11 +135,15 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             if (note instanceof TestSuccessfulNotification) {
                 executor.successNotifications++;
                 executor.testProcessor.processNotifySuccess((TestSuccessfulNotification) note);
+
+                executor.executorService.shutdown();
             }
             else {
                 if (note instanceof TestFailedNotification) {
                     executor.failedNotifications++;
                     executor.testProcessor.processNotifyFail((TestFailedNotification) note);
+
+                    executor.executorService.shutdown();
                 }
             }
 
@@ -149,6 +154,8 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
                     executor.running = false;
                 }
             }
+
+
         }
     }
 
@@ -165,6 +172,8 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     private volatile boolean running = false;
     private Instant startTime;
     private volatile boolean warmUp = false;
+
+    private ScheduledExecutorService executorService;
 
     static {
         coolDownPeriod = config.getLong("test.fixedrate.cooldown.period", 1) * 1000;
@@ -223,29 +232,30 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             running = true;
             startTime = Instant.now();
 
-            long repeatCounter = getRepeat();
-            while (running) {
-                getMaestro().statsRequest();
-                Thread.sleep(1000);
-                repeatCounter--;
-                if (repeatCounter == 0) {
-                    break;
-                }
-            }
+            executorService = Executors.newSingleThreadScheduledExecutor();
 
-            int totalNotifications = getTotalNotifications();
+            Runnable task = () -> { getMaestro().statsRequest(); };
+            executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
 
-            if (totalNotifications > 0) {
-                if (failedNotifications > 0) {
-                    logger.info("Test {} completed unsuccessfully", (warmUp ? "warm-up" : "run"));
-                } else {
-                    logger.info("Test {} completed successfully", (warmUp ? "warm-up" : "run"));
-                    return true;
-                }
+            ExecutorService resultService = Executors.newSingleThreadExecutor();
+
+            Future<Boolean> testResultFuture = resultService.submit(() -> getTestResult());
+
+            long timeout = getTimeout();
+            logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
+            Boolean testResult = testResultFuture.get(timeout, TimeUnit.SECONDS);
+
+            if (testResult == true) {
+                logger.info("Test {} completed successfully", phaseName());
+                return true;
             }
             else {
-                logger.warn("Not enough notifications were received to assert the test completion status");
+                logger.info("Test {} completed unsuccessfully", phaseName());
+                return false;
             }
+        }
+        catch (TimeoutException e) {
+            logger.error("The test timed out before notifications were received");
         }
         catch (Exception e) {
             logger.error("Error: {}", e.getMessage(), e);
@@ -258,32 +268,31 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         return false;
     }
 
-    private int getTotalNotifications() throws InterruptedException {
-        int timeoutStopWorkerMillis = config.getInt("maestro.worker.stop.timeout", 1000);
+    private String phaseName() {
+        return warmUp ? "warm-up" : "run";
+    }
 
-        int totalNotifications;
-        if (running) {
-            int notificationRetries = (testProfile.getParallelCount() * (timeoutStopWorkerMillis / 1000) * 2) + 1;
+    private boolean getTestResult() {
+        int totalNotifications = 0;
 
-            do {
-                totalNotifications = failedNotifications + successNotifications;
-                if (totalNotifications < numPeers) {
-                    logger.info("Not enough notifications received yet: received {} of {}", totalNotifications, numPeers);
-                    logger.info("Backends might be quiescing after the test execution");
-                    notificationRetries--;
-                    Thread.sleep(1000);
-                }
-                else {
-                    logger.info("Received all the required notifications: {} of {}", totalNotifications, numPeers);
-                    break;
-                }
-
-            } while (canWait(totalNotifications, notificationRetries));
-        }
-        else {
+        do {
             totalNotifications = failedNotifications + successNotifications;
-        }
-        return totalNotifications;
+            if (totalNotifications < numPeers) {
+                logger.debug("Not enough notifications received yet: received {} of {}", totalNotifications, numPeers);
+                try {
+                    Thread.sleep(1000);
+                } catch (InterruptedException e) {
+                    return false;
+                }
+            }
+            else {
+                logger.info("Received all the required notifications: {} of {}", totalNotifications, numPeers);
+                break;
+            }
+
+        } while (true);
+
+        return true;
     }
 
     private boolean canWait(int totalNotifications, int notificationRetries) {
@@ -294,7 +303,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         return false;
     }
 
-    private long getRepeat() {
+    private long getTimeout() {
         long repeat;
 
         if (warmUp) {
@@ -303,7 +312,8 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         else {
             repeat = testProfile.getEstimatedCompletionTime();
         }
-        return repeat;
+
+        return repeat + 10;
     }
 
     private void updatePeerCount() throws InterruptedException {
