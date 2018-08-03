@@ -136,7 +136,11 @@ public class WorkerShutdownObserver implements WatchdogObserver {
             }
         }
         finally {
-            TestLogUtils.createSymlinks(logDir, failed);
+
+            // if null => drain worker observer
+            if (logDir != null) {
+                TestLogUtils.createSymlinks(logDir, failed);
+            }
 
             sendTestNotification(failed, exceptionMessage);
         }

@@ -177,10 +177,6 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         }
     }
 
-    private void shutdownAndWaitWriters() {
-        this.latencyEvaluator = null;
-    }
-
     @Override
     public void handle(SetRequest note) {
         super.handle(note);
@@ -307,50 +303,44 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         super.handle(note, logDir);
     }
 
-    private boolean drainStart() {
-        WorkerOptions drainOptions = new WorkerOptions();
-
-        drainOptions.setBrokerURL(getWorkerOptions().getBrokerURL());
-        drainOptions.setParallelCount(getWorkerOptions().getParallelCount());
-        drainOptions.setDuration(DurationDrain.DURATION_DRAIN_FORMAT);
-
-        return drainStart(drainOptions);
-    }
-
     private boolean drainStart(WorkerOptions drainOptions) {
         if (container.isTestInProgress()) {
-            logger.warn("Trying to start draining the SUT, but a test execution is already in progress");
-            getClient().notifyFailure("Test in progress");
+            logger.warn("Trying to start a new test, but a test execution is already in progress");
+            getClient().notifyFailure("Test already in progress");
 
             return false;
         }
 
         try {
-            final List<MaestroWorker> workers = new ArrayList<>();
+            final TestWorkerInitializer testWorkerInitializer = new TestWorkerInitializer(workerClass, latencyEvaluator,
+                    drainOptions);
 
-            logger.debug("Starting the workers {}", workerClass);
-            WorkerOptions wo = new WorkerOptions();
+            int count = getWorkerOptions().getParallelCountAsInt();
+            logger.debug("Creating {} workers of type {}", count, workerClass);
+            final List<MaestroWorker> workers = container.create(testWorkerInitializer, count);
 
+            if (workers.isEmpty()) {
+                logger.warn("No workers were created");
+
+                return false;
+            }
+
+            logger.debug("Removing previous observers");
             container.getObservers().clear();
+
+            // Note: it uses the base log dir because of the symlinks
+            logger.debug("Setting up the observer: worker shutdown observer");
+            WorkerShutdownObserver workerShutdownObserver = new WorkerShutdownObserver(logDir, getClient());
+            container.getObservers().add(workerShutdownObserver);
 
             logger.debug("Setting up the observer: worker cleanup observer");
             container.getObservers().add(new CleanupObserver());
 
+            logger.debug("Starting the workers {}", workerClass);
+
             container.start(null);
 
-            if (workers.isEmpty()) {
-                logger.warn("No workers has been started!");
-            } else {
-                logger.debug("Creating the latency writer thread");
-
-                //TODO handle shutdown gently
-                Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownAndWaitWriters));
-            }
-
-            final int drainRetries = (config.getInt("worker.auto.drain.retries", 10) + 5);
-
-            container.waitForComplete(drainRetries * 1000);
-
+            getClient().replyOk();
             return true;
         } catch (Exception e) {
             logger.error("Unable to start workers from the container: {}", e.getMessage(), e);
@@ -362,14 +352,16 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(DrainRequest note) {
-        WorkerOptions drainOptions = new WorkerOptions();
+        if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
+            WorkerOptions drainOptions = new WorkerOptions();
 
-        drainOptions.setBrokerURL(note.getUrl());
-        drainOptions.setDuration(note.getDuration());
-        drainOptions.setParallelCount(note.getParallelCount());
+            drainOptions.setBrokerURL(note.getUrl());
+            drainOptions.setDuration(note.getDuration());
+            drainOptions.setParallelCount(note.getParallelCount());
 
-        if (!drainStart(drainOptions)) {
-            logger.error("Unable to start draining from the SUT");
+            if (!drainStart(drainOptions)) {
+                logger.error("Unable to start draining from the SUT");
+            }
         }
     }
 
