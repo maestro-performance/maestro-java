@@ -133,7 +133,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             return true;
         } catch (Exception e) {
             logger.error("Unable to start workers from the container: {}", e.getMessage(), e);
-            getClient().replyInternalError();
+            getClient().replyInternalError("Unable to start workers from the container: %s", e.getMessage());
         }
 
         return false;
@@ -353,7 +353,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             return true;
         } catch (Exception e) {
             logger.error("Unable to start workers from the container: {}", e.getMessage(), e);
-            getClient().replyInternalError();
+            getClient().replyInternalError("Unable to start workers from the container: %s", e.getMessage());
         }
 
         return false;

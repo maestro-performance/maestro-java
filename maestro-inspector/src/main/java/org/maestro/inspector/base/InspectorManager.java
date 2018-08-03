@@ -63,7 +63,8 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
             inspector.setUrl(url);
         } catch (MaestroException e) {
             logger.error("Unable to set the management interface URL {}: {}", url, e.getMessage(), e);
-            getClient().replyInternalError();
+            getClient().replyInternalError("Unable to set the management interface URL %s: %s", url,
+                    e.getMessage());
         }
     }
 
@@ -85,7 +86,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         }
         catch (Throwable t) {
             logger.error("Unable to start inspector: {}", t.getMessage(), t);
-            getClient().replyInternalError();
+            getClient().replyInternalError("Unable to start inspector: %s", t.getMessage());
         }
     }
 
@@ -101,7 +102,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
                 setUrl(value);
             else {
                 logger.error("Unable to set management interface URL {}", value);
-                getClient().replyInternalError();
+                getClient().replyInternalError("Unable to start inspector: %s", value);
             }
         }
     }

@@ -17,10 +17,39 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageBufferPacker;
+import org.msgpack.core.MessageUnpacker;
+
+import java.io.IOException;
 
 public class InternalError extends MaestroResponse {
-    public InternalError() {
+    private String message;
+
+    public InternalError(final String message) {
         super(MaestroCommand.MAESTRO_NOTE_INTERNAL_ERROR);
+    }
+
+    public InternalError(MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_INTERNAL_ERROR, unpacker);
+
+        message = unpacker.unpackString();
+    }
+
+    public String getMessage() {
+        return message;
+    }
+
+    public void setMessage(String message) {
+        this.message = message;
+    }
+
+    @Override
+    protected MessageBufferPacker pack() throws IOException {
+        MessageBufferPacker packer = super.pack();
+
+        packer.packString(message);
+
+        return packer;
     }
 
     @Override

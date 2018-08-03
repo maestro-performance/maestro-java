@@ -38,8 +38,10 @@ public interface MaestroReceiver {
 
     /**
      * Publishes an internal error reply in the Maestro broker
+     * @param message the error message
+     * @param args the arguments to format the message
      */
-    void replyInternalError();
+    void replyInternalError(String message,String...args);
 
     /**
      * Publishes a test success notification message in the broker

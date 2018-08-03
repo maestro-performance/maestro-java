@@ -68,7 +68,7 @@ public class MaestroDeserializer {
                 return new PingResponse(unpacker);
             }
             case MAESTRO_NOTE_INTERNAL_ERROR: {
-                return new InternalError();
+                return new InternalError(unpacker);
             }
             case MAESTRO_NOTE_PROTOCOL_ERROR: {
                 return new ProtocolError();

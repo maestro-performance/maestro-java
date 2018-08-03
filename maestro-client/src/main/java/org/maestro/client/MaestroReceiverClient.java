@@ -85,9 +85,9 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         }
     }
 
-    public void replyInternalError() {
+    public void replyInternalError(final String message,String...args) {
         logger.trace("Sending the internal error response from {}", this.toString());
-        InternalError errResponse = new InternalError();
+        InternalError errResponse = new InternalError(String.format(message, args));
 
         errResponse.setName(clientName + "@" + host);
         errResponse.setId(id);
