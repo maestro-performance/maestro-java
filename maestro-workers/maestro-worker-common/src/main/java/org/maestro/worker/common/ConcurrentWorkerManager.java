@@ -155,6 +155,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     private void setupLatencyEvaluator() {
         Double givenLatency = super.getWorkerOptions().getFclAsDouble();
         if (givenLatency == null) {
+            this.latencyEvaluator = null;
             return;
         }
 
