@@ -190,7 +190,7 @@ public class ReportGeneratorTest {
     }
 
 
-    @Test(timeout = 20000)
+    @Test(timeout = 35000)
     public void testInspectorOnly() {
         String path = this.getClass().getResource("/data-ok").getPath();
 
@@ -205,7 +205,7 @@ public class ReportGeneratorTest {
                 Arrays.asList("inspector"), Arrays.asList());
     }
 
-    @Test(timeout = 20000)
+    @Test(timeout = 35000)
     public void testInspectorMissingData() {
         String path = this.getClass().getResource("/data-inspector-missing").getPath();
 
@@ -220,7 +220,7 @@ public class ReportGeneratorTest {
                 Arrays.asList("inspector"), Arrays.asList());
     }
 
-    @Test(timeout = 30000, expected = MaestroException.class)
+    @Test(timeout = 35000, expected = MaestroException.class)
     public void testInvalidStructure() {
         String path = this.getClass().getResource("/data-inv-dir-structure").getPath();
 
