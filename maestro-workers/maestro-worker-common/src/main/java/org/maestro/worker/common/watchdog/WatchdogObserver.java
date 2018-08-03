@@ -28,7 +28,7 @@ public interface WatchdogObserver {
 
     /**
      * Actions that run on watchdog start
-     * @return
+     * @return true if it should continue or false otherwise
      */
     default boolean onStart() {
         return true;
@@ -36,8 +36,8 @@ public interface WatchdogObserver {
 
     /**
      * Actions that run on watchdog stop
-     * @param workerRuntimeInfos
-     * @return
+     * @param workerRuntimeInfos a list of active workers and their information
+     * @return true if processing should continue or false otherwise
      */
     default boolean onStop(final List<WorkerRuntimeInfo> workerRuntimeInfos) {
         return true;

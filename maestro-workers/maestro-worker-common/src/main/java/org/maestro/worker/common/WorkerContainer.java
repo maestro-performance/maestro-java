@@ -73,8 +73,6 @@ public final class WorkerContainer {
     /**
      * Start the execution of the workers for a predefined class
      * @param evaluator The evaluator that is run along w/ the worker watchdog (ie.: to evaluate the FCL/latency)
-     * @throws IllegalAccessException if unable to access the worker constructor
-     * @throws InstantiationException if unable to instantiate the worker
      */
     public void start(final Evaluator<?> evaluator) {
 
