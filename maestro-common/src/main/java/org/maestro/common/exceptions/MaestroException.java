@@ -22,8 +22,8 @@ public class MaestroException extends RuntimeException {
         super();
     }
 
-    public MaestroException(String message) {
-        super(message);
+    public MaestroException(String message, Object...args) {
+        super(String.format(message, args));
     }
 
     public MaestroException(String message, Throwable cause) {

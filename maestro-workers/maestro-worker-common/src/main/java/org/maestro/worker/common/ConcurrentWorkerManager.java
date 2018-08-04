@@ -111,11 +111,14 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             WorkerRateWriter workerRateWriter = new WorkerRateWriter(testLogDir, workers);
             container.getObservers().add(new RateWriterObserver(workerRateWriter));
 
+            logger.debug("Setting up the observer: worker stale check");
+            WorkerStaleChecker workerStaleChecker = new WorkerStaleChecker(workers);
+            container.getObservers().add(new StaleObserver(workerStaleChecker));
+
             // Note: it uses the base log dir because of the symlinks
             logger.debug("Setting up the observer: worker shutdown observer");
             WorkerShutdownObserver workerShutdownObserver = new WorkerShutdownObserver(logDir, getClient());
             container.getObservers().add(workerShutdownObserver);
-
 
             if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
                 logger.debug("Setting up the observer: drain observer");
