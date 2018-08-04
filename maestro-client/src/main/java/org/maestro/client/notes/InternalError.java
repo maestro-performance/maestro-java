@@ -27,6 +27,8 @@ public class InternalError extends MaestroResponse {
 
     public InternalError(final String message) {
         super(MaestroCommand.MAESTRO_NOTE_INTERNAL_ERROR);
+
+        this.message = message;
     }
 
     public InternalError(MessageUnpacker unpacker) throws IOException {
