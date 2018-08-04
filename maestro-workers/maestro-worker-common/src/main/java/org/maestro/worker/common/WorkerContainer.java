@@ -44,7 +44,6 @@ public final class WorkerContainer {
     private WorkerWatchdog workerWatchdog;
     private Thread watchDogThread;
     private LocalDateTime startTime;
-    private Evaluator<?> evaluator;
 
     public WorkerContainer() {
     }
@@ -75,9 +74,6 @@ public final class WorkerContainer {
      * @param evaluator The evaluator that is run along w/ the worker watchdog (ie.: to evaluate the FCL/latency)
      */
     public void start(final Evaluator<?> evaluator) {
-
-        this.evaluator = evaluator;
-
         try {
             for (WorkerRuntimeInfo workerRuntimeInfo : workerRuntimeInfos) {
                 workerRuntimeInfo.thread.start();
@@ -186,7 +182,7 @@ public final class WorkerContainer {
      * Gets the latency statistics
      * @return the latency statistics or null if not applicable for the work set in the container
      */
-    public LatencyStats latencyStats() {
+    public LatencyStats latencyStats(final Evaluator<?> evaluator) {
         if (!watchdogRunning()) {
             return null;
         }

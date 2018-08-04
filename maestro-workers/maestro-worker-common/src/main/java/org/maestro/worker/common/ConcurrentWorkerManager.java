@@ -19,7 +19,6 @@ package org.maestro.worker.common;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
-import org.maestro.common.duration.DurationDrain;
 import org.maestro.common.evaluators.HardLatencyEvaluator;
 import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.evaluators.SoftLatencyEvaluator;
@@ -31,7 +30,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
 
@@ -85,8 +83,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         try {
             super.writeTestProperties(testLogDir);
 
-            final TestWorkerInitializer testWorkerInitializer = new TestWorkerInitializer(workerClass, latencyEvaluator,
-                    getWorkerOptions());
+            final TestWorkerInitializer testWorkerInitializer = new TestWorkerInitializer(workerClass, getWorkerOptions());
 
             int count = getWorkerOptions().getParallelCountAsInt();
             logger.debug("Creating {} workers of type {}", count, workerClass);
@@ -257,7 +254,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         // Explanation: the role is the name as the role (ie: clientName@host)
         statsResponse.setRole(getClientName());
 
-        LatencyStats latencyStats = container.latencyStats();
+        LatencyStats latencyStats = container.latencyStats(latencyEvaluator);
         if (latencyStats != null) {
             statsResponse.setLatency(latencyStats.getLatency());
         }
@@ -315,8 +312,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         }
 
         try {
-            final TestWorkerInitializer testWorkerInitializer = new TestWorkerInitializer(workerClass, latencyEvaluator,
-                    drainOptions);
+            final TestWorkerInitializer testWorkerInitializer = new TestWorkerInitializer(workerClass, drainOptions);
 
             int count = getWorkerOptions().getParallelCountAsInt();
             logger.debug("Creating {} workers of type {}", count, workerClass);

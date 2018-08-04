@@ -21,22 +21,16 @@ import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.worker.WorkerOptions;
 
 public class TestWorkerInitializer implements WorkerInitializer {
-    private Class<MaestroWorker> clazz;
-    private Evaluator<?> evaluator;
-    private WorkerOptions workerOptions;
+    private final Class<MaestroWorker> clazz;
+    private final WorkerOptions workerOptions;
 
-    public TestWorkerInitializer(Class<MaestroWorker> clazz, Evaluator<?> evaluator, WorkerOptions workerOptions) {
+    public TestWorkerInitializer(final Class<MaestroWorker> clazz, final WorkerOptions workerOptions) {
         this.clazz = clazz;
-        this.evaluator = evaluator;
         this.workerOptions = workerOptions;
     }
 
     public Class<MaestroWorker> getClazz() {
         return clazz;
-    }
-
-    public Evaluator<?> getEvaluator() {
-        return evaluator;
     }
 
     public WorkerOptions getWorkerOptions() {
