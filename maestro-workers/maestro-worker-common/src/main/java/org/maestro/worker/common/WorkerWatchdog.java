@@ -16,7 +16,6 @@
 
 package org.maestro.worker.common;
 
-import org.maestro.common.evaluators.Evaluator;
 import org.maestro.worker.common.watchdog.WatchdogObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,7 +40,6 @@ class WorkerWatchdog implements Runnable {
     private final List<WorkerRuntimeInfo> workers;
 
     private volatile WatchdogState watchdogState = WatchdogState.STOPPED;
-    private final Evaluator<?> evaluator;
 
 
     /**
@@ -49,12 +47,9 @@ class WorkerWatchdog implements Runnable {
      * @param workers A list of workers to inspect
      */
     public WorkerWatchdog(final WorkerContainer workerContainer,
-                          final List<WorkerRuntimeInfo> workers,
-                          final Evaluator<?> evaluator) {
+                          final List<WorkerRuntimeInfo> workers) {
         this.workerContainer = workerContainer;
         this.workers = new ArrayList<>(workers);
-
-        this.evaluator = evaluator;
     }
 
 
@@ -80,20 +75,6 @@ class WorkerWatchdog implements Runnable {
 
             while (isRunning() && workersRunning()) {
                 try {
-                    if (evaluator != null) {
-                        if (!evaluator.eval()) {
-
-                            /*
-                             Note: shot at distance warning. This one will eventually reset
-                             the value of the running flag above.
-
-                             TODO: fix this shot-at-distance
-                             */
-
-                            workerContainer.fail("The evaluation of the latency condition failed");
-                        }
-                    }
-
                     Thread.sleep(1000);
                 } catch (InterruptedException e) {
                     logger.info("The worker thread was interrupted", e);
