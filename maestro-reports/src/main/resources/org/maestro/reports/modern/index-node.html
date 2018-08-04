@@ -143,7 +143,7 @@
 
                                 <tr>
                                     <td>Durable</td>
-                                    <td>{{ durable | default ('unknown') }}</td>
+                                    <td>{{ durable | default ('unset (client default)') }}</td>
                                 </tr>
 
                                 <tr>
@@ -344,19 +344,19 @@
                             <tbody>
                             <tr>
                                 <td>Maximum Rate</td>
-                                <td>{{ rateMax | round(6) }}</td>
+                                <td>{{ rateMax }} msg/sec</td>
                             </tr>
                             <tr>
                                 <td>Minimum Rate</td>
-                                <td>{{ rateMin | round(6) }}</td>
+                                <td>{{ rateMin }} msg/sec</td>
                             </tr>
                             <tr>
                                 <td>Rate Samples</td>
-                                <td>{{ rateSamples | round(0) }}</td>
+                                <td>{{ rateSamples | round(0) }} records</td>
                             </tr>
                             <tr>
                                 <td>Geometric Mean</td>
-                                <td>{{ rateGeometricMean | round(6) }}</td>
+                                <td>{{ rateGeometricMean | round(6) }} msg/sec</td>
                             </tr>
                             <tr>
                                 <td>Standard Deviation</td>
@@ -364,12 +364,12 @@
                             </tr>
                             <tr>
                                 <td>Rate Error Count</td>
-                                <td>{{ rateErrorCount}}</td>
+                                <td>{{ rateErrorCount}} messages</td>
                             </tr>
 
                             <tr>
                                 <td>Skipped Rate Records</td>
-                                <td>{{ rateSkipCount }}</td>
+                                <td>{{ rateSkipCount }} messages</td>
                             </tr>
                             </tbody>
                         </table>
