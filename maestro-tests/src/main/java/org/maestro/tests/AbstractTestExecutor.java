@@ -19,9 +19,7 @@ package org.maestro.tests;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.MaestroProcessedInfo;
-import org.maestro.client.notes.GetResponse;
-import org.maestro.client.notes.MaestroNotification;
-import org.maestro.client.notes.PingResponse;
+import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.NodeUtils;
 import org.maestro.common.client.notes.GetOption;
@@ -32,6 +30,7 @@ import org.maestro.reports.downloaders.ReportsDownloader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
@@ -48,6 +47,8 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     private final Maestro maestro;
     private final ReportsDownloader reportsDownloader;
 
+    private volatile boolean running = false;
+    private Instant startTime;
 
     public AbstractTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader) {
         this.maestro = maestro;
@@ -62,6 +63,23 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     protected ReportsDownloader getReportsDownloader() {
         return reportsDownloader;
+    }
+
+    protected void testStart() {
+        running = true;
+        startTime = Instant.now();
+    }
+
+    protected void testStop() {
+        running = false;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public Instant getStartTime() {
+        return startTime;
     }
 
     /**
@@ -183,11 +201,46 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         return knownPeers.size();
     }
 
+    @Deprecated
     protected void addDataServer(final GetResponse note, final AbstractTestProcessor testProcessor) {
         if (note.getOption() == GetOption.MAESTRO_NOTE_OPT_GET_DS) {
             logger.info("Registering data server at {}", note.getValue());
             testProcessor.getDataServers().put(note.getName(), note.getValue());
         }
+    }
+
+
+    public int peerCount(final AbstractTestProfile testProfile) throws InterruptedException {
+        if (testProfile.getManagementInterface() != null) {
+            return getNumPeers("sender", "receiver", "inspector");
+        }
+        else {
+            return getNumPeers("sender", "receiver");
+        }
+    }
+
+
+    protected boolean isTestFailed(final MaestroNote note) {
+        if (note instanceof TestFailedNotification) {
+            TestFailedNotification testFailedNotification = (TestFailedNotification) note;
+            logger.error("Test failed on {}: {}", testFailedNotification.getName(), testFailedNotification.getMessage());
+            return true;
+        }
+
+        return false;
+    }
+
+    protected boolean isFailed(MaestroNote note) {
+        boolean success = true;
+
+        if (note instanceof DrainCompleteNotification) {
+            success = ((DrainCompleteNotification) note).isSuccessful();
+            if (!success) {
+                logger.error("Drained failed for {}", ((DrainCompleteNotification) note).getName());
+            }
+        }
+
+        return success;
     }
 
 

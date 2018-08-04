@@ -19,22 +19,18 @@ package org.maestro.tests.rate;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.callback.MaestroNoteCallback;
-import org.maestro.client.notes.DrainCompleteNotification;
 import org.maestro.client.notes.GetResponse;
-import org.maestro.client.notes.TestFailedNotification;
-import org.maestro.client.notes.TestSuccessfulNotification;
 import org.maestro.common.ConfigurationWrapper;
-import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
+import org.maestro.tests.DownloadProcessor;
 import org.maestro.tests.callbacks.DownloadCallback;
 import org.maestro.tests.callbacks.StatsCallBack;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -47,11 +43,8 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
     private final FixedRateTestProfile testProfile;
 
     private static final long coolDownPeriod;
-    private final FixedRateTestProcessor testProcessor;
+    private final DownloadProcessor downloadProcessor;
 
-    private int numPeers = 0;
-    private volatile boolean running = false;
-    private Instant startTime;
     private volatile boolean warmUp = false;
 
     private ScheduledExecutorService executorService;
@@ -65,16 +58,15 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         super(maestro, reportsDownloader);
 
         this.testProfile = testProfile;
-        this.testProcessor = new FixedRateTestProcessor(testProfile, reportsDownloader);
 
         List<MaestroNoteCallback> callbackList = getMaestro().getCollector().getCallbacks();
         callbackList.add(new StatsCallBack(this));
-        callbackList.add(new DownloadCallback(this));
+
+        downloadProcessor = new DownloadProcessor(reportsDownloader);
+        callbackList.add(new DownloadCallback(this, downloadProcessor));
     }
 
     private void reset() {
-        numPeers = 0;
-        running = false;
         warmUp = false;
     }
 
@@ -83,7 +75,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             // Clean up the topic
             getMaestro().collect();
 
-            updatePeerCount();
+            int numPeers = peerCount(testProfile);
             if (numPeers == 0) {
                 logger.error("There are not enough peers to run the test");
 
@@ -93,7 +85,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             List<? extends MaestroNote> dataServers = getMaestro().getDataServer().get();
             dataServers.stream()
                     .filter(note -> note instanceof GetResponse)
-                    .forEach(note -> super.addDataServer((GetResponse) note, testProcessor));
+                    .forEach(note -> downloadProcessor.addDataServer((GetResponse) note));
 
             if (warmUp) {
                 getReportsDownloader().getOrganizer().getTracker().setCurrentTest(0);
@@ -110,8 +102,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             else {
                 startServices();
             }
-            running = true;
-            startTime = Instant.now();
+            testStart();
 
             executorService = Executors.newSingleThreadScheduledExecutor();
 
@@ -151,34 +142,15 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             }
 
             reset();
+
+            testStop();
+
             stopServices();
         }
 
         return false;
     }
 
-    private boolean isFailed(MaestroNote note) {
-        boolean success = true;
-
-        if (note instanceof DrainCompleteNotification) {
-            success = ((DrainCompleteNotification) note).isSuccessful();
-            if (!success) {
-                logger.error("Drained failed for {}", ((DrainCompleteNotification) note).getName());
-            }
-        }
-
-        return success;
-    }
-
-    private boolean isTestFailed(MaestroNote note) {
-        if (note instanceof TestFailedNotification) {
-            TestFailedNotification testFailedNotification = (TestFailedNotification) note;
-            logger.error("Test failed on {}: {}", testFailedNotification.getName(), testFailedNotification.getMessage());
-            return true;
-        }
-
-        return false;
-    }
 
     private String phaseName() {
         return warmUp ? "warm-up" : "run";
@@ -198,14 +170,6 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         return repeat + 10;
     }
 
-    private void updatePeerCount() throws InterruptedException {
-        if (testProfile.getManagementInterface() != null) {
-            numPeers = getNumPeers("sender", "receiver", "inspector");
-        }
-        else {
-            numPeers = getNumPeers("sender", "receiver");
-        }
-    }
 
     public boolean run() {
         logger.info("Starting the warm up execution");
@@ -236,19 +200,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         return warmUp;
     }
 
-    public boolean isRunning() {
-        return running;
-    }
-
     public FixedRateTestProfile getTestProfile() {
         return testProfile;
-    }
-
-    public FixedRateTestProcessor getTestProcessor() {
-        return testProcessor;
-    }
-
-    public Instant getStartTime() {
-        return startTime;
     }
 }
