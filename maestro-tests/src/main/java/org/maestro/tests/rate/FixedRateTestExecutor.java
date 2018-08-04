@@ -78,13 +78,6 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         warmUp = false;
     }
 
-    private void addDataServer(GetResponse note) {
-        if (note.getOption() == GetOption.MAESTRO_NOTE_OPT_GET_DS) {
-            logger.info("Registering data server at {}", note.getValue());
-            testProcessor.getDataServers().put(note.getName(), note.getValue());
-        }
-    }
-
     private boolean runTest() {
         try {
             // Clean up the topic
@@ -100,7 +93,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             List<? extends MaestroNote> dataServers = getMaestro().getDataServer().get();
             dataServers.stream()
                     .filter(note -> note instanceof GetResponse)
-                    .forEach(note -> addDataServer((GetResponse) note));
+                    .forEach(note -> super.addDataServer((GetResponse) note, testProcessor));
 
             if (warmUp) {
                 getReportsDownloader().getOrganizer().getTracker().setCurrentTest(0);

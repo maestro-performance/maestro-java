@@ -58,21 +58,6 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
         this.reportsDownloader = reportsDownloader;
     }
 
-    @Override
-    @Deprecated
-    protected boolean processGetResponse(GetResponse note) {
-        logger.debug("Processing data server response");
-        super.processGetResponse(note);
-
-        if (note.getOption() == GetOption.MAESTRO_NOTE_OPT_GET_DS) {
-            logger.info("Registering data server at {}", note.getValue());
-            dataServers.put(note.getName(), note.getValue());
-
-            return true;
-        }
-
-        return false;
-    }
 
     @Override
     protected boolean processPingResponse(PingResponse note) {

@@ -19,10 +19,12 @@ package org.maestro.tests;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.MaestroProcessedInfo;
+import org.maestro.client.notes.GetResponse;
 import org.maestro.client.notes.MaestroNotification;
 import org.maestro.client.notes.PingResponse;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.NodeUtils;
+import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
@@ -45,7 +47,6 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     private final Maestro maestro;
     private final ReportsDownloader reportsDownloader;
-    private volatile boolean drained;
 
 
     public AbstractTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader) {
@@ -180,6 +181,13 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
         logger.info("Known peers recorded: {}", knownPeers.size());
         return knownPeers.size();
+    }
+
+    protected void addDataServer(final GetResponse note, final AbstractTestProcessor testProcessor) {
+        if (note.getOption() == GetOption.MAESTRO_NOTE_OPT_GET_DS) {
+            logger.info("Registering data server at {}", note.getValue());
+            testProcessor.getDataServers().put(note.getName(), note.getValue());
+        }
     }
 
 

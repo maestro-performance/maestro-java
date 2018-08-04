@@ -17,10 +17,14 @@
 package org.maestro.tests.incremental;
 
 import org.maestro.client.Maestro;
+import org.maestro.client.notes.GetResponse;
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 /**
  * An executor that runs the test ever incrementing the rate and parallel connections as defined by the profile
@@ -63,8 +67,10 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                     numPeers = getNumPeers("sender", "receiver");
                 }
 
-                resolveDataServers();
-                processReplies(testProcessor, (int) repeat, numPeers);
+                List<? extends MaestroNote> dataServers = getMaestro().getDataServer().get();
+                dataServers.stream()
+                        .filter(note -> note instanceof GetResponse)
+                        .forEach(note -> super.addDataServer((GetResponse) note, testProcessor));
 
                 getReportsDownloader().getOrganizer().getTracker().setCurrentTest(testProfile.getTestExecutionNumber());
 
