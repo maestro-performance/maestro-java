@@ -37,7 +37,6 @@ import java.util.List;
  */
 public final class WorkerContainer {
 
-    private static WorkerContainer instance;
     private final List<WorkerRuntimeInfo> workerRuntimeInfos = new ArrayList<>();
     private final List<WatchdogObserver> observers = new LinkedList<>();
 
