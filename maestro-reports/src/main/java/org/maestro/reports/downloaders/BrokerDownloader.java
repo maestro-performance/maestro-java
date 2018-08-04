@@ -207,7 +207,7 @@ public class BrokerDownloader implements ReportsDownloader {
 
     @Override
     public void waitForComplete() {
-        int expiryTime = config.getInt("download.broker.expiry", 60);
+        int expiryTime = config.getInt("download.broker.expiry", 20);
 
         logger.info("Waiting {} seconds until all the files have been downloaded from the broker", expiryTime);
         Instant last = lastDownloadTime();
