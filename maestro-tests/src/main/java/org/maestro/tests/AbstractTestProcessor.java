@@ -37,7 +37,6 @@ import java.util.Map;
 public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTestProcessor.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
-    public static final int DEFAULT_WAIT_TIME;
 
     private final ReportsDownloader reportsDownloader;
     private final AbstractTestProfile testProfile;
@@ -45,12 +44,8 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
     private boolean failed = false;
     private int notifications = 0;
 
-    private int flushWaitSeconds = DEFAULT_WAIT_TIME;
     private final Map<String, String> dataServers = new HashMap<>();
 
-    static {
-        DEFAULT_WAIT_TIME = config.getInteger("test.post.processing.wait.time", 3);
-    }
 
     /**
      * Constructor
@@ -86,37 +81,10 @@ public abstract class AbstractTestProcessor extends MaestroNoteProcessor {
         return true;
     }
 
-    protected int getFlushWaitSeconds() {
-        return flushWaitSeconds;
-    }
-
-    protected void setFlushWaitSeconds(int flushWaitSeconds) {
-        this.flushWaitSeconds = flushWaitSeconds;
-    }
-
-    // Give some time for the backend to flush their data to disk
-    // before downloading
-    private void waitForFlush() {
-        if (flushWaitSeconds > 0) {
-            logger.info("Waiting for {} seconds for the backend to flush their data", flushWaitSeconds);
-        }
-
-        while (flushWaitSeconds > 0) {
-            try {
-                Thread.sleep(1000);
-                flushWaitSeconds--;
-            } catch (InterruptedException e) {
-                break;
-            }
-        }
-    }
-
     private void doProcess(final String name, final String resultType) {
         if (name != null) {
             final String type = NodeUtils.getTypeFromName(name);
             final String host = dataServers.get(name);
-
-            waitForFlush();
 
             reportsDownloader.downloadLastSuccessful(type, host);
 

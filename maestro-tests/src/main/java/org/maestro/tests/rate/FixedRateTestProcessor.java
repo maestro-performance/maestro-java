@@ -35,8 +35,6 @@ public class FixedRateTestProcessor extends AbstractTestProcessor {
      */
     public FixedRateTestProcessor(FixedRateTestProfile testProfile, ReportsDownloader reportsDownloader) {
         super(testProfile, reportsDownloader);
-
-        setFlushWaitSeconds(AbstractTestProcessor.DEFAULT_WAIT_TIME * testProfile.getParallelCount());
     }
 
     /**

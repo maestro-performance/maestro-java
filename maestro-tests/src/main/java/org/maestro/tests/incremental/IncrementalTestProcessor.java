@@ -52,9 +52,5 @@ public class IncrementalTestProcessor extends AbstractTestProcessor {
 
         return false;
     }
-
-    public void increaseFlushWaitSeconds() {
-        setFlushWaitSeconds(AbstractTestProcessor.DEFAULT_WAIT_TIME * testProfile.parallelCount);
-    }
 }
 

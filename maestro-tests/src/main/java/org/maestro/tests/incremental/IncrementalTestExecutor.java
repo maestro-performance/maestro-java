@@ -84,8 +84,6 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                     break;
                 }
 
-                testProcessor.increaseFlushWaitSeconds();
-
                 logger.info("Sleeping for {} milliseconds to let the broker catch up", coolDownPeriod);
                 Thread.sleep(coolDownPeriod);
             }
