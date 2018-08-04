@@ -21,6 +21,7 @@ import org.maestro.common.client.notes.MaestroNote;
 
 import java.util.List;
 
+@Deprecated
 public class MaestroNoteProcessor {
     protected boolean processGetResponse(final GetResponse note) {
         return true;
