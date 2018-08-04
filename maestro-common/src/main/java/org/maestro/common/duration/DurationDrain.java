@@ -18,6 +18,8 @@ package org.maestro.common.duration;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.NonProgressingStaleChecker;
+import org.maestro.common.StaleChecker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,35 +31,19 @@ public class DurationDrain extends DurationCount {
 
 
     private final int drainRetries;
-    private long lastCount = 0;
-    private long repeat = 0;
+    private final StaleChecker staleChecker;
 
     public DurationDrain() {
         super(-1);
 
         drainRetries = config.getInt("worker.auto.drain.retries", 10);
+        staleChecker = new NonProgressingStaleChecker(drainRetries);
     }
 
     @Override
     public boolean canContinue(TestProgress progress) {
         long count = progress.messageCount();
 
-        if (count > lastCount) {
-            lastCount = count;
-        }
-        else {
-            if (count == lastCount) {
-                repeat++;
-                logger.info("Apparently no more data is in the queue ... retrying for 10 more times");
-
-                if (repeat >= drainRetries) {
-                    logger.info("Exhausted the retries, aborting the drain");
-
-                    return false;
-                }
-            }
-        }
-
-        return true;
+        return !staleChecker.isStale(count);
     }
 }
