@@ -70,15 +70,14 @@ public final class WorkerContainer {
 
     /**
      * Start the execution of the workers for a predefined class
-     * @param evaluator The evaluator that is run along w/ the worker watchdog (ie.: to evaluate the FCL/latency)
      */
-    public void start(final Evaluator<?> evaluator) {
+    public void start() {
         try {
             for (WorkerRuntimeInfo workerRuntimeInfo : workerRuntimeInfos) {
                 workerRuntimeInfo.thread.start();
             }
 
-            workerWatchdog = new WorkerWatchdog(this, workerRuntimeInfos, evaluator);
+            workerWatchdog = new WorkerWatchdog(this, workerRuntimeInfos);
 
             watchDogThread = new Thread(workerWatchdog);
             watchDogThread.start();
@@ -98,22 +97,6 @@ public final class WorkerContainer {
             if (workerWatchdog.isRunning()) {
                 for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
                     ri.worker.stop();
-                }
-
-                workerWatchdog.stop();
-            }
-
-            startTime = null;
-        }
-    }
-
-    public void fail(final String message) {
-        if (workerWatchdog != null) {
-            if (workerWatchdog.isRunning()) {
-                MaestroException exception = new MaestroException(message);
-
-                for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
-                    ri.worker.fail(exception);
                 }
 
                 workerWatchdog.stop();

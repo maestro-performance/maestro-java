@@ -41,7 +41,7 @@ public class DrainObserver implements WatchdogObserver {
             workerContainer.create(workerInitializer, count);
 
             logger.info("Starting to drain the queues after the test was executed");
-            workerContainer.start(null);
+            workerContainer.start();
 
             boolean ret = workerContainer.waitForComplete(drainRetries * 1000);
             if (!ret) {

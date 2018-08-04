@@ -108,6 +108,12 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
                 logger.debug("Setting up the observer: worker latency writer");
                 WorkerLatencyWriter latencyWriter = getLatencyWriter(testLogDir, workers);
                 container.getObservers().add(new LatencyWriterObserver(latencyWriter));
+
+                if (latencyEvaluator != null) {
+                    logger.debug("Setting up the observer: worker latency condition");
+                    WorkerEvaluatorChecker evaluatorChecker = new WorkerEvaluatorChecker(workers, latencyEvaluator);
+                    container.getObservers().add(new EvaluatorObserver(evaluatorChecker));
+                }
             }
 
             logger.debug("Setting up the observer: worker rate writer");
@@ -133,7 +139,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
             logger.debug("Starting the workers {}", workerClass);
 
-            container.start(latencyEvaluator);
+            container.start();
 
             getClient().replyOk(note);
             return true;
@@ -299,7 +305,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
             logger.debug("Starting the workers {}", workerClass);
 
-            container.start(null);
+            container.start();
 
             getClient().replyOk(note);
             return true;
