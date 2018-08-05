@@ -75,7 +75,7 @@ public final class Maestro implements MaestroRequester {
             collectorExecutor.stop();
             collectorThread.join();
         } catch (InterruptedException e) {
-            logger.warn("Interrupted while stopping Maestro {}", e.getMessage(), e);
+            logger.trace("Interrupted while stopping Maestro {}", e.getMessage(), e);
         }
         finally {
             logger.info("Disconnecting the Maestro client");
@@ -660,7 +660,7 @@ public final class Maestro implements MaestroRequester {
             try {
                 Thread.sleep(wait);
             } catch (InterruptedException e) {
-                logger.warn("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
+                logger.trace("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
             }
             retries--;
         } while (retries > 0);
@@ -692,7 +692,7 @@ public final class Maestro implements MaestroRequester {
             try {
                 Thread.sleep(wait);
             } catch (InterruptedException e) {
-                logger.warn("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
+                logger.trace("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
             }
             retries--;
         } while (retries > 0);
@@ -726,7 +726,7 @@ public final class Maestro implements MaestroRequester {
             try {
                 Thread.sleep(wait);
             } catch (InterruptedException e) {
-                logger.warn("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
+                logger.trace("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
             }
             retries--;
         } while (retries > 0);
@@ -744,7 +744,7 @@ public final class Maestro implements MaestroRequester {
         try {
             Thread.sleep(wait);
         } catch (InterruptedException e) {
-            logger.warn("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
+            logger.trace("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
         }
 
         return collectorExecutor.getCollector().collect(predicate);
