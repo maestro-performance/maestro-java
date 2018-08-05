@@ -57,6 +57,11 @@ class QuiverExecutor extends FlexibleTestExecutor {
         // Wait for up to 2 minutes for the test to complete
         Thread.sleep(60*1000*2)
     }
+
+    @Override
+    boolean run() {
+        return run(0)
+    }
 }
 
 class QuiverReportResolver extends AbstractReportResolver {
@@ -155,8 +160,6 @@ testProfile.setSourceURL(sourceURL)
 
 println "Creating the executor"
 QuiverExecutor executor = new QuiverExecutor(maestro, reportsDownloader, testProfile)
-
-executor.setNotificationRetries(120)
 
 int ret = 0;
 
