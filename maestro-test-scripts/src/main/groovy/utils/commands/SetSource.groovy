@@ -25,6 +25,7 @@ package utils.commands
 import org.maestro.client.Maestro
 import org.maestro.common.client.notes.MaestroNote
 
+
 /**
  * Another example: a simple use case of the higher level maestro client
  */

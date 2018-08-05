@@ -27,6 +27,8 @@ import org.maestro.common.NodeUtils
 import org.maestro.common.client.notes.MaestroNote
 import org.maestro.reports.downloaders.BrokerDownloader
 
+import java.util.concurrent.CompletableFuture
+
 /**
  * This sample script shows how to use the Maestro client API to send a flush request to
  * the test cluster
@@ -51,14 +53,14 @@ maestro = new Maestro(maestroURL)
  * First, register available data servers on the cluster
  */
 
-maestro.getDataServer();
+CompletableFuture<List<? extends MaestroNote>> future = maestro.getDataServer();
 
 
 /**
  * Collect any available response
  */
 println "Collecting replies"
-List<MaestroNote> replies = maestro.collect(1000, 10)
+List<MaestroNote> replies = future.get()
 
 BrokerDownloader downloader = new BrokerDownloader(maestro, args[0])
 

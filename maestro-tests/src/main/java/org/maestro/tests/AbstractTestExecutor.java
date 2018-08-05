@@ -18,11 +18,9 @@ package org.maestro.tests;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
-import org.maestro.client.exchange.MaestroProcessedInfo;
 import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.NodeUtils;
-import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
@@ -135,33 +133,6 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     /**
      * Try to guess the number of connected peers
-     * @return the number of connected peers (best guess)
-     * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
-     * @throws InterruptedException if interrupted
-     */
-    protected int getNumPeers() throws MaestroConnectionException, InterruptedException {
-        int numPeers = 0;
-
-        logger.debug("Collecting responses to ensure topic is clean prior to pinging nodes");
-        maestro.collect();
-
-        logger.debug("Sending ping request");
-        maestro.pingRequest();
-
-        Thread.sleep(5000);
-
-        List<MaestroNote> replies = maestro.collect();
-        for (MaestroNote note : replies) {
-            if (note instanceof PingResponse) {
-                numPeers++;
-            }
-        }
-
-        return numPeers;
-    }
-
-    /**
-     * Try to guess the number of connected peers
      * @param types A variable argument list of peer types to count
      * @return the number of connected peers (best guess)
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
@@ -199,14 +170,6 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
         logger.info("Known peers recorded: {}", knownPeers.size());
         return knownPeers.size();
-    }
-
-    @Deprecated
-    protected void addDataServer(final GetResponse note, final AbstractTestProcessor testProcessor) {
-        if (note.getOption() == GetOption.MAESTRO_NOTE_OPT_GET_DS) {
-            logger.info("Registering data server at {}", note.getValue());
-            testProcessor.getDataServers().put(note.getName(), note.getValue());
-        }
     }
 
 
@@ -255,20 +218,5 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
         logger.debug("Sending request to collect data servers");
         maestro.getDataServer();
-    }
-
-    @Deprecated
-    protected MaestroProcessedInfo processNotifications(final AbstractTestProcessor testProcessor, long repeat, int numPeers) {
-        List<MaestroNote> replies = getMaestro().collect(1000, repeat, numPeers, reply -> reply instanceof MaestroNotification);
-
-        return testProcessor.process(replies);
-    }
-
-
-    @Deprecated
-    protected MaestroProcessedInfo processReplies(final AbstractTestProcessor testProcessor, long repeat, int numPeers) {
-        List<MaestroNote> replies = getMaestro().collect(1000, repeat, numPeers);
-
-        return testProcessor.process(replies);
     }
 }
