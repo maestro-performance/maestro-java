@@ -479,7 +479,14 @@ public final class Maestro implements MaestroRequester {
         StatsRequest maestroNote = new StatsRequest();
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
-        return getOkErrorCompletableFuture();
+        return CompletableFuture.supplyAsync(
+                new Supplier<List<? extends MaestroNote>>() {
+                    @Override
+                    public List<? extends MaestroNote> get() {
+                        return collect(1000, note -> note instanceof InternalError || note instanceof StatsResponse);
+                    }
+                }
+        );
     }
 
 
