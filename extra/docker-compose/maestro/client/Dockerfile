@@ -18,7 +18,7 @@ ENV MAESTRO_VERSION ${MAESTRO_VERSION:-1.4.0-SNAPSHOT}
 LABEL MAESTRO_VERSION=${MAESTRO_VERSION}
 ENV GROOVY_VERSION 2.4.15
 
-RUN yum install -y java-1.8.0-openjdk unzip zip which ntp
+RUN yum install -y java-1.8.0-openjdk unzip zip which ntp rsync
 ENV JAVA_HOME /etc/alternatives/jre
 RUN yum clean all
 

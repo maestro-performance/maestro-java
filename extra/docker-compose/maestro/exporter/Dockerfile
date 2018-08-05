@@ -20,7 +20,7 @@ ENV MAESTRO_APP_ROOT /opt/maestro
 EXPOSE 8000
 RUN mkdir -p ${MAESTRO_APP_ROOT}
 WORKDIR ${MAESTRO_APP_ROOT}
-RUN yum install -y java-1.8.0-openjdk ntp
+RUN yum install -y java-1.8.0-openjdk ntp rsync
 RUN yum clean all
 COPY --from=buildimg /root/build/maestro-java/maestro-exporter/target/maestro-exporter-${MAESTRO_VERSION}-bin.tar.gz .
 RUN mkdir maestro-exporter && tar --strip-components=1 -xvf maestro-exporter-${MAESTRO_VERSION}-bin.tar.gz -C maestro-exporter
