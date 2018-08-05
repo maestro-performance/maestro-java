@@ -14,3 +14,6 @@ data:
     log4j.additivity.org.maestro=false
   maestro-worker.properties: |
     data.server.port=8000
+  maestro-worker.jvm.conf: |
+    #MAESTRO_JVM_MEM_OPTS=""
+    #MAESTRO_JVM_OTHER_OPTS=""
