@@ -31,12 +31,18 @@ import static org.maestro.worker.common.WorkerStateInfoUtil.isCleanExit;
  * or failed
  */
 class WorkerWatchdog implements Runnable {
+    public enum WatchdogState {
+        STOPPED,
+        RUNNING,
+        STOPPING
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(WorkerWatchdog.class);
 
     private final WorkerContainer workerContainer;
     private final List<WorkerRuntimeInfo> workers;
 
-    private volatile boolean running = false;
+    private volatile WatchdogState watchdogState = WatchdogState.STOPPED;
     private final Evaluator<?> evaluator;
 
 
@@ -54,14 +60,6 @@ class WorkerWatchdog implements Runnable {
     }
 
 
-    /**
-     * Sets the running state for the watchdog
-     * @param running true if running or false otherwise
-     */
-    public void setRunning(boolean running) {
-        this.running = running;
-    }
-
     private boolean workersRunning() {
         for (int i = 0, size = workers.size(); i < size; i++) {
             WorkerRuntimeInfo ri = workers.get(i);
@@ -76,14 +74,14 @@ class WorkerWatchdog implements Runnable {
     @Override
     public void run() {
         logger.info("Running the worker watchdog");
-        running = true;
+        watchdogState = WatchdogState.RUNNING;
 
         try {
             for (WatchdogObserver observer : workerContainer.getObservers()) {
                 observer.onStart();
             }
 
-            while (running && workersRunning()) {
+            while (isRunning() && workersRunning()) {
                 try {
                     if (evaluator != null) {
                         if (!evaluator.eval()) {
@@ -107,6 +105,7 @@ class WorkerWatchdog implements Runnable {
                 }
             }
         } finally {
+            watchdogState = WatchdogState.STOPPING;
             logger.debug("Waiting for flushing workers's data");
 
             for (WatchdogObserver observer : workerContainer.getObservers()) {
@@ -115,13 +114,19 @@ class WorkerWatchdog implements Runnable {
                 }
             }
 
-            setRunning(false);
+            watchdogState = WatchdogState.STOPPED;
         }
 
         logger.info("Finished running the worker watchdog");
     }
 
     public boolean isRunning() {
-        return running;
+        return watchdogState == WatchdogState.RUNNING;
+    }
+
+    public void stop() {
+        if (watchdogState == WatchdogState.RUNNING) {
+            watchdogState = WatchdogState.STOPPING;
+        }
     }
 }

@@ -100,7 +100,7 @@ public final class WorkerContainer {
                     ri.worker.stop();
                 }
 
-                workerWatchdog.setRunning(false);
+                workerWatchdog.stop();
             }
 
             startTime = null;
@@ -116,7 +116,7 @@ public final class WorkerContainer {
                     ri.worker.fail(exception);
                 }
 
-                workerWatchdog.setRunning(false);
+                workerWatchdog.stop();
             }
 
             startTime = null;
@@ -210,6 +210,7 @@ public final class WorkerContainer {
     public boolean waitForComplete(long timeout) {
         try {
             watchDogThread.join(timeout);
+            stop();
 
             return watchDogThread.isAlive();
         } catch (InterruptedException e) {
