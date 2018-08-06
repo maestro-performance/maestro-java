@@ -91,12 +91,8 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
             getReportsDownloader().getOrganizer().getTracker().setCurrentTest(number);
             apply.accept(getMaestro());
 
-            if (testProfile.getInspectorName() != null) {
-                startServices(testProfile.getInspectorName());
-            }
-            else {
-                startServices();
-            }
+            startServices(testProfile);
+
             testStart();
 
             executorService = Executors.newSingleThreadScheduledExecutor();

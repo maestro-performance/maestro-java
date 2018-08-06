@@ -91,11 +91,15 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     /**
      * Start connected peers
-     * @param inspectorName the name of the inspector to use
+     * @param testProfile the test profile in use
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
-    protected void startServices(final String inspectorName) throws MaestroConnectionException {
-        maestro.startInspector(inspectorName);
+    protected void startServices(final AbstractTestProfile testProfile) throws MaestroConnectionException {
+        final String inspectorName = testProfile.getInspectorName();
+        if (inspectorName != null) {
+            maestro.startInspector(inspectorName);
+        }
+
         maestro.startReceiver();
         maestro.startSender();
     }

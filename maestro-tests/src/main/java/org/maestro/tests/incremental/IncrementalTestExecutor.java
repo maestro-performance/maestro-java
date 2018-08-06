@@ -102,12 +102,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             getReportsDownloader().getOrganizer().getTracker().setCurrentTest(testNumber);
             testProfile.apply(getMaestro());
 
-            if (testProfile.getInspectorName() != null) {
-                startServices(testProfile.getInspectorName());
-            }
-            else {
-                startServices();
-            }
+            startServices(testProfile);
 
             testStart();
 
