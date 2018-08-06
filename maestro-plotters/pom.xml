@@ -30,6 +30,7 @@
         <module>maestro-plotter-inspector</module>
         <module>maestro-plotter-amqp-inspector</module>
         <module>maestro-plotter-rate</module>
+        <module>maestro-plotter-latency</module>
     </modules>
 
 
