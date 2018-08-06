@@ -141,6 +141,10 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             try {
                 final List<? extends MaestroNote> drainReplies = getMaestro().waitForDrain(15000).get();
 
+                if (drainReplies.size() == 0) {
+                    logger.warn("None of the peers reported a successful drain from the SUT");
+                }
+
                 drainReplies.stream()
                         .filter(note -> isFailed(note));
 
