@@ -16,6 +16,8 @@
 
 package org.maestro.common.worker;
 
+import java.util.concurrent.locks.LockSupport;
+
 /**
  * Worker utilities
  */
@@ -29,5 +31,19 @@ public class WorkerUtils {
      */
     public static long getExchangeInterval(final long rate) {
         return rate > 0 ? (1_000_000_000L / rate) : 0;
+    }
+
+
+    public static long waitNanoInterval(final long expectedFireTime, final long intervalInNanos) {
+        assert intervalInNanos > 0;
+        long now;
+        do {
+            now = System.nanoTime();
+            if (now - expectedFireTime < 0) {
+                LockSupport.parkNanos(expectedFireTime - now);
+            }
+        } while (now - expectedFireTime < 0);
+
+        return now;
     }
 }

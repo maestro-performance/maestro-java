@@ -5,6 +5,7 @@ import org.maestro.common.duration.EpochMicroClock;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.io.data.writers.BinaryRateWriter;
 import org.maestro.common.worker.MaestroWorker;
+import org.maestro.common.worker.WorkerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,6 +14,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.TimeUnit;
 
 public class WorkerRateWriter implements Runnable {
     private static class WriterCache {
@@ -29,7 +31,7 @@ public class WorkerRateWriter implements Runnable {
     private List<? extends MaestroWorker> workers;
     private EpochMicroClock microClock = EpochClocks.exclusiveMicro();
 
-    private boolean running = false;
+    private volatile boolean running = false;
 
     public WorkerRateWriter(final File reportFolder, final List<? extends MaestroWorker> workers) throws IOException  {
         for (MaestroWorker worker : workers) {
@@ -87,14 +89,22 @@ public class WorkerRateWriter implements Runnable {
     public void run() {
         running = true;
 
+        final long interval = 1_000_000_000L;
+        long nextFireTime = System.nanoTime() + interval;
+
         while (running) {
-            cachedWriters.forEach(this::updateForWorker);
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                logger.info("Rate writer was interrupted");
-                break;
+            final long now = WorkerUtils.waitNanoInterval(nextFireTime, interval);
+
+            long drift = TimeUnit.NANOSECONDS.toMillis(now - nextFireTime);
+
+            if (drift > 0) {
+                logger.warn("The current time is {} milliseconds beyond the scheduled time of check. The writer is probably " +
+                        "unable update all the data within the scheduled time.",
+                        drift);
             }
+
+            nextFireTime += interval;
+            cachedWriters.forEach(this::updateForWorker);
         }
 
         cachedWriters.values().forEach(writerCache -> writerCache.writer.close());

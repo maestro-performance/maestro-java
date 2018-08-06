@@ -115,17 +115,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         setMessageSize(workerOptions.getMessageSize());
     }
 
-    private static long waitNanoInterval(final long expectedFireTime, final long intervalInNanos) {
-        assert intervalInNanos > 0;
-        long now;
-        do {
-            now = System.nanoTime();
-            if (now - expectedFireTime < 0) {
-                LockSupport.parkNanos(expectedFireTime - now);
-            }
-        } while (now - expectedFireTime < 0);
-        return now;
-    }
+
 
     public void start() {
         startedEpochMillis = System.currentTimeMillis();
@@ -190,23 +180,14 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
         while (duration.canContinue(this) && isRunning()) {
             if (intervalInNanos > 0) {
-                final long now = waitNanoInterval(nextFireTime, intervalInNanos);
+                final long now = WorkerUtils.waitNanoInterval(nextFireTime, intervalInNanos);
                 assert (now - nextFireTime) >= 0 : "can't wait less than the configured interval in nanos";
                 nextFireTime += intervalInNanos;
-                elapsedIntervalsNanos += intervalInNanos;
             }
 
             final long sendTimeEpochMicros = epochMicroClock.microTime();
-            final long expectedSendTimeEpochMicros;
-
-            if (intervalInNanos > 0) {
-                final long elapsedIntervalsMicros = (elapsedIntervalsNanos / 1_000L);
-                expectedSendTimeEpochMicros = startFireEpochMicros + elapsedIntervalsMicros;
-            } else {
-                expectedSendTimeEpochMicros = sendTimeEpochMicros;
-            }
-
             client.sendMessages(sendTimeEpochMicros, commitTransaction(count, opts, isSessionTransacted));
+
             count++;
             //update message sent count
             this.messageCount.lazySet(count);
