@@ -33,6 +33,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.*;
+import java.util.function.Consumer;
 
 /**
  * A test executor that uses fixed rates
@@ -70,7 +71,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         warmUp = false;
     }
 
-    private boolean runTest() {
+    private boolean runTest(int number, final Consumer<Maestro> apply) {
         try {
             // Clean up the topic
             getMaestro().collect();
@@ -87,14 +88,8 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
                     .filter(note -> note instanceof GetResponse)
                     .forEach(note -> downloadProcessor.addDataServer((GetResponse) note));
 
-            if (warmUp) {
-                getReportsDownloader().getOrganizer().getTracker().setCurrentTest(0);
-                testProfile.warmUp(getMaestro());
-            }
-            else {
-                getReportsDownloader().getOrganizer().getTracker().setCurrentTest(1);
-                testProfile.apply(getMaestro());
-            }
+            getReportsDownloader().getOrganizer().getTracker().setCurrentTest(number);
+            apply.accept(getMaestro());
 
             if (testProfile.getInspectorName() != null) {
                 startServices(testProfile.getInspectorName());
@@ -175,13 +170,13 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         logger.info("Starting the warm up execution");
 
         warmUp = true;
-        if (runTest()) {
+        if (runTest(0, testProfile::warmUp)) {
             try {
                 Thread.sleep(getCoolDownPeriod());
                 logger.info("Starting the test");
 
                 warmUp = false;
-                return runTest();
+                return runTest(1, testProfile::apply);
             } catch (InterruptedException e) {
                 logger.warn("The test execution was interrupted");
             }
