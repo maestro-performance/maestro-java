@@ -66,10 +66,14 @@ public class RateWriterObserver implements WatchdogObserver {
 
     @Override
     public boolean onStop(final List<WorkerRuntimeInfo> workerRuntimeInfos) {
-        this.rateWriterThread.interrupt();
-
+        workerRateWriter.setRunning(false);
         try {
-            this.rateWriterThread.join();
+            this.rateWriterThread.join(1000);
+
+            if (this.rateWriterThread.isAlive()) {
+                logger.warn("The rate writer thread did not stop within the specified timeout");
+                this.rateWriterThread.interrupt();
+            }
         } catch (InterruptedException e) {
             logger.error("Rate writer thread was interrupted: {}", e.getMessage(), e);
         }
