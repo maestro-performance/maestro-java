@@ -32,7 +32,7 @@ public abstract class StreamReader<T> implements ReportReader<T> {
         Reader in = null;
 
         try {
-            in = new InputStreamReader(stream);
+            in = new BufferedReader(new InputStreamReader(stream));
 
             return readReader(in);
         }
@@ -47,7 +47,7 @@ public abstract class StreamReader<T> implements ReportReader<T> {
         logger.debug("Reading file {}", filename);
 
         try {
-            fileStream = new FileInputStream(filename);
+            fileStream = new BufferedInputStream(new FileInputStream(filename));
 
             return readStream(fileStream);
         }

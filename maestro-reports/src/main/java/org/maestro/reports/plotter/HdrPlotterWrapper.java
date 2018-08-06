@@ -16,16 +16,19 @@
 
 package org.maestro.reports.plotter;
 
-import net.orpiske.hhp.plot.HdrData;
-import net.orpiske.hhp.plot.HdrLogProcessorWrapper;
-import net.orpiske.hhp.plot.HdrPropertyWriter;
-import net.orpiske.hhp.plot.HdrReader;
+
+import org.HdrHistogram.Histogram;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.io.FilenameUtils;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.test.TestProperties;
 import org.maestro.common.worker.WorkerUtils;
+import org.maestro.plotter.latency.HdrLogProcessorWrapper;
+import org.maestro.plotter.latency.common.HdrData;
+import org.maestro.plotter.latency.graph.HdrPlotter;
+import org.maestro.plotter.latency.properties.HdrPropertyWriter;
+import org.maestro.plotter.utils.Util;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,13 +38,14 @@ import java.io.IOException;
 public class HdrPlotterWrapper implements PlotterWrapper {
     private static final Logger logger = LoggerFactory.getLogger(HdrPlotterWrapper.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
-    private static final String DEFAULT_UNIT_RATE;
+    private static final double DEFAULT_UNIT_RATE;
     private static final boolean legacyHdrMode;
 
-    private String unitRate;
+    private double unitRate;
+    private Histogram histogram;
 
     static {
-        DEFAULT_UNIT_RATE = config.getString("hdr.plotter.default.unit.rate", "1000");
+        DEFAULT_UNIT_RATE = config.getDouble("hdr.plotter.default.unit.rate", 1000.0);
         legacyHdrMode = config.getBoolean("hdr.plotter.legacy.mode", false);
     }
 
@@ -49,7 +53,7 @@ public class HdrPlotterWrapper implements PlotterWrapper {
         this(DEFAULT_UNIT_RATE);
     }
 
-    public HdrPlotterWrapper(final String unitRate) {
+    public HdrPlotterWrapper(double unitRate) {
         this.unitRate = unitRate;
     }
 
@@ -81,20 +85,18 @@ public class HdrPlotterWrapper implements PlotterWrapper {
                 throw new IOException("File " + file.getPath() + " does not exist");
             }
 
+            histogram = Util.getAccumulated(file);
+
             final HdrData hdrData = getHdrData(file);
 
             // HdrPlotterWrapper
-            net.orpiske.hhp.plot.HdrPlotter plotter = new net.orpiske.hhp.plot.HdrPlotter(FilenameUtils.removeExtension(file.getPath()));
+            HdrPlotter plotter = new HdrPlotter(FilenameUtils.removeExtension(file.getName()));
 
-            plotter.getChartProperties().setTitle("");
-            plotter.getChartProperties().setSeriesName("Percentile");
-            plotter.setOutputWidth(1280);
-            plotter.setOutputHeight(1024);
-            plotter.plot(hdrData);
+            plotter.plot(hdrData, file.getParentFile());
 
             HdrPropertyWriter propertyWriter = new HdrPropertyWriter();
 
-            propertyWriter.postProcess(file);
+            propertyWriter.postProcess(histogram, file);
 
             return true;
         }
@@ -104,7 +106,7 @@ public class HdrPlotterWrapper implements PlotterWrapper {
         }
     }
 
-    private HdrData getHdrData(File file) throws IOException {
+    private synchronized HdrData getHdrData(final File file) {
         HdrData hdrData;
         if (!legacyHdrMode) {
             TestProperties testProperties = loadProperties(file.getParentFile());
@@ -112,44 +114,31 @@ public class HdrPlotterWrapper implements PlotterWrapper {
                 final long intervalInNanos = WorkerUtils.getExchangeInterval(testProperties.getRate());
 
                 if (intervalInNanos == 0) {
-                    hdrData = getHdrDataUnbounded(file);
+                    hdrData = getHdrDataUnbounded();
                 } else {
-                    hdrData = getHdrDataBounded(file, intervalInNanos);
+                    hdrData = getHdrDataBounded(intervalInNanos);
                 }
             } else {
-                hdrData = getHdrDataUnbounded(file);
+                hdrData = getHdrDataUnbounded();
             }
         }
         else {
-            hdrData = getHdrDataUnbounded(file);
+            hdrData = getHdrDataUnbounded();
         }
         return hdrData;
     }
 
-    private HdrData getHdrDataUnbounded(File file) throws IOException {
+    private HdrData getHdrDataUnbounded() {
         final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
-        String csvFile;
 
-        synchronized (this) {
-            csvFile = processorWrapper.convertLog(file.getPath());
-        }
 
-        // CSV Reader
-        final HdrReader reader = new HdrReader();
-        return reader.read(csvFile);
+        return processorWrapper.convertLog(histogram);
     }
 
 
-    private HdrData getHdrDataBounded(File file, final long interval) throws IOException {
+    private HdrData getHdrDataBounded(final long interval) {
         final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
-        String[] csvFile;
 
-        synchronized (this) {
-            csvFile = processorWrapper.convertLog(file.getPath(), String.valueOf(interval));
-        }
-
-        // CSV Reader
-        final HdrReader reader = new HdrReader();
-        return reader.read(csvFile[0], csvFile[1]);
+        return processorWrapper.convertLog(histogram, interval);
     }
 }
