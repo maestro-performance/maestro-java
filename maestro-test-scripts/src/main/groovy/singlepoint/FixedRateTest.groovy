@@ -19,7 +19,8 @@ package singlepoint
 import org.maestro.client.Maestro
 import org.maestro.reports.downloaders.DownloaderBuilder
 import org.maestro.reports.downloaders.ReportsDownloader
-import org.maestro.tests.rate.FixedRateTestExecutor
+import org.maestro.tests.rate.AbstractFixedRateExecutor
+import org.maestro.tests.rate.FixedRateTestExecutorFactory
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile
 import org.maestro.common.LogConfigurator
 import org.maestro.common.duration.TestDurationBuilder
@@ -75,6 +76,7 @@ maxLatency = System.getenv("MAXIMUM_LATENCY")
 managementInterface = System.getenv("MANAGEMENT_INTERFACE");
 inspectorName = System.getenv("INSPECTOR_NAME");
 downloaderName = System.getenv("DOWNLOADER_NAME");
+warmUp = System.getenv("WARM_UP");
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
@@ -97,7 +99,9 @@ testProfile.setParallelCount(Integer.parseInt(parallelCount))
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
 ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
-FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, reportsDownloader, testProfile)
+AbstractFixedRateExecutor testExecutor = FixedRateTestExecutorFactory.newTestExecutor(maestro, reportsDownloader,
+        testProfile, warmUp)
+
 boolean ret = testExecutor.run();
 
 reportsDownloader.waitForComplete();

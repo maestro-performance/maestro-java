@@ -19,13 +19,8 @@ package org.maestro.tests.rate;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.callback.MaestroNoteCallback;
-import org.maestro.client.notes.GetResponse;
 import org.maestro.common.ConfigurationWrapper;
-import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.reports.downloaders.ReportsDownloader;
-import org.maestro.tests.AbstractTestExecutor;
-import org.maestro.tests.DownloadProcessor;
-import org.maestro.tests.callbacks.DownloadCallback;
 import org.maestro.tests.callbacks.StatsCallBack;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.slf4j.Logger;
@@ -33,129 +28,43 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.function.Consumer;
 
 /**
- * A test executor that uses fixed rates
+ * A test executor that uses fixed rates and warms-up before the test
  */
-public class FixedRateTestExecutor extends AbstractTestExecutor {
+public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestExecutor.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
-    private final FixedRateTestProfile testProfile;
-
-    private static final long coolDownPeriod;
-    private final DownloadProcessor downloadProcessor;
 
     private volatile boolean warmUp = false;
 
     private ScheduledExecutorService executorService;
 
-    static {
-        coolDownPeriod = config.getLong("test.fixedrate.cooldown.period", 1) * 1000;
-    }
 
     public FixedRateTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
                                  final FixedRateTestProfile testProfile) {
-        super(maestro, reportsDownloader);
-
-        this.testProfile = testProfile;
+        super(maestro, reportsDownloader, testProfile);
 
         List<MaestroNoteCallback> callbackList = getMaestro().getCollector().getCallbacks();
         callbackList.add(new StatsCallBack(this));
-
-        downloadProcessor = new DownloadProcessor(reportsDownloader);
-        callbackList.add(new DownloadCallback(this, downloadProcessor));
     }
 
-    private void reset() {
+    protected void reset() {
         warmUp = false;
     }
 
-    private boolean runTest(int number, final Consumer<Maestro> apply) {
-        try {
-            // Clean up the topic
-            getMaestro().collect();
-
-            int numPeers = peerCount(testProfile);
-            if (numPeers == 0) {
-                logger.error("There are not enough peers to run the test");
-
-                return false;
-            }
-
-            List<? extends MaestroNote> dataServers = getMaestro().getDataServer().get();
-            dataServers.stream()
-                    .filter(note -> note instanceof GetResponse)
-                    .forEach(note -> downloadProcessor.addDataServer((GetResponse) note));
-
-            getReportsDownloader().getOrganizer().getTracker().setCurrentTest(number);
-            apply.accept(getMaestro());
-
-            startServices(testProfile);
-
-            testStart();
-
-            executorService = Executors.newSingleThreadScheduledExecutor();
-
-            Runnable task = () -> { getMaestro().statsRequest(); };
-            executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
-
-            long timeout = getTimeout();
-            logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
-            List<? extends MaestroNote> results = getMaestro()
-                    .waitForNotifications(timeout, numPeers)
-                    .get();
-
-            long failed = results.stream()
-                    .filter(note -> isTestFailed(note))
-                    .count();
-
-            if (failed > 0) {
-                logger.info("Test {} completed unsuccessfully", phaseName());
-                return false;
-            }
-
-            logger.info("Test {} completed successfully", phaseName());
-            return true;
-        }
-        catch (Exception e) {
-            logger.error("Error: {}", e.getMessage(), e);
-        }
-        finally {
-            try {
-                final List<? extends MaestroNote> drainReplies = getMaestro().waitForDrain(15000).get();
-
-                drainReplies.stream()
-                        .filter(note -> isFailed(note));
-
-            } catch (ExecutionException | InterruptedException e) {
-                logger.error("Error checking the draining status: {}", e.getMessage(), e);
-            }
-
-            reset();
-
-            testStop();
-
-            stopServices();
-        }
-
-        return false;
-    }
-
-
-    private String phaseName() {
+    protected String phaseName() {
         return warmUp ? "warm-up" : "run";
     }
 
-
-    private long getTimeout() {
+    protected long getTimeout() {
         long repeat;
 
         if (warmUp) {
-            repeat = testProfile.getWarmUpEstimatedCompletionTime();
+            repeat = getTestProfile().getWarmUpEstimatedCompletionTime();
         }
         else {
-            repeat = testProfile.getEstimatedCompletionTime();
+            repeat = getTestProfile().getEstimatedCompletionTime();
         }
 
         return repeat + 10;
@@ -166,13 +75,13 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         logger.info("Starting the warm up execution");
 
         warmUp = true;
-        if (runTest(0, testProfile::warmUp)) {
+        if (runTest(0, getTestProfile()::warmUp)) {
             try {
                 Thread.sleep(getCoolDownPeriod());
                 logger.info("Starting the test");
 
                 warmUp = false;
-                return runTest(1, testProfile::apply);
+                return runTest(1, getTestProfile()::apply);
             } catch (InterruptedException e) {
                 logger.warn("The test execution was interrupted");
             }
@@ -182,16 +91,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         return false;
     }
 
-    @Override
-    public long getCoolDownPeriod() {
-        return coolDownPeriod;
-    }
-
     public boolean isWarmUp() {
         return warmUp;
-    }
-
-    public FixedRateTestProfile getTestProfile() {
-        return testProfile;
     }
 }
