@@ -30,9 +30,6 @@ import java.util.concurrent.ScheduledExecutorService;
 public class StraightFixedRateTestExecutor extends AbstractFixedRateExecutor {
     private static final Logger logger = LoggerFactory.getLogger(StraightFixedRateTestExecutor.class);
 
-    private ScheduledExecutorService executorService;
-
-
     public StraightFixedRateTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
                                          final FixedRateTestProfile testProfile) {
         super(maestro, reportsDownloader, testProfile);
