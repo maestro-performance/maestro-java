@@ -48,7 +48,6 @@ public class ReportContextBuilder {
             nodeTypes.add(nodeType);
             tests.add(reportFile.getTestNum());
 
-
             try {
                 ReportDirInfo reportDirInfo = reportFile.getReportDirInfo();
                 reportDirs.add(reportDirInfo);

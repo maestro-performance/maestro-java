@@ -20,6 +20,7 @@ import org.apache.commons.cli.*;
 import org.maestro.common.LogConfigurator;
 import org.maestro.reports.ReportGenerator;
 import org.maestro.reports.composed.ComposedIndexGenerator;
+import org.maestro.reports.context.common.WithWarmUpContext;
 import org.maestro.reports.processors.DiskCleaner;
 
 import java.io.File;
@@ -34,6 +35,7 @@ public class ReportAction extends Action {
     private boolean clean;
     private final Map<String,String> indexProperties = new HashMap<>();
     private boolean composed;
+    private boolean withWarmUp = false;
 
 
     public ReportAction(String[] args) {
@@ -68,6 +70,7 @@ public class ReportAction extends Action {
         options.addOption("C", "clean", false, "clean the report directory after processing");
         options.addOption("", "with-properties", true, "pass optional properties (ie.: saved along with the index)");
         options.addOption("", "composed", false, "generate the composed index");
+        options.addOption("", "with-warm-up", false, "consider the first test iteration as warm-up");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -94,6 +97,7 @@ public class ReportAction extends Action {
         clean = cmdLine.hasOption('C');
         parseProperties(cmdLine.getOptionValue("with-properties"));
         composed = cmdLine.hasOption("composed");
+        withWarmUp = cmdLine.hasOption("with-warm-up");
     }
 
     public int run() {
@@ -109,7 +113,15 @@ public class ReportAction extends Action {
                 }
 
                 reportGenerator.setIndexProperties(indexProperties);
-                reportGenerator.generate();
+
+                if (withWarmUp) {
+                    reportGenerator.generate(new WithWarmUpContext(), null);
+                }
+                else {
+                    reportGenerator.generate();
+                }
+
+
                 System.out.println("Report generated successfully");
             }
             return 0;

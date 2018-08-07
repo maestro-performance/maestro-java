@@ -22,6 +22,8 @@ import org.apache.commons.io.FileUtils;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.common.exceptions.EmptyDataSet;
 import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
+import org.maestro.reports.context.NodeReportContext;
+import org.maestro.reports.context.ReportContext;
 import org.maestro.reports.files.ReportDirInfo;
 import org.maestro.reports.files.ReportFile;
 import org.maestro.reports.index.IndexRenderer;
@@ -112,20 +114,28 @@ public class ReportGenerator {
         }
     }
 
-    private void renderNodePage(final ReportDirInfo report) {
+    private void renderNodePage(final ReportDirInfo report, final NodeReportContext nodeReportContext) {
         logger.info("Processing report dir: {}", report.getReportDir());
-        Map<String, Object> nodeReportContext = NodeContextBuilder.toContext(report);
+        Map<String, Object> context = NodeContextBuilder.toContext(report);
+
+        if (nodeReportContext != null) {
+            nodeReportContext.eval(context);
+        }
 
         try {
             File outFile = new File(report.getReportDir(), "index.html");
-            FileUtils.writeStringToFile(outFile, reportRenderer.render(nodeReportContext), StandardCharsets.UTF_8);
+            FileUtils.writeStringToFile(outFile, reportRenderer.render(context), StandardCharsets.UTF_8);
             reportRenderer.copyResources(outFile.getParentFile());
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
     public void generate() {
+        generate(null, null);
+    }
+
+
+    public void generate(final ReportContext reportContext, final NodeReportContext nodeReportContext) {
         File baseDir = new File(path);
 
         // Step 1: build the file list for processing
@@ -144,11 +154,16 @@ public class ReportGenerator {
 
         // Step 3: build the report context
         Map<String, Object> context = ReportContextBuilder.toContext(fileList, baseDir);
+
+        if (reportContext != null) {
+            reportContext.eval(context);
+        }
+
         @SuppressWarnings("unchecked")
         Set<ReportDirInfo> reports = (Set<ReportDirInfo>) context.get("reportDirs");
 
         // Step 4: render the pages for each host
-        reports.parallelStream().forEach(this::renderNodePage);
+        reports.parallelStream().forEach(reportDirInfo -> renderNodePage(reportDirInfo, nodeReportContext));
 
         // Step 5: render the index page
         renderReportIndex(baseDir, context);
