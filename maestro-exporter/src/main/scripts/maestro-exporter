@@ -58,4 +58,4 @@ fi
 
 mainclass=org.maestro.exporter.main.Main
 
-java -classpath ${MAESTRO_EXPORTER_DEBUG_ARGS} "$installdir"/bin/*exporter-*.jar -Dorg.maestro.home="$installdir" $MAESTRO_JAVA_OPTS "$mainclass" $@
+java ${MAESTRO_EXPORTER_DEBUG_ARGS} -classpath "$installdir"/bin/*exporter-*.jar -Dorg.maestro.home="$installdir" $MAESTRO_JAVA_OPTS "$mainclass" $@
