@@ -68,7 +68,7 @@ public class WorkerShutdownObserver implements WatchdogObserver {
 
     private static long getDeadLine(long startWaitingWorkersEpochMillis, int runningCount) {
         long deadLineAmount = runningCount * TIMEOUT_STOP_WORKER_MILLIS * 2;
-        long deadLineMax = config.getLong("worker.active.deadline.max", 55000);
+        long deadLineMax = config.getLong("worker.active.deadline.max", 65000);
 
         if (deadLineAmount > deadLineMax) {
             deadLineAmount = deadLineMax;
