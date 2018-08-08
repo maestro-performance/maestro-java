@@ -59,4 +59,8 @@ public class CompletionTime {
 
         return ret;
     }
+
+    public static long getDeadline() {
+        return config.getLong("worker.active.deadline.max", 65000) / 1000;
+    }
 }

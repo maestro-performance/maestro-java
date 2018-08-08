@@ -23,6 +23,7 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.callbacks.StatsCallBack;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
+import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -67,7 +68,7 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
             repeat = getTestProfile().getEstimatedCompletionTime();
         }
 
-        return repeat + 10;
+        return repeat + CompletionTime.getDeadline();
     }
 
 

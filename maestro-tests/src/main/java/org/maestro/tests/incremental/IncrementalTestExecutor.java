@@ -72,7 +72,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
     }
 
     private long getTimeout() {
-        return testProfile.getEstimatedCompletionTime() + 10;
+        return getTimeout(testProfile);
     }
 
     private String phaseName() {

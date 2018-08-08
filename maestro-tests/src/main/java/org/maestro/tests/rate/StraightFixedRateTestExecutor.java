@@ -22,7 +22,6 @@ import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.ScheduledExecutorService;
 
 /**
  * A test executor that uses fixed rates and goes straight to the test without warming up
@@ -42,7 +41,7 @@ public class StraightFixedRateTestExecutor extends AbstractFixedRateExecutor {
     }
 
     protected long getTimeout() {
-        return getTestProfile().getEstimatedCompletionTime() + 10;
+        return getTimeout(getTestProfile());
     }
 
 

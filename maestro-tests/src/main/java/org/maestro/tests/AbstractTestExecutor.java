@@ -25,6 +25,7 @@ import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.downloaders.ReportsDownloader;
+import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -222,5 +223,9 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
         logger.debug("Sending request to collect data servers");
         maestro.getDataServer();
+    }
+
+    protected long getTimeout(final AbstractTestProfile testProfile) {
+        return testProfile.getEstimatedCompletionTime() + CompletionTime.getDeadline();
     }
 }
