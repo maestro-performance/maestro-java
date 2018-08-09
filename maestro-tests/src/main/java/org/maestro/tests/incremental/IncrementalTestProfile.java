@@ -18,7 +18,6 @@ package org.maestro.tests.incremental;
 
 import org.maestro.client.Maestro;
 import org.maestro.common.duration.TestDuration;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestProfile;
 import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;

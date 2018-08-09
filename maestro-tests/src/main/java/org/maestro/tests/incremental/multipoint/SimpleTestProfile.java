@@ -17,7 +17,6 @@
 package org.maestro.tests.incremental.multipoint;
 
 import org.maestro.client.Maestro;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.MultiPointProfile;
 import org.maestro.tests.incremental.IncrementalTestProfile;
 import org.slf4j.Logger;

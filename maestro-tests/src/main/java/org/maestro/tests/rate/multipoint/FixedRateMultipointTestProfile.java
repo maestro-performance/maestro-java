@@ -18,7 +18,6 @@ package org.maestro.tests.rate.multipoint;
 
 import org.maestro.client.Maestro;
 import org.maestro.common.duration.TestDuration;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.MultiPointProfile;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.slf4j.Logger;

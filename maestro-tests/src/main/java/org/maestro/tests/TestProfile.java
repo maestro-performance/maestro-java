@@ -17,7 +17,6 @@
 package org.maestro.tests;
 
 import org.maestro.client.Maestro;
-import org.maestro.common.exceptions.MaestroException;
 
 /**
  * A base interface for implementing test profiles.
