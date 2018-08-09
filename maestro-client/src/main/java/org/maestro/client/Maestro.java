@@ -472,6 +472,31 @@ public final class Maestro implements MaestroRequester {
 
 
     /**
+     * Sends a stop receiver request
+     * @throws MaestroConnectionException if unable to send the MQTT request
+     */
+    public CompletableFuture<List<? extends MaestroNote>> stopAll() throws MaestroConnectionException {
+        StopSender stopSender = new StopSender();
+
+        maestroClient.publish(MaestroTopics.SENDER_DAEMONS, stopSender);
+
+        StopReceiver stopReceiver = new StopReceiver();
+
+        maestroClient.publish(MaestroTopics.RECEIVER_DAEMONS, stopReceiver);
+
+        StopInspector stopInspector = new StopInspector();
+
+        maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, stopInspector);
+
+        StopAgent stopAgent = new StopAgent();
+
+        maestroClient.publish(MaestroTopics.AGENT_DAEMONS, stopAgent);
+
+        return getOkErrorCompletableFuture();
+    }
+
+
+    /**
      * Sends a stats request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
