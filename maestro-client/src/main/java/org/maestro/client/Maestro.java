@@ -677,66 +677,6 @@ public final class Maestro implements MaestroRequester {
      * Collect replies up to a certain limit of retries/timeout
      * @param wait how much time between each retry
      * @param retries number of retries
-     * @return A list of serialized maestro replies or null if none
-     */
-    private List<MaestroNote> collect(long wait, long retries) {
-        List<MaestroNote> replies;
-
-        do {
-            replies = collectorExecutor.collect();
-
-            if (hasReplies(replies)) {
-                break;
-            }
-
-            try {
-                Thread.sleep(wait);
-            } catch (InterruptedException e) {
-                logger.trace("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
-            }
-            retries--;
-        } while (retries > 0);
-
-        return replies;
-    }
-
-    /**
-     * Collect replies up to a certain limit of retries/timeout
-     * @param wait how much time between each retry
-     * @param retries number of retries
-     * @param expect The number of replies to expect.
-     * @return A list of serialized maestro replies or null if none. May return less that expected.
-     */
-    private List<MaestroNote> collect(long wait, long retries, int expect) {
-        List<MaestroNote> replies = new LinkedList<>();
-
-        do {
-            List<MaestroNote> collected = collectorExecutor.collect();
-
-            if (collected != null) {
-                replies.addAll(collected);
-
-                if (hasReplies(replies) && replies.size() >= expect) {
-                    break;
-                }
-            }
-
-            try {
-                Thread.sleep(wait);
-            } catch (InterruptedException e) {
-                logger.trace("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
-            }
-            retries--;
-        } while (retries > 0);
-
-        return replies;
-    }
-
-
-    /**
-     * Collect replies up to a certain limit of retries/timeout
-     * @param wait how much time between each retry
-     * @param retries number of retries
      * @param expect The number of replies to expect.
      * @param predicate Returns only the messages matching the predicate
      * @return A list of serialized maestro replies or null if none. May return less that expected.
