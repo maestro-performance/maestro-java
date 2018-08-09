@@ -123,16 +123,9 @@ public final class Maestro implements MaestroRequester {
 
         maestroClient.publish(topic, maestroNote);
 
-        final CompletableFuture<List<? extends MaestroNote>> ret =  CompletableFuture.supplyAsync(
-                new Supplier<List<? extends MaestroNote>>() {
-                    @Override
-                    public List<? extends MaestroNote> get() {
-                        return collect(1000, note -> note instanceof PingResponse);
-                    }
-                }
+        return CompletableFuture.supplyAsync(
+                () -> Maestro.this.collect(1000, note -> note instanceof PingResponse)
         );
-
-        return ret;
     }
 
     private boolean isSetReply(MaestroNote note) {
@@ -141,12 +134,7 @@ public final class Maestro implements MaestroRequester {
 
     private CompletableFuture<List<? extends MaestroNote>> getSetCompletableFuture() {
         return CompletableFuture.supplyAsync(
-                new Supplier<List<? extends MaestroNote>>() {
-                    @Override
-                    public List<? extends MaestroNote> get() {
-                        return collect(1000, Maestro.this::isSetReply);
-                    }
-                }
+                () -> collect(1000, Maestro.this::isSetReply)
         );
     }
 
@@ -403,12 +391,7 @@ public final class Maestro implements MaestroRequester {
 
     private CompletableFuture<List<? extends MaestroNote>> getOkErrorCompletableFuture() {
         return CompletableFuture.supplyAsync(
-                new Supplier<List<? extends MaestroNote>>() {
-                    @Override
-                    public List<? extends MaestroNote> get() {
-                        return collect(1000, isOkOrErrorResponse());
-                    }
-                }
+                () -> collect(1000, isOkOrErrorResponse())
         );
     }
 
@@ -505,12 +488,7 @@ public final class Maestro implements MaestroRequester {
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
         return CompletableFuture.supplyAsync(
-                new Supplier<List<? extends MaestroNote>>() {
-                    @Override
-                    public List<? extends MaestroNote> get() {
-                        return collect(1000, note -> note instanceof InternalError || note instanceof StatsResponse);
-                    }
-                }
+                () -> collect(1000, note -> note instanceof InternalError || note instanceof StatsResponse)
         );
     }
 
@@ -538,12 +516,7 @@ public final class Maestro implements MaestroRequester {
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
         return CompletableFuture.supplyAsync(
-                new Supplier<List<? extends MaestroNote>>() {
-                    @Override
-                    public List<? extends MaestroNote> get() {
-                        return collect(1000, note -> note instanceof InternalError || note instanceof GetResponse);
-                    }
-                }
+                () -> collect(1000, note -> note instanceof InternalError || note instanceof GetResponse)
         );
     }
 
@@ -581,12 +554,7 @@ public final class Maestro implements MaestroRequester {
 
         maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
         return CompletableFuture.supplyAsync(
-                new Supplier<List<? extends MaestroNote>>() {
-                    @Override
-                    public List<? extends MaestroNote> get() {
-                        return collect(1000, note -> note instanceof UserCommand1Response || note instanceof InternalError);
-                    }
-                }
+                () -> collect(1000, note -> note instanceof UserCommand1Response || note instanceof InternalError)
         );
     }
 
@@ -604,12 +572,7 @@ public final class Maestro implements MaestroRequester {
 
         maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
         return CompletableFuture.supplyAsync(
-                new Supplier<List<? extends MaestroNote>>() {
-                    @Override
-                    public List<? extends MaestroNote> get() {
-                        return collect(1000, isOkOrErrorResponse());
-                    }
-                }
+                () -> collect(1000, isOkOrErrorResponse())
         );
     }
 
@@ -651,12 +614,7 @@ public final class Maestro implements MaestroRequester {
 
         maestroClient.publish(topic, drainRequest);
         return CompletableFuture.supplyAsync(
-                new Supplier<List<? extends MaestroNote>>() {
-                    @Override
-                    public List<? extends MaestroNote> get() {
-                        return collect(1000,isOkOrErrorResponse());
-                    }
-                }
+                () -> collect(1000,isOkOrErrorResponse())
         );
     }
 
@@ -733,24 +691,14 @@ public final class Maestro implements MaestroRequester {
 
     public CompletableFuture<List<? extends MaestroNote>> waitForDrain(long timeout) {
         return CompletableFuture.supplyAsync(
-                new Supplier<List<? extends MaestroNote>>() {
-                    @Override
-                    public List<? extends MaestroNote> get() {
-                        return collect(timeout, note -> note instanceof DrainCompleteNotification || note instanceof InternalError);
-                    }
-                }
+                () -> collect(timeout, note -> note instanceof DrainCompleteNotification || note instanceof InternalError)
         );
     }
 
 
     public CompletableFuture<List<? extends MaestroNote>> waitForNotifications(long timeout, int expect) {
         return CompletableFuture.supplyAsync(
-                new Supplier<List<? extends MaestroNote>>() {
-                    @Override
-                    public List<? extends MaestroNote> get() {
-                        return collect(1000, timeout, expect, maestroNotificationPredicate());
-                    }
-                }
+                () -> collect(1000, timeout, expect, maestroNotificationPredicate())
         );
     }
 
