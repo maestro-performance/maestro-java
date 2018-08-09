@@ -41,7 +41,6 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         super(url, "maestro-java-collector",MaestroDeserializer::deserialize);
     }
 
-
     @Override
     protected void noteArrived(MaestroNote note) {
         for (MaestroNoteCallback callback : callbacks) {
@@ -60,21 +59,17 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         return running;
     }
 
-    public List<MaestroNote> collect() {
-        logger.trace("Collecting messages");
-        List<MaestroNote> ret = new LinkedList<>();
-
-        while(collected.peek() != null) {
-            ret.add(collected.poll());
-        }
-
-        logger.trace("Number of messages collected: {}", ret.size());
-        return ret;
+    public void clear() {
+        collected.clear();
     }
 
     public List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
         logger.trace("Collecting messages");
-        List<MaestroNote> ret =  collected.stream().filter(predicate).collect(Collectors.toList());
+        List<MaestroNote> ret =  collected.stream()
+                .filter(predicate)
+                .collect(Collectors.toList());
+
+        collected.removeIf(predicate);
 
         logger.trace("Number of messages collected: {}", ret.size());
         return ret;

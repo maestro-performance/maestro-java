@@ -145,7 +145,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      */
     protected int getNumPeers(String ...types) throws MaestroConnectionException, InterruptedException {
         logger.debug("Collecting responses to ensure topic is clean prior to pinging nodes");
-        maestro.clean();
+        maestro.clear();
 
         logger.debug("Sending ping request");
         CompletableFuture<List<? extends MaestroNote>> repliesFuture = maestro.pingRequest();

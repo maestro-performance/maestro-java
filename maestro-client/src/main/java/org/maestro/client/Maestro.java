@@ -623,8 +623,8 @@ public final class Maestro implements MaestroRequester {
      * Collect replies
      * @return A list of serialized maestro replies
      */
-    public List<MaestroNote> clean() {
-        return collectorExecutor.collect();
+    public void clear() {
+        collectorExecutor.clear();
     }
 
     private boolean hasReplies(List<?> replies) {
@@ -644,14 +644,10 @@ public final class Maestro implements MaestroRequester {
         List<MaestroNote> replies = new LinkedList<>();
 
         do {
-            List<MaestroNote> collected = collectorExecutor.collect();
+            replies.addAll(collectorExecutor.getCollector().collect(predicate));
 
-            if (collected != null) {
-                replies.addAll(collected.stream().filter(predicate).collect(Collectors.toList()));
-
-                if (hasReplies(replies) && replies.size() >= expect) {
-                    break;
-                }
+            if (hasReplies(replies) && replies.size() >= expect) {
+                break;
             }
 
             try {
@@ -687,18 +683,13 @@ public final class Maestro implements MaestroRequester {
         }
 
         do {
-            List<MaestroNote> collected = collectorExecutor.collect();
+            try {
+                Thread.sleep(wait);
+            } catch (InterruptedException e) {
+                logger.trace("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
+            }
 
-            if (collected != null) {
-                replies.addAll(collected.stream().filter(predicate).collect(Collectors.toList()));
-            }
-            else {
-                try {
-                    Thread.sleep(wait);
-                } catch (InterruptedException e) {
-                    logger.trace("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
-                }
-            }
+            replies.addAll(collectorExecutor.getCollector().collect(predicate));
         } while (!staleChecker.isStale(replies.size()));
 
         return replies;

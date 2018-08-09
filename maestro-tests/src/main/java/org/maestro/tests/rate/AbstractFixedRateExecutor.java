@@ -66,7 +66,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
     protected boolean runTest(int number, final Consumer<Maestro> apply) {
         try {
             // Clean up the topic
-            getMaestro().clean();
+            getMaestro().clear();
 
             int numPeers = peerCount(testProfile);
             if (numPeers == 0) {
