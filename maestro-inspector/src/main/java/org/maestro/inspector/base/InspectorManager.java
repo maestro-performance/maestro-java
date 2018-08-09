@@ -105,7 +105,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
             }
             else {
                 logger.error("Unable to set management interface URL {}", value);
-                getClient().replyInternalError("Unable to start inspector: %s", value);
+                getClient().replyInternalError("Unable to set management interface URL: %s", value);
             }
         }
 
