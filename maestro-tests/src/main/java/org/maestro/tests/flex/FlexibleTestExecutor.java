@@ -87,7 +87,7 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
     public boolean run(int number) {
         try {
             // Clean up the topic
-            getMaestro().collect();
+            getMaestro().clean();
 
             int numPeers = peerCount(testProfile);
             if (numPeers == 0) {

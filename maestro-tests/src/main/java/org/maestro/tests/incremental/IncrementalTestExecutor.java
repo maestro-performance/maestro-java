@@ -84,7 +84,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
         try {
             // Clean up the topic
-            getMaestro().collect();
+            getMaestro().clean();
 
             int numPeers = peerCount(testProfile);
             if (numPeers == 0) {

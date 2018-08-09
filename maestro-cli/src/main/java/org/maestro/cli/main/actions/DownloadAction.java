@@ -30,6 +30,9 @@ import org.maestro.reports.downloaders.ReportsDownloader;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class DownloadAction extends Action {
     private static class Server {
@@ -136,9 +139,9 @@ public class DownloadAction extends Action {
     }
 
     public int run() {
-        resolveDataServers();
-
         try {
+            resolveDataServers();
+
             for (Server server : servers) {
                 ReportsDownloader rd = new DefaultDownloader(directory);
 
@@ -174,7 +177,7 @@ public class DownloadAction extends Action {
         }
     }
 
-    private void resolveDataServers() {
+    private void resolveDataServers() throws InterruptedException, ExecutionException, TimeoutException {
         System.out.printf("Resolving data servers");
 
         if (servers == null) {
@@ -182,9 +185,9 @@ public class DownloadAction extends Action {
             Maestro maestro = new Maestro(maestroUrl);
 
             System.out.printf("Sending the request");
-            maestro.getDataServer();
-            List<MaestroNote> replies = maestro.collect(1000, 10, 10,
-                    reply -> isDataServerReply(reply));
+            List<? extends MaestroNote> replies = maestro
+                    .getDataServer()
+                    .get(10, TimeUnit.SECONDS);
 
             for (MaestroNote note : replies) {
                 GetResponse reply = (GetResponse) note;
@@ -196,9 +199,5 @@ public class DownloadAction extends Action {
                 servers.add(server);
             }
         }
-    }
-
-    private boolean isDataServerReply(MaestroNote reply) {
-        return reply instanceof GetResponse && ((GetResponse) reply).getOption() == GetOption.MAESTRO_NOTE_OPT_GET_DS;
     }
 }

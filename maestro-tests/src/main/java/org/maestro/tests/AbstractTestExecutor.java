@@ -145,7 +145,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      */
     protected int getNumPeers(String ...types) throws MaestroConnectionException, InterruptedException {
         logger.debug("Collecting responses to ensure topic is clean prior to pinging nodes");
-        maestro.collect();
+        maestro.clean();
 
         logger.debug("Sending ping request");
         CompletableFuture<List<? extends MaestroNote>> repliesFuture = maestro.pingRequest();
@@ -211,19 +211,6 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         return success;
     }
 
-
-    /**
-     * Resolve the data servers connected to the test cluster
-     * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
-     */
-    @Deprecated
-    protected void resolveDataServers() throws MaestroConnectionException {
-        logger.debug("Collecting responses to ensure topic is clean prior to collecting data servers");
-        maestro.collect();
-
-        logger.debug("Sending request to collect data servers");
-        maestro.getDataServer();
-    }
 
     protected long getTimeout(final AbstractTestProfile testProfile) {
         return testProfile.getEstimatedCompletionTime() + CompletionTime.getDeadline();
