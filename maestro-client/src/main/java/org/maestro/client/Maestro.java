@@ -22,6 +22,8 @@ import org.maestro.client.exchange.MaestroMqttClient;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
+import org.maestro.common.NonProgressingStaleChecker;
+import org.maestro.common.StaleChecker;
 import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.MaestroRequester;
 import org.maestro.common.client.notes.GetOption;
@@ -665,6 +667,36 @@ public final class Maestro implements MaestroRequester {
     }
 
     /**
+     * Collect replies matching a predicate until stale
+     * @param wait how much time between each retry
+     * @param retries number of retries before considering stale
+     * @param predicate Returns only the messages matching the predicate
+     * @return A list of serialized maestro replies or null if none. May return less that expected.
+     */
+    private List<MaestroNote> collectUntilStale(long wait, long retries, Predicate<? super MaestroNote> predicate) {
+        List<MaestroNote> replies = new LinkedList<>();
+
+        StaleChecker staleChecker = new NonProgressingStaleChecker(retries);
+
+        do {
+            List<MaestroNote> collected = collectorExecutor.collect();
+
+            if (collected != null) {
+                replies.addAll(collected.stream().filter(predicate).collect(Collectors.toList()));
+            }
+            else {
+                try {
+                    Thread.sleep(wait);
+                } catch (InterruptedException e) {
+                    logger.trace("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
+                }
+            }
+        } while (!staleChecker.isStale(replies.size()));
+
+        return replies;
+    }
+
+    /**
      * Collect replies up to a certain limit of retries/timeout
      * @param wait how much time between each retry
      * @param predicate Returns only the messages matching the predicate
@@ -689,9 +721,15 @@ public final class Maestro implements MaestroRequester {
         return collectorExecutor.getCollector();
     }
 
-    public CompletableFuture<List<? extends MaestroNote>> waitForDrain(long timeout) {
+    /**
+     * Waits for the drain notifications
+     * @param retries Number of retries before considering stale (every retry == 1 second of wait)
+     * @return A completable future
+     */
+    public CompletableFuture<List<? extends MaestroNote>> waitForDrain(long retries) {
         return CompletableFuture.supplyAsync(
-                () -> collect(timeout, note -> note instanceof DrainCompleteNotification || note instanceof InternalError)
+                () -> collectUntilStale(1000, retries,
+                        note -> note instanceof DrainCompleteNotification || note instanceof InternalError)
         );
     }
 

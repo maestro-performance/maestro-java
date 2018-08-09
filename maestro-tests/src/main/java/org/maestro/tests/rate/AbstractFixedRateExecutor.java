@@ -118,7 +118,9 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
         }
         finally {
             try {
-                final List<? extends MaestroNote> drainReplies = getMaestro().waitForDrain(15000).get();
+                long drainRetries = config.getLong("client.drain.retries", 20);
+
+                final List<? extends MaestroNote> drainReplies = getMaestro().waitForDrain(drainRetries).get();
 
                 drainReplies.stream()
                         .filter(note -> isFailed(note));

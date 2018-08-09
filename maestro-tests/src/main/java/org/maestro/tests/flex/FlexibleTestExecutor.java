@@ -16,8 +16,10 @@
 
 package org.maestro.tests.flex;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.notes.GetResponse;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
@@ -35,6 +37,8 @@ import java.util.concurrent.ExecutionException;
  */
 public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
     private static final Logger logger = LoggerFactory.getLogger(FlexibleTestExecutor.class);
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+
     private final Maestro maestro;
 
     private final DownloadProcessor downloadProcessor;
@@ -133,7 +137,9 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
             logger.info("Test execution interrupted");
         } finally {
             try {
-                final List<? extends MaestroNote> drainReplies = getMaestro().waitForDrain(15000).get();
+                long drainRetries = config.getLong("client.drain.retries", 20);
+
+                final List<? extends MaestroNote> drainReplies = getMaestro().waitForDrain(drainRetries).get();
 
                 drainReplies.stream()
                         .filter(note -> isFailed(note));

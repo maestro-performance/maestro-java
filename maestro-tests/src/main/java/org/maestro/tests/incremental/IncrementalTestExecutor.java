@@ -39,7 +39,6 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestExecutor.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
-
     private final IncrementalTestProfile testProfile;
 
     private static final long coolDownPeriod;
@@ -134,7 +133,9 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
         }
         finally {
             try {
-                final List<? extends MaestroNote> drainReplies = getMaestro().waitForDrain(15000).get();
+                long drainRetries = config.getLong("client.drain.retries", 20);
+
+                final List<? extends MaestroNote> drainReplies = getMaestro().waitForDrain(drainRetries).get();
 
                 if (drainReplies.size() == 0) {
                     logger.warn("None of the peers reported a successful drain from the SUT");
