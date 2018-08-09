@@ -30,10 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 /**
  * An executor that runs the test ever incrementing the rate and parallel connections as defined by the profile
@@ -128,6 +125,9 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
             logger.info("Test {} completed successfully", phaseName());
             return true;
+        }
+        catch (TimeoutException te) {
+            logger.warn("Timed out waiting for the test notifications");
         }
         catch (Exception e) {
             logger.error("Error: {}", e.getMessage(), e);
