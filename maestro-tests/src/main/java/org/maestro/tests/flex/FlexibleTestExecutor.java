@@ -120,7 +120,7 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
             long timeout = getTimeout();
             logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
             List<? extends MaestroNote> results = getMaestro()
-                    .waitForNotifications(timeout, numPeers)
+                    .waitForNotifications(numPeers)
                     .get();
 
             logger.info("Processing the notifications");

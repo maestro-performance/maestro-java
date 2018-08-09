@@ -36,6 +36,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
 
     private final Queue<MaestroNote> collected = new ConcurrentLinkedQueue<>();
     private final List<MaestroNoteCallback> callbacks = new LinkedList<>();
+    private final List<MaestroMonitor> monitored = new LinkedList<>();
 
     public MaestroCollector(final String url) throws MaestroConnectionException {
         super(url, "maestro-java-collector",MaestroDeserializer::deserialize);
@@ -48,6 +49,12 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         }
 
         collected.add(note);
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Message arrived waking up {} threads", monitored.size());
+        }
+
+        monitored.forEach(monitor -> { synchronized(monitor) { monitor.notify(); } } );
     }
 
     public void setRunning(boolean running) {
@@ -65,7 +72,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
 
     public List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
         logger.trace("Collecting messages");
-        List<MaestroNote> ret =  collected.stream()
+        List<MaestroNote> ret = collected.stream()
                 .filter(predicate)
                 .collect(Collectors.toList());
 
@@ -77,5 +84,13 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
 
     public List<MaestroNoteCallback> getCallbacks() {
         return callbacks;
+    }
+
+    public synchronized void monitor(final MaestroMonitor monitor) {
+        monitored.add(monitor);
+    }
+
+    public synchronized void remove(final MaestroMonitor monitor) {
+        monitored.remove(monitor);
     }
 }

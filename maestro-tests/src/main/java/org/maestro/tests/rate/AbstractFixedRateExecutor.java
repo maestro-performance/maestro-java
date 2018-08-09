@@ -94,7 +94,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
             long timeout = getTimeout();
             logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
             List<? extends MaestroNote> results = getMaestro()
-                    .waitForNotifications(timeout - 1, numPeers)
+                    .waitForNotifications(numPeers)
                     .get(timeout, TimeUnit.SECONDS);
 
             long failed = results.stream()

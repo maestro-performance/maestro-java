@@ -16,14 +16,9 @@
 
 package org.maestro.client;
 
-import org.maestro.client.exchange.MaestroCollector;
-import org.maestro.client.exchange.MaestroCollectorExecutor;
-import org.maestro.client.exchange.MaestroMqttClient;
-import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.*;
 import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
-import org.maestro.common.NonProgressingStaleChecker;
-import org.maestro.common.StaleChecker;
 import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.MaestroRequester;
 import org.maestro.common.client.notes.GetOption;
@@ -36,8 +31,8 @@ import org.slf4j.LoggerFactory;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CountDownLatch;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 
 /**
@@ -49,6 +44,8 @@ public final class Maestro implements MaestroRequester {
     private final MaestroClient maestroClient;
     private final MaestroCollectorExecutor collectorExecutor;
     private final Thread collectorThread;
+
+    private CountDownLatch startSignal = new CountDownLatch(1);
 
     /**
      * Constructor
@@ -125,7 +122,7 @@ public final class Maestro implements MaestroRequester {
         maestroClient.publish(topic, maestroNote);
 
         return CompletableFuture.supplyAsync(
-                () -> Maestro.this.collect(1000, note -> note instanceof PingResponse)
+                () -> collectWithDelay(1000L, note -> note instanceof PingResponse)
         );
     }
 
@@ -135,7 +132,7 @@ public final class Maestro implements MaestroRequester {
 
     private CompletableFuture<List<? extends MaestroNote>> getSetCompletableFuture() {
         return CompletableFuture.supplyAsync(
-                () -> collect(1000, Maestro.this::isSetReply)
+                () -> collectWithDelay(1000L, Maestro.this::isSetReply)
         );
     }
 
@@ -392,7 +389,7 @@ public final class Maestro implements MaestroRequester {
 
     private CompletableFuture<List<? extends MaestroNote>> getOkErrorCompletableFuture() {
         return CompletableFuture.supplyAsync(
-                () -> collect(1000, isOkOrErrorResponse())
+                () -> collectWithDelay(1000, isOkOrErrorResponse())
         );
     }
 
@@ -489,7 +486,7 @@ public final class Maestro implements MaestroRequester {
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
         return CompletableFuture.supplyAsync(
-                () -> collect(1000, note -> note instanceof InternalError || note instanceof StatsResponse)
+                () -> collectWithDelay(1000, note -> note instanceof InternalError || note instanceof StatsResponse)
         );
     }
 
@@ -517,7 +514,7 @@ public final class Maestro implements MaestroRequester {
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
         return CompletableFuture.supplyAsync(
-                () -> collect(1000, note -> note instanceof InternalError || note instanceof GetResponse)
+                () -> collectWithDelay(1000, note -> note instanceof InternalError || note instanceof GetResponse)
         );
     }
 
@@ -555,7 +552,7 @@ public final class Maestro implements MaestroRequester {
 
         maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
         return CompletableFuture.supplyAsync(
-                () -> collect(1000, note -> note instanceof UserCommand1Response || note instanceof InternalError)
+                () -> collectWithDelay(1000, note -> note instanceof UserCommand1Response || note instanceof InternalError)
         );
     }
 
@@ -573,7 +570,7 @@ public final class Maestro implements MaestroRequester {
 
         maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
         return CompletableFuture.supplyAsync(
-                () -> collect(1000, isOkOrErrorResponse())
+                () -> collectWithDelay(1000, isOkOrErrorResponse())
         );
     }
 
@@ -615,7 +612,7 @@ public final class Maestro implements MaestroRequester {
 
         maestroClient.publish(topic, drainRequest);
         return CompletableFuture.supplyAsync(
-                () -> collect(1000,isOkOrErrorResponse())
+                () -> collectWithDelay(1000,isOkOrErrorResponse())
         );
     }
 
@@ -633,63 +630,39 @@ public final class Maestro implements MaestroRequester {
 
     /**
      * Collect replies up to a certain limit of retries/timeout
-     * @param wait how much time between each retry
-     * @param retries number of retries
      * @param expect The number of replies to expect.
      * @param predicate Returns only the messages matching the predicate
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
-    private List<MaestroNote> collect(long wait, long retries, int expect, Predicate<? super MaestroNote> predicate) {
+    private List<MaestroNote> collect(int expect, Predicate<? super MaestroNote> predicate) {
         List<MaestroNote> replies = new LinkedList<>();
+        MaestroMonitor monitor = new MaestroMonitor();
 
-        do {
-            replies.addAll(collectorExecutor.getCollector().collect(predicate));
+        try {
+            collectorExecutor.getCollector().monitor(monitor);
 
-            if (hasReplies(replies) && replies.size() >= expect) {
-                break;
-            }
+            do {
+                replies.addAll(collectorExecutor.getCollector().collect(predicate));
 
-            try {
-                Thread.sleep(wait);
-            } catch (InterruptedException e) {
-                logger.trace("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
-            }
-            retries--;
-        } while (retries > 0);
+                if (hasReplies(replies) && replies.size() >= expect) {
+                    break;
+                }
 
-        return replies;
-    }
+                try {
+                    synchronized (monitor) {
+                        if (logger.isTraceEnabled()) {
+                            logger.trace("Not enough responses ... waiting");
+                        }
+                        monitor.wait();
+                    }
+                } catch (InterruptedException e) {
 
-    /**
-     * Collect replies matching a predicate until stale
-     * @param delay initial delay
-     * @param wait how much time between each retry
-     * @param retries number of retries before considering stale
-     * @param predicate Returns only the messages matching the predicate
-     * @return A list of serialized maestro replies or null if none. May return less that expected.
-     */
-    private List<MaestroNote> collectUntilStale(long delay, long wait, long retries, Predicate<? super MaestroNote> predicate) {
-        List<MaestroNote> replies = new LinkedList<>();
-
-        StaleChecker staleChecker = new NonProgressingStaleChecker(retries);
-
-        if (delay > 0) {
-            try {
-                Thread.sleep(delay);
-            } catch (InterruptedException e) {
-
-            }
+                }
+            } while (replies.size() >= expect);
         }
-
-        do {
-            try {
-                Thread.sleep(wait);
-            } catch (InterruptedException e) {
-                logger.trace("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
-            }
-
-            replies.addAll(collectorExecutor.getCollector().collect(predicate));
-        } while (!staleChecker.isStale(replies.size()));
+        finally {
+            collectorExecutor.getCollector().remove(monitor);
+        }
 
         return replies;
     }
@@ -700,7 +673,7 @@ public final class Maestro implements MaestroRequester {
      * @param predicate Returns only the messages matching the predicate
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
-    private List<MaestroNote> collect(long wait, Predicate<? super MaestroNote> predicate) {
+    private List<MaestroNote> collectWithDelay(long wait, Predicate<? super MaestroNote> predicate) {
         try {
             Thread.sleep(wait);
         } catch (InterruptedException e) {
@@ -721,13 +694,12 @@ public final class Maestro implements MaestroRequester {
 
     /**
      * Waits for the drain notifications
-     * @param delay initial delay before trying to collect the drain notifications
-     * @param retries Number of retries before considering stale (every retry == 1 second of wait)
+     * @param expect Number of retries before considering stale (every retry == 1 second of wait)
      * @return A completable future
      */
-    public CompletableFuture<List<? extends MaestroNote>> waitForDrain(long delay, long retries) {
+    public CompletableFuture<List<? extends MaestroNote>> waitForDrain(int expect) {
         return CompletableFuture.supplyAsync(
-                () -> collectUntilStale(delay, 1000, retries,
+                () -> collect(expect,
                         note -> note instanceof DrainCompleteNotification || note instanceof InternalError)
         );
     }
@@ -737,13 +709,13 @@ public final class Maestro implements MaestroRequester {
      * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> waitForDrain() {
-        return waitForDrain(15000, 2);
+        return waitForDrain(1);
     }
 
 
-    public CompletableFuture<List<? extends MaestroNote>> waitForNotifications(long timeout, int expect) {
+    public CompletableFuture<List<? extends MaestroNote>> waitForNotifications(int expect) {
         return CompletableFuture.supplyAsync(
-                () -> collect(1000, timeout, expect, maestroNotificationPredicate())
+                () -> collect(expect, maestroNotificationPredicate())
         );
     }
 

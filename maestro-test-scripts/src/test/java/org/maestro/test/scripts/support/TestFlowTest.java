@@ -96,7 +96,7 @@ public class TestFlowTest extends EndToEndTest {
 
         // Get the test result notification
         List<? extends MaestroNote> replies = maestro
-                .waitForNotifications(2, 2)
+                .waitForNotifications(2)
                 .get(3, TimeUnit.SECONDS);
 
         assertTrue( "Replies don't match: " + replies.size(), replies.size() == 2);
