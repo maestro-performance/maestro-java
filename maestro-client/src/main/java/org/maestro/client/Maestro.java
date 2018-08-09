@@ -37,7 +37,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.function.Predicate;
-import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
 
@@ -668,15 +667,24 @@ public final class Maestro implements MaestroRequester {
 
     /**
      * Collect replies matching a predicate until stale
+     * @param delay initial delay
      * @param wait how much time between each retry
      * @param retries number of retries before considering stale
      * @param predicate Returns only the messages matching the predicate
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
-    private List<MaestroNote> collectUntilStale(long wait, long retries, Predicate<? super MaestroNote> predicate) {
+    private List<MaestroNote> collectUntilStale(long delay, long wait, long retries, Predicate<? super MaestroNote> predicate) {
         List<MaestroNote> replies = new LinkedList<>();
 
         StaleChecker staleChecker = new NonProgressingStaleChecker(retries);
+
+        if (delay > 0) {
+            try {
+                Thread.sleep(delay);
+            } catch (InterruptedException e) {
+
+            }
+        }
 
         do {
             List<MaestroNote> collected = collectorExecutor.collect();
@@ -723,14 +731,23 @@ public final class Maestro implements MaestroRequester {
 
     /**
      * Waits for the drain notifications
+     * @param delay initial delay before trying to collect the drain notifications
      * @param retries Number of retries before considering stale (every retry == 1 second of wait)
      * @return A completable future
      */
-    public CompletableFuture<List<? extends MaestroNote>> waitForDrain(long retries) {
+    public CompletableFuture<List<? extends MaestroNote>> waitForDrain(long delay, long retries) {
         return CompletableFuture.supplyAsync(
-                () -> collectUntilStale(1000, retries,
+                () -> collectUntilStale(delay, 1000, retries,
                         note -> note instanceof DrainCompleteNotification || note instanceof InternalError)
         );
+    }
+
+    /**
+     * Waits for the drain notifications
+     * @return A completable future
+     */
+    public CompletableFuture<List<? extends MaestroNote>> waitForDrain() {
+        return waitForDrain(15000, 2);
     }
 
 

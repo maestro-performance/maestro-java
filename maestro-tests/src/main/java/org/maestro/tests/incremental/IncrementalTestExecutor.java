@@ -132,10 +132,12 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             logger.error("Error: {}", e.getMessage(), e);
         }
         finally {
-            try {
-                long drainRetries = config.getLong("client.drain.retries", 20);
+            long drainDeadline = config.getLong("client.drain.deadline.secs", 30);
 
-                final List<? extends MaestroNote> drainReplies = getMaestro().waitForDrain(drainRetries).get();
+            try {
+                final List<? extends MaestroNote> drainReplies = getMaestro()
+                        .waitForDrain()
+                        .get(drainDeadline, TimeUnit.SECONDS);
 
                 if (drainReplies.size() == 0) {
                     logger.warn("None of the peers reported a successful drain from the SUT");
@@ -146,6 +148,9 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
             } catch (ExecutionException | InterruptedException e) {
                 logger.error("Error checking the draining status: {}", e.getMessage(), e);
+            }
+            catch (TimeoutException e) {
+                logger.warn("Did not receive a drain response within {} seconds", drainDeadline);
             }
 
             testStop();

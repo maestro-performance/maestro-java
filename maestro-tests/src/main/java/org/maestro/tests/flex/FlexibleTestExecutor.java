@@ -30,6 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 /**
@@ -136,16 +138,21 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
         } catch (Exception e) {
             logger.info("Test execution interrupted");
         } finally {
-            try {
-                long drainRetries = config.getLong("client.drain.retries", 20);
+            long drainDeadline = config.getLong("client.drain.deadline.secs", 30);
 
-                final List<? extends MaestroNote> drainReplies = getMaestro().waitForDrain(drainRetries).get();
+            try {
+                final List<? extends MaestroNote> drainReplies = getMaestro()
+                        .waitForDrain()
+                        .get(drainDeadline, TimeUnit.SECONDS);
 
                 drainReplies.stream()
                         .filter(note -> isFailed(note));
 
             } catch (ExecutionException | InterruptedException e) {
                 logger.error("Error checking the draining status: {}", e.getMessage(), e);
+            }
+            catch (TimeoutException e) {
+                logger.warn("Did not receive a drain response within {} seconds", drainDeadline);
             }
 
             testStop();
