@@ -98,13 +98,17 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         if (note.getOption() == SetRequest.Option.MAESTRO_NOTE_OPT_SET_MI) {
             String value = note.getValue();
 
-            if (value != null)
+            if (value != null) {
                 setUrl(value);
+
+                getClient().replyOk();
+            }
             else {
                 logger.error("Unable to set management interface URL {}", value);
                 getClient().replyInternalError("Unable to start inspector: %s", value);
             }
         }
+
     }
 
     @Override
