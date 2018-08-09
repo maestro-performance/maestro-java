@@ -189,6 +189,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
             }
             case MAESTRO_NOTE_OPT_FCL: {
                 workerOptions.setFcl(note.getValue());
+                break;
             }
         }
     }
