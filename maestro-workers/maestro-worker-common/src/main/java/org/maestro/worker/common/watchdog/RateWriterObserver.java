@@ -68,7 +68,7 @@ public class RateWriterObserver implements WatchdogObserver {
     public boolean onStop(final List<WorkerRuntimeInfo> workerRuntimeInfos) {
         workerRateWriter.setRunning(false);
         try {
-            this.rateWriterThread.join(1000);
+            this.rateWriterThread.join(1500);
 
             if (this.rateWriterThread.isAlive()) {
                 logger.warn("The rate writer thread did not stop within the specified timeout");
