@@ -130,7 +130,7 @@ public abstract class IncrementalTestProfile extends AbstractTestProfile {
         this.parallelCountIncrement = parallelCountIncrement;
     }
 
-    abstract public void apply(Maestro maestro) throws MaestroException;
+    abstract public void apply(Maestro maestro);
 
     public boolean isOverCeiling() {
         return (rate > ceilingRate && parallelCount >= ceilingParallelCount);

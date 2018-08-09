@@ -168,45 +168,45 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
         return CompletionTime.estimate(getDuration().getWarmUpDuration(), warmUpRate);
     }
 
-    protected void apply(final Maestro maestro, boolean warmUp) throws MaestroException {
+    protected void apply(final Maestro maestro, boolean warmUp) {
         logger.info("Setting endpoint URL to {}", getSendReceiveURL());
-        maestro.setBroker(getSendReceiveURL());
+        apply(maestro::setBroker, getSendReceiveURL());
 
         if (warmUp) {
             logger.info("Setting warm-up rate to {}", warmUpRate);
-            maestro.setRate(warmUpRate);
+            apply(maestro::setRate, warmUpRate);
 
             TestDuration warmUpDuration = getDuration().getWarmUpDuration();
             long balancedDuration = Math.round(warmUpDuration.getNumericDuration() / getParallelCount());
 
             logger.info("Setting warm-up duration to {}", balancedDuration);
-            maestro.setDuration(balancedDuration);
+            apply(maestro::setDuration, balancedDuration);
 
             logger.info("Setting warm-up parallel count to {}", this.warmUpParallelCount);
-            maestro.setParallelCount(this.warmUpParallelCount);
+            apply(maestro::setParallelCount, this.warmUpParallelCount);
         }
         else {
             logger.info("Setting test rate to {}", getRate());
-            maestro.setRate(rate);
+            apply(maestro::setRate, rate);
 
             logger.info("Setting test duration to {}", getDuration());
-            maestro.setDuration(this.getDuration().toString());
+            apply(maestro::setDuration, this.getDuration().toString());
 
             logger.info("Setting parallel count to {}", this.parallelCount);
-            maestro.setParallelCount(this.parallelCount);
+            apply(maestro::setParallelCount, this.parallelCount);
         }
 
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
-        maestro.setFCL(getMaximumLatency());
+        apply(maestro::setFCL, getMaximumLatency());
 
         logger.info("Setting message size to {}", getMessageSize());
-        maestro.setMessageSize(getMessageSize());
+        apply(maestro::setMessageSize, getMessageSize());
 
         if (getManagementInterface() != null) {
             if (getInspectorName() != null) {
                 logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
                         getInspectorName());
-                maestro.setManagementInterface(getManagementInterface());
+                apply(maestro::setManagementInterface, getManagementInterface());
             }
         }
 
@@ -214,24 +214,24 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
             if (getExtPointBranch() != null) {
                 logger.info("Setting the extension point source to {} using the {} branch", getExtPointSource(),
                         getExtPointBranch());
-                maestro.sourceRequest(getExtPointSource(), getExtPointBranch());
+                apply(maestro::sourceRequest, getExtPointSource(), getExtPointBranch());
             }
         }
 
         if (getExtPointCommand() != null) {
             logger.info("Setting command to Agent execution to {}", getExtPointCommand());
-            maestro.userCommand(0, getExtPointCommand());
+            apply(maestro::userCommand, 0L, getExtPointCommand());
         }
     }
 
     @Override
-    public void apply(final Maestro maestro) throws MaestroException {
+    public void apply(final Maestro maestro) {
         logger.info("Applying test execution profile");
         apply(maestro, false);
         logger.info("Estimated time for test completion: {} secs", getEstimatedCompletionTime());
     }
 
-    public void warmUp(final Maestro maestro) throws MaestroException {
+    public void warmUp(final Maestro maestro) {
         logger.info("Applying test warm-up profile");
         apply(maestro, true);
         logger.info("Estimated time for warm-up completion: {} secs", getWarmUpEstimatedCompletionTime());

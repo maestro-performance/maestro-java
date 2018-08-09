@@ -45,46 +45,46 @@ public class FixedRateMultipointTestProfile extends FixedRateTestProfile impleme
     }
 
     @Override
-    protected void apply(final Maestro maestro, boolean warmUp) throws MaestroException {
+    protected void apply(final Maestro maestro, boolean warmUp) {
         for (EndPoint endPoint : endPoints) {
             logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getSendReceiveURL());
             logger.debug(" {} end point located at {}", endPoint.getName(), endPoint.getTopic());
 
-            maestro.setBroker(endPoint.getTopic(), endPoint.getSendReceiveURL());
+            apply(maestro::setBroker, endPoint.getTopic(), endPoint.getSendReceiveURL());
         }
 
         if (warmUp) {
             logger.info("Setting warm up rate to {}", getRate());
-            maestro.setRate(warmUpRate);
+            apply(maestro::setRate, warmUpRate);
 
             TestDuration warmUpDuration = getDuration().getWarmUpDuration();
             long balancedDuration = Math.round(warmUpDuration.getNumericDuration() / getParallelCount());
 
             logger.info("Setting warm up duration to {}", balancedDuration);
-            maestro.setDuration(balancedDuration);
+            apply(maestro::setDuration, balancedDuration);
         }
         else {
             logger.info("Setting test rate to {}", getRate());
-            maestro.setRate(getRate());
+            apply(maestro::setRate, getRate());
 
             logger.info("Setting test duration to {}", getDuration());
-            maestro.setDuration(getDuration().toString());
+            apply(maestro::setDuration, getDuration().toString());
         }
 
         logger.info("Setting parallel count to {}", getParallelCount());
-        maestro.setParallelCount(getParallelCount());
+        apply(maestro::setParallelCount, getParallelCount());
 
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
-        maestro.setFCL(getMaximumLatency());
+        apply(maestro::setFCL, getMaximumLatency());
 
         logger.info("Setting message size to {}", getMessageSize());
-        maestro.setMessageSize(getMessageSize());
+        apply(maestro::setMessageSize, getMessageSize());
 
         if (getManagementInterface() != null) {
             if (getInspectorName() != null) {
                 logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
                         getInspectorName());
-                maestro.setManagementInterface(getManagementInterface());
+                apply(maestro::setManagementInterface, getManagementInterface());
             }
         }
 
@@ -92,13 +92,13 @@ public class FixedRateMultipointTestProfile extends FixedRateTestProfile impleme
             if (getExtPointBranch() != null) {
                 logger.info("Setting the extension point source to {} using the {} branch", getExtPointSource(),
                         getExtPointBranch());
-                maestro.sourceRequest(getExtPointSource(), getExtPointBranch());
+                apply(maestro::sourceRequest, getExtPointSource(), getExtPointBranch());
             }
         }
 
         if (getExtPointCommand() != null) {
             logger.info("Setting command to Agent execution to {}", getExtPointCommand());
-            maestro.userCommand(0, getExtPointCommand());
+            apply(maestro::userCommand, 0L, getExtPointCommand());
         }
     }
 

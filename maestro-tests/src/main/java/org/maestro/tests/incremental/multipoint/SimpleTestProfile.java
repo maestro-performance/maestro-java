@@ -41,32 +41,35 @@ public class SimpleTestProfile extends IncrementalTestProfile implements MultiPo
         return endPoints;
     }
 
-    public void apply(Maestro maestro) throws MaestroException {
+
+    public void apply(Maestro maestro) {
         for (EndPoint endPoint : endPoints) {
             logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getBrokerURL());
             logger.debug(" {} end point located at {}", endPoint.getName(), endPoint.getTopic());
 
-            maestro.setBroker(endPoint.getTopic(), endPoint.getSendReceiveURL());
+            apply(maestro::setBroker, endPoint.getTopic(), endPoint.getSendReceiveURL());
         }
 
         logger.info("Setting rate to {}", getRate());
-        maestro.setRate(rate);
+        apply(maestro::setRate, rate);
 
         logger.info("Rate increment value is {}", getRateIncrement());
 
         logger.info("Setting parallel count to {}", this.parallelCount);
-        maestro.setParallelCount(this.parallelCount);
+        apply(maestro::setParallelCount, this.parallelCount);
 
         logger.info("Parallel count increment value is {}", getParallelCountIncrement());
 
         logger.info("Setting duration to {}", getDuration());
-        maestro.setDuration(this.getDuration().toString());
+        apply(maestro::setDuration, this.getDuration().toString());
 
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
-        maestro.setFCL(getMaximumLatency());
+        apply(maestro::setFCL, getMaximumLatency());
 
         // Variable message messageSize
-        maestro.setMessageSize(getMessageSize());
+        logger.info("Setting message size to: {}", getMessageSize());
+        apply(maestro::setMessageSize, getMessageSize());
+
         logger.info("Estimated time for test completion: {} secs", getEstimatedCompletionTime());
     }
 }
