@@ -25,7 +25,7 @@ import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.DownloadProcessor;
-import org.maestro.tests.callbacks.DownloadCallback;
+import org.maestro.tests.callbacks.LogRequesterCallback;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -64,7 +64,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
         List<MaestroNoteCallback> callbackList = getMaestro().getCollector().getCallbacks();
 
         downloadProcessor = new DownloadProcessor(reportsDownloader);
-        callbackList.add(new DownloadCallback(this, downloadProcessor));
+        callbackList.add(new LogRequesterCallback(this, downloadProcessor));
     }
 
     private long getTimeout() {
