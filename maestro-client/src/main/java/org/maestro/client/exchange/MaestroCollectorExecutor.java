@@ -46,7 +46,6 @@ public class MaestroCollectorExecutor extends AbstractMaestroExecutor {
 
     /**
      * Collect the messages received in background
-     * @return A list of messages received in background
      */
     public void clear() {
         MaestroCollector maestroCollector = (MaestroCollector) super.getMaestroPeer();

@@ -621,7 +621,6 @@ public final class Maestro implements MaestroRequester {
 
     /**
      * Collect replies
-     * @return A list of serialized maestro replies
      */
     public void clear() {
         collectorExecutor.clear();
