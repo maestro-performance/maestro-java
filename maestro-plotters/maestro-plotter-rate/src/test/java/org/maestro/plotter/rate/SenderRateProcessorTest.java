@@ -61,23 +61,22 @@ public class SenderRateProcessorTest extends CommonRateProcessorTest {
                 statistics.getMean(), 0.0000);
     }
 
-    @Ignore
     @Test
     public void testStatisticsNonZero() throws Exception {
         RateData rateData = getData("/data-ok/sender-non-zero.dat");
 
         Statistics statistics = rateData.rateStatistics();
 
-        assertEquals("Unexpected value for the max", 59,
+        assertEquals("Unexpected value for the max", 86400,
                 statistics.getMax(), 0.0000);
 
-        assertEquals("Unexpected value for the min", 0,
+        assertEquals("Unexpected value for the min", 1,
                 statistics.getMin(), 0.0000);
 
-        assertEquals("Unexpected value for the geometric mean", 23.191,
+        assertEquals("Unexpected value for the geometric mean", 31787.21266448759,
                 statistics.getGeometricMean(), 0.0000);
 
-        assertEquals("Unexpected value for the average mean", 30.5,
+        assertEquals("Unexpected value for the average mean", 43200.5,
                 statistics.getMean(), 0.0000);
     }
 
