@@ -132,13 +132,15 @@ ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
 
-if (!testExecutor.run()) {
-    maestro.stop()
+boolean ret = testExecutor.run();
 
+reportsDownloader.waitForComplete();
+maestro.stop()
+
+if (!ret) {
     System.exit(1)
 }
 
-maestro.stop()
 System.exit(0)
 
 

@@ -119,11 +119,14 @@ ManagementInterface.setupInterface(managementInterface, inspectorName, testProfi
 ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
 FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, reportsDownloader, testProfile)
-if (!testExecutor.run()) {
-    maestro.stop()
 
+boolean ret = testExecutor.run();
+
+reportsDownloader.waitForComplete();
+maestro.stop()
+
+if (!ret) {
     System.exit(1)
 }
 
-maestro.stop()
 System.exit(0)
