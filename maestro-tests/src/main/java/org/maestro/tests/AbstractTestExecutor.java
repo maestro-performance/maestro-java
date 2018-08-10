@@ -115,27 +115,6 @@ public abstract class AbstractTestExecutor implements TestExecutor {
             logger.warn("While stopping the sender: {}", e.getMessage());
         }
 
-        /**
-         * This is based on a discussion I had with Qpid Dispatch Router developers: if the
-         * receiver disconnects before the sender, some messages from the sender will be
-         * inflight on the router, but since the receiver will be shutting down they may not
-         * be acknowledged. This causes their delivery status to be unknown on the router and
-         * the disposition of this messages is then sent back to the sender as
-         * MODIFIED/undeliberable. This may cause JMSExceptions to be thrown by the sender.
-         *
-         * By forcing a small delay between sender/router shutdown, it tries to reduce the
-         * occurrences of unknown inflight messages.
-         *
-         * Ref: https://github.com/maestro-performance/maestro-java/issues/96
-         *
-         */
-        final int inFlightDelay = config.getInt("executor.inflight.delay", 250);
-        try {
-            Thread.sleep(inFlightDelay);
-        } catch (InterruptedException e) {
-
-        }
-
         try {
             exec(maestro::stopReceiver);
         }
