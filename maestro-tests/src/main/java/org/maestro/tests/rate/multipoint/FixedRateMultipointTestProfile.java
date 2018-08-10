@@ -26,6 +26,8 @@ import org.slf4j.LoggerFactory;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.maestro.client.Maestro.set;
+
 /**
  * A test profile for fixed rate tests
  */
@@ -49,41 +51,41 @@ public class FixedRateMultipointTestProfile extends FixedRateTestProfile impleme
             logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getSendReceiveURL());
             logger.debug(" {} end point located at {}", endPoint.getName(), endPoint.getTopic());
 
-            apply(maestro::setBroker, endPoint.getTopic(), endPoint.getSendReceiveURL());
+            set(maestro::setBroker, endPoint.getTopic(), endPoint.getSendReceiveURL());
         }
 
         if (warmUp) {
             logger.info("Setting warm up rate to {}", getRate());
-            apply(maestro::setRate, warmUpRate);
+            set(maestro::setRate, warmUpRate);
 
             TestDuration warmUpDuration = getDuration().getWarmUpDuration();
             long balancedDuration = Math.round(warmUpDuration.getNumericDuration() / getParallelCount());
 
             logger.info("Setting warm up duration to {}", balancedDuration);
-            apply(maestro::setDuration, balancedDuration);
+            set(maestro::setDuration, balancedDuration);
         }
         else {
             logger.info("Setting test rate to {}", getRate());
-            apply(maestro::setRate, getRate());
+            set(maestro::setRate, getRate());
 
             logger.info("Setting test duration to {}", getDuration());
-            apply(maestro::setDuration, getDuration().toString());
+            set(maestro::setDuration, getDuration().toString());
         }
 
         logger.info("Setting parallel count to {}", getParallelCount());
-        apply(maestro::setParallelCount, getParallelCount());
+        set(maestro::setParallelCount, getParallelCount());
 
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
-        apply(maestro::setFCL, getMaximumLatency());
+        set(maestro::setFCL, getMaximumLatency());
 
         logger.info("Setting message size to {}", getMessageSize());
-        apply(maestro::setMessageSize, getMessageSize());
+        set(maestro::setMessageSize, getMessageSize());
 
         if (getManagementInterface() != null) {
             if (getInspectorName() != null) {
                 logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
                         getInspectorName());
-                apply(maestro::setManagementInterface, getManagementInterface());
+                set(maestro::setManagementInterface, getManagementInterface());
             }
         }
 
@@ -91,13 +93,13 @@ public class FixedRateMultipointTestProfile extends FixedRateTestProfile impleme
             if (getExtPointBranch() != null) {
                 logger.info("Setting the extension point source to {} using the {} branch", getExtPointSource(),
                         getExtPointBranch());
-                apply(maestro::sourceRequest, getExtPointSource(), getExtPointBranch());
+                set(maestro::sourceRequest, getExtPointSource(), getExtPointBranch());
             }
         }
 
         if (getExtPointCommand() != null) {
             logger.info("Setting command to Agent execution to {}", getExtPointCommand());
-            apply(maestro::userCommand, 0L, getExtPointCommand());
+            set(maestro::userCommand, 0L, getExtPointCommand());
         }
     }
 

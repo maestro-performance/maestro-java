@@ -20,6 +20,8 @@ import org.maestro.client.Maestro;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestProfile;
 
+import static org.maestro.client.Maestro.set;
+
 /**
  * A simple but flexible single point test profile for usage w/ 3rd party tools
  */
@@ -49,7 +51,7 @@ public class FlexibleTestProfile extends AbstractTestProfile {
 
     @Override
     public void apply(final Maestro maestro) throws MaestroException {
-        maestro.setBroker(this.brokerURL);
-        maestro.sourceRequest(sourceURL, null);
+        set(maestro::setBroker, this.brokerURL);
+        set(maestro::sourceRequest, sourceURL, null);
     }
 }
