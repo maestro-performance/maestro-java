@@ -32,7 +32,7 @@ public class LatencyWriterObserver implements WatchdogObserver {
     private static final Logger logger = LoggerFactory.getLogger(LatencyWriterObserver.class);
     private final WorkerLatencyWriter latencyWriter;
     private Thread latencyWriterThread;
-    private Thread shutdownThread;
+    private final Thread shutdownThread;
 
     public LatencyWriterObserver(final WorkerLatencyWriter latencyWriter) {
         this.latencyWriter = latencyWriter;

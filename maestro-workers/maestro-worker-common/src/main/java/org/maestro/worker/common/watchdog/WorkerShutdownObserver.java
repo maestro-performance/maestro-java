@@ -92,7 +92,7 @@ public class WorkerShutdownObserver implements WatchdogObserver {
             workers.stream()
                     .filter(workerRuntimeInfo -> workerRuntimeInfo.thread.isAlive())
                     .parallel()
-                    .forEach(workerRuntimeInfo -> finishWorkers(workerRuntimeInfo));
+                    .forEach(WorkerShutdownObserver::finishWorkers);
 
             activeThreads = workers.stream()
                     .filter(workerRuntimeInfo -> workerRuntimeInfo.thread.isAlive())

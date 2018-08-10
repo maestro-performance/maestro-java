@@ -16,7 +16,7 @@ import java.util.concurrent.TimeUnit;
 public class WorkerStaleChecker {
     private final List<? extends MaestroWorker> workers;
     private static final StaleChecker staleChecker = new NonProgressingStaleChecker(30);
-    private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
     /**
      * Constructor

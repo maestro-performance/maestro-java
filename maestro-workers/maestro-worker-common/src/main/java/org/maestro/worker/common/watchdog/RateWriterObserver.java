@@ -32,7 +32,7 @@ public class RateWriterObserver implements WatchdogObserver {
     private static final Logger logger = LoggerFactory.getLogger(RateWriterObserver.class);
     private final WorkerRateWriter workerRateWriter;
     private Thread rateWriterThread;
-    private Thread shutdownThread;
+    private final Thread shutdownThread;
 
     public RateWriterObserver(final WorkerRateWriter workerRateWriter) {
         this.workerRateWriter = workerRateWriter;

@@ -17,7 +17,6 @@
 package org.maestro.worker.common.ds;
 
 import org.apache.commons.configuration.AbstractConfiguration;
-import org.eclipse.jetty.server.Handler;
 import org.eclipse.jetty.server.Server;
 import org.eclipse.jetty.server.ServerConnector;
 import org.eclipse.jetty.server.handler.ContextHandler;
@@ -88,7 +87,7 @@ public class MaestroDataServer implements Runnable {
      * @param location the location to serve
      * @throws Exception on multiple circumstances if unable to add the context root
      */
-    public void addContext(final String contextPath, final String location) throws Exception {
+    private void addContext(final String contextPath, final String location) throws Exception {
         logger.debug("Serving files from location {} on context {}", location, contextPath);
 
         ResourceHandler resourceHandler = new ResourceHandler();
@@ -113,25 +112,6 @@ public class MaestroDataServer implements Runnable {
 
         contexts.addHandler(context);
         context.start();
-    }
-
-    /**
-     * Removes a context from the data server
-     * @param contextPath the context path to remove
-     */
-    public void removeContext(final String contextPath) {
-        logger.info("Trying to add a new handler after start");
-
-        // server.getHandler
-        for (Handler handler : contexts.getHandlers()) {
-            if (handler instanceof ContextHandler) {
-                ContextHandler contextHandler = (ContextHandler) handler;
-
-                if (contextPath.equals(contextHandler.getContextPath())) {
-                    contexts.removeHandler(handler);
-                }
-            }
-        }
     }
 
     @Override

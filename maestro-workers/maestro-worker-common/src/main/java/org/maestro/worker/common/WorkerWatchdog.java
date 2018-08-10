@@ -24,8 +24,6 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.List;
 
-import static org.maestro.worker.common.WorkerStateInfoUtil.isCleanExit;
-
 /**
  * The watchdog inspects the active workers to check whether they are still active, completed their job
  * or failed
@@ -61,8 +59,7 @@ class WorkerWatchdog implements Runnable {
 
 
     private boolean workersRunning() {
-        for (int i = 0, size = workers.size(); i < size; i++) {
-            WorkerRuntimeInfo ri = workers.get(i);
+        for (WorkerRuntimeInfo ri : workers) {
             if (!ri.thread.isAlive()) {
                 return false;
             }

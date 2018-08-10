@@ -16,7 +16,6 @@
 
 package org.maestro.worker.common.container.initializers;
 
-import org.maestro.common.evaluators.Evaluator;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.worker.WorkerOptions;
 
@@ -27,10 +26,6 @@ public class TestWorkerInitializer implements WorkerInitializer {
     public TestWorkerInitializer(final Class<MaestroWorker> clazz, final WorkerOptions workerOptions) {
         this.clazz = clazz;
         this.workerOptions = workerOptions;
-    }
-
-    public Class<MaestroWorker> getClazz() {
-        return clazz;
     }
 
     public WorkerOptions getWorkerOptions() {

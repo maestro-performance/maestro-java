@@ -19,17 +19,17 @@ import java.util.concurrent.TimeUnit;
 public class WorkerRateWriter implements Runnable {
     private static class WriterCache {
         private long count;
-        private BinaryRateWriter writer;
+        private final BinaryRateWriter writer;
 
-        public WriterCache(long count, BinaryRateWriter writer) {
+        WriterCache(long count, BinaryRateWriter writer) {
             this.count = count;
             this.writer = writer;
         }
     }
     private static final Logger logger = LoggerFactory.getLogger(WorkerRateWriter.class);
-    private Map<Class<?>, WriterCache> cachedWriters = new HashMap<>(4);
+    private final Map<Class<?>, WriterCache> cachedWriters = new HashMap<>(4);
     private List<? extends MaestroWorker> workers;
-    private EpochMicroClock microClock = EpochClocks.exclusiveMicro();
+    private final EpochMicroClock microClock = EpochClocks.exclusiveMicro();
 
     private volatile boolean running = false;
 

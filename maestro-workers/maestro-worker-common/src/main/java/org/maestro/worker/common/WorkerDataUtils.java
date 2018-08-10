@@ -11,7 +11,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 
-public class WorkerDataUtils {
+class WorkerDataUtils {
     private static final Logger logger = LoggerFactory.getLogger(WorkerDataUtils.class);
 
     public static <T extends MaestroWorker> BinaryRateWriter writer(final File reportFolder, final T worker) throws IOException {

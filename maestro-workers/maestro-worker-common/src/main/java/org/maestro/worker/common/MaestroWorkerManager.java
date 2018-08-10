@@ -25,7 +25,6 @@ import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroConnectionException;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.test.TestProperties;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerOptions;
@@ -45,7 +44,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
 
     private final MaestroReceiverClient client;
-    private WorkerOptions workerOptions;
+    private final WorkerOptions workerOptions;
     private boolean running = true;
     private final MaestroDataServer dataServer;
 
@@ -72,11 +71,6 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     }
 
 
-    protected void setWorkerOptions(WorkerOptions workerOptions) {
-        this.workerOptions = workerOptions;
-    }
-
-
     protected MaestroReceiverClient getClient() {
         return client;
     }
@@ -90,7 +84,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     }
 
 
-    protected void setRunning(boolean running) {
+    void setRunning(boolean running) {
         this.running = running;
     }
 
@@ -195,7 +189,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     }
 
 
-    protected void writeTestProperties(final File testLogDir) throws IOException, DurationParseException {
+    void writeTestProperties(final File testLogDir) throws IOException, DurationParseException {
         TestProperties testProperties = new TestProperties();
 
         final String testNumber = testLogDir.getName();
@@ -329,6 +323,15 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         }
 
         File[] files = logSubDir.listFiles();
+        if (files == null) {
+            logger.error("The client request log files, but the location does not contain any");
+
+            getClient().replyInternalError("The client requested the log files for location %s but there's no files there",
+                    note.getLocationType().toString());
+
+            return;
+        }
+
         for (File file : files) {
             logger.debug("Sending log file {} with location type {}", file.getName(),
                     note.getLocationType());
