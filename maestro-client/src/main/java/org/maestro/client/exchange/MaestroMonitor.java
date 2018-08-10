@@ -23,15 +23,16 @@ import java.util.Objects;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
+import java.util.function.Predicate;
 
 public class MaestroMonitor {
     private static final Logger logger = LoggerFactory.getLogger(MaestroMonitor.class);
     private final Lock lock = new ReentrantLock();
     private final Condition condition = lock.newCondition();
 
-    private Object object;
+    private Predicate object;
 
-    public MaestroMonitor(Object object) {
+    public MaestroMonitor(Predicate object) {
         this.object = object;
     }
 
@@ -49,7 +50,7 @@ public class MaestroMonitor {
     public void doUnlock() {
         lock.lock();
         try {
-            logger.trace("Some messages arrived ... unlocking for check");
+            logger.debug("Some messages arrived ... unlocking for check");
             condition.signal();
         }
         finally {
@@ -57,6 +58,9 @@ public class MaestroMonitor {
         }
     }
 
+    public boolean shouldAwake(Object subject) {
+        return object.test(subject);
+    }
 
     @Override
     public boolean equals(Object o) {
