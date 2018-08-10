@@ -229,13 +229,13 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     public void apply(final Maestro maestro) {
         logger.info("Applying test execution profile");
         apply(maestro, false);
-        logger.info("Estimated time for test completion: {} secs", getEstimatedCompletionTime());
+        logger.info("Estimated time for test completion: {} seconds", getEstimatedCompletionTime());
     }
 
     public void warmUp(final Maestro maestro) {
         logger.info("Applying test warm-up profile");
         apply(maestro, true);
-        logger.info("Estimated time for warm-up completion: {} secs", getWarmUpEstimatedCompletionTime());
+        logger.info("Estimated time for warm-up completion: {} seconds", getWarmUpEstimatedCompletionTime());
     }
 
     @Override

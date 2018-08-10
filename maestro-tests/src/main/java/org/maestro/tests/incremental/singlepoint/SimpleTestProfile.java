@@ -70,6 +70,6 @@ public class SimpleTestProfile extends IncrementalTestProfile implements SingleP
         // Variable message messageSize
         logger.info("Setting message size to: {}", getMessageSize());
         set(maestro::setMessageSize, getMessageSize());
-        logger.info("Estimated time for test completion: {} secs", getEstimatedCompletionTime());
+        logger.info("Estimated time for test completion: {} seconds", getEstimatedCompletionTime());
     }
 }
