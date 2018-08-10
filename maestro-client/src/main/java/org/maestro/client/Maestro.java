@@ -356,6 +356,7 @@ public final class Maestro implements MaestroRequester {
      * Sets the management interface URL
      * @param value The management interface URL
      * @throws MaestroException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> setManagementInterface(final String value) throws MaestroException {
         SetRequest maestroNote = new SetRequest();
@@ -372,6 +373,7 @@ public final class Maestro implements MaestroRequester {
      * @param value The name of the inspector to start. The URL is set via setManagementInterface
      *              command
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> startInspector(final String value) throws MaestroConnectionException {
         StartInspector maestroNote = new StartInspector();
@@ -396,6 +398,7 @@ public final class Maestro implements MaestroRequester {
     /**
      * Sends a stop inspector request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> stopInspector() throws MaestroConnectionException {
         StopInspector maestroNote = new StopInspector();
@@ -408,6 +411,7 @@ public final class Maestro implements MaestroRequester {
     /**
      * Sends a start sender request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> startSender() throws MaestroConnectionException {
         StartSender maestroNote = new StartSender();
@@ -420,6 +424,7 @@ public final class Maestro implements MaestroRequester {
     /**
      * Sends a stop sender request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> stopSender() throws MaestroConnectionException {
         StopSender maestroNote = new StopSender();
@@ -431,6 +436,7 @@ public final class Maestro implements MaestroRequester {
     /**
      * Sends a start receiver request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> startReceiver() throws MaestroConnectionException {
         StartReceiver maestroNote = new StartReceiver();
@@ -443,6 +449,7 @@ public final class Maestro implements MaestroRequester {
     /**
      * Sends a stop receiver request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> stopReceiver() throws MaestroConnectionException {
         StopReceiver maestroNote = new StopReceiver();
@@ -455,6 +462,7 @@ public final class Maestro implements MaestroRequester {
     /**
      * Sends a stop receiver request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> stopAll() throws MaestroConnectionException {
         StopSender stopSender = new StopSender();
@@ -480,6 +488,7 @@ public final class Maestro implements MaestroRequester {
     /**
      * Sends a stats request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> statsRequest() throws MaestroConnectionException {
         StatsRequest maestroNote = new StatsRequest();
@@ -494,6 +503,7 @@ public final class Maestro implements MaestroRequester {
     /**
      * Sends a halt request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> halt() throws MaestroConnectionException {
         Halt maestroNote = new Halt();
@@ -506,6 +516,7 @@ public final class Maestro implements MaestroRequester {
     /**
      * Sends a get request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> getDataServer() throws MaestroConnectionException {
         GetRequest maestroNote = new GetRequest();
@@ -521,6 +532,7 @@ public final class Maestro implements MaestroRequester {
     /**
      * Sends a start agent request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> startAgent() throws MaestroConnectionException {
         StartAgent maestroNote = new StartAgent();
@@ -532,6 +544,7 @@ public final class Maestro implements MaestroRequester {
     /**
      * Sends a stop agent request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> stopAgent() throws MaestroConnectionException {
         StopAgent maestroNote = new StopAgent();
@@ -543,6 +556,7 @@ public final class Maestro implements MaestroRequester {
     /**
      * Sends a user command request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> userCommand(final long option, final String payload) throws MaestroConnectionException {
         UserCommand1Request maestroNote = new UserCommand1Request();
@@ -561,6 +575,7 @@ public final class Maestro implements MaestroRequester {
      * @param sourceUrl the source url (ie.: git://host/path/to/extension-endpoint.git)
      * @param branch branch to use for the source URL
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> sourceRequest(final String sourceUrl, final String branch) throws MaestroConnectionException {
         AgentSourceRequest maestroNote = new AgentSourceRequest();
@@ -603,6 +618,14 @@ public final class Maestro implements MaestroRequester {
         maestroClient.publish(topic, maestroNote);
     }
 
+    /**
+     * Issues a drain request
+     * @param topic the topic to send the request to
+     * @param duration duration of the drain
+     * @param url URL to drain
+     * @param parallelCount parallel count
+     * @return A completable future
+     */
     public CompletableFuture<List<? extends MaestroNote>> drainRequest(final String topic, final String duration, final String url, int parallelCount) {
         DrainRequest drainRequest = new DrainRequest();
 
@@ -617,7 +640,7 @@ public final class Maestro implements MaestroRequester {
     }
 
     /**
-     * Collect replies
+     * Clear the container of received messages
      */
     public void clear() {
         collectorExecutor.clear();
@@ -715,6 +738,11 @@ public final class Maestro implements MaestroRequester {
     }
 
 
+    /**
+     * Waits for notifications
+     * @param expect how many notifications to expect
+     * @return A completable future
+     */
     public CompletableFuture<List<? extends MaestroNote>> waitForNotifications(int expect) {
         return CompletableFuture.supplyAsync(
                 () -> collect(expect, maestroNotificationPredicate())

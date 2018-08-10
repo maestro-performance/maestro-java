@@ -25,6 +25,12 @@ import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.function.Predicate;
 
+/**
+ * This class serves as a monitoring lock for asynchronous receipt of messages (usually,
+ * notifications). With this, the calling threads can be put to sleep until new messages
+ * matching the predicate have arrived. The responsibility of notifying them relies on
+ * the MaestroCollector which receives the messages.
+ */
 public class MaestroMonitor {
     private static final Logger logger = LoggerFactory.getLogger(MaestroMonitor.class);
     private final Lock lock = new ReentrantLock();
@@ -32,10 +38,18 @@ public class MaestroMonitor {
 
     private Predicate object;
 
+    /**
+     * Constructs a Monitor using the given predicate (ie.: note instanceof TestSuccessfulNotification)
+     * @param object the monitoring predicate
+     */
     public MaestroMonitor(Predicate object) {
         this.object = object;
     }
 
+    /**
+     * Lock the execution
+     * @throws InterruptedException if interrupted
+     */
     public void doLock() throws InterruptedException {
         lock.lock();
         try {
@@ -47,6 +61,10 @@ public class MaestroMonitor {
         }
     }
 
+
+    /**
+     * Unlock the execution
+     */
     public void doUnlock() {
         lock.lock();
         try {
@@ -58,20 +76,15 @@ public class MaestroMonitor {
         }
     }
 
+
+    /**
+     * Tests if a subject matches the predicate
+     * @param subject the subject to test (ie.: a new note arriving on the collector)
+     * @return true if it matches or false otherwise
+     */
     public boolean shouldAwake(Object subject) {
         return object.test(subject);
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        MaestroMonitor monitor = (MaestroMonitor) o;
-        return Objects.equals(object, monitor.object);
-    }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(object);
-    }
 }

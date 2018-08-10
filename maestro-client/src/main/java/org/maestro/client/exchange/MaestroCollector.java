@@ -29,7 +29,10 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
-
+/**
+ * An specialized peer that is used on the front-end side of the code
+ * to collect messages published on front-end related topics
+ */
 public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollector.class);
     private volatile boolean running = true;
@@ -38,9 +41,15 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     private final List<MaestroNoteCallback> callbacks = new LinkedList<>();
     private final List<MaestroMonitor> monitored = new LinkedList<>();
 
+    /**
+     * Constructor
+     * @param url the URL to the Maestro broker
+     * @throws MaestroConnectionException if unable to connect
+     */
     public MaestroCollector(final String url) throws MaestroConnectionException {
         super(url, "maestro-java-collector",MaestroDeserializer::deserialize);
     }
+
 
     @Override
     protected void noteArrived(MaestroNote note) {
@@ -57,19 +66,38 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         monitored.forEach(monitor -> { if (monitor.shouldAwake(note)) monitor.doUnlock(); } );
     }
 
+
+    /**
+     * Sets the running state for the collector
+     * @param running true if running or false otherwise
+     */
     void setRunning(boolean running) {
         this.running = running;
     }
 
+
+    /**
+     * Checks the running state of the collector
+     * @return true if running or false otherwise
+     */
     @Override
     public boolean isRunning() {
         return running;
     }
 
+    /**
+     * Clear the collected messages
+     */
     public synchronized void clear() {
         collected.clear();
     }
 
+
+    /**
+     * Collect notes matching a given predicate
+     * @param predicate the predicate that notes need to match in order to be collected
+     * @return A list of collected notes
+     */
     public synchronized List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
         logger.trace("Collecting messages");
         List<MaestroNote> ret = collected.stream()
@@ -82,14 +110,27 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         return ret;
     }
 
+
+    /**
+     * Adds a callback to be executed on note arrival
+     * @param callback the callback to execute
+     */
     public synchronized void addCallback(MaestroNoteCallback callback) {
         callbacks.add(callback);
     }
 
+    /**
+     * Adds a monitor for message arrival
+     * @param monitor the monitor to add
+     */
     public synchronized void monitor(final MaestroMonitor monitor) {
         monitored.add(monitor);
     }
 
+    /**
+     * Removes a monitor
+     * @param monitor the monitor to remove
+     */
     public synchronized void remove(final MaestroMonitor monitor) {
         monitored.remove(monitor);
     }
