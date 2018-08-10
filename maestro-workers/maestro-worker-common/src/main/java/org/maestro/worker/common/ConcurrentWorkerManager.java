@@ -219,10 +219,10 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         logger.info("Stop receiver request received");
 
         if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
+            getClient().replyOk();
+
             container.stop();
         }
-
-        getClient().replyOk();
     }
 
     @Override
@@ -230,10 +230,10 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         logger.info("Stop sender request received");
 
         if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
+            getClient().replyOk();
+
             container.stop();
         }
-
-        getClient().replyOk();
     }
 
 
