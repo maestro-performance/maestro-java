@@ -20,7 +20,7 @@ package org.maestro.client.notes;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.client.notes.MaestroNoteType;
 
-public abstract class MaestroEvent<T> extends AbtractMaestroNote {
+public abstract class MaestroEvent<T> extends AbstractMaestroNote {
 
     public MaestroEvent(MaestroNoteType type, MaestroCommand command) {
         super(type, command);

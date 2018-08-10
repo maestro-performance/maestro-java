@@ -23,7 +23,7 @@ import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
-public class MaestroResponse extends AbtractMaestroNote {
+public class MaestroResponse extends AbstractMaestroNote {
     private String id = "";
     private String name = "";
 

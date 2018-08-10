@@ -24,11 +24,11 @@ import org.msgpack.core.MessagePack;
 
 import java.io.IOException;
 
-abstract class AbtractMaestroNote implements MaestroNote {
+abstract class AbstractMaestroNote implements MaestroNote {
     private MaestroNoteType noteType;
     private MaestroCommand maestroCommand;
 
-    public AbtractMaestroNote(MaestroNoteType type, MaestroCommand command) {
+    public AbstractMaestroNote(MaestroNoteType type, MaestroCommand command) {
         setNoteType(type);
         setMaestroCommand(command);
     }
