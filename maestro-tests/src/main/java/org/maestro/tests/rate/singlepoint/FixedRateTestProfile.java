@@ -20,7 +20,6 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.exceptions.NotEnoughRepliesException;
-import org.maestro.common.duration.DurationCount;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.tests.AbstractTestProfile;
 import org.maestro.tests.SinglePointProfile;
@@ -158,12 +157,7 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
 
     @Override
     public long getEstimatedCompletionTime() {
-        if (duration instanceof DurationCount) {
-            return CompletionTime.estimate(duration, getRate());
-        }
-        else {
-            return duration.getNumericDuration();
-        }
+        return getEstimatedCompletionTime(duration, getRate());
     }
 
     public long getWarmUpEstimatedCompletionTime() {

@@ -16,6 +16,10 @@
 
 package org.maestro.tests;
 
+import org.maestro.common.duration.DurationCount;
+import org.maestro.common.duration.TestDuration;
+import org.maestro.tests.utils.CompletionTime;
+
 public abstract class AbstractTestProfile implements TestProfile {
     private int testExecutionNumber;
     private String managementInterface;
@@ -43,6 +47,15 @@ public abstract class AbstractTestProfile implements TestProfile {
 
     public void setInspectorName(final String inspectorName) {
         this.inspectorName = inspectorName;
+    }
+
+    protected static long getEstimatedCompletionTime(final TestDuration duration, long rate) {
+        if (duration instanceof DurationCount) {
+            return CompletionTime.estimate(duration, rate);
+        }
+        else {
+            return duration.getNumericDuration();
+        }
     }
 
     @Override
