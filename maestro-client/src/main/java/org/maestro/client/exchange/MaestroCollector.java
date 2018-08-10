@@ -51,10 +51,10 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         collected.add(note);
 
         if (logger.isTraceEnabled()) {
-            logger.trace("Message arrived waking up {} threads", monitored.size());
+            logger.trace("Message {} arrived waking up {} monitors", note.getMaestroCommand(), monitored.size());
         }
 
-        monitored.forEach(monitor -> { synchronized(monitor) { monitor.notify(); } } );
+        monitored.forEach(monitor -> monitor.doUnlock() );
     }
 
     void setRunning(boolean running) {

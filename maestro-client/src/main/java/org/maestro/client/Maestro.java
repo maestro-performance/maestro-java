@@ -636,29 +636,31 @@ public final class Maestro implements MaestroRequester {
      */
     private List<MaestroNote> collect(int expect, Predicate<? super MaestroNote> predicate) {
         List<MaestroNote> replies = new LinkedList<>();
-        MaestroMonitor monitor = new MaestroMonitor();
+        MaestroMonitor monitor = new MaestroMonitor(predicate);
 
         try {
             collectorExecutor.getCollector().monitor(monitor);
 
             do {
                 replies.addAll(collectorExecutor.getCollector().collect(predicate));
+                logger.trace("Collected {} of {}", replies.size(), expect);
 
-                if (hasReplies(replies) && replies.size() >= expect) {
+                if (replies.size() >= expect) {
                     break;
                 }
 
                 try {
-                    synchronized (monitor) {
-                        if (logger.isTraceEnabled()) {
-                            logger.trace("Not enough responses ... waiting");
-                        }
-                        monitor.wait();
-                    }
+                    logger.trace("Not enough responses matching the predicate. Waiting for more messages to arrive");
+                    monitor.doLock();
                 } catch (InterruptedException e) {
-
+                    logger.trace("Interrupted while waiting for message collection");
                 }
-            } while (replies.size() >= expect);
+
+                logger.trace("Out of the collection lock. Checking for new messages");
+            } while (true);
+
+            logger.debug("Exiting the collection loop: {} collected of {} expected for {}", replies.size(), expect,
+                    predicate);
         }
         finally {
             collectorExecutor.getCollector().remove(monitor);

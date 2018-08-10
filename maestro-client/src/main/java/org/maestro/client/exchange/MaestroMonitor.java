@@ -16,5 +16,58 @@
 
 package org.maestro.client.exchange;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.util.Objects;
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 public class MaestroMonitor {
+    private static final Logger logger = LoggerFactory.getLogger(MaestroMonitor.class);
+    private final Lock lock = new ReentrantLock();
+    private final Condition condition = lock.newCondition();
+
+    private Object object;
+
+    public MaestroMonitor(Object object) {
+        this.object = object;
+    }
+
+    public void doLock() throws InterruptedException {
+        lock.lock();
+        try {
+            logger.trace("Not enough messages satisfying the condition are available. Waiting ...");
+            condition.await();
+        }
+        finally {
+            lock.unlock();
+        }
+    }
+
+    public void doUnlock() {
+        lock.lock();
+        try {
+            logger.trace("Some messages arrived ... unlocking for check");
+            condition.signal();
+        }
+        finally {
+            lock.unlock();
+        }
+    }
+
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        MaestroMonitor monitor = (MaestroMonitor) o;
+        return Objects.equals(object, monitor.object);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(object);
+    }
 }
