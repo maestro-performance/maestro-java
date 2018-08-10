@@ -17,6 +17,7 @@
 package org.maestro.tests.incremental.singlepoint;
 
 import org.maestro.client.Maestro;
+import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.tests.SinglePointProfile;
 import org.maestro.tests.incremental.IncrementalTestProfile;
 import org.slf4j.Logger;
@@ -70,6 +71,20 @@ public class SimpleTestProfile extends IncrementalTestProfile implements SingleP
         // Variable message messageSize
         logger.info("Setting message size to: {}", getMessageSize());
         set(maestro::setMessageSize, getMessageSize());
+
+        if (getManagementInterface() != null) {
+            if (getInspectorName() != null) {
+                logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
+                        getInspectorName());
+                try {
+                    set(maestro::setManagementInterface, getManagementInterface());
+                }
+                catch (NotEnoughRepliesException ne) {
+                    logger.warn("Apparently no inspector nodes are enabled on this cluster. Ignoring ...");
+                }
+            }
+        }
+
         logger.info("Estimated time for test completion: {} seconds", getEstimatedCompletionTime());
     }
 }
