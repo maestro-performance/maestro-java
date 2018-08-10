@@ -25,6 +25,8 @@ package utils.commands
 import org.maestro.client.Maestro
 import org.maestro.common.client.notes.MaestroNote
 
+import java.util.concurrent.CompletableFuture
+
 
 /**
  * Another example: a simple use case of the higher level maestro client
@@ -47,18 +49,23 @@ maestro = new Maestro(maestroURL)
  * Sends a stop command to all the test cluster
  */
 println "Sending the source command"
-maestro.sourceRequest(sourceURL, branch)
+CompletableFuture<List<? extends MaestroNote>> sourceFuture = maestro.sourceRequest(sourceURL, branch)
 
-println "Waiting 2 seconds"
-Thread.sleep(12000)
+
+println "Collecting the replies"
+List<? extends MaestroNote> sourceReplies = sourceFuture.get(12000);
+println "Number of source replies: " + sourceReplies.size()
 
 println "Sending ping ..."
-maestro.pingRequest()
+CompletableFuture<List<? extends MaestroNote>> pingFuture = maestro.pingRequest()
+
+int peers = pingFuture.get(2000).size();
+println "Number of ping replies: " + peers
 
 println "Stopping the agent"
 maestro.stopAgent()
 
-List<MaestroNote> replies = maestro.collect(1000, 10)
+List<MaestroNote> replies = maestro.waitForNotifications(peers)
 println "Processing " + replies.size() + " replies"
 replies.each { MaestroNote note ->
     println "Available responses on the broker: " + note
