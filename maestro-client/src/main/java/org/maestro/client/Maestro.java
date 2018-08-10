@@ -646,11 +646,6 @@ public final class Maestro implements MaestroRequester {
         collectorExecutor.clear();
     }
 
-    private boolean hasReplies(List<?> replies) {
-        return (replies != null && replies.size() > 0);
-    }
-
-
     /**
      * Collect replies up to a certain limit of retries/timeout
      * @param expect The number of replies to expect.
