@@ -25,9 +25,9 @@ public class LogRequesterCallback implements MaestroNoteCallback {
     }
 
     @Override
-    public void call(MaestroNote note) {
+    public boolean call(MaestroNote note) {
         if (!executor.isRunning()) {
-            return;
+            return true;
         }
 
         if (note instanceof TestSuccessfulNotification) {
@@ -38,5 +38,7 @@ public class LogRequesterCallback implements MaestroNoteCallback {
                 downloadProcessor.download((TestFailedNotification) note);
             }
         }
+
+        return true;
     }
 }

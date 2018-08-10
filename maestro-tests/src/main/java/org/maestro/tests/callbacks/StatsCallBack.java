@@ -29,9 +29,9 @@ public class StatsCallBack implements MaestroNoteCallback {
     }
 
     @Override
-    public void call(MaestroNote note) {
+    public boolean call(MaestroNote note) {
         if (!executor.isWarmUp() || !executor.isRunning()) {
-            return;
+            return true;
         }
 
         if (note instanceof StatsResponse) {
@@ -68,6 +68,8 @@ public class StatsCallBack implements MaestroNoteCallback {
                 }
             }
         }
+
+        return true;
     }
 
     private void updateCounters(StatsResponse statsResponse) {

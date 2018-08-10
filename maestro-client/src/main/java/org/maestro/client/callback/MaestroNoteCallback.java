@@ -10,6 +10,7 @@ public interface MaestroNoteCallback {
     /**
      * Executes the call back
      * @param note the related note
+     * @return true if the message should continue to be processed or false otherwise
      */
-    void call(MaestroNote note);
+    boolean call(MaestroNote note);
 }

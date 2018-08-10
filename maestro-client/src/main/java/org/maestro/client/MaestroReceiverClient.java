@@ -45,12 +45,14 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         }
 
         @Override
-        public void call(MaestroNote note) {
+        public boolean call(MaestroNote note) {
             try {
                 Thread.sleep(defaultDelay);
             } catch (InterruptedException e) {
                 logger.warn("Interrupted while waiting for the note send delay");
             }
+
+            return true;
         }
     }
 

@@ -101,7 +101,7 @@ public class BrokerDownloader implements ReportsDownloader {
         }
 
         @Override
-        public void call(MaestroNote note) {
+        public boolean call(MaestroNote note) {
             if (note instanceof LogResponse) {
                 LogResponse logResponse = (LogResponse) note;
                 if (logResponse.getLocationType() == LocationType.LAST_FAILED) {
@@ -116,7 +116,11 @@ public class BrokerDownloader implements ReportsDownloader {
                 finally {
                     lastDownloadTime = System.currentTimeMillis();
                 }
+
+                return false;
             }
+
+            return true;
         }
 
         public long getLastDownloadTime() {

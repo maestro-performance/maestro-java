@@ -54,7 +54,9 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     @Override
     protected void noteArrived(MaestroNote note) {
         for (MaestroNoteCallback callback : callbacks) {
-            callback.call(note);
+            if (!callback.call(note)) {
+                return;
+            }
         }
 
         collected.add(note);
