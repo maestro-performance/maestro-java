@@ -21,6 +21,7 @@ import org.maestro.client.Maestro;
 import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.NodeUtils;
+import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
@@ -35,6 +36,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+
+import static org.maestro.client.Maestro.exec;
 
 /**
  * A simple test executor that should be extensible for most usages
@@ -86,8 +89,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
     protected void startServices() throws MaestroConnectionException {
-        maestro.startReceiver();
-        maestro.startSender();
+        maestro.startAll(null);
     }
 
     /**
@@ -97,12 +99,8 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      */
     protected void startServices(final AbstractTestProfile testProfile) throws MaestroConnectionException {
         final String inspectorName = testProfile.getInspectorName();
-        if (inspectorName != null) {
-            maestro.startInspector(inspectorName);
-        }
 
-        maestro.startReceiver();
-        maestro.startSender();
+        exec(maestro::startAll, inspectorName);
     }
 
     /**
@@ -110,7 +108,12 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
     final public void stopServices() throws MaestroConnectionException {
-        maestro.stopSender();
+        try {
+            exec(maestro::stopSender);
+        }
+        catch (NotEnoughRepliesException e) {
+            logger.warn("While stopping the sender: {}", e.getMessage());
+        }
 
         /**
          * This is based on a discussion I had with Qpid Dispatch Router developers: if the
@@ -132,8 +135,20 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         } catch (InterruptedException e) {
 
         }
-        maestro.stopReceiver();
-        maestro.stopInspector();
+
+        try {
+            exec(maestro::stopReceiver);
+        }
+        catch (NotEnoughRepliesException e) {
+            logger.warn("While stopping the receiver: {}", e.getMessage());
+        }
+
+        try {
+            exec(maestro::stopInspector);
+        }
+        catch (NotEnoughRepliesException e) {
+            logger.warn("While stopping the inspector: {}", e.getMessage());
+        }
     }
 
     /**

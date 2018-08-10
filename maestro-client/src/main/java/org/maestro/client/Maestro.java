@@ -21,6 +21,7 @@ import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
 import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.MaestroRequester;
+import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
@@ -485,6 +486,27 @@ public final class Maestro implements MaestroRequester {
 
 
     /**
+     * Starts all of the receivers, senders and inspectors peers on the test cluster
+     * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future
+     */
+    public CompletableFuture<List<? extends MaestroNote>> startAll(final String inspectorName) throws MaestroConnectionException {
+        maestroClient.publish(MaestroTopics.RECEIVER_DAEMONS, new StartReceiver());
+
+        if (inspectorName != null) {
+            StartInspector note = new StartInspector();
+            note.set(inspectorName);
+
+            maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, note);
+        }
+
+        maestroClient.publish(MaestroTopics.SENDER_DAEMONS, new StartSender());
+
+        return getOkErrorCompletableFuture();
+    }
+
+
+    /**
      * Sends a stats request
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @return A completable future
@@ -759,7 +781,7 @@ public final class Maestro implements MaestroRequester {
         }
 
         if (replies.size() == 0) {
-            throw new MaestroException("Not enough replies when trying to apply a setting to the test cluster");
+            throw new NotEnoughRepliesException("Not enough replies when trying to execute a command on the test cluster");
         }
 
         for (MaestroNote reply : replies) {
@@ -781,7 +803,7 @@ public final class Maestro implements MaestroRequester {
         }
 
         if (replies.size() == 0) {
-            throw new MaestroException("Not enough replies when trying to apply a setting to the test cluster");
+            throw new NotEnoughRepliesException("Not enough replies when trying to execute a command on the test cluster");
         }
 
         for (MaestroNote reply : replies) {
@@ -803,7 +825,7 @@ public final class Maestro implements MaestroRequester {
         }
 
         if (replies.size() == 0) {
-            throw new MaestroException("Not enough replies when trying to apply a execute a command on test cluster");
+            throw new NotEnoughRepliesException("Not enough replies when trying to execute a command on test cluster");
         }
 
         for (MaestroNote reply : replies) {
@@ -812,6 +834,11 @@ public final class Maestro implements MaestroRequester {
                 throw new MaestroException("Error executing a command on the test cluster: %s", ie.getMessage());
             }
         }
+    }
+
+
+    public static <T> void exec(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, T value) {
+        set(function, value);
     }
 
 }

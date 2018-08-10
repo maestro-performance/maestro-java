@@ -19,6 +19,7 @@ package org.maestro.tests.rate.singlepoint;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.duration.DurationCount;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.tests.AbstractTestProfile;
@@ -207,7 +208,12 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
             if (getInspectorName() != null) {
                 logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
                         getInspectorName());
-                set(maestro::setManagementInterface, getManagementInterface());
+                try {
+                    set(maestro::setManagementInterface, getManagementInterface());
+                }
+                catch (NotEnoughRepliesException ne) {
+                    logger.warn("Apparently no inspector nodes are enabled on this cluster. Ignoring ...");
+                }
             }
         }
 
