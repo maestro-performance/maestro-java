@@ -49,7 +49,7 @@ public class ThroughputStats implements PerfStats {
             return 0;
         }
 
-        return count / duration.getSeconds();
+        return (double) count / (double) duration.getSeconds();
     }
 
     @Override

@@ -20,12 +20,12 @@ import java.util.concurrent.TimeUnit;
 public class BinaryRateWriter implements RateWriter {
     private static final Logger logger = LoggerFactory.getLogger(BinaryRateWriter.class);
 
-    private File reportFile;
-    private FileChannel fileChannel;
+    private final File reportFile;
+    private final FileChannel fileChannel;
     private long last = 0;
 
     // TODO: size needs to be adjusted accordingly
-    private ByteBuffer byteBuffer = ByteBuffer.allocateDirect(FileHeader.BYTES + (RateEntry.BYTES * 10));
+    private final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(FileHeader.BYTES + (RateEntry.BYTES * 10));
 
     /**
      * Constructor
@@ -75,7 +75,7 @@ public class BinaryRateWriter implements RateWriter {
      * @param metadata entry metadata
      * @param count rate
      * @param timestamp timestamp of rate collection
-     * @throws IOException
+     * @throws IOException for multiple types of I/O errors
      */
     public void write(int metadata, long count, long timestamp) throws IOException {
         checkBufferCapacity();

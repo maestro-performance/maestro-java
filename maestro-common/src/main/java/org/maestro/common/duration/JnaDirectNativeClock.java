@@ -43,8 +43,7 @@ public final class JnaDirectNativeClock implements EpochMicroClock {
     }
 
     public JnaDirectNativeClock() {
-        final int requiredCapacity = TIMESPEC_REQUIRED_CAPACITY;
-        buffer = new UnsafeBuffer(BufferUtil.allocateDirectAligned(requiredCapacity, Long.BYTES));
+        buffer = new UnsafeBuffer(BufferUtil.allocateDirectAligned(TIMESPEC_REQUIRED_CAPACITY, Long.BYTES));
         this.pointer = Pointer.createConstant(buffer.addressOffset());
     }
 

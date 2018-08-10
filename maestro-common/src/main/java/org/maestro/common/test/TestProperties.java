@@ -16,7 +16,6 @@
 
 package org.maestro.common.test;
 
-import org.maestro.common.content.MessageSize;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;

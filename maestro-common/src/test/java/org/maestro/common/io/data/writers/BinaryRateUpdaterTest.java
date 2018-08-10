@@ -38,7 +38,7 @@ public class BinaryRateUpdaterTest {
 
     /**
      * Tests joining files with an existent destination file
-     * @throws IOException
+     * @throws IOException for multiple types of I/O errors
      */
     @Test
     public void testJoinFile() throws IOException {
@@ -89,7 +89,7 @@ public class BinaryRateUpdaterTest {
 
     /**
      * Tests joining files with a non-existent destination file
-     * @throws IOException
+     * @throws IOException for multiple types of I/O errors
      */
     @Test
     public void testJoinFileOverlay() throws IOException {

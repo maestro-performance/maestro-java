@@ -14,8 +14,8 @@ import java.nio.channels.FileChannel;
 public class BinaryRateReader implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(BinaryRateReader.class);
 
-    private FileChannel fileChannel;
-    private ByteBuffer byteBuffer = ByteBuffer.allocateDirect(FileHeader.BYTES + (RateEntry.BYTES * 20));
+    private final FileChannel fileChannel;
+    private final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(FileHeader.BYTES + (RateEntry.BYTES * 20));
 
     private final FileHeader fileHeader;
 
@@ -38,7 +38,7 @@ public class BinaryRateReader implements AutoCloseable {
 
     /**
      * Gets the file header
-     * @return
+     * @return the file header
      */
     public FileHeader getHeader() {
         return fileHeader;

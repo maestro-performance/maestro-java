@@ -20,15 +20,11 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.NonProgressingStaleChecker;
 import org.maestro.common.StaleChecker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class DurationDrain extends DurationCount {
     public static final String DURATION_DRAIN_FORMAT = "-1";
 
-    private static final Logger logger = LoggerFactory.getLogger(DurationDrain.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
-
 
     private final int drainRetries;
     private final StaleChecker staleChecker;

@@ -31,7 +31,7 @@ public interface MaestroNote {
 
     /**
      * Gets the Maestro command for the note
-     * @return the maestro command as an instace of MaestroCommand
+     * @return the maestro command as an instance of MaestroCommand
      */
     MaestroCommand getMaestroCommand();
 

@@ -23,7 +23,6 @@ import org.maestro.common.test.MaestroTestProperties;
 import org.maestro.common.worker.WorkerOptions;
 
 import java.io.File;
-import java.util.Properties;
 
 public interface MaestroInspector extends TestDuration.TestProgress {
 

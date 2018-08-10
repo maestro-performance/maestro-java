@@ -47,9 +47,7 @@ public class URLQueryTest {
         assertEquals("Value for 'none2' does not match", new Integer(0),
                 urlQuery.getInteger("none2", 0));
 
-        assertEquals("Value for 'none3' does not match",
-                null,
-                urlQuery.getString("none3", null));
+        assertNull("Value for 'none3' does not match", urlQuery.getString("none3", null));
     }
 
 
@@ -63,8 +61,6 @@ public class URLQueryTest {
         assertEquals("Value for 'none2' does not match", new Integer(0),
                 urlQuery.getInteger("none2", 0));
 
-        assertEquals("Value for 'none3' does not match",
-                null,
-                urlQuery.getString("none3", null));
+        assertNull("Value for 'none3' does not match", urlQuery.getString("none3", null));
     }
 }

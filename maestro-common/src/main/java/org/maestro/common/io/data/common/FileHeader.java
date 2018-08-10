@@ -17,7 +17,7 @@ public class FileHeader {
         AGENT(3),
         EXPORTER(4);
 
-        private int code;
+        private final int code;
 
         Role(int code) {
             this.code = code;

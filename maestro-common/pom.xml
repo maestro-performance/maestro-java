@@ -26,7 +26,6 @@
     </parent>
 
     <artifactId>maestro-common</artifactId>
-    <groupId>org.maestro</groupId>
 
     <properties>
         <jna.version>4.5.0</jna.version>

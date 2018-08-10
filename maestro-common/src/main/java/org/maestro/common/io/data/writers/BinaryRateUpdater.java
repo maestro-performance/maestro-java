@@ -40,11 +40,11 @@ import java.util.concurrent.TimeUnit;
 public class BinaryRateUpdater implements AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(BinaryRateUpdater.class);
 
-    private FileChannel fileChannel;
+    private final FileChannel fileChannel;
     private FileHeader fileHeader;
 
-    private ByteBuffer byteBuffer = ByteBuffer.allocateDirect(FileHeader.BYTES + 2);
-    private boolean overlay;
+    private final ByteBuffer byteBuffer = ByteBuffer.allocateDirect(FileHeader.BYTES + 2);
+    private final boolean overlay;
 
     /**
      * Constructor
@@ -81,7 +81,7 @@ public class BinaryRateUpdater implements AutoCloseable {
         }
     }
 
-    public boolean isOverlay() {
+    private boolean isOverlay() {
         return overlay;
     }
 
