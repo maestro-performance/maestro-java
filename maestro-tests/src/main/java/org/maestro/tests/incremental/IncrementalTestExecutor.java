@@ -153,6 +153,8 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
             testStop();
 
+            getReportsDownloader().waitForComplete();
+
             stopServices();
         }
 
@@ -175,15 +177,6 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                 break;
             }
 
-            try {
-                logger.info("Sleeping for {} milliseconds to let the broker catch up", coolDownPeriod);
-
-                Thread.sleep(getCoolDownPeriod());
-
-            } catch (InterruptedException e) {
-                logger.warn("The test execution was interrupted");
-                break;
-            }
             testNumber++;
         } while (true);
 
