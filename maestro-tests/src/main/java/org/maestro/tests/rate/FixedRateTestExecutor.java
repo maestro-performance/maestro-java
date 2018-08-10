@@ -46,8 +46,7 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
                                  final FixedRateTestProfile testProfile) {
         super(maestro, reportsDownloader, testProfile);
 
-        List<MaestroNoteCallback> callbackList = getMaestro().getCollector().getCallbacks();
-        callbackList.add(new StatsCallBack(this));
+        getMaestro().getCollector().addCallback(new StatsCallBack(this));
     }
 
     protected void reset() {

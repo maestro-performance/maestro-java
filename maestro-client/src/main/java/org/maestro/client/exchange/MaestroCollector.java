@@ -32,7 +32,7 @@ import java.util.stream.Collectors;
 
 public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollector.class);
-    private boolean running = true;
+    private volatile boolean running = true;
 
     private final Queue<MaestroNote> collected = new ConcurrentLinkedQueue<>();
     private final List<MaestroNoteCallback> callbacks = new LinkedList<>();
@@ -57,7 +57,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         monitored.forEach(monitor -> { synchronized(monitor) { monitor.notify(); } } );
     }
 
-    public void setRunning(boolean running) {
+    void setRunning(boolean running) {
         this.running = running;
     }
 
@@ -66,11 +66,11 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         return running;
     }
 
-    public void clear() {
+    public synchronized void clear() {
         collected.clear();
     }
 
-    public List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
+    public synchronized List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
         logger.trace("Collecting messages");
         List<MaestroNote> ret = collected.stream()
                 .filter(predicate)
@@ -82,8 +82,8 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         return ret;
     }
 
-    public List<MaestroNoteCallback> getCallbacks() {
-        return callbacks;
+    public synchronized void addCallback(MaestroNoteCallback callback) {
+        callbacks.add(callback);
     }
 
     public synchronized void monitor(final MaestroMonitor monitor) {

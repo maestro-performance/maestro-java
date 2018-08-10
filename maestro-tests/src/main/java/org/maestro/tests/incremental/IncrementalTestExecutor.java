@@ -18,7 +18,6 @@ package org.maestro.tests.incremental;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
-import org.maestro.client.callback.MaestroNoteCallback;
 import org.maestro.client.notes.GetResponse;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
@@ -61,10 +60,9 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
         super(maestro, reportsDownloader);
 
         this.testProfile = testProfile;
-        List<MaestroNoteCallback> callbackList = getMaestro().getCollector().getCallbacks();
 
         downloadProcessor = new DownloadProcessor(reportsDownloader);
-        callbackList.add(new LogRequesterCallback(this, downloadProcessor));
+        getMaestro().getCollector().addCallback(new LogRequesterCallback(this, downloadProcessor));
     }
 
     private long getTimeout() {

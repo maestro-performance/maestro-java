@@ -54,10 +54,8 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
 
         this.testProfile = testProfile;
 
-        List<MaestroNoteCallback> callbackList = getMaestro().getCollector().getCallbacks();
-
         downloadProcessor = new DownloadProcessor(reportsDownloader);
-        callbackList.add(new LogRequesterCallback(this, downloadProcessor));
+        getMaestro().getCollector().addCallback(new LogRequesterCallback(this, downloadProcessor));
     }
 
     protected abstract void reset();

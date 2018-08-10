@@ -151,7 +151,7 @@ public class BrokerDownloader implements ReportsDownloader {
         maestro.getCollector().subscribe(MaestroTopics.MAESTRO_LOGS_TOPIC, 0);
 
         downloadCallback = new DownloadCallback(organizer);
-        maestro.getCollector().getCallbacks().add(downloadCallback);
+        maestro.getCollector().addCallback(downloadCallback);
     }
 
     @Override
