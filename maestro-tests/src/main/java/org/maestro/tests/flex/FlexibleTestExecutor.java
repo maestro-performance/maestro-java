@@ -125,7 +125,7 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
 
             logger.info("Processing the notifications");
             long failed = results.stream()
-                    .filter(note -> isTestFailed(note))
+                    .filter(this::isTestFailed)
                     .count();
 
             if (failed > 0) {
@@ -145,8 +145,7 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
                         .waitForDrain()
                         .get(drainDeadline, TimeUnit.SECONDS);
 
-                drainReplies.stream()
-                        .filter(note -> isFailed(note));
+                drainReplies.forEach(this::isFailed);
 
             } catch (ExecutionException | InterruptedException e) {
                 logger.error("Error checking the draining status: {}", e.getMessage(), e);

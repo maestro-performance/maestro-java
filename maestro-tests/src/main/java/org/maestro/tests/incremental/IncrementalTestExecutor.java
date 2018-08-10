@@ -43,8 +43,6 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
     private static final long coolDownPeriod;
     private final DownloadProcessor downloadProcessor;
 
-    private ScheduledExecutorService executorService;
-
     static {
         coolDownPeriod = config.getLong("test.incremental.cooldown.period", 1) * 1000;
     }
@@ -100,9 +98,9 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
             testStart();
 
-            executorService = Executors.newSingleThreadScheduledExecutor();
+            ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
-            Runnable task = () -> { getMaestro().statsRequest(); };
+            Runnable task = () -> getMaestro().statsRequest();
             executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
 
             long timeout = getTimeout();
@@ -112,7 +110,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                     .get(timeout, TimeUnit.SECONDS);
 
             long failed = results.stream()
-                    .filter(note -> isTestFailed(note))
+                    .filter(this::isTestFailed)
                     .count();
 
             if (failed > 0) {
@@ -141,8 +139,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                     logger.warn("None of the peers reported a successful drain from the SUT");
                 }
 
-                drainReplies.stream()
-                        .filter(note -> isFailed(note));
+                drainReplies.forEach(this::isFailed);
 
             } catch (ExecutionException | InterruptedException e) {
                 logger.error("Error checking the draining status: {}", e.getMessage(), e);

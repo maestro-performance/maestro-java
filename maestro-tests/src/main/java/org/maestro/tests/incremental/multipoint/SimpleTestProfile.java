@@ -45,7 +45,7 @@ public class SimpleTestProfile extends IncrementalTestProfile implements MultiPo
 
     public void apply(Maestro maestro) {
         for (EndPoint endPoint : endPoints) {
-            logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getBrokerURL());
+            logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getSendReceiveURL());
             logger.debug(" {} end point located at {}", endPoint.getName(), endPoint.getTopic());
 
             set(maestro::setBroker, endPoint.getTopic(), endPoint.getSendReceiveURL());

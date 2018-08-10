@@ -18,7 +18,6 @@ package org.maestro.tests.rate;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
-import org.maestro.client.callback.MaestroNoteCallback;
 import org.maestro.client.notes.GetResponse;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
@@ -42,14 +41,12 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
     private static final long coolDownPeriod;
     private final DownloadProcessor downloadProcessor;
 
-    private ScheduledExecutorService executorService;
-
     static {
         coolDownPeriod = config.getLong("test.fixedrate.cooldown.period", 1) * 1000;
     }
 
-    public AbstractFixedRateExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                 final FixedRateTestProfile testProfile) {
+    AbstractFixedRateExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
+                              final FixedRateTestProfile testProfile) {
         super(maestro, reportsDownloader);
 
         this.testProfile = testProfile;
@@ -84,9 +81,9 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
 
             testStart();
 
-            executorService = Executors.newSingleThreadScheduledExecutor();
+            ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
-            Runnable task = () -> { getMaestro().statsRequest(); };
+            Runnable task = () -> getMaestro().statsRequest();
             executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
 
             long timeout = getTimeout();
@@ -96,7 +93,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
                     .get(timeout, TimeUnit.SECONDS);
 
             long failed = results.stream()
-                    .filter(note -> isTestFailed(note))
+                    .filter(this::isTestFailed)
                     .count();
 
             if (failed > 0) {
@@ -121,8 +118,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
                         .waitForDrain()
                         .get(drainDeadline, TimeUnit.SECONDS);
 
-                drainReplies.stream()
-                        .filter(note -> isFailed(note));
+                drainReplies.forEach(this::isFailed);
 
             } catch (ExecutionException | InterruptedException e) {
                 logger.error("Error checking the draining status: {}", e.getMessage(), e);

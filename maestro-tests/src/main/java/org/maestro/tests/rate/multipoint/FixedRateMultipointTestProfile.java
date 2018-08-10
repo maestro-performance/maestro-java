@@ -59,7 +59,7 @@ public class FixedRateMultipointTestProfile extends FixedRateTestProfile impleme
             set(maestro::setRate, warmUpRate);
 
             TestDuration warmUpDuration = getDuration().getWarmUpDuration();
-            long balancedDuration = Math.round(warmUpDuration.getNumericDuration() / getParallelCount());
+            long balancedDuration = Math.round((double) warmUpDuration.getNumericDuration() / (double) getParallelCount());
 
             logger.info("Setting warm up duration to {}", balancedDuration);
             set(maestro::setDuration, balancedDuration);

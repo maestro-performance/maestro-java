@@ -50,7 +50,7 @@ public class CompletionTime {
             ret = config.getLong("duration.count.wait.base", defaultBase);
 
             if (rate > 0) {
-                ret += Math.round(duration.getNumericDuration() / rate);
+                ret += Math.round((double) duration.getNumericDuration() / (double) rate);
             }
             else {
                 ret = ret * 7;

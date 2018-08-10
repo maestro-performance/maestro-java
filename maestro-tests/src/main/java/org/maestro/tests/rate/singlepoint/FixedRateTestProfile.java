@@ -36,10 +36,10 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestProfile.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
-    protected int rate;
+    private int rate;
     protected int warmUpRate;
-    protected int parallelCount;
-    protected int warmUpParallelCount;
+    private int parallelCount;
+    private int warmUpParallelCount;
     private String brokerURL;
 
     private int maximumLatency = 0;
@@ -173,7 +173,7 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
             set(maestro::setRate, warmUpRate);
 
             TestDuration warmUpDuration = getDuration().getWarmUpDuration();
-            long balancedDuration = Math.round(warmUpDuration.getNumericDuration() / getParallelCount());
+            long balancedDuration = Math.round((double) warmUpDuration.getNumericDuration() / (double) getParallelCount());
 
             logger.info("Setting warm-up duration to {}", balancedDuration);
             set(maestro::setDuration, balancedDuration);

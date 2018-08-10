@@ -52,7 +52,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     private volatile boolean running = false;
     private Instant startTime;
 
-    public AbstractTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader) {
+    protected AbstractTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader) {
         this.maestro = maestro;
         this.reportsDownloader = reportsDownloader;
 
@@ -137,14 +137,14 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      * @throws InterruptedException if interrupted
      */
-    protected int getNumPeers(String ...types) throws MaestroConnectionException, InterruptedException {
+    private int getNumPeers(String... types) throws MaestroConnectionException, InterruptedException {
         logger.debug("Collecting responses to ensure topic is clean prior to pinging nodes");
         maestro.clear();
 
         logger.debug("Sending ping request");
         CompletableFuture<List<? extends MaestroNote>> repliesFuture = maestro.pingRequest();
 
-        List<? extends MaestroNote> replies = null;
+        List<? extends MaestroNote> replies;
         try {
             replies = repliesFuture.get();
         } catch (ExecutionException e) {
@@ -172,7 +172,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     }
 
 
-    public int peerCount(final AbstractTestProfile testProfile) throws InterruptedException {
+    protected int peerCount(final AbstractTestProfile testProfile) throws InterruptedException {
         if (testProfile.getManagementInterface() != null) {
             return getNumPeers("sender", "receiver", "inspector");
         }
