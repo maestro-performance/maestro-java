@@ -17,10 +17,17 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageUnpacker;
+
+import java.io.IOException;
 
 public class StartSender extends MaestroRequest<MaestroSenderEventListener> {
     public StartSender() {
         super(MaestroCommand.MAESTRO_NOTE_START_SENDER);
+    }
+
+    public StartSender(final MessageUnpacker unpacker) throws IOException  {
+        super(MaestroCommand.MAESTRO_NOTE_START_SENDER, unpacker);
     }
 
     @Override

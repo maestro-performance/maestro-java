@@ -17,10 +17,17 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageUnpacker;
+
+import java.io.IOException;
 
 public class StopReceiver extends MaestroRequest<MaestroReceiverEventListener> {
     public StopReceiver() {
         super(MaestroCommand.MAESTRO_NOTE_STOP_RECEIVER);
+    }
+
+    public StopReceiver(final MessageUnpacker unpacker) throws IOException  {
+        super(MaestroCommand.MAESTRO_NOTE_STOP_RECEIVER, unpacker);
     }
 
     @Override

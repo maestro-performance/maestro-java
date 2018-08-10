@@ -27,12 +27,12 @@ public abstract class MaestroNotification extends MaestroEvent<MaestroEventListe
     private String id;
     private String name;
 
-    public MaestroNotification(MaestroCommand maestroCommand) {
+    public MaestroNotification(final MaestroCommand maestroCommand) {
         super(MaestroNoteType.MAESTRO_TYPE_NOTIFICATION, maestroCommand);
     }
 
-    public MaestroNotification(MaestroCommand maestroCommand, MessageUnpacker unpacker) throws IOException {
-        super(MaestroNoteType.MAESTRO_TYPE_NOTIFICATION, maestroCommand);
+    public MaestroNotification(final MaestroCommand maestroCommand, final MessageUnpacker unpacker) throws IOException {
+        super(MaestroNoteType.MAESTRO_TYPE_NOTIFICATION, maestroCommand, unpacker);
 
         id = unpacker.unpackString();
         name = unpacker.unpackString();

@@ -29,8 +29,8 @@ public class StartInspector extends MaestroRequest<MaestroInspectorEventListener
         super(MaestroCommand.MAESTRO_NOTE_START_INSPECTOR);
     }
 
-    public StartInspector(MessageUnpacker unpacker) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_START_INSPECTOR);
+    public StartInspector(final MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_START_INSPECTOR, unpacker);
 
         this.payload = unpacker.unpackString();
     }

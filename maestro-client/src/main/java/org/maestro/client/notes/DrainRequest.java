@@ -33,7 +33,7 @@ public class DrainRequest extends MaestroRequest<MaestroReceiverEventListener> {
     }
 
     public DrainRequest(final MessageUnpacker unpacker) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_DRAIN);
+        super(MaestroCommand.MAESTRO_NOTE_DRAIN, unpacker);
 
         this.duration = unpacker.unpackString();
         this.url = unpacker.unpackString();

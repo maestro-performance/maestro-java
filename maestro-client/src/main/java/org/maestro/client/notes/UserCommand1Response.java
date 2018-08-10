@@ -30,7 +30,7 @@ public class UserCommand1Response extends MaestroResponse {
         super(MaestroCommand.MAESTRO_NOTE_USER_COMMAND_1);
     }
 
-    public UserCommand1Response(MessageUnpacker unpacker) throws IOException {
+    public UserCommand1Response(final MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_USER_COMMAND_1, unpacker);
 
         this.status = unpacker.unpackString();

@@ -17,11 +17,19 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageUnpacker;
+
+import java.io.IOException;
 
 public class StopInspector extends MaestroRequest<MaestroInspectorEventListener> {
     public StopInspector() {
         super(MaestroCommand.MAESTRO_NOTE_STOP_INSPECTOR);
     }
+
+    public StopInspector(final MessageUnpacker unpacker) throws IOException  {
+        super(MaestroCommand.MAESTRO_NOTE_STOP_INSPECTOR, unpacker);
+    }
+
 
     @Override
     public void notify(MaestroInspectorEventListener visitor) {

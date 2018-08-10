@@ -51,7 +51,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         this.url = url;
     }
 
-    private void createInspector(final String inspectorType) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+    private void createInspector(final StartInspector note, final String inspectorType) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
         @SuppressWarnings("unchecked")
         Class<MaestroInspector> clazz = (Class<MaestroInspector>) Class.forName(inspectorType);
 
@@ -63,17 +63,17 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
             inspector.setUrl(url);
         } catch (MaestroException e) {
             logger.error("Unable to set the management interface URL {}: {}", url, e.getMessage(), e);
-            getClient().replyInternalError("Unable to set the management interface URL %s: %s", url,
+            getClient().replyInternalError(note,"Unable to set the management interface URL %s: %s", url,
                     e.getMessage());
         }
     }
 
     @Override
-    public void handle(StartInspector note) {
+    public void handle(final StartInspector note) {
         logger.debug("Start inspector request received");
 
         try {
-            createInspector(inspectorMap.get(note.getPayload()));
+            createInspector(note, inspectorMap.get(note.getPayload()));
 
             inspector.setWorkerOptions(getWorkerOptions());
 
@@ -82,17 +82,17 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
             inspectorThread = new Thread(inspectorContainer);
             inspectorThread.start();
 
-            getClient().replyOk();
+            getClient().replyOk(note);
         }
         catch (Throwable t) {
             logger.error("Unable to start inspector: {}", t.getMessage(), t);
-            getClient().replyInternalError("Unable to start inspector: %s", t.getMessage());
+            getClient().replyInternalError(note, "Unable to start inspector: %s", t.getMessage());
         }
     }
 
 
     @Override
-    public void handle(SetRequest note) {
+    public void handle(final SetRequest note) {
         super.handle(note);
 
         if (note.getOption() == SetRequest.Option.MAESTRO_NOTE_OPT_SET_MI) {
@@ -101,18 +101,18 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
             if (value != null) {
                 setUrl(value);
 
-                getClient().replyOk();
+                getClient().replyOk(note);
             }
             else {
                 logger.error("Unable to set management interface URL {}", value);
-                getClient().replyInternalError("Unable to set management interface URL: %s", value);
+                getClient().replyInternalError(note,"Unable to set management interface URL: %s", value);
             }
         }
 
     }
 
     @Override
-    public void handle(StopInspector note) {
+    public void handle(final StopInspector note) {
         logger.debug("Stop inspector request received");
 
         if (inspectorThread != null) {
@@ -125,6 +125,11 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
             inspectorThread.interrupt();
             inspectorThread = null;
         }
+        else {
+            logger.warn("Inspector received a stop request but it is not running");
+        }
+
+        getClient().replyOk(note);
     }
 
     @Override

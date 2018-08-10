@@ -82,7 +82,7 @@ public class SetRequest extends MaestroRequest<MaestroEventListener> {
     }
 
     public SetRequest(MessageUnpacker unpacker) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_SET);
+        super(MaestroCommand.MAESTRO_NOTE_SET, unpacker);
 
         this.option = Option.from(unpacker.unpackLong());
         this.value = unpacker.unpackString();

@@ -73,12 +73,13 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         this.epochMicroClock = EpochClocks.exclusiveMicro();
     }
 
-    public void replyOk() {
+    public void replyOk(final MaestroNote note) {
         logger.trace("Sending the OK response from {}", this.toString());
         OkResponse okResponse = new OkResponse();
 
         okResponse.setName(clientName + "@" + host);
         okResponse.setId(id);
+        okResponse.correlate(note);
 
         try {
             super.publish(MaestroTopics.MAESTRO_TOPIC, okResponse);
@@ -87,12 +88,13 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         }
     }
 
-    public void replyInternalError(final String message,String...args) {
+    public void replyInternalError(final MaestroNote note, final String message, final String...args) {
         logger.trace("Sending the internal error response from {}", this.toString());
         InternalError errResponse = new InternalError(String.format(message, args));
 
         errResponse.setName(clientName + "@" + host);
         errResponse.setId(id);
+        errResponse.correlate(note);
 
         try {
             super.publish(MaestroTopics.MAESTRO_TOPIC, errResponse);
@@ -101,7 +103,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         }
     }
 
-    public void pingResponse(long sec, long uSec) {
+    public void pingResponse(final MaestroNote note, long sec, long uSec) {
         logger.trace("Creation seconds.micro: {}.{}", sec, uSec);
 
         final long creationEpochMicros = TimeUnit.SECONDS.toMicros(sec) + uSec;
@@ -114,6 +116,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         response.setElapsed(TimeUnit.MICROSECONDS.toMillis(elapsedMicros));
         response.setName(clientName + "@" + host);
         response.setId(id);
+        response.correlate(note);
 
         super.publish(MaestroTopics.MAESTRO_TOPIC, response);
     }

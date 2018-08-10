@@ -19,7 +19,7 @@ package org.maestro.client.exchange;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.Objects;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -36,7 +36,7 @@ public class MaestroMonitor {
     private final Lock lock = new ReentrantLock();
     private final Condition condition = lock.newCondition();
 
-    private Predicate object;
+    private final Predicate object;
 
     /**
      * Constructs a Monitor using the given predicate (ie.: note instanceof TestSuccessfulNotification)
@@ -55,6 +55,21 @@ public class MaestroMonitor {
         try {
             logger.trace("Not enough messages satisfying the condition are available. Waiting ...");
             condition.await();
+        }
+        finally {
+            lock.unlock();
+        }
+    }
+
+    /**
+     * Lock the execution
+     * @throws InterruptedException if interrupted
+     */
+    public void doLock(long timeout) throws InterruptedException {
+        lock.lock();
+        try {
+            logger.trace("Not enough messages satisfying the condition are available. Waiting ...");
+            condition.await(timeout, TimeUnit.MILLISECONDS);
         }
         finally {
             lock.unlock();

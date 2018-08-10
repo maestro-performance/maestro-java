@@ -19,34 +19,40 @@ package org.maestro.client.notes;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.MaestroNoteType;
+import org.maestro.common.client.notes.MessageCorrelation;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
+import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
 abstract class AbstractMaestroNote implements MaestroNote {
-    private MaestroNoteType noteType;
-    private MaestroCommand maestroCommand;
+    private final MaestroNoteType noteType;
+    private final MaestroCommand maestroCommand;
+    private MessageCorrelation correlation;
 
-    public AbstractMaestroNote(MaestroNoteType type, MaestroCommand command) {
-        setNoteType(type);
-        setMaestroCommand(command);
+    public AbstractMaestroNote(final MaestroNoteType noteType, final MaestroCommand maestroCommand) {
+        this.noteType = noteType;
+        this.maestroCommand = maestroCommand;
+    }
+
+    public AbstractMaestroNote(final MaestroNoteType type, final MaestroCommand command,
+                               final MessageUnpacker unpacker) throws IOException {
+        this(type, command);
+
+        final String correlationId = unpacker.unpackString();
+        final String messageId = unpacker.unpackString();
+
+        correlation = new MessageCorrelation(correlationId, messageId);
     }
 
     public MaestroNoteType getNoteType() {
         return noteType;
     }
 
-    protected void setNoteType(MaestroNoteType noteType) {
-        this.noteType = noteType;
-    }
 
     public MaestroCommand getMaestroCommand() {
         return maestroCommand;
-    }
-
-    protected void setMaestroCommand(MaestroCommand maestroCommand) {
-        this.maestroCommand = maestroCommand;
     }
 
     protected MessageBufferPacker pack() throws IOException {
@@ -55,7 +61,36 @@ abstract class AbstractMaestroNote implements MaestroNote {
         packer.packShort(noteType.getValue());
         packer.packLong(maestroCommand.getValue());
 
+        correlate();
+
+        packer.packString(correlation.getCorrelationId());
+        packer.packString(correlation.getMessageId());
+
         return packer;
+    }
+
+    public MessageCorrelation correlate() {
+        if (correlation == null) {
+            correlation = MessageCorrelation.newRandomCorrelation();
+        }
+
+        return correlation;
+    }
+
+    public void correlate(final MessageCorrelation correlation) {
+        this.correlation = correlation;
+    }
+
+    public void correlate(final MaestroNote note) {
+        correlate(note.correlate());
+    }
+
+    public boolean correlatesTo(final MessageCorrelation correlation) {
+        return this.correlation.equals(correlation);
+    }
+
+    public boolean correlatesTo(final MaestroNote note) {
+        return correlation.equals(note.correlate());
     }
 
     final public byte[] serialize() throws IOException {

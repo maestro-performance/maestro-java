@@ -17,10 +17,17 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageUnpacker;
+
+import java.io.IOException;
 
 public class ProtocolError extends MaestroResponse {
     public ProtocolError() {
         super(MaestroCommand.MAESTRO_NOTE_PROTOCOL_ERROR);
+    }
+
+    public ProtocolError(final MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_PROTOCOL_ERROR, unpacker);
     }
 
     @Override

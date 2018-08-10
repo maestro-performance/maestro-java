@@ -31,7 +31,7 @@ public class UserCommand1Request extends MaestroRequest<MaestroAgentEventListene
     }
 
     public UserCommand1Request(MessageUnpacker unpacker) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_USER_COMMAND_1);
+        super(MaestroCommand.MAESTRO_NOTE_USER_COMMAND_1, unpacker);
 
         if (unpacker.hasNext()) {
             this.option = unpacker.unpackLong();

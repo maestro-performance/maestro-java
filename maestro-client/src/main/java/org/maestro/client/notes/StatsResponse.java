@@ -37,7 +37,7 @@ public class StatsResponse extends MaestroResponse {
         super(MaestroCommand.MAESTRO_NOTE_STATS);
     }
 
-    public StatsResponse(MessageUnpacker unpacker) throws IOException {
+    public StatsResponse(final MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_STATS, unpacker);
 
         childCount = unpacker.unpackInt();

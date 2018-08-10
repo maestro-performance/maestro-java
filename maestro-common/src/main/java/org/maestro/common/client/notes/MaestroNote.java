@@ -48,6 +48,15 @@ public interface MaestroNote {
      */
     String toString();
 
+    MessageCorrelation correlate();
+
+    void correlate(final MessageCorrelation correlation);
+
+    void correlate(final MaestroNote note);
+
+    boolean correlatesTo(final MessageCorrelation correlation);
+
+    boolean correlatesTo(final MaestroNote note);
 
     /**
      * Moves to the next subsequent note

@@ -18,7 +18,7 @@ public class LogRequest extends MaestroRequest<MaestroEventListener> {
     }
 
     public LogRequest(final MessageUnpacker unpacker) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_LOG);
+        super(MaestroCommand.MAESTRO_NOTE_LOG, unpacker);
 
         this.locationType = LocationType.byCode(unpacker.unpackInt());
         if (locationType == LocationType.ANY) {

@@ -16,6 +16,8 @@
 
 package org.maestro.common.client;
 
+import org.maestro.common.client.notes.MaestroNote;
+
 /**
  * Provides an interface that can be used by peers, workers, etc to publish
  * safe maestro responses and notifications
@@ -26,22 +28,25 @@ public interface MaestroReceiver {
     /**
      * Publishes a ping response that takes into account a giver number of
      * elapsed seconds/microseconds
+     * @param note the request note to correlate this response to
      * @param sec Epoch seconds
      * @param uSec Microseconds within the second
      */
-    void pingResponse(long sec, long uSec);
+    void pingResponse(MaestroNote note, long sec, long uSec);
 
     /**
      * Publishes a OK reply in the maestro broker
+     * @param note the request note to correlate this response to
      */
-    void replyOk();
+    void replyOk(MaestroNote note);
 
     /**
      * Publishes an internal error reply in the Maestro broker
+     * @param note the request note to correlate this response to
      * @param message the error message
      * @param args the arguments to format the message
      */
-    void replyInternalError(String message,String...args);
+    void replyInternalError(MaestroNote note, String message,String...args);
 
     /**
      * Publishes a test success notification message in the broker

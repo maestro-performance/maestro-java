@@ -19,11 +19,14 @@ package org.maestro.client;
 import org.maestro.client.exchange.*;
 import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
+import org.maestro.common.NonProgressingStaleChecker;
+import org.maestro.common.StaleChecker;
 import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.MaestroRequester;
 import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.MessageCorrelation;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
 import org.slf4j.Logger;
@@ -99,6 +102,7 @@ public final class Maestro implements MaestroRequester {
         FlushRequest maestroNote = new FlushRequest();
 
         maestroClient.publish(topic, maestroNote);
+
         return getOkErrorCompletableFuture();
     }
 
@@ -121,19 +125,15 @@ public final class Maestro implements MaestroRequester {
 
         maestroClient.publish(topic, maestroNote);
 
+        MessageCorrelation correlation = maestroNote.correlate();
+
         return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000L, note -> note instanceof PingResponse)
+                () -> collect(note -> isCorrelated(note, correlation))
         );
     }
 
-    private boolean isSetReply(MaestroNote note) {
-        return note instanceof OkResponse || note instanceof InternalError;
-    }
-
-    private CompletableFuture<List<? extends MaestroNote>> getSetCompletableFuture() {
-        return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000L, Maestro.this::isSetReply)
-        );
+    private boolean isCorrelated(final MaestroNote note, final MessageCorrelation correlation) {
+        return note.correlatesTo(correlation);
     }
 
     /**
@@ -158,7 +158,11 @@ public final class Maestro implements MaestroRequester {
         maestroNote.setBroker(value);
 
         maestroClient.publish(topic, maestroNote);
-        return getSetCompletableFuture();
+        MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation))
+        );
     }
 
 
@@ -196,7 +200,11 @@ public final class Maestro implements MaestroRequester {
         }
 
         maestroClient.publish(topic, maestroNote);
-        return getSetCompletableFuture();
+        MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation))
+        );
     }
 
 
@@ -223,7 +231,11 @@ public final class Maestro implements MaestroRequester {
         maestroNote.setLogLevel(value);
 
         maestroClient.publish(topic, maestroNote);
-        return getSetCompletableFuture();
+        MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation))
+        );
     }
 
 
@@ -250,7 +262,11 @@ public final class Maestro implements MaestroRequester {
         maestroNote.setParallelCount(Integer.toString(value));
 
         maestroClient.publish(topic, maestroNote);
-        return getSetCompletableFuture();
+        MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation))
+        );
     }
 
     /**
@@ -265,7 +281,11 @@ public final class Maestro implements MaestroRequester {
         maestroNote.setMessageSize(value);
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
-        return getSetCompletableFuture();
+        MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation))
+        );
     }
 
 
@@ -281,7 +301,11 @@ public final class Maestro implements MaestroRequester {
         maestroNote.setMessageSize(Long.toString(value));
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
-        return getSetCompletableFuture();
+        MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation))
+        );
     }
 
 
@@ -307,7 +331,11 @@ public final class Maestro implements MaestroRequester {
         maestroNote.setThrottle(Integer.toString(value));
 
         maestroClient.publish(topic, maestroNote);
-        return getSetCompletableFuture();
+        MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation))
+        );
     }
 
 
@@ -333,7 +361,11 @@ public final class Maestro implements MaestroRequester {
         maestroNote.setRate(Integer.toString(value));
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
-        return getSetCompletableFuture();
+        MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation))
+        );
     }
 
 
@@ -348,7 +380,11 @@ public final class Maestro implements MaestroRequester {
         maestroNote.setFCL(Integer.toString(value));
 
         maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
-        return getSetCompletableFuture();
+        MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation))
+        );
     }
 
 
@@ -364,7 +400,11 @@ public final class Maestro implements MaestroRequester {
         maestroNote.setManagementInterface(value);
 
         maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, maestroNote);
-        return getSetCompletableFuture();
+        MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation))
+        );
     }
 
 
@@ -381,7 +421,11 @@ public final class Maestro implements MaestroRequester {
         maestroNote.set(value);
 
         maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, maestroNote);
-        return getSetCompletableFuture();
+        MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation))
+        );
     }
 
 
@@ -389,7 +433,14 @@ public final class Maestro implements MaestroRequester {
         return note -> note instanceof OkResponse || note instanceof InternalError;
     }
 
+
     private CompletableFuture<List<? extends MaestroNote>> getOkErrorCompletableFuture() {
+        return CompletableFuture.supplyAsync(
+                () -> collectWithDelay(1000, isOkOrErrorResponse())
+        );
+    }
+
+    private CompletableFuture<List<? extends MaestroNote>> getOkErrorCompletableFuture(final MessageCorrelation correlation) {
         return CompletableFuture.supplyAsync(
                 () -> collectWithDelay(1000, isOkOrErrorResponse())
         );
@@ -710,6 +761,46 @@ public final class Maestro implements MaestroRequester {
 
     /**
      * Collect replies up to a certain limit of retries/timeout
+     * @param predicate Returns only the messages matching the predicate
+     * @return A list of serialized maestro replies or null if none. May return less that expected.
+     */
+    private List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
+        List<MaestroNote> replies = new LinkedList<>();
+        MaestroMonitor monitor = new MaestroMonitor(predicate);
+        StaleChecker staleChecker = new NonProgressingStaleChecker(10);
+
+        try {
+            collectorExecutor.getCollector().monitor(monitor);
+
+            do {
+                replies.addAll(collectorExecutor.getCollector().collect(predicate));
+                logger.trace("Collected {} notes", replies.size());
+
+                if (staleChecker.isStale(replies.size())) {
+                    break;
+                }
+
+                try {
+                    logger.trace("Not enough responses matching the predicate. Waiting for more messages to arrive");
+                    monitor.doLock(50);
+                } catch (InterruptedException e) {
+                    logger.trace("Interrupted while waiting for message collection");
+                }
+
+                logger.trace("Out of the collection lock. Checking for new messages");
+            } while (true);
+
+            logger.debug("Exiting the collection loop: {} collected for {}", replies.size(), predicate);
+        }
+        finally {
+            collectorExecutor.getCollector().remove(monitor);
+        }
+
+        return replies;
+    }
+
+    /**
+     * Collect replies up to a certain limit of retries/timeout
      * @param wait how much time between each retry
      * @param predicate Returns only the messages matching the predicate
      * @return A list of serialized maestro replies or null if none. May return less that expected.
@@ -773,7 +864,7 @@ public final class Maestro implements MaestroRequester {
     public static <T> void set(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, T value) {
         final int timeout = 2;
 
-        List<? extends MaestroNote> replies = null;
+        List<? extends MaestroNote> replies;
         try {
             replies = function.apply(value).get(timeout, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
@@ -795,7 +886,7 @@ public final class Maestro implements MaestroRequester {
     public static <T, U> void set(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1, U value2) {
         final int timeout = 1;
 
-        List<? extends MaestroNote> replies = null;
+        List<? extends MaestroNote> replies;
         try {
             replies = function.apply(value1, value2).get(timeout, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException e) {
@@ -817,7 +908,7 @@ public final class Maestro implements MaestroRequester {
     public static <T> void exec(Supplier<CompletableFuture<List<? extends MaestroNote>>> function) {
         final int timeout = 2;
 
-        List<? extends MaestroNote> replies = null;
+        List<? extends MaestroNote> replies;
         try {
             replies = function.get().get(timeout, TimeUnit.SECONDS);
         } catch (TimeoutException | InterruptedException | ExecutionException e) {

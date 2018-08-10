@@ -167,4 +167,21 @@ public class MaestroProtocolTest {
         assertTrue(1.123 == ((StatsResponse) parsed).getLatency());
         assertEquals("1521027548", ((StatsResponse) parsed).getTimestamp());
     }
+
+
+    @Test
+    public void serializeDrainCompleteNotification() throws Exception {
+        DrainCompleteNotification note = new DrainCompleteNotification();
+
+        note.setId("asfas45");
+        note.setName("unittest@localhost");
+        note.setMessage("Test failed");
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
+
+        assertTrue(parsed instanceof DrainCompleteNotification);
+        assertTrue("Parsed object is not a Drain Complete Notification",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_NOTIFY_DRAIN_COMPLETE);
+    }
 }

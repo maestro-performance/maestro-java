@@ -62,7 +62,7 @@ public class MaestroDeserializer {
 
         switch (Objects.requireNonNull(command)) {
             case MAESTRO_NOTE_OK: {
-                return new OkResponse();
+                return new OkResponse(unpacker);
             }
             case MAESTRO_NOTE_PING: {
                 return new PingResponse(unpacker);

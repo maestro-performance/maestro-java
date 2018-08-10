@@ -130,6 +130,8 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         statsResponse.setRoleInfo("");
         statsResponse.setTimestamp("0");
 
+        statsResponse.correlate(note);
+
         client.statsResponse(statsResponse);
     }
 
@@ -256,7 +258,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     @Override
     public void handle(PingRequest note) throws MaestroConnectionException, MalformedNoteException {
-        client.pingResponse(note.getSec(), note.getUsec());
+        client.pingResponse(note, note.getSec(), note.getUsec());
     }
 
 
@@ -317,7 +319,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
             logger.error("The client requested the log files for location {} but they don't exist at {}",
                     note.getLocationType().toString(), logDir);
 
-            getClient().replyInternalError("The client requested the log files for location %s but they don't exist at %s",
+            getClient().replyInternalError(note,"The client requested the log files for location %s but they don't exist at %s",
                     note.getLocationType().toString(), logDir.getPath());
             return;
         }
@@ -326,7 +328,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         if (files == null) {
             logger.error("The client request log files, but the location does not contain any");
 
-            getClient().replyInternalError("The client requested the log files for location %s but there's no files there",
+            getClient().replyInternalError(note,"The client requested the log files for location %s but there's no files there",
                     note.getLocationType().toString());
 
             return;

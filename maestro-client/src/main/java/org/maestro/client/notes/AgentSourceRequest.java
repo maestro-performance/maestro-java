@@ -31,7 +31,7 @@ public class AgentSourceRequest extends MaestroRequest<MaestroAgentEventListener
     }
 
     public AgentSourceRequest(final MessageUnpacker unpacker) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_AGENT_SOURCE);
+        super(MaestroCommand.MAESTRO_NOTE_AGENT_SOURCE, unpacker);
 
         this.sourceUrl = unpacker.unpackString();
 

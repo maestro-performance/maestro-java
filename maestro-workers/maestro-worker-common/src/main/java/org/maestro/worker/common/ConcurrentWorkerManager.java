@@ -19,6 +19,7 @@ package org.maestro.worker.common;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.evaluators.HardLatencyEvaluator;
 import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.evaluators.SoftLatencyEvaluator;
@@ -68,7 +69,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
      * Starts the workers and add them to a container
      * @return true if started correctly or false otherwise
      */
-    private boolean doWorkerStart() {
+    private boolean doWorkerStart(final MaestroNote note) {
         if (container.isTestInProgress()) {
             logger.warn("Trying to start a new test, but a test execution is already in progress");
             getClient().notifyFailure("Test already in progress");
@@ -129,11 +130,11 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
             container.start(latencyEvaluator);
 
-            getClient().replyOk();
+            getClient().replyOk(note);
             return true;
         } catch (Exception e) {
             logger.error("Unable to start workers from the container: {}", e.getMessage(), e);
-            getClient().replyInternalError("Unable to start workers from the container: %s", e.getMessage());
+            getClient().replyInternalError(note, "Unable to start workers from the container: %s", e.getMessage());
         }
 
         return false;
@@ -181,7 +182,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     public void handle(SetRequest note) {
         super.handle(note);
 
-        getClient().replyOk();
+        getClient().replyOk(note);
     }
 
     @Override
@@ -193,33 +194,33 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     }
 
     @Override
-    public void handle(StartReceiver note) {
+    public void handle(final StartReceiver note) {
         logger.info("Start receiver request received");
 
         if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
-            if (!doWorkerStart()) {
+            if (!doWorkerStart(note)) {
                 logger.warn("::handle {} can't start worker", note);
             }
         }
     }
 
     @Override
-    public void handle(StartSender note) {
+    public void handle(final StartSender note) {
         logger.info("Start sender request received");
 
         if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
-            if (!doWorkerStart()) {
+            if (!doWorkerStart(note)) {
                 logger.warn("::handle {} can't start worker", note);
             }
         }
     }
 
     @Override
-    public void handle(StopReceiver note) {
+    public void handle(final StopReceiver note) {
         logger.info("Stop receiver request received");
 
         if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
-            getClient().replyOk();
+            getClient().replyOk(note);
 
             container.stop();
         }
@@ -230,7 +231,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         logger.info("Stop sender request received");
 
         if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
-            getClient().replyOk();
+            getClient().replyOk(note);
 
             container.stop();
         }
@@ -303,7 +304,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         super.handle(note, logDir);
     }
 
-    private boolean drainStart(WorkerOptions drainOptions) {
+    private boolean drainStart(final WorkerOptions drainOptions, final MaestroNote note) {
         if (container.isTestInProgress()) {
             logger.warn("Trying to start a new test, but a test execution is already in progress");
             getClient().notifyFailure("Test already in progress");
@@ -339,18 +340,18 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
             container.start(null);
 
-            getClient().replyOk();
+            getClient().replyOk(note);
             return true;
         } catch (Exception e) {
             logger.error("Unable to start workers from the container: {}", e.getMessage(), e);
-            getClient().replyInternalError("Unable to start workers from the container: %s", e.getMessage());
+            getClient().replyInternalError(note,"Unable to start workers from the container: %s", e.getMessage());
         }
 
         return false;
     }
 
     @Override
-    public void handle(DrainRequest note) {
+    public void handle(final DrainRequest note) {
         if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
             WorkerOptions drainOptions = new WorkerOptions();
 
@@ -358,7 +359,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             drainOptions.setDuration(note.getDuration());
             drainOptions.setParallelCount(note.getParallelCount());
 
-            if (!drainStart(drainOptions)) {
+            if (!drainStart(drainOptions, note)) {
                 logger.error("Unable to start draining from the SUT");
             }
         }

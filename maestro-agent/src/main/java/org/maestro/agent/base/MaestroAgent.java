@@ -275,7 +275,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
 
             thread.start();
 
-            this.getClient().replyOk();
+            this.getClient().replyOk(note);
 
         } catch (Exception e) {
             e.printStackTrace();
@@ -330,7 +330,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     }
 
     @Override
-    public void handle(AgentSourceRequest note) {
+    public void handle(final AgentSourceRequest note) {
         logger.info("Source request arrived");
 
         final String sourceUrl = note.getSourceUrl();
@@ -368,10 +368,10 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
             logger.info("Source directory for project created at {}", repositoryDir);
             extensionPoints.add(new ExtensionPoint(new File(repositoryDir, "requests"), true));
 
-            getClient().replyOk();
+            getClient().replyOk(note);
         } catch (GitAPIException e) {
             logger.error("Unable to clone repository: {}", e.getMessage(), e);
-            getClient().replyInternalError("Unable to clone repository: %s", e.getMessage());
+            getClient().replyInternalError(note,"Unable to clone repository: %s", e.getMessage());
         }
     }
 

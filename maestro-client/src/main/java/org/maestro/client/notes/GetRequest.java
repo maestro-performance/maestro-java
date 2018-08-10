@@ -33,8 +33,8 @@ public class GetRequest extends MaestroRequest<MaestroEventListener> {
         super(MaestroCommand.MAESTRO_NOTE_GET);
     }
 
-    public GetRequest(MessageUnpacker unpacker) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_GET);
+    public GetRequest(final MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_GET, unpacker);
 
         this.option = GetOption.from(unpacker.unpackLong());
     }
