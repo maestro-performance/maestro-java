@@ -48,9 +48,8 @@ final class JMSReceiverClient extends JMSClient implements ReceiverClient {
     }
 
     private int getReadBytes(BytesMessage message) throws JMSException {
-        final BytesMessage bytesMessage = message;
         //just read the benchmark minimum payload
-        return bytesMessage.readBytes(payloadBytes.array(), PAYLOAD_SIZE);
+        return message.readBytes(payloadBytes.array(), PAYLOAD_SIZE);
     }
 
 

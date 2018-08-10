@@ -50,6 +50,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     private final SingleWriterRecorder latencyRecorder = new SingleWriterRecorder(HIGHEST_TRACKABLE_VALUE, 3);
     //TODO the size need to be configured
 
+    @SuppressWarnings("CanBeFinal")
     private volatile WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     private String url;
@@ -88,7 +89,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         this(JMSReceiverClient::new);
     }
 
-    public JMSReceiverWorker(Supplier<? extends ReceiverClient> clientFactory) {
+    private JMSReceiverWorker(Supplier<? extends ReceiverClient> clientFactory) {
         this.clientFactory = clientFactory;
     }
 

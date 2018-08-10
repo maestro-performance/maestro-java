@@ -32,6 +32,7 @@ final class JMSResourceUtil {
 
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static Throwable capturingClose(MessageProducer closeable) {
         logger.debug("Closing the producer ");
 
@@ -46,6 +47,7 @@ final class JMSResourceUtil {
         return null;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static Throwable capturingClose(Session closeable) {
         logger.debug("Closing the session ");
 
@@ -60,6 +62,7 @@ final class JMSResourceUtil {
         return null;
     }
 
+    @SuppressWarnings("UnusedReturnValue")
     public static Throwable capturingClose(MessageConsumer closeable) {
         logger.debug("Closing the consumer");
 

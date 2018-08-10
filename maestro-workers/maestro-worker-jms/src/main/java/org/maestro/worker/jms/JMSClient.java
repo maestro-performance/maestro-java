@@ -40,12 +40,12 @@ import javax.jms.Destination;
 class JMSClient implements Client {
     private static final Logger logger = LoggerFactory.getLogger(JMSClient.class);
 
-    protected String url = null;
-    protected Destination destination = null;
-    protected Connection connection = null;
-    protected JmsOptions opts;
+    private String url = null;
+    Destination destination = null;
+    Connection connection = null;
+    JmsOptions opts;
 
-    protected int number = -1;
+    private int number = -1;
 
     public int getNumber() {
         return number;

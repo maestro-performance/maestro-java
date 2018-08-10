@@ -34,7 +34,6 @@ import org.slf4j.LoggerFactory;
 
 import javax.jms.Session;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.LockSupport;
 import java.util.function.Supplier;
 
 /**
@@ -53,13 +52,14 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     private int number;
 
     private final Supplier<? extends SenderClient> clientFactory;
+    @SuppressWarnings("CanBeFinal")
     private volatile WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     public JMSSenderWorker() {
         this(JMSSenderClient::new);
     }
 
-    public JMSSenderWorker(Supplier<? extends SenderClient> clientFactory) {
+    private JMSSenderWorker(Supplier<? extends SenderClient> clientFactory) {
         this.clientFactory = clientFactory;
     }
 
@@ -166,9 +166,6 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
         //it couldn't uses the Epoch in nanos because it could overflow pretty soon (less than 1 day)
         final EpochMicroClock epochMicroClock = EpochClocks.exclusiveMicro();
-        final long startFireEpochMicros = epochMicroClock.microTime();
-        //to avoid accumulated approx errors on the expectedSendTimeEpochMillis calculations
-        long elapsedIntervalsNanos = 0;
 
         long nextFireTime = System.nanoTime() + intervalInNanos;
         final JmsOptions opts = ((JMSClient) client).getOpts();
