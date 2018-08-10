@@ -30,9 +30,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CountDownLatch;
-import java.util.function.Predicate;
+import java.util.concurrent.*;
+import java.util.function.*;
 
 
 /**
@@ -746,6 +745,73 @@ public final class Maestro implements MaestroRequester {
 
     private Predicate<MaestroNote> maestroNotificationPredicate() {
         return note -> note instanceof TestSuccessfulNotification || note instanceof InternalError || note instanceof TestFailedNotification;
+    }
+
+
+    public static <T> void set(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, T value) {
+        final int timeout = 2;
+
+        List<? extends MaestroNote> replies = null;
+        try {
+            replies = function.apply(value).get(timeout, TimeUnit.SECONDS);
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+            throw new MaestroException(e);
+        }
+
+        if (replies.size() == 0) {
+            throw new MaestroException("Not enough replies when trying to apply a setting to the test cluster");
+        }
+
+        for (MaestroNote reply : replies) {
+            if (reply instanceof InternalError) {
+                InternalError ie = (InternalError) reply;
+                throw new MaestroException("Error applying a setting to the test cluster: %s", ie.getMessage());
+            }
+        }
+    }
+
+    public static <T, U> void set(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1, U value2) {
+        final int timeout = 1;
+
+        List<? extends MaestroNote> replies = null;
+        try {
+            replies = function.apply(value1, value2).get(timeout, TimeUnit.SECONDS);
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+            throw new MaestroException(e);
+        }
+
+        if (replies.size() == 0) {
+            throw new MaestroException("Not enough replies when trying to apply a setting to the test cluster");
+        }
+
+        for (MaestroNote reply : replies) {
+            if (reply instanceof InternalError) {
+                InternalError ie = (InternalError) reply;
+                throw new MaestroException("Error applying a setting to the test cluster: %s", ie.getMessage());
+            }
+        }
+    }
+
+    public static <T> void exec(Supplier<CompletableFuture<List<? extends MaestroNote>>> function) {
+        final int timeout = 2;
+
+        List<? extends MaestroNote> replies = null;
+        try {
+            replies = function.get().get(timeout, TimeUnit.SECONDS);
+        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+            throw new MaestroException(e);
+        }
+
+        if (replies.size() == 0) {
+            throw new MaestroException("Not enough replies when trying to apply a execute a command on test cluster");
+        }
+
+        for (MaestroNote reply : replies) {
+            if (reply instanceof InternalError) {
+                InternalError ie = (InternalError) reply;
+                throw new MaestroException("Error executing a command on the test cluster: %s", ie.getMessage());
+            }
+        }
     }
 
 }

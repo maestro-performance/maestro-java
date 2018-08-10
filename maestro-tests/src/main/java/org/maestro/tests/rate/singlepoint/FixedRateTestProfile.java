@@ -27,6 +27,8 @@ import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import static org.maestro.client.Maestro.set;
+
 /**
  * A test profile for fixed rate tests
  */
@@ -169,43 +171,43 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
 
     protected void apply(final Maestro maestro, boolean warmUp) {
         logger.info("Setting endpoint URL to {}", getSendReceiveURL());
-        apply(maestro::setBroker, getSendReceiveURL());
+        set(maestro::setBroker, getSendReceiveURL());
 
         if (warmUp) {
             logger.info("Setting warm-up rate to {}", warmUpRate);
-            apply(maestro::setRate, warmUpRate);
+            set(maestro::setRate, warmUpRate);
 
             TestDuration warmUpDuration = getDuration().getWarmUpDuration();
             long balancedDuration = Math.round(warmUpDuration.getNumericDuration() / getParallelCount());
 
             logger.info("Setting warm-up duration to {}", balancedDuration);
-            apply(maestro::setDuration, balancedDuration);
+            set(maestro::setDuration, balancedDuration);
 
             logger.info("Setting warm-up parallel count to {}", this.warmUpParallelCount);
-            apply(maestro::setParallelCount, this.warmUpParallelCount);
+            set(maestro::setParallelCount, this.warmUpParallelCount);
         }
         else {
             logger.info("Setting test rate to {}", getRate());
-            apply(maestro::setRate, rate);
+            set(maestro::setRate, rate);
 
             logger.info("Setting test duration to {}", getDuration());
-            apply(maestro::setDuration, this.getDuration().toString());
+            set(maestro::setDuration, this.getDuration().toString());
 
             logger.info("Setting parallel count to {}", this.parallelCount);
-            apply(maestro::setParallelCount, this.parallelCount);
+            set(maestro::setParallelCount, this.parallelCount);
         }
 
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
-        apply(maestro::setFCL, getMaximumLatency());
+        set(maestro::setFCL, getMaximumLatency());
 
         logger.info("Setting message size to {}", getMessageSize());
-        apply(maestro::setMessageSize, getMessageSize());
+        set(maestro::setMessageSize, getMessageSize());
 
         if (getManagementInterface() != null) {
             if (getInspectorName() != null) {
                 logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
                         getInspectorName());
-                apply(maestro::setManagementInterface, getManagementInterface());
+                set(maestro::setManagementInterface, getManagementInterface());
             }
         }
 
@@ -213,13 +215,13 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
             if (getExtPointBranch() != null) {
                 logger.info("Setting the extension point source to {} using the {} branch", getExtPointSource(),
                         getExtPointBranch());
-                apply(maestro::sourceRequest, getExtPointSource(), getExtPointBranch());
+                set(maestro::sourceRequest, getExtPointSource(), getExtPointBranch());
             }
         }
 
         if (getExtPointCommand() != null) {
             logger.info("Setting command to Agent execution to {}", getExtPointCommand());
-            apply(maestro::userCommand, 0L, getExtPointCommand());
+            set(maestro::userCommand, 0L, getExtPointCommand());
         }
     }
 

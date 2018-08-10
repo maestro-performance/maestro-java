@@ -25,6 +25,8 @@ import org.slf4j.LoggerFactory;
 import java.util.LinkedList;
 import java.util.List;
 
+import static org.maestro.client.Maestro.set;
+
 @SuppressWarnings("unused")
 public class SimpleTestProfile extends IncrementalTestProfile implements MultiPointProfile {
     private static final Logger logger = LoggerFactory.getLogger(SimpleTestProfile.class);
@@ -46,28 +48,28 @@ public class SimpleTestProfile extends IncrementalTestProfile implements MultiPo
             logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getBrokerURL());
             logger.debug(" {} end point located at {}", endPoint.getName(), endPoint.getTopic());
 
-            apply(maestro::setBroker, endPoint.getTopic(), endPoint.getSendReceiveURL());
+            set(maestro::setBroker, endPoint.getTopic(), endPoint.getSendReceiveURL());
         }
 
         logger.info("Setting rate to {}", getRate());
-        apply(maestro::setRate, rate);
+        set(maestro::setRate, rate);
 
         logger.info("Rate increment value is {}", getRateIncrement());
 
         logger.info("Setting parallel count to {}", this.parallelCount);
-        apply(maestro::setParallelCount, this.parallelCount);
+        set(maestro::setParallelCount, this.parallelCount);
 
         logger.info("Parallel count increment value is {}", getParallelCountIncrement());
 
         logger.info("Setting duration to {}", getDuration());
-        apply(maestro::setDuration, this.getDuration().toString());
+        set(maestro::setDuration, this.getDuration().toString());
 
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
-        apply(maestro::setFCL, getMaximumLatency());
+        set(maestro::setFCL, getMaximumLatency());
 
         // Variable message messageSize
         logger.info("Setting message size to: {}", getMessageSize());
-        apply(maestro::setMessageSize, getMessageSize());
+        set(maestro::setMessageSize, getMessageSize());
 
         logger.info("Estimated time for test completion: {} secs", getEstimatedCompletionTime());
     }

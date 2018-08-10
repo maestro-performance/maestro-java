@@ -16,18 +16,6 @@
 
 package org.maestro.tests;
 
-import org.maestro.client.notes.InternalError;
-import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.common.exceptions.MaestroException;
-
-import java.util.List;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
-import java.util.function.BiFunction;
-import java.util.function.Function;
-
 public abstract class AbstractTestProfile implements TestProfile {
     private int testExecutionNumber;
     private String managementInterface;
@@ -55,51 +43,6 @@ public abstract class AbstractTestProfile implements TestProfile {
 
     public void setInspectorName(final String inspectorName) {
         this.inspectorName = inspectorName;
-    }
-
-    protected <T> void apply(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, T value) {
-        final int timeout = 2;
-
-        List<? extends MaestroNote> replies = null;
-        try {
-            replies = function.apply(value).get(timeout, TimeUnit.SECONDS);
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
-            throw new MaestroException(e);
-        }
-
-        if (replies.size() == 0) {
-            throw new MaestroException("Not enough replies when trying to apply a setting to the test cluster");
-        }
-
-        for (MaestroNote reply : replies) {
-            if (reply instanceof InternalError) {
-                InternalError ie = (InternalError) reply;
-                throw new MaestroException("Error applying a setting to the test cluster: %s", ie.getMessage());
-            }
-        }
-    }
-
-    protected <T, U> void apply(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1, U value2) {
-        final int timeout = 1;
-
-        List<? extends MaestroNote> replies = null;
-        try {
-            replies = function.apply(value1, value2).get(timeout, TimeUnit.SECONDS);
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
-            throw new MaestroException(e);
-        }
-
-        if (replies.size() == 0) {
-            throw new MaestroException("Not enough replies when trying to apply a setting to the test cluster");
-        }
-
-        for (MaestroNote reply : replies) {
-            if (reply instanceof InternalError) {
-                InternalError ie = (InternalError) reply;
-                throw new MaestroException("Error applying a setting to the test cluster: %s", ie.getMessage());
-            }
-        }
-
     }
 
     @Override
