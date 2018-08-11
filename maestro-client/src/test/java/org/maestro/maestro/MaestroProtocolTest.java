@@ -19,6 +19,7 @@ package org.maestro.maestro;
 import org.junit.Test;
 import org.maestro.client.exchange.MaestroDeserializer;
 import org.maestro.client.notes.*;
+import org.maestro.client.notes.InternalError;
 import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.client.notes.MaestroNote;
@@ -184,4 +185,96 @@ public class MaestroProtocolTest {
                 parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
         assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_NOTIFY_DRAIN_COMPLETE);
     }
+
+    @Test
+    public void serializeInternalError() throws Exception {
+        InternalError note = new InternalError("Something bad happened");
+
+        note.setId("asfas45");
+        note.setName("unittest@localhost");
+        note.setMessage("Test failed");
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
+
+        assertTrue(parsed instanceof InternalError);
+        assertTrue("Parsed object is not a Drain Complete Notification",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_INTERNAL_ERROR);
+    }
+
+
+    @Test
+    public void serializeStartSenderRequest() throws Exception {
+        StartSender note = new StartSender();
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
+
+        assertTrue(parsed instanceof StartSender);
+        assertTrue("Parsed object is not a Start Sender message",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_START_SENDER);
+    }
+
+    @Test
+    public void serializeStartReceiverRequest() throws Exception {
+        StartReceiver note = new StartReceiver();
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
+
+        assertTrue(parsed instanceof StartReceiver);
+        assertTrue("Parsed object is not a Start Receiver message",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_START_RECEIVER);
+    }
+
+    @Test
+    public void serializeStartInspectorRequest() throws Exception {
+        StartInspector note = new StartInspector("testInspector");
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
+
+        assertTrue(parsed instanceof StartInspector);
+        assertTrue("Parsed object is not a Start Inspector message",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_START_INSPECTOR);
+        assertEquals("Inspector name don't match", "testInspector",
+                ((StartInspector) parsed).getPayload());
+    }
+
+    @Test
+    public void serializeStopSenderRequest() throws Exception {
+        StopSender note = new StopSender();
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
+
+        assertTrue(parsed instanceof StopSender);
+        assertTrue("Parsed object is not a Stop Sender message",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_STOP_SENDER);
+    }
+
+    @Test
+    public void serializeStopReceiverRequest() throws Exception {
+        StopReceiver note = new StopReceiver();
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
+
+        assertTrue(parsed instanceof StopReceiver);
+        assertTrue("Parsed object is not a Start Receiver message",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_STOP_RECEIVER);
+    }
+
+    @Test
+    public void serializeStopInspectorRequest() throws Exception {
+        StopInspector note = new StopInspector();
+
+        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
+
+        assertTrue(parsed instanceof StopInspector);
+        assertTrue("Parsed object is not a Start Inspector message",
+                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_STOP_INSPECTOR);
+    }
+
 }
