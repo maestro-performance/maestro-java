@@ -23,20 +23,18 @@ import org.msgpack.core.MessageUnpacker;
 import java.io.IOException;
 
 public class StartInspector extends MaestroRequest<MaestroInspectorEventListener> {
-    private String payload;
+    private final String payload;
 
-    public StartInspector() {
+    public StartInspector(final String payload) {
         super(MaestroCommand.MAESTRO_NOTE_START_INSPECTOR);
+
+        this.payload = payload;
     }
 
     public StartInspector(final MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_START_INSPECTOR, unpacker);
 
         this.payload = unpacker.unpackString();
-    }
-
-    public void set(final String payload) {
-        this.payload = payload;
     }
 
     public String getPayload() {

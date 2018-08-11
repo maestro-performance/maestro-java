@@ -416,9 +416,7 @@ public final class Maestro implements MaestroRequester {
      * @return A completable future
      */
     public CompletableFuture<List<? extends MaestroNote>> startInspector(final String value) throws MaestroConnectionException {
-        StartInspector maestroNote = new StartInspector();
-
-        maestroNote.set(value);
+        StartInspector maestroNote = new StartInspector(value);
 
         maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, maestroNote);
         MessageCorrelation correlation = maestroNote.correlate();
@@ -545,8 +543,7 @@ public final class Maestro implements MaestroRequester {
         maestroClient.publish(MaestroTopics.RECEIVER_DAEMONS, new StartReceiver());
 
         if (inspectorName != null) {
-            StartInspector note = new StartInspector();
-            note.set(inspectorName);
+            StartInspector note = new StartInspector(inspectorName);
 
             maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, note);
         }
