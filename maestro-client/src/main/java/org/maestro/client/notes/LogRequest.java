@@ -3,8 +3,6 @@ package org.maestro.client.notes;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 

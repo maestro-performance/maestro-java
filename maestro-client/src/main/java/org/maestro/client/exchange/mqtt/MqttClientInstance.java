@@ -29,7 +29,7 @@ import java.util.UUID;
 public class MqttClientInstance {
     private static MqttClientInstance instance = null;
     private MqttClient client;
-    private String id;
+    private final String id;
 
     private MqttClientInstance(final String url) {
         String adjustedUrl = URLUtils.sanitizeURL(url);
@@ -56,9 +56,7 @@ public class MqttClientInstance {
 
         if (noReuse == null) {
             if (instance == null) {
-                if (instance == null) {
-                    instance = new MqttClientInstance(url);
-                }
+                instance = new MqttClientInstance(url);
             }
         }
         else {

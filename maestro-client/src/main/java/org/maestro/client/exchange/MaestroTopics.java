@@ -108,9 +108,7 @@ public class MaestroTopics {
         ret[0] = PEER_TOPIC + "/by-name/" + host + "/" + clientName;
         ret[1] = PEER_TOPIC + "/by-id" + id;
 
-        for (int i = 0; i < publicTopics.length; i++) {
-            ret[i+2] = publicTopics[i];
-        }
+        System.arraycopy(publicTopics, 0, ret, 2, publicTopics.length);
 
         return ret;
     }

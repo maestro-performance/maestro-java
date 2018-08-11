@@ -78,7 +78,7 @@ public class LogResponse extends MaestroResponse {
         this.total = total;
     }
 
-    protected void setIndex(int index) {
+    private void setIndex(int index) {
         this.index = index;
     }
 
@@ -90,11 +90,11 @@ public class LogResponse extends MaestroResponse {
         this.fileHash = fileHash;
     }
 
-    public int getIndex() {
+    private int getIndex() {
         return index;
     }
 
-    public int getTotal() {
+    private int getTotal() {
         return total;
     }
 
@@ -160,7 +160,7 @@ public class LogResponse extends MaestroResponse {
     }
 
 
-    protected void packData(final MessageBufferPacker packer) throws IOException {
+    private void packData(final MessageBufferPacker packer) throws IOException {
         if (fi == null) {
             fi = initializeInputStream();
         }
@@ -169,12 +169,18 @@ public class LogResponse extends MaestroResponse {
     }
 
 
-    protected void packData(final MessageBufferPacker packer, final InputStream inputStream) throws IOException {
+    private void packData(final MessageBufferPacker packer, final InputStream inputStream) throws IOException {
         logger.debug("Skipping {} bytes", pos);
 
         int chunkSize = getChunkSize(LOG_RESPONSE_MAX_PAYLOAD_SIZE);
         byte[] data = new byte[chunkSize];
-        inputStream.read(data, 0, chunkSize);
+        final int read = inputStream.read(data, 0, chunkSize);
+        if (read == -1) {
+            logger.error("End of buffer has been reached");
+
+            // TODO: check if needs to throw an exception
+        }
+
         packer.packBinaryHeader(chunkSize);
         packer.writePayload(data, 0, chunkSize);
 

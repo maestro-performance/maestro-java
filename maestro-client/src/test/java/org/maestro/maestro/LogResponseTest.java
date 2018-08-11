@@ -37,29 +37,27 @@ public class LogResponseTest {
         private int testChunkSize = LogResponse.LOG_RESPONSE_MAX_PAYLOAD_SIZE;
 
         @Override
-        public void setFileName(String fileName) {
+        protected void setFileName(String fileName) {
             super.setFileName(fileName);
         }
 
         @Override
-        public void setFileSize(long fileSize) {
+        protected void setFileSize(long fileSize) {
             super.setFileSize(fileSize);
         }
 
         @Override
-        public void setTotal(int total) {
+        protected void setTotal(int total) {
             super.setTotal(total);
         }
 
-        public void setTestChunkSize(int testChunkSize) {
+        void setTestChunkSize(int testChunkSize) {
             this.testChunkSize = testChunkSize;
         }
 
         @Override
         protected InputStream initializeInputStream() {
-            InputStream ret = this.getClass().getResourceAsStream("/logresponse/" + getFileName());
-
-            return ret;
+            return this.getClass().getResourceAsStream("/logresponse/" + getFileName());
         }
 
         @Override
@@ -67,7 +65,7 @@ public class LogResponseTest {
             return super.getChunkSize(testChunkSize);
         }
 
-        public String calculateHash() throws IOException {
+        String calculateHash() throws IOException {
             try (InputStream inputStream = this.getClass().getResourceAsStream("/logresponse/" + getFileName())) {
                 Sha1Digest digest = new Sha1Digest();
 
@@ -123,7 +121,7 @@ public class LogResponseTest {
         assertTrue("The log response should have subsequent data", logResponse.hasNext());
         byte[] secondChunk = doSerialize(logResponse);
 
-        MaestroNote note = MaestroDeserializer.deserialize(firstChunk);
+        @SuppressWarnings("UnusedAssignment") MaestroNote note = MaestroDeserializer.deserialize(firstChunk);
         note = MaestroDeserializer.deserialize(secondChunk);
 
         assertTrue(note instanceof LogResponse);

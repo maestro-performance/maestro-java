@@ -35,7 +35,7 @@ import java.io.IOException;
 public class MaestroMqttClient implements MaestroClient {
     private static final Logger logger = LoggerFactory.getLogger(MaestroClient.class);
 
-    private MqttClient mqttClient;
+    private final MqttClient mqttClient;
 
     /**
      * Constructor

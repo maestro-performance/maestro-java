@@ -20,8 +20,6 @@ import org.maestro.common.exceptions.MaestroConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
-
 /**
  * A simplified executor to be used along with a maestro client. It is meant to run in a thread,
  * along side with the sending peer. Received messages can be collected via collect method.

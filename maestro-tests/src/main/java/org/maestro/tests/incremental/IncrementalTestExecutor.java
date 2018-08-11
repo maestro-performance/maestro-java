@@ -21,6 +21,7 @@ import org.maestro.client.Maestro;
 import org.maestro.client.notes.GetResponse;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.DownloadProcessor;
@@ -128,7 +129,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             logger.error("Error: {}", e.getMessage(), e);
         }
         finally {
-            long drainDeadline = config.getLong("client.drain.deadline.secs", 30);
+            long drainDeadline = config.getLong("client.drain.deadline.secs", 60);
 
             try {
                 final List<? extends MaestroNote> drainReplies = getMaestro()
@@ -136,7 +137,8 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                         .get(drainDeadline, TimeUnit.SECONDS);
 
                 if (drainReplies.size() == 0) {
-                    logger.warn("None of the peers reported a successful drain from the SUT");
+                    logger.warn("None of the peers reported a successful drain from the SUT within {} seconds",
+                            drainDeadline);
                 }
 
                 drainReplies.forEach(this::isFailed);
@@ -150,7 +152,17 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
             testStop();
 
-            stopServices();
+            try {
+                stopServices();
+            }
+            catch (MaestroException e) {
+                if (e.getCause() instanceof TimeoutException) {
+                    logger.warn("Timed out waiting for a stop response");
+                }
+                else {
+                    logger.warn(e.getMessage());
+                }
+            }
         }
 
         return false;

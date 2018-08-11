@@ -83,7 +83,7 @@ public class MaestroMonitor {
     public void doUnlock() {
         lock.lock();
         try {
-            logger.debug("Some messages arrived ... unlocking for check");
+            logger.trace("Some messages arrived ... unlocking for check");
             condition.signal();
         }
         finally {

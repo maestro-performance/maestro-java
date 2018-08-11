@@ -40,7 +40,7 @@ import java.util.Arrays;
 public abstract class AbstractMaestroPeer<T extends MaestroNote> implements MqttCallbackExtended {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroPeer.class);
 
-    private MqttClient inboundEndPoint;
+    private final MqttClient inboundEndPoint;
     protected String clientName;
     private final MaestroNoteDeserializer<? extends T> deserializer;
 

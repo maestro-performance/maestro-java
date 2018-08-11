@@ -746,7 +746,7 @@ public final class Maestro implements MaestroRequester {
                 logger.trace("Out of the collection lock. Checking for new messages");
             } while (true);
 
-            logger.debug("Exiting the collection loop: {} collected of {} expected for {}", replies.size(), expect,
+            logger.trace("Exiting the collection loop: {} collected of {} expected for {}", replies.size(), expect,
                     predicate);
         }
         finally {
@@ -787,7 +787,7 @@ public final class Maestro implements MaestroRequester {
                 logger.trace("Out of the collection lock. Checking for new messages");
             } while (true);
 
-            logger.debug("Exiting the collection loop: {} collected for {}", replies.size(), predicate);
+            logger.trace("Exiting the collection loop: {} collected for {}", replies.size(), predicate);
         }
         finally {
             collectorExecutor.getCollector().remove(monitor);
@@ -864,8 +864,11 @@ public final class Maestro implements MaestroRequester {
         List<? extends MaestroNote> replies;
         try {
             replies = function.apply(value).get(timeout, TimeUnit.SECONDS);
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new MaestroException(e);
+        }
+        catch (TimeoutException e) {
+            throw new NotEnoughRepliesException("Timed out waiting for replies from the test cluster", e);
         }
 
         if (replies.size() == 0) {
@@ -881,13 +884,16 @@ public final class Maestro implements MaestroRequester {
     }
 
     public static <T, U> void set(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1, U value2) {
-        final int timeout = 1;
+        final int timeout = 2;
 
         List<? extends MaestroNote> replies;
         try {
             replies = function.apply(value1, value2).get(timeout, TimeUnit.SECONDS);
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new MaestroException(e);
+        }
+        catch (TimeoutException e) {
+            throw new NotEnoughRepliesException("Timed out waiting for replies from the test cluster", e);
         }
 
         if (replies.size() == 0) {
@@ -908,8 +914,11 @@ public final class Maestro implements MaestroRequester {
         List<? extends MaestroNote> replies;
         try {
             replies = function.get().get(timeout, TimeUnit.SECONDS);
-        } catch (TimeoutException | InterruptedException | ExecutionException e) {
+        } catch (InterruptedException | ExecutionException e) {
             throw new MaestroException(e);
+        }
+        catch (TimeoutException e) {
+            throw new NotEnoughRepliesException("Timed out waiting for replies from the test cluster", e);
         }
 
         if (replies.size() == 0) {

@@ -30,10 +30,10 @@ public class NonProgressingStaleChecker implements StaleChecker {
         else {
             if (count == lastCount) {
                 repeat++;
-                logger.debug("Current count is the same as last count. Checking if stale");
+                logger.trace("Current count is the same as last count. Checking if stale");
 
                 if (repeat >= retries) {
-                    logger.debug("Count is stale");
+                    logger.trace("Count is stale");
 
                     return true;
                 }
