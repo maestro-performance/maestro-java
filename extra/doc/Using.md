@@ -122,6 +122,7 @@ Fixed Rate Test Variables
 | `RATE` | `null` | The rate or 0 for unbounded | 
 | `PARALLEL_COUNT` | `null` | The number of connections per worker |
 | `MAXIMUM_LATENCY` | `null` | Optional maximum latency |
+| `WARM_UP` | `null` | Whether to run a short warm-up before the actual test (set to true for the warm-up) |
 
 
 Incremental Test Variables
@@ -193,6 +194,9 @@ After a test is completed, performance reports can be generated using the follow
 ```
 maestro-cli report -l info -d /path/to/save/reports
 ```
+
+Please consider checking the help with the --help option, since some test behaviors and parameters can
+be adjusted (ie.: warm-up).
 
 Using as Library
 ----
