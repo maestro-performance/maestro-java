@@ -138,22 +138,6 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
         } catch (Exception e) {
             logger.info("Test execution interrupted");
         } finally {
-            long drainDeadline = config.getLong("client.drain.deadline.secs", 30);
-
-            try {
-                final List<? extends MaestroNote> drainReplies = getMaestro()
-                        .waitForDrain()
-                        .get(drainDeadline, TimeUnit.SECONDS);
-
-                drainReplies.forEach(this::isFailed);
-
-            } catch (ExecutionException | InterruptedException e) {
-                logger.error("Error checking the draining status: {}", e.getMessage(), e);
-            }
-            catch (TimeoutException e) {
-                logger.warn("Did not receive a drain response within {} seconds", drainDeadline);
-            }
-
             testStop();
 
             stopServices();
