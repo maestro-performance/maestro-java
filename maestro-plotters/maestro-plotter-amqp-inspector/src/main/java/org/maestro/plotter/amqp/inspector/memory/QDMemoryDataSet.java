@@ -3,8 +3,6 @@ package org.maestro.plotter.amqp.inspector.memory;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.maestro.plotter.amqp.inspector.Utilities;
-import org.maestro.plotter.amqp.inspector.routerlink.RouterLinkData;
-import org.maestro.plotter.amqp.inspector.routerlink.RouterLinkRecord;
 import org.maestro.plotter.common.properties.annotations.PropertyName;
 import org.maestro.plotter.common.properties.annotations.PropertyProvider;
 import org.maestro.plotter.common.statistics.Statistics;

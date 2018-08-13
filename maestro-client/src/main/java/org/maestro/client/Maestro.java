@@ -48,8 +48,6 @@ public final class Maestro implements MaestroRequester {
     private final MaestroCollectorExecutor collectorExecutor;
     private final Thread collectorThread;
 
-    private CountDownLatch startSignal = new CountDownLatch(1);
-
     /**
      * Constructor
      * @param url URL of the maestro broker
@@ -433,12 +431,6 @@ public final class Maestro implements MaestroRequester {
 
 
     private CompletableFuture<List<? extends MaestroNote>> getOkErrorCompletableFuture() {
-        return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000, isOkOrErrorResponse())
-        );
-    }
-
-    private CompletableFuture<List<? extends MaestroNote>> getOkErrorCompletableFuture(final MessageCorrelation correlation) {
         return CompletableFuture.supplyAsync(
                 () -> collectWithDelay(1000, isOkOrErrorResponse())
         );

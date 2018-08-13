@@ -95,9 +95,6 @@ public class BinaryRateUpdaterTest {
     public void testJoinFileOverlay() throws IOException {
         String path = this.getClass().getResource(".").getPath();
         File reportFile = new File(path, "sender.dat");
-        File baseFile = new File(path, "sender-0.dat");
-
-//        FileUtils.copyFile(baseFile, reportFile);
 
         try {
             BinaryRateUpdater binaryRateUpdater = new BinaryRateUpdater(reportFile, false);

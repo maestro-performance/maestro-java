@@ -16,14 +16,11 @@
 
 package org.maestro.plotter.rate;
 
-import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.maestro.plotter.common.properties.PropertyWriter;
 import org.maestro.plotter.common.statistics.Statistics;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;

@@ -17,18 +17,11 @@
 package org.maestro.reports;
 
 import org.HdrHistogram.*;
-import org.apache.commons.csv.CSVFormat;
-import org.apache.commons.csv.CSVParser;
-import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.csv.QuoteMode;
 import org.apache.commons.io.FileUtils;
 import org.maestro.common.exceptions.MaestroException;
-import org.maestro.common.io.data.common.FileHeader;
 import org.maestro.common.io.data.writers.BinaryRateUpdater;
-import org.maestro.common.io.data.writers.BinaryRateWriter;
 import org.maestro.common.test.TestProperties;
 import org.maestro.common.io.data.writers.LatencyWriter;
-import org.maestro.reports.data.rate.RateToHistogram;
 import org.maestro.reports.files.MptReportFile;
 import org.maestro.reports.files.ReportFile;
 import org.maestro.reports.node.NodeType;
@@ -38,8 +31,6 @@ import org.slf4j.LoggerFactory;
 import java.io.*;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.zip.GZIPInputStream;
-import java.util.zip.GZIPOutputStream;
 
 public class ReportAggregator {
     private static final Logger logger = LoggerFactory.getLogger(ReportAggregator.class);

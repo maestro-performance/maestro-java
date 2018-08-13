@@ -44,7 +44,6 @@ import static org.maestro.client.Maestro.exec;
  */
 public abstract class AbstractTestExecutor implements TestExecutor {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTestExecutor.class);
-    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
     private final Maestro maestro;
     private final ReportsDownloader reportsDownloader;

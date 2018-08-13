@@ -33,12 +33,8 @@ import java.util.concurrent.*;
  */
 public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestExecutor.class);
-    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
     private volatile boolean warmUp = false;
-
-    private ScheduledExecutorService executorService;
-
 
     public FixedRateTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
                                  final FixedRateTestProfile testProfile) {

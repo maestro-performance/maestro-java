@@ -51,14 +51,6 @@ public class WorkerTestRunner extends JmsTestRunner {
         peers.clear();
     }
 
-    private void resetMaestroClientPeers() {
-        for (Maestro maestro : maestroClientPeers) {
-           maestro.stop();
-        }
-
-        maestroClientPeers.clear();
-    }
-
     @Override
     protected Object createTest() throws Exception {
         Object o = super.createTest();
