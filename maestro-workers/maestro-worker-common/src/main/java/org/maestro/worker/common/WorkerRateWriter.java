@@ -29,7 +29,6 @@ public class WorkerRateWriter implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(WorkerRateWriter.class);
     private final Map<Class<?>, WriterCache> cachedWriters = new HashMap<>(4);
     private List<? extends MaestroWorker> workers;
-    private final EpochMicroClock microClock = EpochClocks.exclusiveMicro();
 
     private volatile boolean running = false;
 
@@ -47,10 +46,9 @@ public class WorkerRateWriter implements Runnable {
         this.workers = workers;
     }
 
-    private void updateForWorker(Class<?> clazz, WriterCache cache) {
+    private void updateForWorker(Class<?> clazz, WriterCache cache, long currentTime) {
         long currentCount = 0;
         boolean stopped = false;
-        long currentTime = microClock.microTime();
 
         for (MaestroWorker worker : workers) {
             if (worker.getClass() == clazz) {
@@ -64,7 +62,7 @@ public class WorkerRateWriter implements Runnable {
         }
 
         if (!stopped) {
-            writeRecord(clazz, cache, currentCount, currentTime);
+            writeRecord(clazz, cache, currentCount, TimeUnit.NANOSECONDS.toMicros(currentTime));
         }
     }
 
@@ -95,7 +93,7 @@ public class WorkerRateWriter implements Runnable {
         while (running) {
             final long now = WorkerUtils.waitNanoInterval(nextFireTime, interval);
 
-            long drift = TimeUnit.NANOSECONDS.toMillis(now - nextFireTime);
+            final long drift = TimeUnit.NANOSECONDS.toMillis(now - nextFireTime);
 
             if (drift > 0) {
                 logger.warn("The current time is {} milliseconds beyond the scheduled time of check. The writer is probably " +
@@ -104,7 +102,7 @@ public class WorkerRateWriter implements Runnable {
             }
 
             nextFireTime += interval;
-            cachedWriters.forEach(this::updateForWorker);
+            cachedWriters.forEach((k, v) -> updateForWorker(k, v, now));
         }
 
         cachedWriters.values().forEach(writerCache -> writerCache.writer.close());
