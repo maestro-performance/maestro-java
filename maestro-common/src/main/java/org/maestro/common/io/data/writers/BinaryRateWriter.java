@@ -112,6 +112,12 @@ public class BinaryRateWriter implements RateWriter {
             logger.error("Cannot save multiple records for within the same second slot: {} == {}", now, last);
             throw new InvalidRecordException("Cannot save multiple records for within the same second slot");
         }
+        else {
+            long next = last + 1;
+            if (now != next) {
+                logger.warn("Trying to save a non-sequential record: now {} / expected {}", now, next);
+            }
+        }
     }
 
     /**
