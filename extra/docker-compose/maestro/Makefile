@@ -1,4 +1,4 @@
-MAESTRO_VERSION=1.4.0-SNAPSHOT
+MAESTRO_VERSION=1.4.0
 MAESTRO_BRANCH=devel
 
 .PHONY: broker clean all client exporter
