@@ -30,7 +30,7 @@ import java.util.Map;
 
 /**
  * A default scatter plotter
- * @param <T>
+ * @param <T> report data type
  */
 public abstract class DefaultScatterPlotter<T> extends AbstractPlotter<T> {
     protected static final String DEFAULT_FILENAME = "";
