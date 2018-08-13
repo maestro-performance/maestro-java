@@ -99,11 +99,6 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
             testStart();
 
-            ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-
-            Runnable task = () -> getMaestro().statsRequest();
-            executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
-
             long timeout = getTimeout();
             logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
             List<? extends MaestroNote> results = getMaestro()
