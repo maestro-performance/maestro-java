@@ -95,27 +95,33 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             getReportsDownloader().getOrganizer().getTracker().setCurrentTest(testNumber);
             testProfile.apply(getMaestro());
 
-            startServices(testProfile);
+            try {
+                startServices(testProfile);
 
-            testStart();
+                testStart();
 
-            long timeout = getTimeout();
-            logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
-            List<? extends MaestroNote> results = getMaestro()
-                    .waitForNotifications(numPeers)
-                    .get(timeout, TimeUnit.SECONDS);
 
-            long failed = results.stream()
-                    .filter(this::isTestFailed)
-                    .count();
+                long timeout = getTimeout();
+                logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
+                List<? extends MaestroNote> results = getMaestro()
+                        .waitForNotifications(numPeers)
+                        .get(timeout, TimeUnit.SECONDS);
 
-            if (failed > 0) {
-                logger.info("Test {} completed unsuccessfully", phaseName());
-                return false;
+                long failed = results.stream()
+                        .filter(this::isTestFailed)
+                        .count();
+
+                if (failed > 0) {
+                    logger.info("Test {} completed unsuccessfully", phaseName());
+                    return false;
+                }
+
+                logger.info("Test {} completed successfully", phaseName());
+                return true;
             }
-
-            logger.info("Test {} completed successfully", phaseName());
-            return true;
+            finally {
+                drain();
+            }
         }
         catch (TimeoutException te) {
             logger.warn("Timed out waiting for the test notifications");
@@ -124,27 +130,6 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             logger.error("Error: {}", e.getMessage(), e);
         }
         finally {
-            long drainDeadline = config.getLong("client.drain.deadline.secs", 60);
-
-            try {
-                final List<? extends MaestroNote> drainReplies = getMaestro()
-                        .waitForDrain()
-                        .get(drainDeadline, TimeUnit.SECONDS);
-
-                if (drainReplies.size() == 0) {
-                    logger.warn("None of the peers reported a successful drain from the SUT within {} seconds",
-                            drainDeadline);
-                }
-
-                drainReplies.forEach(this::isFailed);
-
-            } catch (ExecutionException | InterruptedException e) {
-                logger.error("Error checking the draining status: {}", e.getMessage(), e);
-            }
-            catch (TimeoutException e) {
-                logger.warn("Did not receive a drain response within {} seconds", drainDeadline);
-            }
-
             testStop();
 
             try {

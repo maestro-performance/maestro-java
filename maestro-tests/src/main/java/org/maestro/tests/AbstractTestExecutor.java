@@ -36,6 +36,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.maestro.client.Maestro.exec;
 
@@ -44,6 +46,7 @@ import static org.maestro.client.Maestro.exec;
  */
 public abstract class AbstractTestExecutor implements TestExecutor {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTestExecutor.class);
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
     private final Maestro maestro;
     private final ReportsDownloader reportsDownloader;
@@ -207,5 +210,26 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     protected long getTimeout(final AbstractTestProfile testProfile) {
         return testProfile.getEstimatedCompletionTime() + CompletionTime.getDeadline();
+    }
+
+    protected void drain() {
+        long drainDeadline = config.getLong("client.drain.deadline.secs", 60);
+
+        try {
+            final List<? extends MaestroNote> drainReplies = getMaestro()
+                    .waitForDrain()
+                    .get(drainDeadline, TimeUnit.SECONDS);
+
+            if (drainReplies.size() == 0) {
+                logger.warn("None of the peers reported a successful drain from the SUT within {} seconds",
+                        drainDeadline);
+            }
+
+            drainReplies.forEach(this::isFailed);
+        } catch (ExecutionException | InterruptedException e) {
+            logger.error("Error checking the draining status: {}", e.getMessage(), e);
+        } catch (TimeoutException e) {
+            logger.warn("Did not receive a drain response within {} seconds", drainDeadline);
+        }
     }
 }

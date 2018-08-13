@@ -78,32 +78,37 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
             getReportsDownloader().getOrganizer().getTracker().setCurrentTest(number);
             apply.accept(getMaestro());
 
-            startServices(testProfile);
+            try {
+                startServices(testProfile);
 
-            testStart();
+                testStart();
 
-            ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+                ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 
-            Runnable task = () -> getMaestro().statsRequest();
-            executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
+                Runnable task = () -> getMaestro().statsRequest();
+                executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
 
-            long timeout = getTimeout();
-            logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
-            List<? extends MaestroNote> results = getMaestro()
-                    .waitForNotifications(numPeers)
-                    .get(timeout, TimeUnit.SECONDS);
+                long timeout = getTimeout();
+                logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
+                List<? extends MaestroNote> results = getMaestro()
+                        .waitForNotifications(numPeers)
+                        .get(timeout, TimeUnit.SECONDS);
 
-            long failed = results.stream()
-                    .filter(this::isTestFailed)
-                    .count();
+                long failed = results.stream()
+                        .filter(this::isTestFailed)
+                        .count();
 
-            if (failed > 0) {
-                logger.info("Test {} completed unsuccessfully", phaseName());
-                return false;
+                if (failed > 0) {
+                    logger.info("Test {} completed unsuccessfully", phaseName());
+                    return false;
+                }
+
+                logger.info("Test {} completed successfully", phaseName());
+                return true;
             }
-
-            logger.info("Test {} completed successfully", phaseName());
-            return true;
+            finally {
+                drain();
+            }
         }
         catch (TimeoutException te) {
             logger.warn("Timed out waiting for the test notifications");
@@ -112,21 +117,6 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
             logger.error("Error: {}", e.getMessage(), e);
         }
         finally {
-            long drainDeadline = config.getLong("client.drain.deadline.secs", 60);
-
-            try {
-                final List<? extends MaestroNote> drainReplies = getMaestro()
-                        .waitForDrain()
-                        .get(drainDeadline, TimeUnit.SECONDS);
-
-                drainReplies.forEach(this::isFailed);
-
-            } catch (ExecutionException | InterruptedException e) {
-                logger.error("Error checking the draining status: {}", e.getMessage(), e);
-            } catch (TimeoutException e) {
-                logger.warn("Did not receive a drain response within {} seconds", drainDeadline);
-            }
-
             reset();
 
             testStop();
@@ -146,7 +136,6 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
 
         return false;
     }
-
 
     protected abstract String phaseName();
 
