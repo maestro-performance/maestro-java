@@ -67,6 +67,8 @@ public class StatsCallBack implements MaestroNoteCallback {
                     reset();
                 }
             }
+
+            return false;
         }
 
         return true;
