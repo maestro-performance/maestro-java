@@ -29,6 +29,7 @@ public class WorkerRateWriter implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(WorkerRateWriter.class);
     private final Map<Class<?>, WriterCache> cachedWriters = new HashMap<>(4);
     private final List<? extends MaestroWorker> workers;
+    private final EpochMicroClock microClock = EpochClocks.exclusiveMicro();
 
     private volatile boolean running = false;
 
@@ -46,9 +47,10 @@ public class WorkerRateWriter implements Runnable {
         this.workers = workers;
     }
 
-    private void updateForWorker(Class<?> clazz, WriterCache cache, long currentTime) {
+    private void updateForWorker(Class<?> clazz, WriterCache cache) {
         long currentCount = 0;
         boolean stopped = false;
+        long currentTime = microClock.microTime();
 
         for (MaestroWorker worker : workers) {
             if (worker.getClass() == clazz) {
@@ -62,7 +64,7 @@ public class WorkerRateWriter implements Runnable {
         }
 
         if (!stopped) {
-            writeRecord(clazz, cache, currentCount, TimeUnit.NANOSECONDS.toMicros(currentTime));
+            writeRecord(clazz, cache, currentCount, currentTime);
         }
     }
 
@@ -102,7 +104,7 @@ public class WorkerRateWriter implements Runnable {
             }
 
             nextFireTime += interval;
-            cachedWriters.forEach((k, v) -> updateForWorker(k, v, now));
+            cachedWriters.forEach(this::updateForWorker);
         }
 
         cachedWriters.values().forEach(writerCache -> writerCache.writer.close());
