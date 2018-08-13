@@ -30,6 +30,8 @@ public class ReportDirInfo {
 
     private final String nodeHost;
     private final int testNum;
+    private String testPhase = "test";
+
     private boolean testSuccessful = false;
 
     private final String resultTypeString;
@@ -83,8 +85,12 @@ public class ReportDirInfo {
         return testNum;
     }
 
+    public void setTestPhase(String testPhase) {
+        this.testPhase = testPhase;
+    }
+
     public String getTestPhase() {
-        return getTestNum() == 0 ? "warm-up" : "test";
+        return testPhase;
     }
 
     public String getResultTypeString() {

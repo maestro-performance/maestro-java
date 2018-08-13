@@ -56,9 +56,6 @@ public class InspectorPlotterWrapper implements PlotterWrapper {
     }
 
     private boolean plotMemoryAreas(final File file) {
-        BasicPlotter<MemoryAreasReader, MemoryAreasPlotter> basicPlotter = new BasicPlotter<>(new MemoryAreasReader(),
-                new MemoryAreasPlotter());
-
         try {
             MemoryAreasReader reader = new MemoryAreasReader();
             MemoryAreasDataSet dataSet = reader.read(file);

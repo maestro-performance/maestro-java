@@ -101,7 +101,7 @@ public class BrokerDownloader implements ReportsDownloader {
         }
 
         @Override
-        public void call(MaestroNote note) {
+        public boolean call(MaestroNote note) {
             if (note instanceof LogResponse) {
                 LogResponse logResponse = (LogResponse) note;
                 if (logResponse.getLocationType() == LocationType.LAST_FAILED) {
@@ -116,7 +116,11 @@ public class BrokerDownloader implements ReportsDownloader {
                 finally {
                     lastDownloadTime = System.currentTimeMillis();
                 }
+
+                return false;
             }
+
+            return true;
         }
 
         public long getLastDownloadTime() {
@@ -151,7 +155,7 @@ public class BrokerDownloader implements ReportsDownloader {
         maestro.getCollector().subscribe(MaestroTopics.MAESTRO_LOGS_TOPIC, 0);
 
         downloadCallback = new DownloadCallback(organizer);
-        maestro.getCollector().getCallbacks().add(downloadCallback);
+        maestro.getCollector().addCallback(downloadCallback);
     }
 
     @Override
@@ -207,7 +211,7 @@ public class BrokerDownloader implements ReportsDownloader {
 
     @Override
     public void waitForComplete() {
-        int expiryTime = config.getInt("download.broker.expiry", 60);
+        int expiryTime = config.getInt("download.broker.expiry", 20);
 
         logger.info("Waiting {} seconds until all the files have been downloaded from the broker", expiryTime);
         Instant last = lastDownloadTime();

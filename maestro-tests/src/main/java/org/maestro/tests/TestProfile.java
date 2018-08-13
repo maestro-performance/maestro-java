@@ -17,7 +17,6 @@
 package org.maestro.tests;
 
 import org.maestro.client.Maestro;
-import org.maestro.common.exceptions.MaestroException;
 
 /**
  * A base interface for implementing test profiles.
@@ -49,7 +48,6 @@ public interface TestProfile {
     /**
      * Apply a test profile using a maestro instance
      * @param maestro the maestro instance to apply the profile to
-     * @throws MaestroException Incorrect or invalid parameters
      */
-    void apply(Maestro maestro) throws MaestroException;
+    void apply(Maestro maestro);
 }

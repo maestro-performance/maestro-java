@@ -19,11 +19,20 @@ package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.client.notes.MaestroNoteType;
+import org.msgpack.core.MessageUnpacker;
 
-public abstract class MaestroEvent<T> extends AbtractMaestroNote {
+import java.io.IOException;
 
-    public MaestroEvent(MaestroNoteType type, MaestroCommand command) {
+public abstract class MaestroEvent<T> extends AbstractMaestroNote {
+
+    public MaestroEvent(final MaestroNoteType type, final MaestroCommand command) {
         super(type, command);
+    }
+
+    public MaestroEvent(final MaestroNoteType type, final MaestroCommand command, final MessageUnpacker unpacker)
+            throws IOException
+    {
+        super(type, command, unpacker);
     }
 
     public abstract void notify(T visitor);

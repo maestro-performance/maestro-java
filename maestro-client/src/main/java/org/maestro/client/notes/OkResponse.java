@@ -17,10 +17,17 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageUnpacker;
+
+import java.io.IOException;
 
 public class OkResponse extends MaestroResponse {
     public OkResponse() {
         super(MaestroCommand.MAESTRO_NOTE_OK);
+    }
+
+    public OkResponse(final MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_OK, unpacker);
     }
 
     @Override

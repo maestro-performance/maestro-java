@@ -22,7 +22,6 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.QuoteMode;
 import org.apache.commons.io.IOUtils;
-import org.maestro.common.writers.RateWriter;
 
 import java.io.*;
 import java.time.LocalDateTime;
@@ -31,11 +30,14 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 import java.util.zip.GZIPInputStream;
 
+@Deprecated
 public class RateToHistogram {
+    public static final String TIMESTAMP_FORMAT = "\"yyyy-MM-dd HH:mm:ss.SSSSSS\"";
+
     private static final DateTimeFormatter dateTimeFormatter;
 
     static {
-        dateTimeFormatter = DateTimeFormatter.ofPattern(RateWriter.TIMESTAMP_FORMAT.replace("\"", ""))
+        dateTimeFormatter = DateTimeFormatter.ofPattern(TIMESTAMP_FORMAT.replace("\"", ""))
                 .withZone(ZoneId.systemDefault());
     }
 

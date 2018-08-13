@@ -31,10 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.Session;
-import java.io.UnsupportedEncodingException;
 import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URLDecoder;
 import java.util.*;
 
 /**
@@ -107,7 +104,13 @@ class JmsOptions {
         while (it.hasNext()) {
             String key = it.next();
             if (!maestroOptions.contains(key)) {
-                queryStringBuilder.append(key).append("=").append(params.get(key));
+                queryStringBuilder.append(key);
+
+                String hasParams = params.get(key);
+                if (hasParams != null) {
+                    queryStringBuilder.append("=").append(params.get(key));
+                }
+
                 if (it.hasNext()) {
                     queryStringBuilder.append("&");
                 }

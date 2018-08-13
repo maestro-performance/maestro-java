@@ -34,7 +34,7 @@ public class NetworkUtils {
      * @return The hostname
      * @throws UnknownHostException if the hostname is invalid or cannot be resolved
      */
-    public static final String getHost(final String option) throws UnknownHostException {
+    public static String getHost(final String option) throws UnknownHostException {
         String host = System.getProperty(MAESTRO_HOST_PROPERTY);
 
         if (host != null) {

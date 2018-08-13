@@ -39,7 +39,6 @@ public class DownloaderBuilder {
             logger.debug("Using the default (HTTP) report downloader");
         }
 
-        logger.debug("Using the default (HTTP) report downloader");
         return pool ? new PooledDownloaderDecorator(reportsDownloader) : reportsDownloader;
     }
 

@@ -18,7 +18,6 @@ package org.maestro.tests.rate.multipoint;
 
 import org.maestro.client.Maestro;
 import org.maestro.common.duration.TestDuration;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.MultiPointProfile;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.slf4j.Logger;
@@ -26,6 +25,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.maestro.client.Maestro.set;
 
 /**
  * A test profile for fixed rate tests
@@ -45,46 +46,46 @@ public class FixedRateMultipointTestProfile extends FixedRateTestProfile impleme
     }
 
     @Override
-    protected void apply(final Maestro maestro, boolean warmUp) throws MaestroException {
+    protected void apply(final Maestro maestro, boolean warmUp) {
         for (EndPoint endPoint : endPoints) {
             logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getSendReceiveURL());
             logger.debug(" {} end point located at {}", endPoint.getName(), endPoint.getTopic());
 
-            maestro.setBroker(endPoint.getTopic(), endPoint.getSendReceiveURL());
+            set(maestro::setBroker, endPoint.getTopic(), endPoint.getSendReceiveURL());
         }
 
         if (warmUp) {
             logger.info("Setting warm up rate to {}", getRate());
-            maestro.setRate(warmUpRate);
+            set(maestro::setRate, warmUpRate);
 
             TestDuration warmUpDuration = getDuration().getWarmUpDuration();
-            long balancedDuration = Math.round(warmUpDuration.getNumericDuration() / getParallelCount());
+            long balancedDuration = Math.round((double) warmUpDuration.getNumericDuration() / (double) getParallelCount());
 
             logger.info("Setting warm up duration to {}", balancedDuration);
-            maestro.setDuration(balancedDuration);
+            set(maestro::setDuration, balancedDuration);
         }
         else {
             logger.info("Setting test rate to {}", getRate());
-            maestro.setRate(getRate());
+            set(maestro::setRate, getRate());
 
             logger.info("Setting test duration to {}", getDuration());
-            maestro.setDuration(getDuration().toString());
+            set(maestro::setDuration, getDuration().toString());
         }
 
         logger.info("Setting parallel count to {}", getParallelCount());
-        maestro.setParallelCount(getParallelCount());
+        set(maestro::setParallelCount, getParallelCount());
 
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
-        maestro.setFCL(getMaximumLatency());
+        set(maestro::setFCL, getMaximumLatency());
 
         logger.info("Setting message size to {}", getMessageSize());
-        maestro.setMessageSize(getMessageSize());
+        set(maestro::setMessageSize, getMessageSize());
 
         if (getManagementInterface() != null) {
             if (getInspectorName() != null) {
                 logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
                         getInspectorName());
-                maestro.setManagementInterface(getManagementInterface());
+                set(maestro::setManagementInterface, getManagementInterface());
             }
         }
 
@@ -92,13 +93,13 @@ public class FixedRateMultipointTestProfile extends FixedRateTestProfile impleme
             if (getExtPointBranch() != null) {
                 logger.info("Setting the extension point source to {} using the {} branch", getExtPointSource(),
                         getExtPointBranch());
-                maestro.sourceRequest(getExtPointSource(), getExtPointBranch());
+                set(maestro::sourceRequest, getExtPointSource(), getExtPointBranch());
             }
         }
 
         if (getExtPointCommand() != null) {
             logger.info("Setting command to Agent execution to {}", getExtPointCommand());
-            maestro.userCommand(0, getExtPointCommand());
+            set(maestro::userCommand, 0L, getExtPointCommand());
         }
     }
 

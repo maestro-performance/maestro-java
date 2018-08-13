@@ -71,7 +71,7 @@ final class ReportDirectoryWalker extends DirectoryWalker<ReportFile> {
             return;
         }
 
-        if (Constants.FILE_EXTENSION_MPT_COMPRESSED.equals(ext)) {
+        if (Constants.FILE_EXTENSION_MAESTRO.equals(ext)) {
             if (!file.getPath().contains(Constants.FILE_HINT_INSPECTOR)) {
                 processMaestroReport(file, results);
 

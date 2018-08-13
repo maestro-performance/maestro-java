@@ -34,6 +34,7 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -63,29 +64,41 @@ public class TestFlowTest extends EndToEndTest {
     public void testSimpleTest() throws Exception {
         System.out.println("Running a short-lived test");
 
-        maestro.setParallelCount(1);
-        maestro.setDuration("5");
-        maestro.setMessageSize(100);
-        maestro.setFCL(1000);
-        maestro.setRate(100);
+        List<? extends MaestroNote> set1 = maestro.setParallelCount(1).get();
+        assertTrue( "Set parallel count replies don't match: " + set1.size(), set1.size() == 2);
 
-        maestro.setBroker("amqp://localhost:5672/unit.test.queue");
+        List<? extends MaestroNote> set2 = maestro.setDuration("5").get();
+        assertTrue( "Set duration replies don't match: " + set2.size(), set2.size() == 2);
 
-        List<MaestroNote> replies = maestro.collect(1000, 10);
+        List<? extends MaestroNote> set3 = maestro.setMessageSize(100).get();
+        assertTrue( "Set message size replies don't match: " + set3.size(), set3.size() == 2);
+
+        List<? extends MaestroNote> set4 = maestro.setFCL(1000).get();
+        assertTrue( "Set FCL replies don't match: " + set4.size(), set4.size() == 2);
+
+        List<? extends MaestroNote> set5 = maestro.setRate(100).get();
+        assertTrue( "Set rate replies don't match: " + set5.size(), set5.size() == 2);
+
+        List<? extends MaestroNote> set6 = maestro
+                .setBroker("amqp://localhost:5672/unit.test.queue")
+                .get();
+        assertTrue( "Set broker replies don't match: " + set6.size(), set6.size() == 2);
+
 
         // 12 = 6 commands * 2 peers (sending and receiving peers)
-        assertTrue( "Replies don't match: " + replies.size(), replies.size() == 12);
 
         maestro.startSender();
         maestro.startReceiver();
 
         // Get the OK replies
-        replies = maestro.collect(1000, 10, 2);
 
         Thread.sleep(2000);
 
         // Get the test result notification
-        replies = maestro.collect(1000, 10, 2);
+        List<? extends MaestroNote> replies = maestro
+                .waitForNotifications(2)
+                .get(3, TimeUnit.SECONDS);
+
         assertTrue( "Replies don't match: " + replies.size(), replies.size() == 2);
 
         MaestroNote firstNote = replies.get(0);

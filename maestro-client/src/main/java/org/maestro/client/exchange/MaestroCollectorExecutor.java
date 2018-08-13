@@ -16,12 +16,9 @@
 
 package org.maestro.client.exchange;
 
-import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.util.List;
 
 /**
  * A simplified executor to be used along with a maestro client. It is meant to run in a thread,
@@ -46,12 +43,11 @@ public class MaestroCollectorExecutor extends AbstractMaestroExecutor {
 
     /**
      * Collect the messages received in background
-     * @return A list of messages received in background
      */
-    public List<MaestroNote> collect() {
+    public void clear() {
         MaestroCollector maestroCollector = (MaestroCollector) super.getMaestroPeer();
 
-        return maestroCollector.collect();
+        maestroCollector.clear();
     }
 
     public void stop() {

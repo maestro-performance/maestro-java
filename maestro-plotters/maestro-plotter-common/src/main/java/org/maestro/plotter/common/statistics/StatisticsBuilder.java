@@ -17,8 +17,6 @@
 package org.maestro.plotter.common.statistics;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.util.stream.DoubleStream;
 
@@ -26,8 +24,6 @@ import java.util.stream.DoubleStream;
  * A builder for statistics containers
  */
 public class StatisticsBuilder {
-    private static final Logger logger = LoggerFactory.getLogger(StatisticsBuilder.class);
-
 
     /**
      * Having zeros on the data set may render some of the calculations invalid (ie.: the Geometric mean). This method

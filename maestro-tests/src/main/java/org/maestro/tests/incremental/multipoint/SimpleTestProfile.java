@@ -17,7 +17,6 @@
 package org.maestro.tests.incremental.multipoint;
 
 import org.maestro.client.Maestro;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.MultiPointProfile;
 import org.maestro.tests.incremental.IncrementalTestProfile;
 import org.slf4j.Logger;
@@ -25,6 +24,8 @@ import org.slf4j.LoggerFactory;
 
 import java.util.LinkedList;
 import java.util.List;
+
+import static org.maestro.client.Maestro.set;
 
 @SuppressWarnings("unused")
 public class SimpleTestProfile extends IncrementalTestProfile implements MultiPointProfile {
@@ -41,32 +42,35 @@ public class SimpleTestProfile extends IncrementalTestProfile implements MultiPo
         return endPoints;
     }
 
-    public void apply(Maestro maestro) throws MaestroException {
+
+    public void apply(Maestro maestro) {
         for (EndPoint endPoint : endPoints) {
-            logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getBrokerURL());
+            logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getSendReceiveURL());
             logger.debug(" {} end point located at {}", endPoint.getName(), endPoint.getTopic());
 
-            maestro.setBroker(endPoint.getTopic(), endPoint.getSendReceiveURL());
+            set(maestro::setBroker, endPoint.getTopic(), endPoint.getSendReceiveURL());
         }
 
         logger.info("Setting rate to {}", getRate());
-        maestro.setRate(rate);
+        set(maestro::setRate, rate);
 
         logger.info("Rate increment value is {}", getRateIncrement());
 
         logger.info("Setting parallel count to {}", this.parallelCount);
-        maestro.setParallelCount(this.parallelCount);
+        set(maestro::setParallelCount, this.parallelCount);
 
         logger.info("Parallel count increment value is {}", getParallelCountIncrement());
 
         logger.info("Setting duration to {}", getDuration());
-        maestro.setDuration(this.getDuration().toString());
+        set(maestro::setDuration, this.getDuration().toString());
 
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
-        maestro.setFCL(getMaximumLatency());
+        set(maestro::setFCL, getMaximumLatency());
 
         // Variable message messageSize
-        maestro.setMessageSize(getMessageSize());
-        logger.info("Estimated time for test completion: {} secs", getEstimatedCompletionTime());
+        logger.info("Setting message size to: {}", getMessageSize());
+        set(maestro::setMessageSize, getMessageSize());
+
+        logger.info("Estimated time for test completion: {} seconds", getEstimatedCompletionTime());
     }
 }

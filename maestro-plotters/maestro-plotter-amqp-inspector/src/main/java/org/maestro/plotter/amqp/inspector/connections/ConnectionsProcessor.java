@@ -1,7 +1,5 @@
 package org.maestro.plotter.amqp.inspector.connections;
 
-import org.maestro.plotter.amqp.inspector.memory.QDMemoryDataSet;
-import org.maestro.plotter.amqp.inspector.memory.QDMemoryRecord;
 import org.maestro.plotter.common.RecordProcessor;
 
 import java.text.SimpleDateFormat;

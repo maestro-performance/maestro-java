@@ -37,7 +37,7 @@ public class DiskCleaner implements ReportFileProcessor {
 
         switch (ext) {
             case Constants.FILE_EXTENSION_HDR_HISTOGRAM:
-            case Constants.FILE_EXTENSION_MPT_COMPRESSED:
+            case Constants.FILE_EXTENSION_MAESTRO:
             case FILE_EXTENSION_CSV:
                 logger.debug("Cleaning file {}", sourceFile.getPath());
                 FileUtils.deleteQuietly(sourceFile);

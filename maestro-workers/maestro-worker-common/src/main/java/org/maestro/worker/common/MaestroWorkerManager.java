@@ -25,7 +25,6 @@ import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroConnectionException;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.test.TestProperties;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerOptions;
@@ -45,7 +44,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
 
     private final MaestroReceiverClient client;
-    private WorkerOptions workerOptions;
+    private final WorkerOptions workerOptions;
     private boolean running = true;
     private final MaestroDataServer dataServer;
 
@@ -60,7 +59,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         super(maestroURL, role, MaestroDeserializer::deserializeEvent);
 
         logger.debug("Creating the receiver client");
-        client = new MaestroReceiverClient(maestroURL, clientName, host, id);
+        client = new MaestroReceiverClient(maestroURL, clientName, host, getId());
 
         workerOptions = new WorkerOptions();
         this.dataServer = dataServer;
@@ -69,11 +68,6 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     protected WorkerOptions getWorkerOptions() {
         return workerOptions;
-    }
-
-
-    protected void setWorkerOptions(WorkerOptions workerOptions) {
-        this.workerOptions = workerOptions;
     }
 
 
@@ -90,7 +84,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     }
 
 
-    protected void setRunning(boolean running) {
+    void setRunning(boolean running) {
         this.running = running;
     }
 
@@ -135,6 +129,8 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         statsResponse.setRate(0);
         statsResponse.setRoleInfo("");
         statsResponse.setTimestamp("0");
+
+        statsResponse.correlate(note);
 
         client.statsResponse(statsResponse);
     }
@@ -189,12 +185,13 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
             }
             case MAESTRO_NOTE_OPT_FCL: {
                 workerOptions.setFcl(note.getValue());
+                break;
             }
         }
     }
 
 
-    protected void writeTestProperties(final File testLogDir) throws IOException, DurationParseException {
+    void writeTestProperties(final File testLogDir) throws IOException, DurationParseException {
         TestProperties testProperties = new TestProperties();
 
         final String testNumber = testLogDir.getName();
@@ -261,7 +258,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     @Override
     public void handle(PingRequest note) throws MaestroConnectionException, MalformedNoteException {
-        client.pingResponse(note.getSec(), note.getUsec());
+        client.pingResponse(note, note.getSec(), note.getUsec());
     }
 
 
@@ -280,6 +277,11 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
                 client.getResponse(response);
             }
         }
+    }
+
+    @Override
+    public void handle(DrainCompleteNotification note) {
+        // NO-OP
     }
 
     /**
@@ -314,14 +316,24 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         }
 
         if (!logSubDir.exists()) {
-            logger.error("The client requested the log files for location {} but they don't exist at {} ",
+            logger.error("The client requested the log files for location {} but they don't exist at {}",
                     note.getLocationType().toString(), logDir);
 
-            getClient().replyInternalError();
+            getClient().replyInternalError(note,"The client requested the log files for location %s but they don't exist at %s",
+                    note.getLocationType().toString(), logDir.getPath());
             return;
         }
 
         File[] files = logSubDir.listFiles();
+        if (files == null) {
+            logger.error("The client request log files, but the location does not contain any");
+
+            getClient().replyInternalError(note,"The client requested the log files for location %s but there's no files there",
+                    note.getLocationType().toString());
+
+            return;
+        }
+
         for (File file : files) {
             logger.debug("Sending log file {} with location type {}", file.getName(),
                     note.getLocationType());

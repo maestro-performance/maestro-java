@@ -34,7 +34,7 @@ public class SenderReportResolverTest {
         assertEquals("List size does not match the expected size", 2, successFiles.size());
 
         assertEquals("The sender rate file does not match the expected sender rate file",
-                BASE_URL + "/logs/tests/lastSuccessful/senderd-rate.csv.gz", successFiles.get(0));
+                BASE_URL + "/logs/tests/lastSuccessful/sender.dat", successFiles.get(0));
         assertEquals("The test properties file does not match the expected file",
                 BASE_URL + "/logs/tests/lastSuccessful/" + TestProperties.FILENAME, successFiles.get(1));
     }
@@ -47,7 +47,7 @@ public class SenderReportResolverTest {
         assertEquals("List size does not match the expected size", 2, failedFiles.size());
 
         assertEquals("The sender rate file does not match the expected sender rate file",
-                BASE_URL + "/logs/tests/lastFailed/senderd-rate.csv.gz", failedFiles.get(0));
+                BASE_URL + "/logs/tests/lastFailed/sender.dat", failedFiles.get(0));
         assertEquals("The test properties file does not match the expected file",
                 BASE_URL + "/logs/tests/lastFailed/" + TestProperties.FILENAME, failedFiles.get(1));
     }

@@ -20,10 +20,12 @@ package utils.commands
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
-@Grab(group='org.maestro', module='maestro-client', version='1.3.7')
+@Grab(group='org.maestro', module='maestro-client', version='1.4.0')
 
 import org.maestro.client.Maestro
 import org.maestro.common.client.notes.MaestroNote
+
+import java.util.concurrent.CompletableFuture
 
 /**
  * This sample script shows how to use the Maestro client API to send a flush request to
@@ -45,13 +47,13 @@ maestro = new Maestro(maestroURL)
 /**
  * Issue the get request
  */
-maestro.getDataServer()
+CompletableFuture<List<? extends MaestroNote>> future = maestro.getDataServer()
 
 /**
  * Collect any available response
  */
 println "Collecting replies"
-List<MaestroNote> replies = maestro.collect(1000, 10)
+List<MaestroNote> replies = future.get();
 
 /**
  * Process any response given. There may be none if no peers are attached to the

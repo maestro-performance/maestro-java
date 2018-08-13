@@ -1,7 +1,7 @@
 FROM centos:7 AS buildimg
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 ARG MAESTRO_VERSION
-ENV MAESTRO_VERSION ${MAESTRO_VERSION:-1.3.7}
+ENV MAESTRO_VERSION ${MAESTRO_VERSION:-1.4.0}
 ARG MAESTRO_BRANCH
 ENV MAESTRO_BRANCH ${MAESTRO_BRANCH:-devel}
 LABEL MAESTRO_VERSION=${MAESTRO_VERSION}
@@ -14,13 +14,13 @@ RUN cd maestro-java && ./mvnw -DskipTests=true -DskipTests=true -PPackage clean 
 FROM centos:7 AS maestro-exporter
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 ARG MAESTRO_VERSION
-ENV MAESTRO_VERSION ${MAESTRO_VERSION:-1.3.7}
+ENV MAESTRO_VERSION ${MAESTRO_VERSION:-1.4.0}
 LABEL MAESTRO_VERSION=${MAESTRO_VERSION}
 ENV MAESTRO_APP_ROOT /opt/maestro
 EXPOSE 8000
 RUN mkdir -p ${MAESTRO_APP_ROOT}
 WORKDIR ${MAESTRO_APP_ROOT}
-RUN yum install -y java-1.8.0-openjdk ntp
+RUN yum install -y java-1.8.0-openjdk ntp rsync
 RUN yum clean all
 COPY --from=buildimg /root/build/maestro-java/maestro-exporter/target/maestro-exporter-${MAESTRO_VERSION}-bin.tar.gz .
 RUN mkdir maestro-exporter && tar --strip-components=1 -xvf maestro-exporter-${MAESTRO_VERSION}-bin.tar.gz -C maestro-exporter

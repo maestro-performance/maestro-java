@@ -18,7 +18,7 @@ package org.maestro.inspector.activemq.writers;
 
 import org.maestro.common.inspector.types.ProductInfo;
 import org.maestro.common.test.InspectorProperties;
-import org.maestro.common.writers.InspectorDataWriter;
+import org.maestro.common.io.data.writers.InspectorDataWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

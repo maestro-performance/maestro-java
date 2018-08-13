@@ -17,8 +17,6 @@
 package org.maestro.reports.node;
 
 import org.maestro.reports.AbstractRenderer;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
@@ -26,7 +24,6 @@ import java.util.Map;
 
 
 public class NodeReportRenderer extends AbstractRenderer {
-    private static final Logger logger = LoggerFactory.getLogger(NodeReportRenderer.class);
 
     public NodeReportRenderer() {
         super();

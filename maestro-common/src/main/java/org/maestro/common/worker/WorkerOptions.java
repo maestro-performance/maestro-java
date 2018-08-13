@@ -19,6 +19,7 @@ package org.maestro.common.worker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+
 /**
  * Represents the options set on the worker by the front-end
  */
@@ -33,6 +34,28 @@ public class WorkerOptions {
     private String throttle;
     private String rate;
     private String fcl;
+
+    public WorkerOptions() {
+    }
+
+    public WorkerOptions(final WorkerOptions workerOptions) {
+        this(workerOptions.getBrokerURL(), workerOptions.getDuration(), workerOptions.getLogLevel(),
+                workerOptions.getParallelCount(), workerOptions.getMessageSize(), workerOptions.getThrottle(),
+                workerOptions.getRate(), workerOptions.getFcl());
+    }
+
+    public WorkerOptions(final String brokerURL, final String duration, final String logLevel,
+                         final String parallelCount, final String messageSize, final String throttle,
+                         final String rate, final String fcl) {
+        this.brokerURL = brokerURL;
+        this.duration = duration;
+        this.logLevel = logLevel;
+        this.parallelCount = parallelCount;
+        this.messageSize = messageSize;
+        this.throttle = throttle;
+        this.rate = rate;
+        this.fcl = fcl;
+    }
 
     /**
      * Gets the broker URL
@@ -92,6 +115,17 @@ public class WorkerOptions {
      */
     public String getParallelCount() {
         return parallelCount;
+    }
+
+    public Integer getParallelCountAsInt() {
+        try {
+            return Integer.parseInt(getParallelCount());
+        }
+        catch (NumberFormatException e) {
+            logger.warn("Unable to parse the provided parallel count {}", getParallelCount());
+        }
+
+        return null;
     }
 
     /**

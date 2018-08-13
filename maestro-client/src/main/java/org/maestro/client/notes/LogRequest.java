@@ -3,8 +3,6 @@ package org.maestro.client.notes;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
@@ -18,7 +16,7 @@ public class LogRequest extends MaestroRequest<MaestroEventListener> {
     }
 
     public LogRequest(final MessageUnpacker unpacker) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_LOG);
+        super(MaestroCommand.MAESTRO_NOTE_LOG, unpacker);
 
         this.locationType = LocationType.byCode(unpacker.unpackInt());
         if (locationType == LocationType.ANY) {

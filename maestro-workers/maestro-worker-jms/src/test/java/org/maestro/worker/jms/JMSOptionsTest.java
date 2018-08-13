@@ -88,6 +88,7 @@ public class JMSOptionsTest {
                 jmsOptions.getConnectionUrl());
     }
 
+    @Test
     public void testTlsAndJmsOptions() {
         final String url = "amqps://hostname:5671/test.performance.queue?durable=false&jms.username=user1&jms.password=pass1&transport.trustAll";
         JmsOptions jmsOptions = new JmsOptions(url);
@@ -95,6 +96,17 @@ public class JMSOptionsTest {
         assertFalse("Expected durable to be false", jmsOptions.isDurable());
         assertEquals("The connection URL does not match the expected one",
                 "amqps://hostname:5671?jms.username=user1&jms.password=pass1&transport.trustAll",
+                jmsOptions.getConnectionUrl());
+    }
+
+    @Test
+    public void testJmsOptions() {
+        final String url = "amqps://hostname:5671/test.performance.queue?durable=false&jms.username=user1&jms.password=pass1";
+        JmsOptions jmsOptions = new JmsOptions(url);
+
+        assertFalse("Expected durable to be false", jmsOptions.isDurable());
+        assertEquals("The connection URL does not match the expected one",
+                "amqps://hostname:5671?jms.username=user1&jms.password=pass1",
                 jmsOptions.getConnectionUrl());
     }
 }

@@ -29,13 +29,11 @@ import org.maestro.common.worker.MaestroSenderWorker;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.common.worker.WorkerStateInfo;
 import org.maestro.common.worker.WorkerUtils;
-import org.maestro.common.writers.OneToOneWorkerChannel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.Session;
 import java.util.concurrent.atomic.AtomicLong;
-import java.util.concurrent.locks.LockSupport;
 import java.util.function.Supplier;
 
 /**
@@ -46,7 +44,6 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     private ContentStrategy contentStrategy;
     private TestDuration duration;
-    private final OneToOneWorkerChannel workerChannel;
     private final AtomicLong messageCount = new AtomicLong(0);
     private volatile long startedEpochMillis = Long.MIN_VALUE;
 
@@ -55,22 +52,16 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     private int number;
 
     private final Supplier<? extends SenderClient> clientFactory;
+    @SuppressWarnings("CanBeFinal")
     private volatile WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     public JMSSenderWorker() {
-        this(JMSSenderClient::new, 128 * 1024);
+        this(JMSSenderClient::new);
     }
 
-    public JMSSenderWorker(Supplier<? extends SenderClient> clientFactory, int channelCapacity) {
+    private JMSSenderWorker(Supplier<? extends SenderClient> clientFactory) {
         this.clientFactory = clientFactory;
-        this.workerChannel = new OneToOneWorkerChannel(channelCapacity);
     }
-
-    @Override
-    public OneToOneWorkerChannel workerChannel() {
-        return workerChannel;
-    }
-
 
 
     @Override
@@ -124,17 +115,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         setMessageSize(workerOptions.getMessageSize());
     }
 
-    private static long waitNanoInterval(final long expectedFireTime, final long intervalInNanos) {
-        assert intervalInNanos > 0;
-        long now;
-        do {
-            now = System.nanoTime();
-            if (now - expectedFireTime < 0) {
-                LockSupport.parkNanos(expectedFireTime - now);
-            }
-        } while (now - expectedFireTime < 0);
-        return now;
-    }
+
 
     public void start() {
         startedEpochMillis = System.currentTimeMillis();
@@ -185,9 +166,6 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
         //it couldn't uses the Epoch in nanos because it could overflow pretty soon (less than 1 day)
         final EpochMicroClock epochMicroClock = EpochClocks.exclusiveMicro();
-        final long startFireEpochMicros = epochMicroClock.microTime();
-        //to avoid accumulated approx errors on the expectedSendTimeEpochMillis calculations
-        long elapsedIntervalsNanos = 0;
 
         long nextFireTime = System.nanoTime() + intervalInNanos;
         final JmsOptions opts = ((JMSClient) client).getOpts();
@@ -199,24 +177,14 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
         while (duration.canContinue(this) && isRunning()) {
             if (intervalInNanos > 0) {
-                final long now = waitNanoInterval(nextFireTime, intervalInNanos);
+                final long now = WorkerUtils.waitNanoInterval(nextFireTime, intervalInNanos);
                 assert (now - nextFireTime) >= 0 : "can't wait less than the configured interval in nanos";
                 nextFireTime += intervalInNanos;
-                elapsedIntervalsNanos += intervalInNanos;
             }
 
             final long sendTimeEpochMicros = epochMicroClock.microTime();
-            final long expectedSendTimeEpochMicros;
-
-            if (intervalInNanos > 0) {
-                final long elapsedIntervalsMicros = (elapsedIntervalsNanos / 1_000L);
-                expectedSendTimeEpochMicros = startFireEpochMicros + elapsedIntervalsMicros;
-            } else {
-                expectedSendTimeEpochMicros = sendTimeEpochMicros;
-            }
-
             client.sendMessages(sendTimeEpochMicros, commitTransaction(count, opts, isSessionTransacted));
-            workerChannel.emitRate(expectedSendTimeEpochMicros, sendTimeEpochMicros);
+
             count++;
             //update message sent count
             this.messageCount.lazySet(count);

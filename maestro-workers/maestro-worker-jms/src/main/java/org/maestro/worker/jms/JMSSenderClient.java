@@ -78,7 +78,7 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
     private void setupPriority() throws JMSException {
         // Ref: https://docs.oracle.com/cd/E17802_01/products/products/jms/javadoc-102a/javax/jms/MessageProducer.html#setPriority(int)
         final int minPriority = 0;
-        final int maxPriority = 0;
+        final int maxPriority = 9;
 
         final int priority = opts.getPriority();
         if (priority > minPriority) {

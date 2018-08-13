@@ -27,7 +27,6 @@ import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
-import org.maestro.common.exceptions.MaestroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,12 +45,14 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         }
 
         @Override
-        public void call(MaestroNote note) {
+        public boolean call(MaestroNote note) {
             try {
                 Thread.sleep(defaultDelay);
             } catch (InterruptedException e) {
                 logger.warn("Interrupted while waiting for the note send delay");
             }
+
+            return true;
         }
     }
 
@@ -72,12 +73,13 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         this.epochMicroClock = EpochClocks.exclusiveMicro();
     }
 
-    public void replyOk() {
+    public void replyOk(final MaestroNote note) {
         logger.trace("Sending the OK response from {}", this.toString());
         OkResponse okResponse = new OkResponse();
 
         okResponse.setName(clientName + "@" + host);
         okResponse.setId(id);
+        okResponse.correlate(note);
 
         try {
             super.publish(MaestroTopics.MAESTRO_TOPIC, okResponse);
@@ -86,12 +88,13 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         }
     }
 
-    public void replyInternalError() {
+    public void replyInternalError(final MaestroNote note, final String message, final String...args) {
         logger.trace("Sending the internal error response from {}", this.toString());
-        InternalError errResponse = new InternalError();
+        InternalError errResponse = new InternalError(String.format(message, args));
 
         errResponse.setName(clientName + "@" + host);
         errResponse.setId(id);
+        errResponse.correlate(note);
 
         try {
             super.publish(MaestroTopics.MAESTRO_TOPIC, errResponse);
@@ -100,7 +103,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         }
     }
 
-    public void pingResponse(long sec, long uSec) {
+    public void pingResponse(final MaestroNote note, long sec, long uSec) {
         logger.trace("Creation seconds.micro: {}.{}", sec, uSec);
 
         final long creationEpochMicros = TimeUnit.SECONDS.toMicros(sec) + uSec;
@@ -113,6 +116,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         response.setElapsed(TimeUnit.MICROSECONDS.toMillis(elapsedMicros));
         response.setName(clientName + "@" + host);
         response.setId(id);
+        response.correlate(note);
 
         super.publish(MaestroTopics.MAESTRO_TOPIC, response);
     }
@@ -129,7 +133,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         notification.setMessage(message);
 
         try {
-            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, true);
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, false);
         } catch (Exception e) {
             logger.error("Unable to publish the success notification: {}", e.getMessage(), e);
         }
@@ -146,7 +150,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         notification.setMessage(message);
 
         try {
-            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, true);
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, false);
         } catch (Exception e) {
             logger.error("Unable to publish the failure notification: {}", e.getMessage(), e);
         }
@@ -207,5 +211,23 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         ThrottleCallback throttleCallback = new ThrottleCallback();
 
         super.publish(MaestroTopics.MAESTRO_LOGS_TOPIC, logResponse, 0, false, throttleCallback);
+    }
+
+
+    public void notifyDrainComplete(boolean status, final String message) {
+        logger.trace("Sending the drain complete notification from {}", this.toString());
+        DrainCompleteNotification notification = new DrainCompleteNotification();
+
+        notification.setName(clientName + "@" + host);
+        notification.setId(id);
+
+        notification.setSuccessful(status);
+        notification.setMessage(message);
+
+        try {
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, false);
+        } catch (Exception e) {
+            logger.error("Unable to publish the drain complete notification: {}", e.getMessage(), e);
+        }
     }
 }

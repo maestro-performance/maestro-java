@@ -26,7 +26,9 @@ public final class Constants {
 
     public static final String TEST_LOGS_CONTEXT = "/logs/tests";
 
-    public static final String VERSION = "1.3.7";
+    public static final String VERSION = "1.4.0-SNAPSHOT";
+
+    public static final int VERSION_NUMERIC;
 
     public static final String BIN_NAME = "maestro-java";
 
@@ -44,6 +46,8 @@ public final class Constants {
         MAESTRO_CONFIG_DIR = System.getProperty(HOME_PROPERTY) + File.separator + "config";
 
         MAESTRO_LOG_DIR = System.getProperty(HOME_PROPERTY) + File.separator + "logs";
+
+        VERSION_NUMERIC = Integer.parseInt(VERSION.replace(".", "").replaceAll("[a-zA-Z-]",""));
     }
 
     /**
@@ -54,7 +58,7 @@ public final class Constants {
     /**
      * File extension for Maestro compressed rate files
      */
-    public static final String FILE_EXTENSION_MPT_COMPRESSED = "gz";
+    public static final String FILE_EXTENSION_MAESTRO = "dat";
 
     /**
      * File extension for Maestro inspector uncompressed files

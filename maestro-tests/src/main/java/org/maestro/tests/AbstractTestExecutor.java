@@ -18,20 +18,28 @@ package org.maestro.tests;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
-import org.maestro.client.exchange.MaestroProcessedInfo;
-import org.maestro.client.notes.MaestroNotification;
-import org.maestro.client.notes.PingResponse;
+import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.NodeUtils;
+import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.downloaders.ReportsDownloader;
+import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import static org.maestro.client.Maestro.exec;
 
 /**
  * A simple test executor that should be extensible for most usages
@@ -43,8 +51,10 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     private final Maestro maestro;
     private final ReportsDownloader reportsDownloader;
 
+    private volatile boolean running = false;
+    private Instant startTime;
 
-    public AbstractTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader) {
+    protected AbstractTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader) {
         this.maestro = maestro;
         this.reportsDownloader = reportsDownloader;
 
@@ -59,82 +69,67 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         return reportsDownloader;
     }
 
+    protected void testStart() {
+        running = true;
+        startTime = Instant.now();
+    }
+
+    protected void testStop() {
+        running = false;
+    }
+
+    public boolean isRunning() {
+        return running;
+    }
+
+    public Instant getStartTime() {
+        return startTime;
+    }
+
     /**
      * Start connected peers
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
     protected void startServices() throws MaestroConnectionException {
-        maestro.startReceiver();
-        maestro.startSender();
+        maestro.startAll(null);
     }
 
     /**
      * Start connected peers
-     * @param inspectorName the name of the inspector to use
+     * @param testProfile the test profile in use
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
-    protected void startServices(final String inspectorName) throws MaestroConnectionException {
-        maestro.startInspector(inspectorName);
-        maestro.startReceiver();
-        maestro.startSender();
+    protected void startServices(final AbstractTestProfile testProfile) throws MaestroConnectionException {
+        final String inspectorName = testProfile.getInspectorName();
+
+        exec(maestro::startAll, inspectorName);
     }
 
     /**
      * Stop connected peers
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
-    final protected void stopServices() throws MaestroConnectionException {
-        maestro.stopSender();
-
-        /**
-         * This is based on a discussion I had with Qpid Dispatch Router developers: if the
-         * receiver disconnects before the sender, some messages from the sender will be
-         * inflight on the router, but since the receiver will be shutting down they may not
-         * be acknowledged. This causes their delivery status to be unknown on the router and
-         * the disposition of this messages is then sent back to the sender as
-         * MODIFIED/undeliberable. This may cause JMSExceptions to be thrown by the sender.
-         *
-         * By forcing a small delay between sender/router shutdown, it tries to reduce the
-         * occurrences of unknown inflight messages.
-         *
-         * Ref: https://github.com/maestro-performance/maestro-java/issues/96
-         *
-         */
-        final int inFlightDelay = config.getInt("executor.inflight.delay", 250);
+    final public void stopServices() throws MaestroConnectionException {
         try {
-            Thread.sleep(inFlightDelay);
-        } catch (InterruptedException e) {
-
+            exec(maestro::stopSender);
         }
-        maestro.stopReceiver();
-        maestro.stopInspector();
-    }
-
-    /**
-     * Try to guess the number of connected peers
-     * @return the number of connected peers (best guess)
-     * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
-     * @throws InterruptedException if interrupted
-     */
-    protected int getNumPeers() throws MaestroConnectionException, InterruptedException {
-        int numPeers = 0;
-
-        logger.debug("Collecting responses to ensure topic is clean prior to pinging nodes");
-        maestro.collect();
-
-        logger.debug("Sending ping request");
-        maestro.pingRequest();
-
-        Thread.sleep(5000);
-
-        List<MaestroNote> replies = maestro.collect();
-        for (MaestroNote note : replies) {
-            if (note instanceof PingResponse) {
-                numPeers++;
-            }
+        catch (NotEnoughRepliesException e) {
+            logger.warn("While stopping the sender: {}", e.getMessage());
         }
 
-        return numPeers;
+        try {
+            exec(maestro::stopReceiver);
+        }
+        catch (NotEnoughRepliesException e) {
+            logger.warn("While stopping the receiver: {}", e.getMessage());
+        }
+
+        try {
+            exec(maestro::stopInspector);
+        }
+        catch (NotEnoughRepliesException e) {
+            logger.warn("While stopping the inspector: {}", e.getMessage());
+        }
     }
 
     /**
@@ -144,16 +139,19 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      * @throws InterruptedException if interrupted
      */
-    protected int getNumPeers(String ...types) throws MaestroConnectionException, InterruptedException {
+    private int getNumPeers(String... types) throws MaestroConnectionException, InterruptedException {
         logger.debug("Collecting responses to ensure topic is clean prior to pinging nodes");
-        maestro.collect();
+        maestro.clear();
 
         logger.debug("Sending ping request");
-        maestro.pingRequest();
+        CompletableFuture<List<? extends MaestroNote>> repliesFuture = maestro.pingRequest();
 
-        Thread.sleep(5000);
-
-        List<MaestroNote> replies = maestro.collect();
+        List<? extends MaestroNote> replies;
+        try {
+            replies = repliesFuture.get();
+        } catch (ExecutionException e) {
+            throw new MaestroException("Unable to collect peers", e);
+        }
         Set<String> knownPeers = new LinkedHashSet<>(replies.size());
 
         for (MaestroNote note : replies) {
@@ -176,28 +174,62 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     }
 
 
-    /**
-     * Resolve the data servers connected to the test cluster
-     * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
-     */
-    protected void resolveDataServers() throws MaestroConnectionException {
-        logger.debug("Collecting responses to ensure topic is clean prior to collecting data servers");
-        maestro.collect();
-
-        logger.debug("Sending request to collect data servers");
-        maestro.getDataServer();
-    }
-
-    protected MaestroProcessedInfo processNotifications(final AbstractTestProcessor testProcessor, long repeat, int numPeers) {
-        List<MaestroNote> replies = getMaestro().collect(1000, repeat, numPeers, reply -> reply instanceof MaestroNotification);
-
-        return testProcessor.process(replies);
+    protected int peerCount(final AbstractTestProfile testProfile) throws InterruptedException {
+        if (testProfile.getManagementInterface() != null) {
+            return getNumPeers("sender", "receiver", "inspector");
+        }
+        else {
+            return getNumPeers("sender", "receiver");
+        }
     }
 
 
-    protected MaestroProcessedInfo processReplies(final AbstractTestProcessor testProcessor, long repeat, int numPeers) {
-        List<MaestroNote> replies = getMaestro().collect(1000, repeat, numPeers);
+    protected boolean isTestFailed(final MaestroNote note) {
+        if (note instanceof TestFailedNotification) {
+            TestFailedNotification testFailedNotification = (TestFailedNotification) note;
+            logger.error("Test failed on {}: {}", testFailedNotification.getName(), testFailedNotification.getMessage());
+            return true;
+        }
 
-        return testProcessor.process(replies);
+        return false;
+    }
+
+    protected boolean isFailed(MaestroNote note) {
+        boolean success = true;
+
+        if (note instanceof DrainCompleteNotification) {
+            success = ((DrainCompleteNotification) note).isSuccessful();
+            if (!success) {
+                logger.error("Drained failed for {}", ((DrainCompleteNotification) note).getName());
+            }
+        }
+
+        return success;
+    }
+
+
+    protected long getTimeout(final AbstractTestProfile testProfile) {
+        return testProfile.getEstimatedCompletionTime() + CompletionTime.getDeadline();
+    }
+
+    protected void drain() {
+        long drainDeadline = config.getLong("client.drain.deadline.secs", 60);
+
+        try {
+            final List<? extends MaestroNote> drainReplies = getMaestro()
+                    .waitForDrain()
+                    .get(drainDeadline, TimeUnit.SECONDS);
+
+            if (drainReplies.size() == 0) {
+                logger.warn("None of the peers reported a successful drain from the SUT within {} seconds",
+                        drainDeadline);
+            }
+
+            drainReplies.forEach(this::isFailed);
+        } catch (ExecutionException | InterruptedException e) {
+            logger.error("Error checking the draining status: {}", e.getMessage(), e);
+        } catch (TimeoutException e) {
+            logger.warn("Did not receive a drain response within {} seconds", drainDeadline);
+        }
     }
 }

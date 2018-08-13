@@ -20,7 +20,7 @@ import org.HdrHistogram.Histogram;
 import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.worker.MaestroReceiverWorker;
 import org.maestro.common.worker.MaestroWorker;
-import org.maestro.common.writers.LatencyWriter;
+import org.maestro.common.io.data.writers.LatencyWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -43,8 +43,8 @@ public final class WorkerLatencyWriter implements Runnable {
         private final long startReportingTime;
         private final LatencyEvaluator latencyEvaluator;
 
-        public WorkerIntervalReport(LatencyWriter latencyWriter, MaestroWorker worker, boolean reportIntervalLatencies,
-                                    long globalStartReportingTime, LatencyEvaluator latencyEvaluator) {
+        WorkerIntervalReport(LatencyWriter latencyWriter, MaestroWorker worker, boolean reportIntervalLatencies,
+                             long globalStartReportingTime, LatencyEvaluator latencyEvaluator) {
             this.latencyWriter = latencyWriter;
             this.worker = worker;
             this.intervalHistogram = null;
@@ -57,7 +57,7 @@ public final class WorkerLatencyWriter implements Runnable {
             this.latencyEvaluator = latencyEvaluator;
         }
 
-        public void updateReport() {
+        void updateReport() {
             updateReport(false);
 
             // Latency evaluation is optional
@@ -73,7 +73,7 @@ public final class WorkerLatencyWriter implements Runnable {
         /**
          * @param snapshotLatencies {@code true} if is needed to force the snapshot of the interval latencies at the end of a test
          */
-        public void updateReport(final boolean snapshotLatencies) {
+        void updateReport(final boolean snapshotLatencies) {
             final long reportTime = System.currentTimeMillis();
             if (snapshotLatencies || this.reportIntervalLatencies) {
                 final Histogram intervalHistogram = this.worker.takeLatenciesSnapshot(this.intervalHistogram);
@@ -94,7 +94,7 @@ public final class WorkerLatencyWriter implements Runnable {
             this.lastReportTime = reportTime;
         }
 
-        public void outputReport() {
+        void outputReport() {
             if (this.intervalHistogram != null && this.intervalHistogram.getTotalCount() > 0) {
                 this.latencyWriter.outputIntervalHistogram(this.intervalHistogram);
             }

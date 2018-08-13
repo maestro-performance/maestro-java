@@ -18,9 +18,7 @@ package org.maestro.tests.incremental;
 
 import org.maestro.client.Maestro;
 import org.maestro.common.duration.TestDuration;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestProfile;
-import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -130,7 +128,7 @@ public abstract class IncrementalTestProfile extends AbstractTestProfile {
         this.parallelCountIncrement = parallelCountIncrement;
     }
 
-    abstract public void apply(Maestro maestro) throws MaestroException;
+    abstract public void apply(Maestro maestro);
 
     public boolean isOverCeiling() {
         return (rate > ceilingRate && parallelCount >= ceilingParallelCount);
@@ -158,7 +156,7 @@ public abstract class IncrementalTestProfile extends AbstractTestProfile {
 
     @Override
     public long getEstimatedCompletionTime() {
-        return CompletionTime.estimate(duration, getRate());
+        return getEstimatedCompletionTime(duration, getRate());
     }
 
 

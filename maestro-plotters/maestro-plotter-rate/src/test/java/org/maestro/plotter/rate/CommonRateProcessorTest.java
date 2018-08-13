@@ -26,4 +26,12 @@ class CommonRateProcessorTest {
         assertTrue("Incorrect loaded size for the rate values",
                 count == rateData.getPeriods().size());
     }
+
+    protected RateData getData(final String resource) throws Exception {
+        final String fileName = this.getClass().getResource(resource).getPath();
+
+        RateDataReader queueReader = new RateDataReader();
+        return queueReader.read(fileName);
+    }
+
 }

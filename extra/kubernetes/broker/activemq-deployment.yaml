@@ -26,7 +26,7 @@ spec:
                       - maestroperf
       containers:
         - name: broker
-          image: maestroperf/maestro-broker:1.3.7
+          image: maestroperf/maestro-broker:1.4.0
           ports:
             - name: mqtt
               containerPort: 1883

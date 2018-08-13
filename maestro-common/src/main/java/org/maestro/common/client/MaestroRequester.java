@@ -16,8 +16,12 @@
 
 package org.maestro.common.client;
 
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
+
+import java.util.List;
+import java.util.concurrent.CompletableFuture;
 
 @SuppressWarnings("unused")
 public interface MaestroRequester {
@@ -31,37 +35,44 @@ public interface MaestroRequester {
     /**
      * Sends a flush request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void flushRequest() throws MaestroConnectionException;
+    @Deprecated
+    CompletableFuture<List<? extends MaestroNote>> flushRequest() throws MaestroConnectionException;
 
 
     /**
      * Sends a flush request
      * @param topic the topic to send the request to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void flushRequest(final String topic) throws MaestroConnectionException;
+    @Deprecated
+    CompletableFuture<List<? extends MaestroNote>> flushRequest(final String topic) throws MaestroConnectionException;
 
     /**
      * Sends a ping request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void pingRequest() throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> pingRequest() throws MaestroConnectionException;
 
     /**
      * Sends a ping request
      * @param topic the topic to send the request to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void pingRequest(final String topic) throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> pingRequest(final String topic) throws MaestroConnectionException;
 
 
     /**
      * Sends a set broker request
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setBroker(final String value) throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> setBroker(final String value) throws MaestroConnectionException;
 
 
     /**
@@ -69,16 +80,18 @@ public interface MaestroRequester {
      * @param value The value to set the (remote) parameter to
      * @param topic the topic to send the request to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setBroker(final String topic, final String value) throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> setBroker(final String topic, final String value) throws MaestroConnectionException;
 
 
     /**
      * Sends a set duration request
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setDuration(final Object value) throws MaestroException;
+    CompletableFuture<List<? extends MaestroNote>> setDuration(final Object value) throws MaestroException;
 
 
     /**
@@ -86,8 +99,9 @@ public interface MaestroRequester {
      * @param topic the topic to send the request to
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setDuration(final String topic, final Object value) throws MaestroException;
+    CompletableFuture<List<? extends MaestroNote>> setDuration(final String topic, final Object value) throws MaestroException;
 
 
 
@@ -95,8 +109,10 @@ public interface MaestroRequester {
      * Sends a set log level request
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setLogLevel(final String value) throws MaestroConnectionException;
+    @Deprecated
+    CompletableFuture<List<? extends MaestroNote>> setLogLevel(final String value) throws MaestroConnectionException;
 
 
     /**
@@ -104,16 +120,18 @@ public interface MaestroRequester {
      * @param topic the topic to send the request to
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setLogLevel(final String topic, final String value) throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> setLogLevel(final String topic, final String value) throws MaestroConnectionException;
 
 
     /**
      * Sends a set parallel count request
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setParallelCount(final int value) throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> setParallelCount(final int value) throws MaestroConnectionException;
 
 
     /**
@@ -121,8 +139,9 @@ public interface MaestroRequester {
      * @param topic the topic to send the request to
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setParallelCount(final String topic, final int value) throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> setParallelCount(final String topic, final int value) throws MaestroConnectionException;
 
     /**
      *
@@ -130,8 +149,9 @@ public interface MaestroRequester {
      *
      * @param value the value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setMessageSize(final String value) throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> setMessageSize(final String value) throws MaestroConnectionException;
 
 
     /**
@@ -139,16 +159,19 @@ public interface MaestroRequester {
      *
      * @param value the value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setMessageSize(final long value) throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> setMessageSize(final long value) throws MaestroConnectionException;
 
 
     /**
      * Sends a set throttle request
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setThrottle(final int value) throws MaestroConnectionException;
+    @Deprecated
+    CompletableFuture<List<? extends MaestroNote>> setThrottle(final int value) throws MaestroConnectionException;
 
 
     /**
@@ -156,16 +179,19 @@ public interface MaestroRequester {
      * @param topic the topic to send the request to
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setThrottle(final String topic, final int value) throws MaestroConnectionException;
+    @Deprecated
+    CompletableFuture<List<? extends MaestroNote>> setThrottle(final String topic, final int value) throws MaestroConnectionException;
 
 
     /**
      * Sends a set rate request
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setRate(final int value) throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> setRate(final int value) throws MaestroConnectionException;
 
 
     /**
@@ -173,97 +199,111 @@ public interface MaestroRequester {
      * @param topic the topic to send the request to
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setRate(final String topic, final int value) throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> setRate(final String topic, final int value) throws MaestroConnectionException;
 
 
     /**
      * Sends a set fail-condition-latency (FCL) request
      * @param value The value to set the (remote) parameter to
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void setFCL(final int value) throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> setFCL(final int value) throws MaestroConnectionException;
 
 
     /**
      * Sends a start inspector request
      * @param value the name of the inspector to start
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void startInspector(final String value) throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> startInspector(final String value) throws MaestroConnectionException;
 
 
     /**
      * Sends a stop inspector request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void stopInspector() throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> stopInspector() throws MaestroConnectionException;
 
 
     /**
      * Sends a start sender request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void startSender() throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> startSender() throws MaestroConnectionException;
 
 
     /**
      * Sends a stop sender request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void stopSender() throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> stopSender() throws MaestroConnectionException;
 
 
     /**
      * Sends a start receiver request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void startReceiver() throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> startReceiver() throws MaestroConnectionException;
 
 
     /**
      * Sends a stop receiver request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void stopReceiver() throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> stopReceiver() throws MaestroConnectionException;
 
 
     /**
      * Sends a stats request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void statsRequest() throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> statsRequest() throws MaestroConnectionException;
 
 
     /**
      * Sends a halt request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void halt() throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> halt() throws MaestroConnectionException;
 
     /**
      * Sends a get request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void getDataServer() throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> getDataServer() throws MaestroConnectionException;
 
     /**
      * Sends a start agent request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void startAgent() throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> startAgent() throws MaestroConnectionException;
 
     /**
      * Sends a stop agent request
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void stopAgent() throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> stopAgent() throws MaestroConnectionException;
 
     /**
      * Sends a agent general execution request
      * @param option An optional numeric option that can be associated w/ the command
      * @param payload An option string payload to be sent along w/ the command
      * @throws MaestroConnectionException if unable to send the MQTT request
+     * @return A completable future that can be used to collect the replies for the request
      */
-    void userCommand(long option, final String payload) throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> userCommand(long option, final String payload) throws MaestroConnectionException;
 }

@@ -36,7 +36,7 @@ public class PingRequest extends MaestroRequest<MaestroEventListener> {
     }
 
     public PingRequest(MessageUnpacker unpacker) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_PING);
+        super(MaestroCommand.MAESTRO_NOTE_PING, unpacker);
 
         sec = unpacker.unpackLong();
         usec = unpacker.unpackLong();

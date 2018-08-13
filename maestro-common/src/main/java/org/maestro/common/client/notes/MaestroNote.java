@@ -31,7 +31,7 @@ public interface MaestroNote {
 
     /**
      * Gets the Maestro command for the note
-     * @return the maestro command as an instace of MaestroCommand
+     * @return the maestro command as an instance of MaestroCommand
      */
     MaestroCommand getMaestroCommand();
 
@@ -48,6 +48,15 @@ public interface MaestroNote {
      */
     String toString();
 
+    MessageCorrelation correlate();
+
+    void correlate(final MessageCorrelation correlation);
+
+    void correlate(final MaestroNote note);
+
+    boolean correlatesTo(final MessageCorrelation correlation);
+
+    boolean correlatesTo(final MaestroNote note);
 
     /**
      * Moves to the next subsequent note

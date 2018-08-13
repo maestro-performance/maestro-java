@@ -50,7 +50,7 @@ public class CompletionTime {
             ret = config.getLong("duration.count.wait.base", defaultBase);
 
             if (rate > 0) {
-                ret += Math.round(duration.getNumericDuration() / rate);
+                ret += Math.round((double) duration.getNumericDuration() / (double) rate);
             }
             else {
                 ret = ret * 7;
@@ -58,5 +58,9 @@ public class CompletionTime {
         }
 
         return ret;
+    }
+
+    public static long getDeadline() {
+        return config.getLong("worker.active.deadline.max", 120000) / 1000;
     }
 }

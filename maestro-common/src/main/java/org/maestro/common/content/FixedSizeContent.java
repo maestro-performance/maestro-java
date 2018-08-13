@@ -22,7 +22,6 @@ import java.nio.ByteBuffer;
  * A fixed-sized bytes message content
  */
 final class FixedSizeContent implements ContentStrategy {
-    private int size = 0;
     private ByteBuffer buffer = null;
 
     FixedSizeContent(int size) {
@@ -34,14 +33,13 @@ final class FixedSizeContent implements ContentStrategy {
     }
 
     private void setSize(int size) {
-        this.size = size;
         this.buffer = ByteBuffer.allocate(size).order(CONTENT_ENDIANNESS);
         for (int i = 0; i < size; i++) {
             this.buffer.put(i, (byte) i);
         }
 
         buffer.clear();
-        buffer.limit(this.size);
+        buffer.limit(size);
     }
 
 

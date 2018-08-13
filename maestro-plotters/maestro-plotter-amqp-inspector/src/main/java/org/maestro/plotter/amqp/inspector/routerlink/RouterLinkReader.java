@@ -3,7 +3,7 @@ package org.maestro.plotter.amqp.inspector.routerlink;
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVRecord;
 import org.apache.commons.csv.QuoteMode;
-import org.maestro.plotter.common.readers.CsvReader;
+import org.maestro.plotter.common.readers.StreamReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +13,7 @@ import java.io.Reader;
 /**
  * A csv router link data reader
  */
-public class RouterLinkReader extends CsvReader<RouterLinkDataSet> {
+public class RouterLinkReader extends StreamReader<RouterLinkDataSet> {
     private static final Logger logger = LoggerFactory.getLogger(RouterLinkReader.class);
 
     private final RouterLinkProcessor routerLinkProcessor;

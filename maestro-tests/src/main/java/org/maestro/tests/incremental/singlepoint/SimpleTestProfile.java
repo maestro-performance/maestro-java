@@ -17,11 +17,13 @@
 package org.maestro.tests.incremental.singlepoint;
 
 import org.maestro.client.Maestro;
-import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.tests.SinglePointProfile;
 import org.maestro.tests.incremental.IncrementalTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.maestro.client.Maestro.set;
 
 public class SimpleTestProfile extends IncrementalTestProfile implements SinglePointProfile {
     private static final Logger logger = LoggerFactory.getLogger(SimpleTestProfile.class);
@@ -46,28 +48,43 @@ public class SimpleTestProfile extends IncrementalTestProfile implements SingleP
         return brokerURL;
     }
 
-    public void apply(Maestro maestro) throws MaestroException {
+    public void apply(Maestro maestro) {
         logger.info("Setting broker to {}", getBrokerURL());
-        maestro.setBroker(getBrokerURL());
+        set(maestro::setBroker, getBrokerURL());
 
         logger.info("Setting rate to {}", getRate());
-        maestro.setRate(rate);
+        set(maestro::setRate, rate);
 
         logger.info("Rate increment value is {}", getRateIncrement());
 
         logger.info("Setting parallel count to {}", this.parallelCount);
-        maestro.setParallelCount(this.parallelCount);
+        set(maestro::setParallelCount, this.parallelCount);
 
         logger.info("Parallel count increment value is {}", getParallelCountIncrement());
 
         logger.info("Setting duration to {}", getDuration());
-        maestro.setDuration(this.getDuration().toString());
+        set(maestro::setDuration, this.getDuration().toString());
 
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
-        maestro.setFCL(getMaximumLatency());
+        set(maestro::setFCL, getMaximumLatency());
 
         // Variable message messageSize
-        maestro.setMessageSize(getMessageSize());
-        logger.info("Estimated time for test completion: {} secs", getEstimatedCompletionTime());
+        logger.info("Setting message size to: {}", getMessageSize());
+        set(maestro::setMessageSize, getMessageSize());
+
+        if (getManagementInterface() != null) {
+            if (getInspectorName() != null) {
+                logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
+                        getInspectorName());
+                try {
+                    set(maestro::setManagementInterface, getManagementInterface());
+                }
+                catch (NotEnoughRepliesException ne) {
+                    logger.warn("Apparently no inspector nodes are enabled on this cluster. Ignoring ...");
+                }
+            }
+        }
+
+        logger.info("Estimated time for test completion: {} seconds", getEstimatedCompletionTime());
     }
 }

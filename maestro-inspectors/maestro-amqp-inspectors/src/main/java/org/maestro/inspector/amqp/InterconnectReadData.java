@@ -15,7 +15,6 @@ import org.slf4j.LoggerFactory;
 import javax.jms.*;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Map;
 
 
 /**
@@ -45,13 +44,21 @@ public class InterconnectReadData {
     /**
      * Collect data from Interconnect
      * @param component string representation component name
-     * @return response collector
+     * @return A hash map with the collected data as read from the message. If
+     * unable to read the message, returns an empty map
      * @throws JMSException if it can't send or receive message
      */
-    private Message collectData(String component) throws JMSException {
+    private HashMap collectData(final String component) throws JMSException {
         requestProducer.send(createMessage(component));
 
-        return collectResponse();
+        Message message = collectResponse();
+        if (message == null) {
+            logger.warn("No message was received, returning an empty data map");
+            return new HashMap();
+        }
+
+        return message.getBody(HashMap.class);
+
     }
 
     /**
@@ -91,6 +98,7 @@ public class InterconnectReadData {
         return message;
     }
 
+
     /**
      * Collect information about Router Links.
      * @return parsed response
@@ -101,9 +109,9 @@ public class InterconnectReadData {
 
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
 
-        Map receivedMessage = collectData("router.link").getBody(HashMap.class);
+        HashMap collectedData = collectData("router.link");
 
-        return new RouterLinkInfo(converter.parseReceivedMessage(receivedMessage));
+        return new RouterLinkInfo(converter.parseReceivedMessage(collectedData));
     }
 
     /**
@@ -116,9 +124,9 @@ public class InterconnectReadData {
 
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
 
-        Map receivedMessage = collectData("connection").getBody(HashMap.class);
+        HashMap collectedData = collectData("connection");
 
-        return new ConnectionsInfo(converter.parseReceivedMessage(receivedMessage));
+        return new ConnectionsInfo(converter.parseReceivedMessage(collectedData));
     }
 
     /**
@@ -130,9 +138,9 @@ public class InterconnectReadData {
     QDMemoryInfo collectMemoryInfo() throws JMSException {
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
 
-        Map receivedMessage = collectData("allocator").getBody(HashMap.class);
+        HashMap collectedData = collectData("allocator");
 
-        return new QDMemoryInfo(converter.parseReceivedMessage(receivedMessage));
+        return new QDMemoryInfo(converter.parseReceivedMessage(collectedData));
     }
 
     /**
@@ -144,8 +152,8 @@ public class InterconnectReadData {
     GeneralInfo collectGeneralInfo() throws JMSException {
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
 
-        Map receivedMessage = collectData("router").getBody(HashMap.class);
+        HashMap collectedData = collectData("router");
 
-        return new GeneralInfo(converter.parseReceivedMessage(receivedMessage));
+        return new GeneralInfo(converter.parseReceivedMessage(collectedData));
     }
 }

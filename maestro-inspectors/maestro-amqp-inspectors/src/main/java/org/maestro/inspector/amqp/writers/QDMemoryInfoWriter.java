@@ -4,7 +4,7 @@ import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
 import org.apache.commons.io.IOUtils;
 import org.maestro.common.inspector.types.QDMemoryInfo;
-import org.maestro.common.writers.InspectorDataWriter;
+import org.maestro.common.io.data.writers.InspectorDataWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

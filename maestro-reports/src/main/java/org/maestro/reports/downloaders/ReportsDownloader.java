@@ -19,9 +19,6 @@ package org.maestro.reports.downloaders;
 import org.maestro.reports.ReportResolver;
 import org.maestro.reports.organizer.Organizer;
 
-import java.time.Instant;
-
-
 /**
  * A reports downloader that collects the reports after the test is complete or on demand via CLI
  */

@@ -21,6 +21,10 @@ import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroException;
 
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 public class MaestroAction extends Action {
     private CommandLine cmdLine;
@@ -67,39 +71,44 @@ public class MaestroAction extends Action {
         try {
             maestro = new Maestro(maestroUrl);
 
+            CompletableFuture<List<? extends MaestroNote>> completableFuture = null;
+
             switch (command) {
                 case "ping": {
-                    maestro.pingRequest();
+                    completableFuture = maestro.pingRequest();
                     break;
                 }
                 case "flush": {
-                    maestro.flushRequest();
+                    completableFuture = maestro.flushRequest();
                     break;
                 }
                 case "stats": {
-                    maestro.statsRequest();
+                    completableFuture = maestro.statsRequest();
                     break;
                 }
                 case "halt": {
-                    maestro.halt();
+                    completableFuture = maestro.halt();
                     break;
                 }
                 case "stop": {
-                    maestro.stopSender();
-                    maestro.stopReceiver();
-                    maestro.stopInspector();
+                    completableFuture = maestro.stopAll();
                     break;
+                }
+                default: {
+                    System.err.println("Invalid command: " + command);
+                    return 2;
                 }
             }
 
-            List<MaestroNote> replies = maestro.collect(1000, 10);
+
+            List<? extends MaestroNote> replies = completableFuture.get(5, TimeUnit.SECONDS);
 
             for (MaestroNote note : replies) {
                 System.out.println("Reply: " + note);
             }
 
             return 0;
-        } catch (MaestroException e) {
+        } catch (MaestroException | InterruptedException | ExecutionException | TimeoutException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }

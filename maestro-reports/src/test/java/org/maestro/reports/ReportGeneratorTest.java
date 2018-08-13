@@ -19,6 +19,7 @@ package org.maestro.reports;
 import org.junit.Before;
 import org.junit.Test;
 import org.maestro.common.LogConfigurator;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.test.TestProperties;
 import org.maestro.plotter.common.exceptions.EmptyDataSet;
 
@@ -169,7 +170,7 @@ public class ReportGeneratorTest {
     /**
      * Ensures proper handling of invalid reports (ie.: empty reports marked as successful should be ignored)
      */
-    @Test(timeout = 20000)
+    @Test(timeout = 40000)
     public void testInvalidReport() {
         String path = this.getClass().getResource("/data-empty-sender-rate-records").getPath();
 
@@ -189,7 +190,7 @@ public class ReportGeneratorTest {
     }
 
 
-    @Test(timeout = 20000)
+    @Test(timeout = 35000)
     public void testInspectorOnly() {
         String path = this.getClass().getResource("/data-ok").getPath();
 
@@ -204,7 +205,7 @@ public class ReportGeneratorTest {
                 Arrays.asList("inspector"), Arrays.asList());
     }
 
-    @Test(timeout = 20000)
+    @Test(timeout = 35000)
     public void testInspectorMissingData() {
         String path = this.getClass().getResource("/data-inspector-missing").getPath();
 
@@ -217,5 +218,14 @@ public class ReportGeneratorTest {
 
         validateRoleDirectoryStructure(new File(path),
                 Arrays.asList("inspector"), Arrays.asList());
+    }
+
+    @Test(timeout = 35000, expected = MaestroException.class)
+    public void testInvalidStructure() {
+        String path = this.getClass().getResource("/data-inv-dir-structure").getPath();
+
+        ReportGenerator reportGenerator = new ReportGenerator(path);
+
+        reportGenerator.generate();
     }
 }

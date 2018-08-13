@@ -5,7 +5,7 @@ ENV ACTIVEMQ_VERSION ${ACTIVEMQ_VERSION:-5.15.3}
 ENV MAESTRO_APP_ROOT /opt/maestro/broker
 EXPOSE 8161
 EXPOSE 1883 
-RUN yum install -y java-1.8.0-openjdk
+RUN yum install -y java-1.8.0-openjdk rsync
 ENV JAVA_HOME /etc/alternatives/jre
 RUN yum clean all
 RUN mkdir -p ${MAESTRO_APP_ROOT}

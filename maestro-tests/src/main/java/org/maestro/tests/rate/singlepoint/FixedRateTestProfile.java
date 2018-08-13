@@ -19,14 +19,15 @@ package org.maestro.tests.rate.singlepoint;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.common.ConfigurationWrapper;
-import org.maestro.common.duration.DurationCount;
+import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.duration.TestDuration;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestProfile;
 import org.maestro.tests.SinglePointProfile;
 import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import static org.maestro.client.Maestro.set;
 
 /**
  * A test profile for fixed rate tests
@@ -35,10 +36,10 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestProfile.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
-    protected int rate;
+    private int rate;
     protected int warmUpRate;
-    protected int parallelCount;
-    protected int warmUpParallelCount;
+    private int parallelCount;
+    private int warmUpParallelCount;
     private String brokerURL;
 
     private int maximumLatency = 0;
@@ -156,57 +157,57 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
 
     @Override
     public long getEstimatedCompletionTime() {
-        if (duration instanceof DurationCount) {
-            return CompletionTime.estimate(duration, getRate());
-        }
-        else {
-            return duration.getNumericDuration();
-        }
+        return getEstimatedCompletionTime(duration, getRate());
     }
 
     public long getWarmUpEstimatedCompletionTime() {
         return CompletionTime.estimate(getDuration().getWarmUpDuration(), warmUpRate);
     }
 
-    protected void apply(final Maestro maestro, boolean warmUp) throws MaestroException {
+    protected void apply(final Maestro maestro, boolean warmUp) {
         logger.info("Setting endpoint URL to {}", getSendReceiveURL());
-        maestro.setBroker(getSendReceiveURL());
+        set(maestro::setBroker, getSendReceiveURL());
 
         if (warmUp) {
             logger.info("Setting warm-up rate to {}", warmUpRate);
-            maestro.setRate(warmUpRate);
+            set(maestro::setRate, warmUpRate);
 
             TestDuration warmUpDuration = getDuration().getWarmUpDuration();
-            long balancedDuration = Math.round(warmUpDuration.getNumericDuration() / getParallelCount());
+            long balancedDuration = Math.round((double) warmUpDuration.getNumericDuration() / (double) getParallelCount());
 
             logger.info("Setting warm-up duration to {}", balancedDuration);
-            maestro.setDuration(balancedDuration);
+            set(maestro::setDuration, balancedDuration);
 
             logger.info("Setting warm-up parallel count to {}", this.warmUpParallelCount);
-            maestro.setParallelCount(this.warmUpParallelCount);
+            set(maestro::setParallelCount, this.warmUpParallelCount);
         }
         else {
             logger.info("Setting test rate to {}", getRate());
-            maestro.setRate(rate);
+            set(maestro::setRate, rate);
 
             logger.info("Setting test duration to {}", getDuration());
-            maestro.setDuration(this.getDuration().toString());
+            set(maestro::setDuration, this.getDuration().toString());
 
             logger.info("Setting parallel count to {}", this.parallelCount);
-            maestro.setParallelCount(this.parallelCount);
+            set(maestro::setParallelCount, this.parallelCount);
         }
 
         logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
-        maestro.setFCL(getMaximumLatency());
+        set(maestro::setFCL, getMaximumLatency());
 
         logger.info("Setting message size to {}", getMessageSize());
-        maestro.setMessageSize(getMessageSize());
+        set(maestro::setMessageSize, getMessageSize());
 
         if (getManagementInterface() != null) {
             if (getInspectorName() != null) {
                 logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
                         getInspectorName());
-                maestro.setManagementInterface(getManagementInterface());
+                try {
+                    set(maestro::setManagementInterface, getManagementInterface());
+                }
+                catch (NotEnoughRepliesException ne) {
+                    logger.warn("Apparently no inspector nodes are enabled on this cluster. Ignoring ...");
+                }
             }
         }
 
@@ -214,27 +215,27 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
             if (getExtPointBranch() != null) {
                 logger.info("Setting the extension point source to {} using the {} branch", getExtPointSource(),
                         getExtPointBranch());
-                maestro.sourceRequest(getExtPointSource(), getExtPointBranch());
+                set(maestro::sourceRequest, getExtPointSource(), getExtPointBranch());
             }
         }
 
         if (getExtPointCommand() != null) {
             logger.info("Setting command to Agent execution to {}", getExtPointCommand());
-            maestro.userCommand(0, getExtPointCommand());
+            set(maestro::userCommand, 0L, getExtPointCommand());
         }
     }
 
     @Override
-    public void apply(final Maestro maestro) throws MaestroException {
+    public void apply(final Maestro maestro) {
         logger.info("Applying test execution profile");
         apply(maestro, false);
-        logger.info("Estimated time for test completion: {} secs", getEstimatedCompletionTime());
+        logger.info("Estimated time for test completion: {} seconds", getEstimatedCompletionTime());
     }
 
-    public void warmUp(final Maestro maestro) throws MaestroException {
+    public void warmUp(final Maestro maestro) {
         logger.info("Applying test warm-up profile");
         apply(maestro, true);
-        logger.info("Estimated time for warm-up completion: {} secs", getWarmUpEstimatedCompletionTime());
+        logger.info("Estimated time for warm-up completion: {} seconds", getWarmUpEstimatedCompletionTime());
     }
 
     @Override

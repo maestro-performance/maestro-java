@@ -143,7 +143,7 @@
 
                                 <tr>
                                     <td>Durable</td>
-                                    <td>{{ durable | default ('unknown') }}</td>
+                                    <td>{{ durable | default ('unset (client default)') }}</td>
                                 </tr>
 
                                 <tr>
@@ -269,35 +269,35 @@
                         -->
                         <tr>
                             <td>Total Count </td>
-                            <td>{{ latencyTotalCount | round(0) }} messages</td>
+                            <td>{{ latencyTotalCount }} messages</td>
                         </tr>
                         <tr>
                             <td>Max Latency</td>
-                            <td>{{ latencyMaxValue | round(4) }} μs</td>
+                            <td>{{ latencyMaxValue }} ns</td>
                         </tr>
                         <tr>
                             <td>99.99ᵗʰ Percentile</td>
-                            <td>{{ latency9999th | round(4) }} μs</td>
+                            <td>{{ latency9999th }} ns</td>
                         </tr>
                         <tr>
                             <td>99.9ᵗʰ Percentile</td>
-                            <td>{{ latency999th | round(4) }} μs</td>
+                            <td>{{ latency999th }} ns</td>
                         </tr>
                         <tr>
                             <td>99ᵗʰ Percentile</td>
-                            <td>{{ latency99th | round(4) }} μs</td>
+                            <td>{{ latency99th }} ns</td>
                         </tr>
                         <tr>
                             <td>95ᵗʰ Percentile</td>
-                            <td>{{ latency95th | round(4) }} μs</td>
+                            <td>{{ latency95th }} ns</td>
                         </tr>
                         <tr>
                             <td>90ᵗʰ Percentile</td>
-                            <td>{{ latency90th | round(4) }} μs</td>
+                            <td>{{ latency90th }} ns</td>
                         </tr>
                         <tr>
                             <td>50ᵗʰ Percentile</td>
-                            <td>{{ latency50th | round(4) }} μs</td>
+                            <td>{{ latency50th }} ns</td>
                         </tr>
                         </tbody>
                     </table>
@@ -344,32 +344,32 @@
                             <tbody>
                             <tr>
                                 <td>Maximum Rate</td>
-                                <td>{{ rateMax | round(6) }}</td>
+                                <td>{{ rateMax }} msg/sec</td>
                             </tr>
                             <tr>
                                 <td>Minimum Rate</td>
-                                <td>{{ rateMin | round(6) }}</td>
+                                <td>{{ rateMin }} msg/sec</td>
                             </tr>
                             <tr>
                                 <td>Rate Samples</td>
-                                <td>{{ rateSamples | round(0) }}</td>
+                                <td>{{ rateSamples | round(0) }} records</td>
                             </tr>
                             <tr>
                                 <td>Geometric Mean</td>
-                                <td>{{ rateGeometricMean | round(6) }}</td>
+                                <td>{{ rateGeometricMean | round(2) }} msg/sec</td>
                             </tr>
                             <tr>
                                 <td>Standard Deviation</td>
-                                <td>{{ rateStandardDeviation | round(6) }}</td>
+                                <td>{{ rateStandardDeviation | round(2) }}</td>
                             </tr>
                             <tr>
                                 <td>Rate Error Count</td>
-                                <td>{{ rateErrorCount}}</td>
+                                <td>{{ rateErrorCount}} messages</td>
                             </tr>
 
                             <tr>
                                 <td>Skipped Rate Records</td>
-                                <td>{{ rateSkipCount }}</td>
+                                <td>{{ rateSkipCount }} messages</td>
                             </tr>
                             </tbody>
                         </table>

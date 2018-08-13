@@ -36,6 +36,9 @@ import org.junit.*;
 import org.junit.runner.RunWith;
 
 import java.util.List;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
@@ -57,16 +60,26 @@ public class ScriptTest extends EndToEndTest {
     protected Maestro maestro;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         LogConfigurator.silent();
+        System.setProperty("maestro.mqtt.no.reuse", "true");
+
+        miniSendingPeer.start();
+        miniReceivingPeer.start();
+    }
+
+    @After
+    public void tearDown() throws Exception {
+        miniSendingPeer.stop();
+        miniReceivingPeer.stop();
     }
 
     @Test
-    public void testPing() {
+    public void testPing() throws InterruptedException, ExecutionException, TimeoutException {
         System.out.println("Sending the ping request");
-        maestro.pingRequest();
-
-        List<MaestroNote> replies = maestro.collect(1000, 10, 2);
+        List<? extends MaestroNote> replies = maestro
+                .pingRequest()
+                .get(10, TimeUnit.SECONDS);
 
         assertTrue(replies.size() == 2);
 
@@ -76,11 +89,11 @@ public class ScriptTest extends EndToEndTest {
     }
 
     @Test
-    public void testSetFixedMessageSize() {
+    public void testSetFixedMessageSize() throws ExecutionException, InterruptedException, TimeoutException {
         System.out.println("Sending the set fixed message size request");
-        maestro.setMessageSize(100);
-
-        List<MaestroNote> replies = maestro.collect(1000, 10, 2);
+        List<? extends MaestroNote> replies = maestro
+                .setMessageSize(100)
+                .get(10, TimeUnit.SECONDS);
 
         assertTrue(replies.size() == 2);
 
@@ -90,13 +103,12 @@ public class ScriptTest extends EndToEndTest {
     }
 
     @Test
-    public void testSetVariableMessageSize() {
+    public void testSetVariableMessageSize() throws ExecutionException, InterruptedException, TimeoutException {
         System.out.println("Sending the set variable message size request");
-        maestro.setMessageSize("~100");
+        List<? extends MaestroNote> replies = maestro.setMessageSize("~100")
+                .get(10, TimeUnit.SECONDS);
 
-        List<MaestroNote> replies = maestro.collect(1000, 10, 2);
-
-        assertTrue(replies.size() == 2);
+        assertTrue("Current size = " + replies.size(), replies.size() == 2);
 
         MaestroNote note = replies.get(0);
         assertEquals(note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);
@@ -104,11 +116,11 @@ public class ScriptTest extends EndToEndTest {
     }
 
     @Test
-    public void testSetBroker() {
+    public void testSetBroker() throws InterruptedException, ExecutionException, TimeoutException {
         System.out.println("Sending the set broker request");
-        maestro.setBroker("amqp://localhost/unit.test.queue");
-
-        List<MaestroNote> replies = maestro.collect(1000, 10, 2);
+        List<? extends MaestroNote> replies = maestro
+                .setBroker("amqp://localhost/unit.test.queue")
+                .get(10, TimeUnit.SECONDS);
 
         assertTrue(replies.size() == 2);
 
@@ -118,11 +130,11 @@ public class ScriptTest extends EndToEndTest {
     }
 
     @Test
-    public void testSetParallelCount() {
+    public void testSetParallelCount() throws InterruptedException, ExecutionException, TimeoutException {
         System.out.println("Sending the set parallel count request");
-        maestro.setParallelCount(100);
-
-        List<MaestroNote> replies = maestro.collect(1000, 10, 2);
+        List<? extends MaestroNote> replies = maestro
+                .setParallelCount(100)
+                .get(10, TimeUnit.SECONDS);
 
         assertTrue(replies.size() == 2);
 
@@ -132,11 +144,11 @@ public class ScriptTest extends EndToEndTest {
     }
 
     @Test
-    public void testSetFCL() {
+    public void testSetFCL() throws InterruptedException, ExecutionException, TimeoutException {
         System.out.println("Sending the set fail condition request");
-        maestro.setFCL(100);
-
-        List<MaestroNote> replies = maestro.collect(1000, 10, 2);
+        List<? extends MaestroNote> replies = maestro
+                .setFCL(100)
+                .get(10, TimeUnit.SECONDS);
 
         assertTrue(replies.size() == 2);
 
@@ -148,13 +160,12 @@ public class ScriptTest extends EndToEndTest {
     /*
      * Deliberately marked as ignored because this feature is not yet complete
      */
-    @Ignore
     @Test
-    public void testStatsRequest() {
+    public void testStatsRequest() throws InterruptedException, ExecutionException, TimeoutException {
         System.out.println("Sending the stats request");
-        maestro.statsRequest();
-
-        List<MaestroNote> replies = maestro.collect(1000, 10, 2);
+        List<? extends MaestroNote> replies = maestro
+                .statsRequest()
+                .get(10, TimeUnit.SECONDS);
 
         assertTrue(replies.size() == 2);
 

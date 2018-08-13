@@ -17,10 +17,17 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageUnpacker;
+
+import java.io.IOException;
 
 public class FlushRequest extends MaestroRequest<MaestroEventListener> {
     public FlushRequest() {
         super(MaestroCommand.MAESTRO_NOTE_FLUSH);
+    }
+
+    public FlushRequest(final MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_FLUSH, unpacker);
     }
 
     @Override

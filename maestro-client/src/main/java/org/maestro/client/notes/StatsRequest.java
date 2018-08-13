@@ -17,10 +17,17 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageUnpacker;
+
+import java.io.IOException;
 
 public class StatsRequest extends MaestroRequest<MaestroEventListener> {
     public StatsRequest() {
         super(MaestroCommand.MAESTRO_NOTE_STATS);
+    }
+
+    public StatsRequest(final MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_STATS, unpacker);
     }
 
     @Override

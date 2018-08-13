@@ -18,314 +18,64 @@ package org.maestro.tests.rate;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
-import org.maestro.client.callback.MaestroNoteCallback;
-import org.maestro.client.notes.StatsResponse;
-import org.maestro.client.notes.TestFailedNotification;
-import org.maestro.client.notes.TestSuccessfulNotification;
 import org.maestro.common.ConfigurationWrapper;
-import org.maestro.common.NodeUtils;
-import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.common.duration.DurationCount;
 import org.maestro.reports.downloaders.ReportsDownloader;
-import org.maestro.tests.AbstractTestExecutor;
+import org.maestro.tests.callbacks.StatsCallBack;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
+import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.time.Duration;
-import java.time.Instant;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.concurrent.*;
 
 /**
- * A test executor that uses fixed rates
+ * A test executor that uses fixed rates and warms-up before the test
  */
-public class FixedRateTestExecutor extends AbstractTestExecutor {
-    private static final class StatsCallBack implements MaestroNoteCallback {
-        private static final Logger logger = LoggerFactory.getLogger(StatsCallBack.class);
-
-        private final FixedRateTestExecutor executor;
-        private final Map<String, Long> counters = new HashMap<>();
-
-        StatsCallBack(FixedRateTestExecutor executor) {
-            this.executor = executor;
-        }
-
-        private void reset() {
-            counters.clear();
-        }
-
-        @Override
-        public void call(MaestroNote note) {
-            if (!executor.warmUp || !executor.running) {
-                return;
-            }
-
-            if (note instanceof StatsResponse) {
-                StatsResponse statsResponse = (StatsResponse) note;
-                logger.debug("Received stats {}", statsResponse);
-
-                int targetRate = executor.testProfile.getRate();
-                if (statsResponse.getRate() < (targetRate / 2) && statsResponse.getRate() > 0) {
-                    logger.warn("The warm-up duration might expire of time instead of count because the current " +
-                            "rate {} is much lower than the target rate {}", statsResponse.getRate(),
-                            executor.testProfile.getRate());
-                }
-
-                updateCounters(statsResponse);
-
-                long messageCount = counters.values().stream().mapToLong(Number::longValue).sum();
-                logger.debug("Current message count: {}", messageCount);
-                if (messageCount >= DurationCount.WARM_UP_COUNT) {
-                    logger.info("The warm-up count has been reached: {} of {}",
-                            messageCount, DurationCount.WARM_UP_COUNT);
-                    this.executor.stopServices();
-                    reset();
-                }
-                else {
-                    final int maxDuration = 3;
-                    Instant now = Instant.now();
-
-                    Duration elapsed = Duration.between(now, executor.startTime);
-                    if (elapsed.getSeconds() > (Duration.ofMinutes(maxDuration).getSeconds())) {
-                        logger.warn("Stopping the warm-up because the maximum duration was reached");
-
-                        this.executor.stopServices();
-                        reset();
-                    }
-                }
-            }
-        }
-
-        private void updateCounters(StatsResponse statsResponse) {
-            final String name = statsResponse.getName();
-            String type = NodeUtils.getTypeFromName(name);
-            if (type.equals("inspector") || type.equals("agent")) {
-                return;
-            }
-
-            Long nodeCount = counters.get(name);
-            if (nodeCount == null) {
-                nodeCount = statsResponse.getCount();
-            }
-            else {
-                nodeCount += statsResponse.getCount();
-            }
-            counters.put(name, nodeCount);
-        }
-    }
-
-    private static final class TestNotificationCallBack implements MaestroNoteCallback {
-        private static final Logger logger = LoggerFactory.getLogger(TestNotificationCallBack.class);
-
-        final FixedRateTestExecutor executor;
-
-        public TestNotificationCallBack(FixedRateTestExecutor executor) {
-            this.executor = executor;
-        }
-
-        @Override
-        public void call(MaestroNote note) {
-            if (!executor.running) {
-                return;
-            }
-
-            if (note instanceof TestSuccessfulNotification) {
-                executor.successNotifications++;
-                executor.testProcessor.processNotifySuccess((TestSuccessfulNotification) note);
-            }
-            else {
-                if (note instanceof TestFailedNotification) {
-                    executor.failedNotifications++;
-                    executor.testProcessor.processNotifyFail((TestFailedNotification) note);
-                }
-            }
-
-            int totalNotifications = executor.failedNotifications + executor.successNotifications;
-            if (executor.numPeers > 0 && totalNotifications > 0) {
-                if (totalNotifications >= executor.numPeers) {
-                    logger.info("Received the required amount of notifications");
-                    executor.running = false;
-                }
-            }
-        }
-    }
-
+public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestExecutor.class);
-    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
-    private final FixedRateTestProfile testProfile;
 
-    private static final long coolDownPeriod;
-    private final FixedRateTestProcessor testProcessor;
-
-    private int numPeers = 0;
-    private volatile int successNotifications = 0;
-    private volatile int failedNotifications = 0;
-    private volatile boolean running = false;
-    private Instant startTime;
     private volatile boolean warmUp = false;
-
-    static {
-        coolDownPeriod = config.getLong("test.fixedrate.cooldown.period", 1) * 1000;
-    }
 
     public FixedRateTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
                                  final FixedRateTestProfile testProfile) {
-        super(maestro, reportsDownloader);
+        super(maestro, reportsDownloader, testProfile);
 
-        this.testProfile = testProfile;
-        this.testProcessor = new FixedRateTestProcessor(testProfile, reportsDownloader);
-
-        List<MaestroNoteCallback> callbackList = getMaestro().getCollector().getCallbacks();
-        callbackList.add(new StatsCallBack(this));
-        callbackList.add(new TestNotificationCallBack(this));
+        getMaestro().getCollector().addCallback(new StatsCallBack(this));
     }
 
-    private void reset() {
-        numPeers = 0;
-        successNotifications = 0;
-        failedNotifications = 0;
-        running = false;
+    protected void reset() {
         warmUp = false;
     }
 
-    private boolean runTest() {
-        try {
-            // Clean up the topic
-            getMaestro().collect();
-
-            updatePeerCount();
-            if (numPeers == 0) {
-                logger.error("There are not enough peers to run the test");
-
-                return false;
-            }
-
-            resolveDataServers();
-            processReplies(testProcessor, 60, numPeers);
-
-            if (warmUp) {
-                getReportsDownloader().getOrganizer().getTracker().setCurrentTest(0);
-                testProfile.warmUp(getMaestro());
-            }
-            else {
-                getReportsDownloader().getOrganizer().getTracker().setCurrentTest(1);
-                testProfile.apply(getMaestro());
-            }
-
-            if (testProfile.getInspectorName() != null) {
-                startServices(testProfile.getInspectorName());
-            }
-            else {
-                startServices();
-            }
-            running = true;
-            startTime = Instant.now();
-
-            long repeatCounter = getRepeat();
-            while (running) {
-                getMaestro().statsRequest();
-                Thread.sleep(1000);
-                repeatCounter--;
-                if (repeatCounter == 0) {
-                    break;
-                }
-            }
-
-            int totalNotifications = getTotalNotifications();
-
-            if (totalNotifications > 0) {
-                if (failedNotifications > 0) {
-                    logger.info("Test {} completed unsuccessfully", (warmUp ? "warm-up" : "run"));
-                } else {
-                    logger.info("Test {} completed successfully", (warmUp ? "warm-up" : "run"));
-                    return true;
-                }
-            }
-            else {
-                logger.warn("Not enough notifications were received to assert the test completion status");
-            }
-        }
-        catch (Exception e) {
-            logger.error("Error: {}", e.getMessage(), e);
-        }
-        finally {
-            reset();
-            stopServices();
-        }
-
-        return false;
+    protected String phaseName() {
+        return warmUp ? "warm-up" : "run";
     }
 
-    private int getTotalNotifications() throws InterruptedException {
-        int timeoutStopWorkerMillis = config.getInt("maestro.worker.stop.timeout", 1000);
-
-        int totalNotifications;
-        if (running) {
-            int notificationRetries = (testProfile.getParallelCount() * (timeoutStopWorkerMillis / 1000) * 2) + 1;
-
-            do {
-                totalNotifications = failedNotifications + successNotifications;
-                if (totalNotifications < numPeers) {
-                    logger.info("Not enough notifications received yet: received {} of {}", totalNotifications, numPeers);
-                    logger.info("Backends might be quiescing after the test execution");
-                    notificationRetries--;
-                    Thread.sleep(1000);
-                }
-                else {
-                    logger.info("Received all the required notifications: {} of {}", totalNotifications, numPeers);
-                    break;
-                }
-
-            } while (canWait(totalNotifications, notificationRetries));
-        }
-        else {
-            totalNotifications = failedNotifications + successNotifications;
-        }
-        return totalNotifications;
-    }
-
-    private boolean canWait(int totalNotifications, int notificationRetries) {
-        if (totalNotifications < numPeers) {
-            return notificationRetries > 0;
-        }
-
-        return false;
-    }
-
-    private long getRepeat() {
+    protected long getTimeout() {
         long repeat;
 
         if (warmUp) {
-            repeat = testProfile.getWarmUpEstimatedCompletionTime();
+            repeat = getTestProfile().getWarmUpEstimatedCompletionTime();
         }
         else {
-            repeat = testProfile.getEstimatedCompletionTime();
+            repeat = getTestProfile().getEstimatedCompletionTime();
         }
-        return repeat;
+
+        return repeat + CompletionTime.getDeadline();
     }
 
-    private void updatePeerCount() throws InterruptedException {
-        if (testProfile.getManagementInterface() != null) {
-            numPeers = getNumPeers("sender", "receiver", "inspector");
-        }
-        else {
-            numPeers = getNumPeers("sender", "receiver");
-        }
-    }
 
     public boolean run() {
         logger.info("Starting the warm up execution");
 
         warmUp = true;
-        if (runTest()) {
+        if (runTest(0, getTestProfile()::warmUp)) {
             try {
                 Thread.sleep(getCoolDownPeriod());
                 logger.info("Starting the test");
 
                 warmUp = false;
-                return runTest();
+                return runTest(1, getTestProfile()::apply);
             } catch (InterruptedException e) {
                 logger.warn("The test execution was interrupted");
             }
@@ -335,8 +85,7 @@ public class FixedRateTestExecutor extends AbstractTestExecutor {
         return false;
     }
 
-    @Override
-    public long getCoolDownPeriod() {
-        return coolDownPeriod;
+    public boolean isWarmUp() {
+        return warmUp;
     }
 }

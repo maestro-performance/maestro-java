@@ -25,7 +25,7 @@ import java.io.IOException;
 
 
 /**
- * A GET response provide peers w/ a reponse for their GET requests
+ * A GET response provide peers w/ a response for their GET requests
  */
 public class GetResponse extends MaestroResponse {
     private GetOption option;

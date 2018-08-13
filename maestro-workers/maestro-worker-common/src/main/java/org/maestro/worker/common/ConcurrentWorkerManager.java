@@ -19,39 +19,32 @@ package org.maestro.worker.common;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.evaluators.HardLatencyEvaluator;
 import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.evaluators.SoftLatencyEvaluator;
 import org.maestro.common.worker.*;
+import org.maestro.worker.common.container.initializers.TestWorkerInitializer;
 import org.maestro.worker.common.ds.MaestroDataServer;
+import org.maestro.worker.common.watchdog.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Objects;
 
-import static org.maestro.worker.common.WorkerStateInfoUtil.isCleanExit;
 
 /**
  * A specialized worker manager that can manage concurrent test workers (ie.: senders/receivers)
  */
 public class ConcurrentWorkerManager extends MaestroWorkerManager implements MaestroReceiverEventListener,MaestroSenderEventListener {
     private static final Logger logger = LoggerFactory.getLogger(ConcurrentWorkerManager.class);
-    private static final long TIMEOUT_STOP_WORKER_MILLIS;
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
     private final WorkerContainer container;
     private final Class<MaestroWorker> workerClass;
     private final File logDir;
-    private Thread latencyWriterThread;
-    private Thread rateWriterThread;
     private LatencyEvaluator latencyEvaluator;
-
-    static {
-        TIMEOUT_STOP_WORKER_MILLIS = config.getLong("maestro.worker.stop.timeout", 1000);
-    }
 
     /**
      * Constructor
@@ -66,7 +59,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
                                    final Class<MaestroWorker> workerClass, final MaestroDataServer dataServer) {
         super(maestroURL, role, host, dataServer);
 
-        this.container = WorkerContainer.getInstance();
+        this.container = new WorkerContainer();
         this.workerClass = workerClass;
         this.logDir = logDir;
     }
@@ -76,7 +69,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
      * Starts the workers and add them to a container
      * @return true if started correctly or false otherwise
      */
-    private boolean doWorkerStart() {
+    private boolean doWorkerStart(final MaestroNote note) {
         if (container.isTestInProgress()) {
             logger.warn("Trying to start a new test, but a test execution is already in progress");
             getClient().notifyFailure("Test already in progress");
@@ -91,53 +84,79 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         try {
             super.writeTestProperties(testLogDir);
 
-            final List<MaestroWorker> workers = new ArrayList<>();
+            final TestWorkerInitializer testWorkerInitializer = new TestWorkerInitializer(workerClass, getWorkerOptions());
 
-            logger.debug("Starting the workers {}", workerClass);
-            container.start(workerClass, workers, this::onStoppedWorkers, latencyEvaluator);
+            int count = getWorkerOptions().getParallelCountAsInt();
+            logger.debug("Creating {} workers of type {}", count, workerClass);
+            final List<MaestroWorker> workers = container.create(testWorkerInitializer, count);
 
             if (workers.isEmpty()) {
-                logger.warn("No workers has been started!");
-            } else {
-                logger.debug("Creating the latency writer thread");
+                logger.warn("No workers were created");
 
-                WorkerLatencyWriter latencyWriter;
-                if (latencyEvaluator == null) {
-                    latencyWriter = new WorkerLatencyWriter(testLogDir, workers);
-                }
-                else {
-                    long reportingInterval = config.getLong("maestro.worker.reporting.interval", 10000);
-                    latencyWriter = new WorkerLatencyWriter(testLogDir, workers, latencyEvaluator,
-                            reportingInterval);
-                }
-                this.latencyWriterThread = new Thread(latencyWriter);
-
-                logger.debug("Creating the rate writer thread");
-                WorkerChannelWriter rateWriter = new WorkerChannelWriter(testLogDir, workers);
-                this.rateWriterThread = new Thread(rateWriter);
-
-                logger.debug("Starting the writers threads");
-                this.latencyWriterThread.start();
-                this.rateWriterThread.start();
-
-                //TODO handle shutdown gently
-                Runtime.getRuntime().addShutdownHook(new Thread(this::shutdownAndWaitWriters));
+                return false;
             }
 
-            getClient().replyOk();
+            logger.debug("Removing previous observers");
+            container.getObservers().clear();
+
+            if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
+                logger.debug("Setting up the observer: worker latency writer");
+                WorkerLatencyWriter latencyWriter = getLatencyWriter(testLogDir, workers);
+                container.getObservers().add(new LatencyWriterObserver(latencyWriter));
+            }
+
+            logger.debug("Setting up the observer: worker rate writer");
+            WorkerRateWriter workerRateWriter = new WorkerRateWriter(testLogDir, workers);
+            container.getObservers().add(new RateWriterObserver(workerRateWriter));
+
+            logger.debug("Setting up the observer: worker stale check");
+            WorkerStaleChecker workerStaleChecker = new WorkerStaleChecker(workers);
+            container.getObservers().add(new StaleObserver(workerStaleChecker));
+
+            // Note: it uses the base log dir because of the symlinks
+            logger.debug("Setting up the observer: worker shutdown observer");
+            WorkerShutdownObserver workerShutdownObserver = new WorkerShutdownObserver(logDir, getClient());
+            container.getObservers().add(workerShutdownObserver);
+
+            if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
+                logger.debug("Setting up the observer: drain observer");
+                container.getObservers().add(new DrainObserver(getWorkerOptions(), testWorkerInitializer, getClient()));
+            }
+
+            logger.debug("Setting up the observer: worker cleanup observer");
+            container.getObservers().add(new CleanupObserver());
+
+            logger.debug("Starting the workers {}", workerClass);
+
+            container.start(latencyEvaluator);
+
+            getClient().replyOk(note);
             return true;
         } catch (Exception e) {
             logger.error("Unable to start workers from the container: {}", e.getMessage(), e);
-            getClient().replyInternalError();
+            getClient().replyInternalError(note, "Unable to start workers from the container: %s", e.getMessage());
         }
 
         return false;
+    }
+
+    private WorkerLatencyWriter getLatencyWriter(File testLogDir, List<MaestroWorker> workers) {
+
+        if (latencyEvaluator == null) {
+            return new WorkerLatencyWriter(testLogDir, workers);
+        }
+        else {
+            long reportingInterval = config.getLong("maestro.worker.reporting.interval", 10000);
+            return new WorkerLatencyWriter(testLogDir, workers, latencyEvaluator,
+                    reportingInterval);
+        }
     }
 
 
     private void setupLatencyEvaluator() {
         Double givenLatency = super.getWorkerOptions().getFclAsDouble();
         if (givenLatency == null) {
+            this.latencyEvaluator = null;
             return;
         }
 
@@ -159,136 +178,11 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         }
     }
 
-    private void shutdownAndWaitWriters(){
-        if (this.rateWriterThread != null) {
-            this.rateWriterThread.interrupt();
-        }
-        if (this.latencyWriterThread != null) {
-            this.latencyWriterThread.interrupt();
-        }
-        if (this.rateWriterThread != null) {
-            try {
-                this.rateWriterThread.join();
-            } catch (InterruptedException e) {
-                logger.error("Rate writer thread was interrupted: {}", e.getMessage(), e);
-            }
-        }
-        if (this.latencyWriterThread != null) {
-            try {
-                this.latencyWriterThread.join();
-            } catch (InterruptedException e) {
-                logger.error("Latency writer thread was interrupted: {}", e.getMessage(), e);
-            }
-        }
-
-        this.latencyEvaluator = null;
-    }
-
-    private static long awaitWorkers(long startWaitingWorkersEpochMillis, final List<WorkerRuntimeInfo> workers) {
-        if (workers.isEmpty()) {
-            return 0;
-        }
-
-        int runningCount = workers.size();
-        final long deadLine = startWaitingWorkersEpochMillis + (runningCount * TIMEOUT_STOP_WORKER_MILLIS * 2);
-
-        // workers are being stopped, just need to check if they have finished their jobs
-        long activeThreads = runningCount;
-        while (activeThreads > 0 && System.currentTimeMillis() < deadLine) {
-            workers.stream()
-                    .filter(workerRuntimeInfo -> workerRuntimeInfo.thread.isAlive())
-                    .parallel()
-                    .forEach(workerRuntimeInfo -> finishWorkers(workerRuntimeInfo));
-
-            activeThreads = workers.stream()
-                    .filter(workerRuntimeInfo -> workerRuntimeInfo.thread.isAlive())
-                    .count();
-
-            logger.info("There are {} workers threads still alive", activeThreads);
-        }
-
-        return activeThreads;
-    }
-
-    private static void finishWorkers(final WorkerRuntimeInfo workerRuntimeInfo) {
-        try {
-            logger.debug("Waiting for worker thread {}", workerRuntimeInfo.thread.getId());
-            workerRuntimeInfo.thread.join(TIMEOUT_STOP_WORKER_MILLIS);
-        } catch (InterruptedException e) {
-            //no op, just retry
-        } finally {
-            if (workerRuntimeInfo.thread.isAlive()) {
-                logger.debug("Worker thread {} is still alive", workerRuntimeInfo.thread.getId());
-            }
-        }
-    }
-
-    /**
-     * It should be called by a different thread/concurrently too (eg WatchDog) so it can't modify any this.* members or workers too.
-     */
-    private void onStoppedWorkers(List<WorkerRuntimeInfo> workers) {
-        boolean failed = false;
-        String exceptionMessage = null;
-
-        try {
-            if (this.rateWriterThread != null || this.latencyWriterThread != null) {
-                final long startWaitingWorkers = System.currentTimeMillis();
-                if (awaitWorkers(startWaitingWorkers, workers) > 0) {
-                    logger.warn("The writer will be forced to stop with alive workers");
-                }
-
-                shutdownAndWaitWriters();
-                final long elapsedMillis = System.currentTimeMillis() - startWaitingWorkers;
-                logger.info("Awaiting workers and shutting down writers took {} ms", elapsedMillis);
-            }
-
-            for (WorkerRuntimeInfo ri : workers) {
-                WorkerStateInfo wsi = ri.worker.getWorkerState();
-
-                if (ri.thread != null && ri.thread.isAlive()) {
-                    logger.warn("Worker {} is reportedly still alive", ri.thread.getId());
-                    ri.thread.interrupt();
-                }
-
-                if (!isCleanExit(wsi)) {
-                    failed = true;
-                    exceptionMessage = Objects.requireNonNull(wsi.getException()).getMessage();
-
-                    break;
-                }
-            }
-        } finally {
-            TestLogUtils.createSymlinks(logDir, failed);
-
-            sendTestNotification(failed, exceptionMessage);
-
-            setWorkerOptions(new WorkerOptions());
-
-            workers.clear();
-        }
-    }
-
-    private void sendTestNotification(boolean failed, String exceptionMessage) {
-
-        if (failed) {
-            if (exceptionMessage != null) {
-                getClient().notifyFailure(exceptionMessage);
-            }
-            else {
-                getClient().notifyFailure("Unhandled worker error");
-            }
-        }
-        else {
-            getClient().notifySuccess("Test completed successfully");
-        }
-    }
-
     @Override
     public void handle(SetRequest note) {
         super.handle(note);
-        container.setWorkerOptions(getWorkerOptions());
 
-        getClient().replyOk();
+        getClient().replyOk(note);
     }
 
     @Override
@@ -300,36 +194,36 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     }
 
     @Override
-    public void handle(StartReceiver note) {
+    public void handle(final StartReceiver note) {
         logger.info("Start receiver request received");
 
         if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
-            if (!doWorkerStart()) {
+            if (!doWorkerStart(note)) {
                 logger.warn("::handle {} can't start worker", note);
             }
         }
     }
 
     @Override
-    public void handle(StartSender note) {
+    public void handle(final StartSender note) {
         logger.info("Start sender request received");
 
         if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
-            if (!doWorkerStart()) {
+            if (!doWorkerStart(note)) {
                 logger.warn("::handle {} can't start worker", note);
             }
         }
     }
 
     @Override
-    public void handle(StopReceiver note) {
+    public void handle(final StopReceiver note) {
         logger.info("Stop receiver request received");
 
         if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
+            getClient().replyOk(note);
+
             container.stop();
         }
-
-        getClient().replyOk();
     }
 
     @Override
@@ -337,10 +231,10 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         logger.info("Stop sender request received");
 
         if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
+            getClient().replyOk(note);
+
             container.stop();
         }
-
-        getClient().replyOk();
     }
 
 
@@ -361,7 +255,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         // Explanation: the role is the name as the role (ie: clientName@host)
         statsResponse.setRole(getClientName());
 
-        LatencyStats latencyStats = container.latencyStats();
+        LatencyStats latencyStats = container.latencyStats(latencyEvaluator);
         if (latencyStats != null) {
             statsResponse.setLatency(latencyStats.getLatency());
         }
@@ -409,4 +303,67 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
         super.handle(note, logDir);
     }
+
+    private boolean drainStart(final WorkerOptions drainOptions, final MaestroNote note) {
+        if (container.isTestInProgress()) {
+            logger.warn("Trying to start a new test, but a test execution is already in progress");
+            getClient().notifyFailure("Test already in progress");
+
+            return false;
+        }
+
+        try {
+            final TestWorkerInitializer testWorkerInitializer = new TestWorkerInitializer(workerClass, drainOptions);
+
+            int count = getWorkerOptions().getParallelCountAsInt();
+            logger.debug("Creating {} workers of type {}", count, workerClass);
+            final List<MaestroWorker> workers = container.create(testWorkerInitializer, count);
+
+            if (workers.isEmpty()) {
+                logger.warn("No workers were created");
+
+                return false;
+            }
+
+            logger.debug("Removing previous observers");
+            container.getObservers().clear();
+
+            // Note: it uses the base log dir because of the symlinks
+            logger.debug("Setting up the observer: worker shutdown observer");
+            WorkerShutdownObserver workerShutdownObserver = new WorkerShutdownObserver(logDir, getClient());
+            container.getObservers().add(workerShutdownObserver);
+
+            logger.debug("Setting up the observer: worker cleanup observer");
+            container.getObservers().add(new CleanupObserver());
+
+            logger.debug("Starting the workers {}", workerClass);
+
+            container.start(null);
+
+            getClient().replyOk(note);
+            return true;
+        } catch (Exception e) {
+            logger.error("Unable to start workers from the container: {}", e.getMessage(), e);
+            getClient().replyInternalError(note,"Unable to start workers from the container: %s", e.getMessage());
+        }
+
+        return false;
+    }
+
+    @Override
+    public void handle(final DrainRequest note) {
+        if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
+            WorkerOptions drainOptions = new WorkerOptions();
+
+            drainOptions.setBrokerURL(note.getUrl());
+            drainOptions.setDuration(note.getDuration());
+            drainOptions.setParallelCount(note.getParallelCount());
+
+            if (!drainStart(drainOptions, note)) {
+                logger.error("Unable to start draining from the SUT");
+            }
+        }
+    }
+
+
 }

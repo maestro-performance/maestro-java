@@ -18,7 +18,7 @@
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
-@Grab(group='org.maestro', module='maestro-client', version='1.3.7')
+@Grab(group='org.maestro', module='maestro-client', version='1.4.0')
 
 import org.maestro.client.Maestro
 import org.maestro.client.notes.GetResponse
@@ -26,6 +26,8 @@ import org.maestro.common.LogConfigurator
 import org.maestro.common.NodeUtils
 import org.maestro.common.client.notes.MaestroNote
 import org.maestro.reports.downloaders.BrokerDownloader
+
+import java.util.concurrent.CompletableFuture
 
 /**
  * This sample script shows how to use the Maestro client API to send a flush request to
@@ -51,14 +53,14 @@ maestro = new Maestro(maestroURL)
  * First, register available data servers on the cluster
  */
 
-maestro.getDataServer();
+CompletableFuture<List<? extends MaestroNote>> future = maestro.getDataServer();
 
 
 /**
  * Collect any available response
  */
 println "Collecting replies"
-List<MaestroNote> replies = maestro.collect(1000, 10)
+List<MaestroNote> replies = future.get()
 
 BrokerDownloader downloader = new BrokerDownloader(maestro, args[0])
 

@@ -18,12 +18,11 @@
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
-@Grab(group='org.maestro', module='maestro-client', version='1.3.7')
+@Grab(group='org.maestro', module='maestro-client', version='1.4.0')
 
 import org.maestro.client.Maestro
-import org.maestro.client.exchange.MaestroNoteProcessor
 import org.maestro.common.client.notes.MaestroNote
-import org.maestro.client.notes.PingResponse
+import java.util.concurrent.CompletableFuture;
 
 /**
  * This example demonstrates how to use a note processor to process
@@ -33,12 +32,6 @@ import org.maestro.client.notes.PingResponse
 /**
  * Defines a processor class
  */
-class PingProcessor extends MaestroNoteProcessor {
-    @Override
-    protected boolean processPingResponse(PingResponse note) {
-        println  "Elapsed time from " + note.getName() + ": " + note.getElapsed() + " ms"
-    }
-}
 
 /**
  * Collects the broker URL from the MAESTRO_BROKER environment variable
@@ -51,18 +44,20 @@ maestro = new Maestro(maestroURL)
 /**
  * Issue a ping request
  */
-maestro.pingRequest()
+CompletableFuture<List<? extends MaestroNote>> pingFuture = maestro.pingRequest()
 
 /**
  * Collect the replies
  */
 println "Collecting replies "
-List<MaestroNote> replies = maestro.collect(1000, 10)
+List<? extends MaestroNote> replies = pingFuture.get()
 
 /**
  * Use a processor to iterate over the replies
  */
-(new PingProcessor()).process(replies)
+replies.each { MaestroNote note ->
+    println "Ping replies: " + note
+}
 
 /**
  * Clean shutdown

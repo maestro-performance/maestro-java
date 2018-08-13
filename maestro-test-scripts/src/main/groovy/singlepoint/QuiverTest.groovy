@@ -21,8 +21,8 @@ package singlepoint
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
-@Grab(group='org.maestro', module='maestro-tests', version='1.3.7')
-@Grab(group='org.maestro', module='maestro-reports', version='1.3.7')
+@Grab(group='org.maestro', module='maestro-tests', version='1.4.0')
+@Grab(group='org.maestro', module='maestro-reports', version='1.4.0')
 @Grab(group='net.orpiske', module='quiver-data-plotter', version='1.0.0')
 
 import org.maestro.client.Maestro
@@ -56,6 +56,11 @@ class QuiverExecutor extends FlexibleTestExecutor {
         maestro.userCommand(0, "rhea")
         // Wait for up to 2 minutes for the test to complete
         Thread.sleep(60*1000*2)
+    }
+
+    @Override
+    boolean run() {
+        return run(0)
     }
 }
 
@@ -155,8 +160,6 @@ testProfile.setSourceURL(sourceURL)
 
 println "Creating the executor"
 QuiverExecutor executor = new QuiverExecutor(maestro, reportsDownloader, testProfile)
-
-executor.setNotificationRetries(120)
 
 int ret = 0;
 

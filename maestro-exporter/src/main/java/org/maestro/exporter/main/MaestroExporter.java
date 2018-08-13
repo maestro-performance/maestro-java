@@ -35,6 +35,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.List;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ExecutionException;
 
 
 public class MaestroExporter {
@@ -82,7 +84,7 @@ public class MaestroExporter {
         pingInfo.register();
     }
 
-    private void processNotes(List<MaestroNote> notes) {
+    private void processNotes(List<? extends MaestroNote> notes) {
         for (MaestroNote note : notes) {
             if (note instanceof StatsResponse) {
                 StatsResponse statsResponse = (StatsResponse) note;
@@ -131,14 +133,37 @@ public class MaestroExporter {
             boolean running = true;
             while (running) {
                 logger.debug("Sending requests");
-                maestro.statsRequest();
-                maestro.pingRequest();
+                CompletableFuture<List<? extends MaestroNote>> statsFutures = maestro.statsRequest();
+                CompletableFuture<List<? extends MaestroNote>> pingFutures = maestro.pingRequest();
 
-                final int collectionInterval = 1000;
-                List<MaestroNote> notes = maestro.collect(collectionInterval, 5);
+                List<? extends MaestroNote> stats = null;
 
-                if (notes != null) {
-                    processNotes(notes);
+                try {
+                    stats = statsFutures.get();
+                } catch (InterruptedException e) {
+                    logger.debug("Interrupted. Aborting");
+                    break;
+                } catch (ExecutionException e) {
+                    logger.error("Error executing the stats request: {}", e.getMessage(), e);
+                }
+
+                List<? extends MaestroNote> pings = null;
+                try {
+                    pings = pingFutures.get();
+                } catch (InterruptedException e) {
+                    logger.debug("Interrupted. Aborting");
+                    break;
+                } catch (ExecutionException e) {
+                    logger.error("Error executing the stats request: {}", e.getMessage(), e);
+                }
+
+
+                if (stats != null) {
+                    processNotes(stats);
+                }
+
+                if (pings != null) {
+                    processNotes(pings);
                 }
 
                 try {

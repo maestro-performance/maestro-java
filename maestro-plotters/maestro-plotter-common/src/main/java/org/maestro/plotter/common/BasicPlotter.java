@@ -17,7 +17,6 @@
 package org.maestro.plotter.common;
 
 import org.maestro.common.exceptions.MaestroException;
-import org.maestro.plotter.common.exceptions.EmptyDataSet;
 import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
 import org.maestro.plotter.common.graph.AbstractPlotter;
 import org.maestro.plotter.common.properties.PropertyWriter;

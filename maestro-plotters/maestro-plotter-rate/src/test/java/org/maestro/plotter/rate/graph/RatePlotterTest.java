@@ -16,39 +16,41 @@
 
 package org.maestro.plotter.rate.graph;
 
-import org.junit.Before;
 import org.junit.Test;
-import org.maestro.plotter.common.exceptions.EmptyDataSet;
-import org.maestro.plotter.common.exceptions.IncompatibleDataSet;
-import org.maestro.plotter.rate.DefaultRateReader;
 import org.maestro.plotter.rate.RateData;
-import org.maestro.plotter.rate.RateDataProcessor;
+import org.maestro.plotter.rate.RateDataReader;
 
 import java.io.File;
-import java.io.IOException;
 
 import static org.junit.Assert.assertTrue;
 
 public class RatePlotterTest {
-    private final String fileName = this.getClass().getResource("/data-ok/senderd-rate-01.csv.gz").getPath();
-    private RateData rateData;
+    protected RateData getData(final String resource) throws Exception {
+        final String fileName = this.getClass().getResource(resource).getPath();
 
-    @Before
-    public void setUp() throws Exception {
-        RateDataProcessor queueProcessor = new RateDataProcessor();
-        DefaultRateReader queueReader = new DefaultRateReader(queueProcessor);
-
-        rateData = queueReader.read(fileName);
+        RateDataReader queueReader = new RateDataReader();
+        return queueReader.read(fileName);
     }
 
-    @Test
-    public void testSenderPlot() throws EmptyDataSet, IncompatibleDataSet {
+    private void testPlot(final String resource, final String output) throws Exception {
+        RateData rateData = getData(resource);
+
         RatePlotter ratePlotter = new RatePlotter();
 
-        File sourceFile = new File(fileName);
-        File outputFile = new File(sourceFile.getParentFile(), "senderd-rate-01.png");
+        File sourceFile = new File(this.getClass().getResource(resource).getPath());
+        File outputFile = new File(sourceFile.getParentFile(), output);
 
         ratePlotter.plot(rateData, outputFile);
         assertTrue("The output file does not exist", outputFile.exists());
+    }
+
+    @Test
+    public void testSenderPlot() throws Exception {
+        testPlot("/data-ok/sender.dat", "senderd-rate-01.png");
+    }
+
+    @Test
+    public void testReceiverPlot() throws Exception {
+        testPlot("/data-ok/receiver.dat", "receiverd-rate-01.png");
     }
 }

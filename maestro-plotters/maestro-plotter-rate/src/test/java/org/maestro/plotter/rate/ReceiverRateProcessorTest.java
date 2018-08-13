@@ -16,24 +16,15 @@
 
 package org.maestro.plotter.rate;
 
-import org.junit.Before;
 import org.junit.Test;
 
 public class ReceiverRateProcessorTest extends CommonRateProcessorTest {
-    private final String fileName = this.getClass().getResource("/data-ok/receiverd-rate-01.csv.gz").getPath();
-    private RateData rateData;
-
-    @Before
-    public void setUp() throws Exception {
-        RateDataProcessor queueProcessor = new RateDataProcessor();
-        DefaultRateReader queueReader = new DefaultRateReader(queueProcessor);
-
-        rateData = queueReader.read(fileName);
-    }
 
     @Test
-    public void testRecordCount() {
-        final int periodCount = 11;
+    public void testRecordCount() throws Exception {
+        RateData rateData = getData("/data-ok/receiver.dat");
+
+        final int periodCount = 86400;
         super.testRecordCount(periodCount, rateData);
     }
 }

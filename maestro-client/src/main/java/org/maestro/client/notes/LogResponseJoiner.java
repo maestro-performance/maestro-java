@@ -11,7 +11,7 @@ public class LogResponseJoiner {
     private static final LogResponseJoiner instance = new LogResponseJoiner();
     private final Map<String, LogResponse> cache = new HashMap<>();
 
-    public static final LogResponseJoiner getInstance() {
+    public static LogResponseJoiner getInstance() {
         return instance;
     }
 

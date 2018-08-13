@@ -17,10 +17,17 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageUnpacker;
+
+import java.io.IOException;
 
 public class Halt extends MaestroRequest<MaestroEventListener> {
     public Halt() {
         super(MaestroCommand.MAESTRO_NOTE_HALT);
+    }
+
+    public Halt(MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_HALT, unpacker);
     }
 
     @Override

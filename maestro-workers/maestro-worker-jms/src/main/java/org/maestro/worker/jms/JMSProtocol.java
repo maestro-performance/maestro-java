@@ -31,6 +31,7 @@ import java.util.function.Function;
 /**
  * JMS Protocol
  */
+@SuppressWarnings("unused")
 public enum JMSProtocol {
     ARTEMIS(
             org.apache.activemq.artemis.jms.client.ActiveMQConnectionFactory::new,

@@ -39,8 +39,6 @@ public class WorkerTestRunner extends JmsTestRunner {
     private final List<MiniPeer> peers = new LinkedList<>();
     private final List<Maestro> maestroClientPeers = new LinkedList<>();
 
-
-
     public WorkerTestRunner(Class<?> klass) throws InitializationError {
         super(klass);
     }
@@ -51,14 +49,6 @@ public class WorkerTestRunner extends JmsTestRunner {
         }
 
         peers.clear();
-    }
-
-    private void resetMaestroClientPeers() {
-        for (Maestro maestro : maestroClientPeers) {
-           maestro.stop();
-        }
-
-        maestroClientPeers.clear();
     }
 
     @Override
@@ -99,7 +89,6 @@ public class WorkerTestRunner extends JmsTestRunner {
 
         MiniPeer miniPeer = new MiniPeer(peer.worker(), peer.maestroUrl(), peer.role(), peer.host());
 
-        miniPeer.start();
         peers.add(miniPeer);
 
         f.setAccessible(true);
@@ -111,8 +100,6 @@ public class WorkerTestRunner extends JmsTestRunner {
         logger.info("Injecting a receiving peer into the test object");
 
         MiniPeer miniPeer = new MiniPeer(peer.worker(), peer.maestroUrl(), peer.role(), peer.host());
-
-        miniPeer.start();
 
         peers.add(miniPeer);
 

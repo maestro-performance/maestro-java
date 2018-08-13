@@ -24,6 +24,8 @@ import com.rabbitmq.jms.admin.RMQConnectionFactory;
  */
 @SuppressWarnings("serial")
 public class MaestroRabbitMQConnectionFactory extends RMQConnectionFactory {
+
+    @SuppressWarnings("unused")
     public MaestroRabbitMQConnectionFactory(final String url) {
         super();
     }
