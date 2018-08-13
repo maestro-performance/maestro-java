@@ -114,7 +114,7 @@ public class BinaryRateWriter implements RateWriter {
         }
         else {
             long next = last + 1;
-            if (now != next) {
+            if (now != next && last != 0) {
                 logger.warn("Trying to save a non-sequential record: now {} / expected {}", now, next);
             }
         }
