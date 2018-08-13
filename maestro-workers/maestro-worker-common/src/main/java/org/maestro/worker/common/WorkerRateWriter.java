@@ -28,7 +28,7 @@ public class WorkerRateWriter implements Runnable {
     }
     private static final Logger logger = LoggerFactory.getLogger(WorkerRateWriter.class);
     private final Map<Class<?>, WriterCache> cachedWriters = new HashMap<>(4);
-    private List<? extends MaestroWorker> workers;
+    private final List<? extends MaestroWorker> workers;
 
     private volatile boolean running = false;
 
