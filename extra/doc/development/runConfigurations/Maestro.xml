@@ -1,0 +1,7 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Maestro" type="CompoundRunConfigurationType" factoryName="Compound Run Configuration">
+    <toRun type="Application" name="Maestro Worker: JMS Receiver" />
+    <toRun type="Application" name="Maestro Worker: JMS Sender" />
+    <method v="2" />
+  </configuration>
+</component>
