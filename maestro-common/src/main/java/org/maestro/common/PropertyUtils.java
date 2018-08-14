@@ -79,17 +79,14 @@ public class PropertyUtils {
             } catch (URISyntaxException e) {
                 e.printStackTrace();
             }
+
+            if (((String) value).toLowerCase().startsWith("amqps")) {
+                context.put("encrypted", "true");
+            }
         }
         else {
             context.put((String) key, value);
         }
-
-        String protocol = (String) context.get("protocol");
-        if (protocol != null && protocol.equals("amqps")) {
-            context.put("encrypted", "true");
-        }
-
-
     }
 
 }
