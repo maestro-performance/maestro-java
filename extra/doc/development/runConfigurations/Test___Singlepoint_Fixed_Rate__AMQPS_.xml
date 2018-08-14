@@ -1,0 +1,30 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Test - Singlepoint Fixed Rate (AMQPS)" type="Application" factoryName="Application" singleton="true">
+    <envs>
+      <env name="SEND_RECEIVE_URL" value="amqps://localhost:5672/queue?durable=true&amp;limitDestinations=10&amp;transport.trustAll=true&amp;transport.verifyHost=false" />
+      <env name="INSPECTOR_NAME" value="ArtemisInspector" />
+      <env name="MAESTRO_BROKER" value="mqtt://localhost:1884" />
+      <env name="MANAGEMENT_INTERFACE" value="http://admin:admin@localhost:8161/console/jolokia" />
+      <env name="MESSAGE_SIZE" value="100" />
+      <env name="PARALLEL_COUNT" value="10" />
+      <env name="RATE" value="0" />
+      <env name="TEST_DURATION" value="90s" />
+      <env name="DOWNLOADER_NAME" value="broker" />
+      <env name="WARM_UP" value="true" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.Main" />
+    <module name="maestro-cli" />
+    <option name="PROGRAM_PARAMETERS" value="exec -d $MODULE_DIR$/target/classes/reports -s $PROJECT_DIR$/maestro-test-scripts/src/main/groovy/singlepoint/FixedRateTest.groovy" />
+    <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.maestro.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
