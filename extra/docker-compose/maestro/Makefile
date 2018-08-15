@@ -1,5 +1,5 @@
-MAESTRO_VERSION=1.4.1
-MAESTRO_BRANCH=maestro-java-1.4.1
+MAESTRO_VERSION=1.5.0-SNAPSHOT
+MAESTRO_BRANCH=maestro-java-1.5.0-SNAPSHOT
 
 .PHONY: broker clean all client exporter
 

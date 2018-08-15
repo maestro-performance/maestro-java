@@ -21,8 +21,8 @@ package singlepoint
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
-@Grab(group='org.maestro', module='maestro-tests', version='1.4.1')
-@Grab(group='org.maestro', module='maestro-reports', version='1.4.1')
+@Grab(group='org.maestro', module='maestro-tests', version='1.5.0-SNAPSHOT')
+@Grab(group='org.maestro', module='maestro-reports', version='1.5.0-SNAPSHOT')
 @Grab(group='net.orpiske', module='quiver-data-plotter', version='1.0.0')
 
 import org.maestro.client.Maestro
