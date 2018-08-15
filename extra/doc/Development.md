@@ -89,3 +89,18 @@ Remote Debugging
 
 To enable remote debugging, export the variable MAESTRO_DEBUG and set it to "y". The test for the variable is case 
 sensitive. The debug port is set to 8000 for all components.
+
+Version bump
+----
+
+Run the following to bump the versions:
+
+```
+mvn versions:set -DnewVersion=new_version
+```
+
+And then the following to accept the changes:
+
+```
+mvn versions:commit
+```
