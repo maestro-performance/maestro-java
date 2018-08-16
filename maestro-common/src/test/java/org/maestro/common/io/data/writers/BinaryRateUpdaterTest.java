@@ -59,27 +59,28 @@ public class BinaryRateUpdaterTest {
 
             binaryRateUpdater.close();
 
-            BinaryRateReader reader = new BinaryRateReader(reportFile);
+            try (BinaryRateReader reader = new BinaryRateReader(reportFile)) {
 
-            FileHeader fileHeader = reader.getHeader();
-            assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
-            assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
+                FileHeader fileHeader = reader.getHeader();
+                assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
+                assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
 
-            // The file was generated w/ when the code was still marked as 1.3.8-SNAPSHOT
-            assertEquals(138, fileHeader.getMaestroVersion());
-            assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+                // The file was generated w/ when the code was still marked as 1.3.8-SNAPSHOT
+                assertEquals(138, fileHeader.getMaestroVersion());
+                assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
 
-            long count = 0;
-            RateEntry entry = reader.readRecord();
-            while (entry != null) {
-                count++;
-                assertEquals("Unexpected value", entry.getCount(), count * 3);
-                entry = reader.readRecord();
+                long count = 0;
+                RateEntry entry = reader.readRecord();
+                while (entry != null) {
+                    count++;
+                    assertEquals("Unexpected value", entry.getCount(), count * 3);
+                    entry = reader.readRecord();
+                }
+
+                long total = 86400;
+                assertEquals("The number of records don't match",
+                        total, count);
             }
-
-            long total = 86400;
-            assertEquals("The number of records don't match",
-                    total, count);
         }
         finally {
             clean(reportFile);
