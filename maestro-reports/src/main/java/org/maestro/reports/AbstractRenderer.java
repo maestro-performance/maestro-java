@@ -85,7 +85,9 @@ public abstract class AbstractRenderer {
     protected String render(final String name, final Map<String, Object> context) throws Exception {
         String text;
 
-        text = IOUtils.toString(this.getClass().getResourceAsStream(name), Charsets.UTF_8);
+        try (InputStream stream = this.getClass().getResourceAsStream(name)) {
+            text = IOUtils.toString(stream, Charsets.UTF_8);
+        }
 
         return jinjava.render(text, context);
     }
