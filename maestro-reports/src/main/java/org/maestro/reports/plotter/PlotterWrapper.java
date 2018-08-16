@@ -31,9 +31,6 @@ public interface PlotterWrapper {
     default void handlePlotException(final File file, final Throwable t) {
         Logger logger = LoggerFactory.getLogger(PlotterWrapper.class);
 
-        logger.error("Unable to plot report file {}: {}", file.getPath(), t.getMessage());
-        logger.trace("Exception: ", t);
-
         ReportFile reportFile = new MptReportFile(null, file);
         reportFile.setReportSuccessful(false);
         reportFile.setReportFailure(t);
@@ -42,8 +39,10 @@ public interface PlotterWrapper {
 
         prop.setProperty("error", "true");
 
-
         if (t != null) {
+            logger.error("Unable to plot report file {}: {}", file.getPath(), t.getMessage());
+            logger.trace("Exception: ", t);
+
             String message = t.getMessage();
 
             if (message != null) {
@@ -54,6 +53,7 @@ public interface PlotterWrapper {
             }
         }
         else {
+            logger.error("Unable to plot report file {}", file.getPath());
             prop.setProperty("message", "Undefined error");
         }
     }
