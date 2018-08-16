@@ -39,7 +39,6 @@ public class Main {
         System.out.println("Actions:");
         System.out.println("   download");
         System.out.println("   report");
-        System.out.println("   data");
         System.out.println("   extension-point");
         System.out.println("   maestro");
         System.out.println("   exec");
@@ -77,10 +76,6 @@ public class Main {
 
         Action action;
         switch (first) {
-            case "data": {
-                action = new DataAction(newArgs);
-                break;
-            }
             case "report": {
                 action = new ReportAction(newArgs);
                 break;
