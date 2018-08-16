@@ -52,8 +52,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     private int number;
 
     private final Supplier<? extends SenderClient> clientFactory;
-    @SuppressWarnings("CanBeFinal")
-    private volatile WorkerStateInfo workerStateInfo = new WorkerStateInfo();
+    private final WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
     public JMSSenderWorker() {
         this(JMSSenderClient::new);
