@@ -99,6 +99,7 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_START_AGENT:
             case MAESTRO_NOTE_STOP_AGENT:{
                 logger.warn("Unexpected maestro command for a response: {}", tmpCommand);
+                throw new MalformedNoteException("Invalid response command: " + tmpCommand);
             }
             default: {
                 logger.error("Type unknown: {}", command.getClass());
