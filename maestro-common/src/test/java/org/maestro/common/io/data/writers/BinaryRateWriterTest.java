@@ -90,23 +90,24 @@ public class BinaryRateWriterTest {
         try {
             long total = generateDataFilePredictable(reportFile);
 
-            BinaryRateReader reader = new BinaryRateReader(reportFile);
+            try (BinaryRateReader reader = new BinaryRateReader(reportFile)) {
 
-            FileHeader fileHeader = reader.getHeader();
-            assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
-            assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
-            assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
-            assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+                FileHeader fileHeader = reader.getHeader();
+                assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
+                assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
+                assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
+                assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
 
-            long count = 0;
-            RateEntry entry = reader.readRecord();
-            while (entry != null) {
-                count++;
-                entry = reader.readRecord();
+                long count = 0;
+                RateEntry entry = reader.readRecord();
+                while (entry != null) {
+                    count++;
+                    entry = reader.readRecord();
+                }
+
+                assertEquals("The number of records don't match",
+                        total, count);
             }
-
-            assertEquals("The number of records don't match",
-                    total, count);
         }
         finally {
             clean(reportFile);

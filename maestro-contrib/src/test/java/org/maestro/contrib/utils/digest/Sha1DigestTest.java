@@ -46,13 +46,13 @@ public class Sha1DigestTest {
      */
     @Test
     public void testCalculateInputStream() throws IOException {
-        InputStream inputStream = getClass().getResourceAsStream("message.txt");
+        try (InputStream inputStream = getClass().getResourceAsStream("message.txt")) {
+            Sha1Digest sha1Digest = new Sha1Digest();
 
-        Sha1Digest sha1Digest = new Sha1Digest();
+            String ret = sha1Digest.calculate(inputStream);
 
-        String ret = sha1Digest.calculate(inputStream);
-
-        assertEquals("The message digest do not match", MESSAGE_DIGEST, ret);
+            assertEquals("The message digest do not match", MESSAGE_DIGEST, ret);
+        }
     }
 
 

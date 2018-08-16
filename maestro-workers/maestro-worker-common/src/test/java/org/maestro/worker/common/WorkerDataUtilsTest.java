@@ -74,8 +74,9 @@ public class WorkerDataUtilsTest {
         String path = this.getClass().getResource(".").getPath();
         File reportDir = new File(path);
 
-        BinaryRateWriter writer = WorkerDataUtils.writer(reportDir, new DummySender());
-        assertNotNull("The writer should not be null", writer);
-        assertEquals("The report path does not match", new File(reportDir, "sender.dat"), writer.reportFile());
+        try (BinaryRateWriter writer = WorkerDataUtils.writer(reportDir, new DummySender())) {
+            assertNotNull("The writer should not be null", writer);
+            assertEquals("The report path does not match", new File(reportDir, "sender.dat"), writer.reportFile());
+        }
     }
 }
