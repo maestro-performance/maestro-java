@@ -28,6 +28,7 @@ import org.maestro.plotter.inspector.common.CommonMemoryData;
 
 import java.awt.*;
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 class CommonMemoryPlotter<T extends CommonMemoryData<?>> extends DefaultHistogramPlotter<T> {
@@ -40,11 +41,13 @@ class CommonMemoryPlotter<T extends CommonMemoryData<?>> extends DefaultHistogra
         XYChart chart = createChart();
 
 
-        List<Long> scaledUsed = reportData.getUsed(FileUtils.ONE_MB);
-        validateDataSet(reportData.getPeriods(), scaledUsed);
+        final List<Long> scaledUsed = reportData.getUsed(FileUtils.ONE_MB);
+        final List<Date> periods = reportData.getPeriods();
+
+        validateDataSet(periods, scaledUsed);
 
         // Series
-        XYSeries used = chart.addSeries("Used", reportData.getPeriods(), scaledUsed);
+        XYSeries used = chart.addSeries("Used", periods, scaledUsed);
 
         used.setLineColor(XChartSeriesColors.BLUE);
         used.setMarkerColor(Color.LIGHT_GRAY);
@@ -54,7 +57,7 @@ class CommonMemoryPlotter<T extends CommonMemoryData<?>> extends DefaultHistogra
         List<Long> scaledCommited = reportData.getCommitted(FileUtils.ONE_MB);
 
         // Series
-        XYSeries committed = chart.addSeries("Committed", reportData.getPeriods(), scaledCommited);
+        XYSeries committed = chart.addSeries("Committed", periods, scaledCommited);
 
         committed.setLineColor(XChartSeriesColors.GREEN);
         committed.setMarkerColor(Color.LIGHT_GRAY);
@@ -65,7 +68,7 @@ class CommonMemoryPlotter<T extends CommonMemoryData<?>> extends DefaultHistogra
         List<Long> scaledMax = reportData.getMax(FileUtils.ONE_MB);
 
         // Series
-        XYSeries max = chart.addSeries("Max", reportData.getPeriods(), scaledMax);
+        XYSeries max = chart.addSeries("Max", periods, scaledMax);
 
         max.setLineColor(XChartSeriesColors.RED);
         max.setMarkerColor(Color.LIGHT_GRAY);

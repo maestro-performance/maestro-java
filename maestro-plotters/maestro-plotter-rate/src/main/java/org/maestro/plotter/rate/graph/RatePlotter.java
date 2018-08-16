@@ -27,6 +27,7 @@ import org.maestro.plotter.rate.RateData;
 
 import java.awt.*;
 import java.io.File;
+import java.util.Date;
 import java.util.List;
 
 public class RatePlotter extends DefaultHistogramPlotter<RateData> {
@@ -39,10 +40,11 @@ public class RatePlotter extends DefaultHistogramPlotter<RateData> {
         XYChart chart = createChart();
 
         List<Long> rateValues = reportData.getRateValues();
-        validateDataSet(reportData.getPeriods(), rateValues);
+        List<Date> periods = reportData.getPeriods();
+        validateDataSet(periods, rateValues);
 
         // Series
-        XYSeries used = chart.addSeries("Rate", reportData.getPeriods(), rateValues);
+        XYSeries used = chart.addSeries("Rate", periods, rateValues);
 
         used.setLineColor(XChartSeriesColors.BLUE);
         used.setMarkerColor(Color.LIGHT_GRAY);
