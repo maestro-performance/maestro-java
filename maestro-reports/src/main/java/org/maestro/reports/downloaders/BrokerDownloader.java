@@ -105,10 +105,10 @@ public class BrokerDownloader implements ReportsDownloader {
             if (note instanceof LogResponse) {
                 LogResponse logResponse = (LogResponse) note;
                 if (logResponse.getLocationType() == LocationType.LAST_FAILED) {
-                    logger.info("About to download last failed reports");
+                    logger.info("About to download last failed reports from {}", ((LogResponse) note).getName());
                 }
                 else {
-                    logger.info("About to download last successful reports");
+                    logger.info("About to download last successful reports from {}", ((LogResponse) note).getName());
                 }
                 try {
                     save(logResponse);
