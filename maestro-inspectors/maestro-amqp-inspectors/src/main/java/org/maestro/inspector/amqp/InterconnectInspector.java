@@ -157,12 +157,13 @@ public class InterconnectInspector implements MaestroInspector {
         File logDir = TestLogUtils.nextTestLogDir(this.baseLogDir);
         InspectorProperties inspectorProperties = new InspectorProperties();
 
-        RouteLinkInfoWriter routerLinkInfoWriter = new RouteLinkInfoWriter(logDir, "routerLink");
-        ConnectionsInfoWriter connectionsInfoWriter = new ConnectionsInfoWriter(logDir, "connections");
-        QDMemoryInfoWriter qdMemoryInfoWriter = new QDMemoryInfoWriter(logDir, "qdmemory");
-        GeneralInfoWriter generalInfoWriter = new GeneralInfoWriter(logDir, "general");
 
-        try {
+        try (RouteLinkInfoWriter routerLinkInfoWriter = new RouteLinkInfoWriter(logDir, "routerLink");
+             ConnectionsInfoWriter connectionsInfoWriter = new ConnectionsInfoWriter(logDir, "connections");
+             QDMemoryInfoWriter qdMemoryInfoWriter = new QDMemoryInfoWriter(logDir, "qdmemory");
+             GeneralInfoWriter generalInfoWriter = new GeneralInfoWriter(logDir, "general");
+            )
+        {
             startedEpochMillis = System.currentTimeMillis();
             running = true;
 
@@ -210,10 +211,6 @@ public class InterconnectInspector implements MaestroInspector {
         } finally {
             startedEpochMillis = Long.MIN_VALUE;
             closeConnection();
-            routerLinkInfoWriter.close();
-            connectionsInfoWriter.close();
-            qdMemoryInfoWriter.close();
-            generalInfoWriter.close();
         }
     }
 

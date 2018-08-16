@@ -137,14 +137,15 @@ public class ArtemisInspector implements MaestroInspector {
         File logDir = TestLogUtils.nextTestLogDir(this.baseLogDir);
         InspectorProperties inspectorProperties = new InspectorProperties();
 
-        JVMMemoryInfoWriter heapMemoryWriter = new JVMMemoryInfoWriter(logDir, "heap");
-        JVMMemoryInfoWriter jvmMemoryAreasWriter = new JVMMemoryInfoWriter(logDir, "memory-areas");
         RuntimeInfoWriter runtimeInfoWriter = new RuntimeInfoWriter(inspectorProperties);
         OSInfoWriter osInfoWriter = new OSInfoWriter(inspectorProperties);
-        QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues");
         ProductInfoWriter productInfoWriter = new ProductInfoWriter(inspectorProperties);
 
-        try {
+        try (JVMMemoryInfoWriter heapMemoryWriter = new JVMMemoryInfoWriter(logDir, "heap");
+             JVMMemoryInfoWriter jvmMemoryAreasWriter = new JVMMemoryInfoWriter(logDir, "memory-areas");
+             QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues");
+             )
+        {
             startedEpochMillis = System.currentTimeMillis();
             running = true;
 
@@ -194,15 +195,6 @@ public class ArtemisInspector implements MaestroInspector {
         }
         finally {
             startedEpochMillis = Long.MIN_VALUE;
-
-            try {
-                heapMemoryWriter.close();
-                jvmMemoryAreasWriter.close();
-                queueInfoWriter.close();
-            }
-            catch (Exception e) {
-                logger.warn(e.getMessage(), e);
-            }
         }
     }
 
