@@ -59,7 +59,9 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
             }
         }
 
-        collected.add(note);
+        synchronized (this) {
+            collected.add(note);
+        }
 
         if (logger.isTraceEnabled()) {
             logger.trace("Message {} arrived waking up {} monitors", note.getMaestroCommand(), monitored.size());
