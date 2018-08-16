@@ -24,16 +24,6 @@ public class DownloadProcessor {
         this.reportsDownloader = reportsDownloader;
     }
 
-    private void doProcess(final String name, final String resultType) {
-        if (name != null) {
-            final String type = NodeUtils.getTypeFromName(name);
-            final String host = dataServers.get(name);
-
-            reportsDownloader.downloadLastSuccessful(type, host);
-
-        }
-    }
-
     /**
      * Download the reports for test successful notifications
      * @param note the success notification
@@ -42,7 +32,10 @@ public class DownloadProcessor {
     public boolean download(final TestSuccessfulNotification note) {
         String name = note.getName();
         if (name != null) {
-            doProcess(name, "success");
+            final String type = NodeUtils.getTypeFromName(name);
+            final String host = dataServers.get(name);
+
+            reportsDownloader.downloadLastSuccessful(type, host);
 
             return true;
         }
@@ -59,7 +52,10 @@ public class DownloadProcessor {
     public boolean download(final TestFailedNotification note) {
         String name = note.getName();
         if (name != null) {
-            doProcess(name, "failed");
+            final String type = NodeUtils.getTypeFromName(name);
+            final String host = dataServers.get(name);
+
+            reportsDownloader.downloadLastFailed(type, host);
 
             return true;
         }
