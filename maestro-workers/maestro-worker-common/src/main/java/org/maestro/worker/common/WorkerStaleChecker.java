@@ -51,7 +51,7 @@ public class WorkerStaleChecker {
         }
 
         if (staleChecker.isStale(count)) {
-            workers.get(0).fail(new MaestroException("Worker has staled after sending %d messages", count));
+            workers.get(0).fail(new MaestroException("Worker has staled after exchanging %d messages", count));
         }
     }
 }
