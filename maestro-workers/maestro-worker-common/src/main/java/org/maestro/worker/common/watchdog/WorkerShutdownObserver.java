@@ -131,18 +131,25 @@ public class WorkerShutdownObserver implements WatchdogObserver {
             }
 
             for (WorkerRuntimeInfo ri : workers) {
-                WorkerStateInfo wsi = ri.worker.getWorkerState();
-
                 if (ri.thread != null && ri.thread.isAlive()) {
                     logger.warn("Worker {} is reportedly still alive", ri.thread.getId());
                     ri.thread.interrupt();
                 }
 
-                if (!isCleanExit(wsi)) {
-                    failed = true;
-                    exceptionMessage = Objects.requireNonNull(wsi.getException()).getMessage();
+                if (ri.worker != null) {
+                    WorkerStateInfo wsi = ri.worker.getWorkerState();
+                    if (wsi == null) {
+                        logger.error("Invalid worker state information");
 
-                    break;
+                        continue;
+                    } else {
+                        if (!isCleanExit(wsi)) {
+                            failed = true;
+                            exceptionMessage = Objects.requireNonNull(wsi.getException()).getMessage();
+
+                            break;
+                        }
+                    }
                 }
             }
         }
