@@ -48,7 +48,6 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     //TODO it could be injected by outside because the precision could be improved using ad-hoc clock timers
     private static final long HIGHEST_TRACKABLE_VALUE = TimeUnit.HOURS.toMicros(1);
     private final SingleWriterRecorder latencyRecorder = new SingleWriterRecorder(HIGHEST_TRACKABLE_VALUE, 3);
-    //TODO the size need to be configured
 
     private final WorkerStateInfo workerStateInfo = new WorkerStateInfo();
 
