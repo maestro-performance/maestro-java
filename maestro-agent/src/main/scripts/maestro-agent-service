@@ -39,16 +39,17 @@ function eerror() {
 function start() {
     echo -en "Starting the daemon: "
     "${installdir}/bin/maestro-agent" -m "${MAESTRO_BROKER}" -l "${MAESTRO_LOG_DIR}" "${@}" >/dev/null 2>/dev/null &
-    if kill -0 %% ; then
+    pid=$!
+    if ! kill -0 ${pid} ; then
         eerror "Maestro agent did not start successfully"
         exit 1
     fi
-    disown %%
+    disown ${pid}
     echo -e "Maestro agent started:${GREEN} ${pid} ${RESET}"
 }
 
 function stop() {
-    for pid in $(pgrep -f "bin/maestro-agent$") ; do
+    for pid in $(pgrep -f "bin/maestro-agent") ; do
         echo "Killing maestro-agent ${pid}"
         kill -TERM ${pid}
     done
