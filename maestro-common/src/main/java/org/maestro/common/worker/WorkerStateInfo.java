@@ -42,8 +42,8 @@ public final class WorkerStateInfo {
     }
 
     private volatile boolean running = false;
-    private WorkerExitStatus exitStatus = WorkerExitStatus.WORKER_EXIT_STOPPED;
-    private Exception exception = null;
+    private volatile WorkerExitStatus exitStatus = WorkerExitStatus.WORKER_EXIT_STOPPED;
+    private volatile Exception exception = null;
 
     /**
      * Whether the worker is running
@@ -61,7 +61,7 @@ public final class WorkerStateInfo {
      * @param exitStatus the exit status for the worker {@link WorkerExitStatus}
      * @param exception Any exception raised in case of errors
      */
-    public void setState(boolean running, WorkerExitStatus exitStatus, Exception exception) {
+    public synchronized void setState(boolean running, WorkerExitStatus exitStatus, Exception exception) {
         this.exitStatus = exitStatus;
         this.exception = exception;
         //uses the this.running store to write release this.exitStatus and this.exception
