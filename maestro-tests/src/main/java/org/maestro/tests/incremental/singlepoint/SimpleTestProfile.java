@@ -30,14 +30,6 @@ public class SimpleTestProfile extends IncrementalTestProfile implements SingleP
 
     private String brokerURL;
 
-    public String getBrokerURL() {
-        return getSendReceiveURL();
-    }
-
-    public void setBrokerURL(String brokerURL) {
-        setSendReceiveURL(brokerURL);
-    }
-
     @Override
     public void setSendReceiveURL(final String url) {
         this.brokerURL = url;
@@ -49,8 +41,8 @@ public class SimpleTestProfile extends IncrementalTestProfile implements SingleP
     }
 
     public void apply(Maestro maestro) {
-        logger.info("Setting broker to {}", getBrokerURL());
-        set(maestro::setBroker, getBrokerURL());
+        logger.info("Setting broker to {}", getSendReceiveURL());
+        set(maestro::setBroker, getSendReceiveURL());
 
         logger.info("Setting rate to {}", getRate());
         set(maestro::setRate, rate);

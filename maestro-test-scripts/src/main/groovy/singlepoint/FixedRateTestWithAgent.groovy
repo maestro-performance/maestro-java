@@ -87,7 +87,7 @@ ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, ma
 
 FixedRateTestProfile testProfile = new FixedRateTestProfile()
 
-testProfile.setBrokerURL(brokerURL)
+testProfile.setSendReceiveURL(brokerURL)
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(messageSize)
 

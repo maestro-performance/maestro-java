@@ -137,14 +137,6 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
         this.messageSize = messageSize;
     }
 
-    public String getBrokerURL() {
-        return getSendReceiveURL();
-    }
-
-    public void setBrokerURL(final String brokerURL) {
-        setSendReceiveURL(brokerURL);
-    }
-
     @Override
     public void setSendReceiveURL(String url) {
         this.brokerURL = url;

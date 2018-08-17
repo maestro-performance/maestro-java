@@ -155,7 +155,7 @@ reportsDownloader.addReportResolver("agent", new QuiverReportResolver())
 println "Creating the profile"
 FlexibleTestProfile testProfile = new FlexibleTestProfile()
 
-testProfile.setBrokerURL(brokerURL)
+testProfile.setSendReceiveURL(brokerURL)
 testProfile.setSourceURL(sourceURL)
 
 println "Creating the executor"
