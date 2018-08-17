@@ -31,7 +31,7 @@ public class DownloaderBuilder {
         }
 
         final ReportsDownloader reportsDownloader;
-        if (name != null && name.toLowerCase().equals("broker")) {
+        if (name != null && name.equalsIgnoreCase("broker")) {
             logger.debug("Using the broker report downloader");
             reportsDownloader = new BrokerDownloader(maestro, baseDir);
         } else {
@@ -59,7 +59,7 @@ public class DownloaderBuilder {
         }
 
         final ReportsDownloader reportsDownloader;
-        if (name != null && name.toLowerCase().equals("broker")) {
+        if (name != null && name.equalsIgnoreCase("broker")) {
             reportsDownloader = new BrokerDownloader(maestro, organizer);
         } else {
             reportsDownloader = new DefaultDownloader(organizer);

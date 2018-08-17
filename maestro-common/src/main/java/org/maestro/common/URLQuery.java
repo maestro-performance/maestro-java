@@ -88,11 +88,11 @@ public class URLQuery {
             return defaultValue;
         }
 
-        if (value.toLowerCase().equals("true")) {
+        if (value.equalsIgnoreCase("true")) {
             return true;
         }
         else {
-            if (value.toLowerCase().equals("false")) {
+            if (value.equalsIgnoreCase("false")) {
                 return false;
             }
         }
