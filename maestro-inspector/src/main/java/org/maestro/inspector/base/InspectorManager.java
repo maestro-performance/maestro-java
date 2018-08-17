@@ -31,7 +31,6 @@ import java.util.HashMap;
 public class InspectorManager extends MaestroWorkerManager implements MaestroInspectorEventListener {
     private static final Logger logger = LoggerFactory.getLogger(InspectorManager.class);
     private Thread inspectorThread;
-    private InspectorContainer inspectorContainer;
     private MaestroInspector inspector;
     private final File logDir;
     private final HashMap<String, String> inspectorMap = new HashMap<>();
@@ -77,7 +76,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
 
             inspector.setWorkerOptions(getWorkerOptions());
 
-            inspectorContainer = new InspectorContainer(inspector);
+            InspectorContainer inspectorContainer = new InspectorContainer(inspector);
 
             inspectorThread = new Thread(inspectorContainer);
             inspectorThread.start();

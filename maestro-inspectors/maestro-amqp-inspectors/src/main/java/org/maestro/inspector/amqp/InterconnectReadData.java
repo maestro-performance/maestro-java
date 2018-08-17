@@ -26,7 +26,6 @@ public class InterconnectReadData {
     private final Destination destination;
     private final MessageConsumer responseConsumer;
     private final MessageProducer requestProducer;
-    private final AbstractConfiguration config = ConfigurationWrapper.getConfig();
     private final long timeout;
 
     public InterconnectReadData(Session session,
@@ -38,6 +37,7 @@ public class InterconnectReadData {
         this.requestProducer = requestProducer;
         this.responseConsumer = responseConsumer;
 
+        AbstractConfiguration config = ConfigurationWrapper.getConfig();
         timeout = config.getInteger("inspector.amqp.management.timeout", 2000);
     }
 

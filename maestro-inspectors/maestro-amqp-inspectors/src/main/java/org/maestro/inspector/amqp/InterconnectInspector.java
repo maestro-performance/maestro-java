@@ -51,7 +51,6 @@ public class InterconnectInspector implements MaestroInspector {
     private TestDuration duration;
     private MaestroReceiver endpoint;
 
-    private ConnectionFactory connectionFactory;
     private Connection connection;
     private Session session;
     private MessageProducer messageProducer;
@@ -106,7 +105,7 @@ public class InterconnectInspector implements MaestroInspector {
     }
 
     private void connect() throws JMSException {
-        connectionFactory = new org.apache.qpid.jms.JmsConnectionFactory(url);
+        ConnectionFactory connectionFactory = new org.apache.qpid.jms.JmsConnectionFactory(url);
         Destination queue = new org.apache.qpid.jms.JmsQueue("$management");
 
         connection = connectionFactory.createConnection();

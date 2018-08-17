@@ -59,7 +59,6 @@ public class ArtemisInspector implements MaestroInspector {
     private MaestroReceiver endpoint;
 
     private ArtemisDataReader artemisDataReader;
-    private J4pClient j4p;
 
     private final int interval;
 
@@ -122,7 +121,7 @@ public class ArtemisInspector implements MaestroInspector {
     }
 
     private void connect() {
-        j4p = J4pClient.url(url)
+        J4pClient j4p = J4pClient.url(url)
                 .user(user)
                 .password(password)
                 .authenticator(new BasicAuthenticator().preemptive())

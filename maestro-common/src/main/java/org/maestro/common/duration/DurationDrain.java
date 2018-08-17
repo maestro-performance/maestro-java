@@ -26,13 +26,12 @@ public class DurationDrain extends DurationCount {
 
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
-    private final int drainRetries;
     private final StaleChecker staleChecker;
 
     public DurationDrain() {
         super(-1);
 
-        drainRetries = config.getInt("worker.auto.drain.retries", 10);
+        int drainRetries = config.getInt("worker.auto.drain.retries", 10);
         staleChecker = new NonProgressingStaleChecker(drainRetries);
     }
 

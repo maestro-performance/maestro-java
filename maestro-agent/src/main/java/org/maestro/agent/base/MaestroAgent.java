@@ -53,7 +53,6 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
 
     private static final Logger logger = LoggerFactory.getLogger(MaestroAgent.class);
     private final GroovyHandler groovyHandler;
-    private final AbstractConfiguration config = ConfigurationWrapper.getConfig();
     private final List<ExtensionPoint> extensionPoints = new LinkedList<>();
     private Thread thread;
 
@@ -70,6 +69,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public MaestroAgent(final String maestroURL, final PeerInfo peerInfo, MaestroDataServer dataServer) throws MaestroException {
         super(maestroURL, peerInfo, dataServer);
 
+        AbstractConfiguration config = ConfigurationWrapper.getConfig();
         String pathStr = config.getString("maestro.agent.ext.path.override", null);
 
         if (pathStr == null){
