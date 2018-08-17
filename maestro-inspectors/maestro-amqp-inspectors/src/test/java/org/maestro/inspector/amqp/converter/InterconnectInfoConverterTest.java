@@ -9,6 +9,7 @@ import static org.junit.Assert.*;
 
 public class InterconnectInfoConverterTest {
 
+    @SuppressWarnings("unchecked")
     @Test
     public void parseReceivedMessage() {
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
