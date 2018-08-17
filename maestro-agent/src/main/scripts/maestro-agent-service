@@ -49,7 +49,7 @@ function start() {
 }
 
 function stop() {
-    for pid in $(pgrep -f "bin/maestro-agent") ; do
+    for pid in $(pgrep -f ".*java.*bin/maestro-agent.*") ; do
         echo "Killing maestro-agent ${pid}"
         kill -TERM ${pid}
     done
