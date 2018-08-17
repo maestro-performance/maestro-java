@@ -53,13 +53,13 @@ CompletableFuture<List<? extends MaestroNote>> sourceFuture = maestro.sourceRequ
 
 
 println "Collecting the replies"
-List<? extends MaestroNote> sourceReplies = sourceFuture.get(12000);
+List<? extends MaestroNote> sourceReplies = sourceFuture.get(12000)
 println "Number of source replies: " + sourceReplies.size()
 
 println "Sending ping ..."
 CompletableFuture<List<? extends MaestroNote>> pingFuture = maestro.pingRequest()
 
-int peers = pingFuture.get(2000).size();
+int peers = pingFuture.get(2000).size()
 println "Number of ping replies: " + peers
 
 println "Stopping the agent"

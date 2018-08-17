@@ -9,7 +9,6 @@ import org.maestro.client.notes.LocationType;
 import org.maestro.client.notes.LogResponse;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.HostTypes;
-import org.maestro.common.NodeUtils;
 import org.maestro.common.URLUtils;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.contrib.utils.digest.Sha1Digest;

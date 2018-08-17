@@ -30,7 +30,7 @@ public class ComposedIndexGenerator {
 
         List<ComposedProperties> propertiesList = walker.generate(baseDir);
 
-        Map<String, Object> context = new HashMap<String, Object>();
+        Map<String, Object> context = new HashMap<>();
         context.put("propertiesList", propertiesList);
 
         ComposedIndexRenderer renderer = new ComposedIndexRenderer();

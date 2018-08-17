@@ -50,7 +50,6 @@ public class GeneralInfoReader extends StreamReader<GeneralInfoDataSet> {
                         record.get(5), record.get(6), record.get(7), record.get(8), record.get(9));
             } catch (Throwable t) {
                 logger.warn("Unable to parse record: {}", t.getMessage(), t);
-                continue;
             }
         }
 

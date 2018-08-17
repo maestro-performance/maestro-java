@@ -256,20 +256,17 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
             groovyHandler.setInitialPath(entryPointDir);
             groovyHandler.setWorkerOptions(getWorkerOptions());
             groovyHandler.setMaestroNote(note);
-            thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try{
-                        if (logger.isTraceEnabled()) {
-                            logger.trace("Executing groovyHandler on thread: {}", Thread.currentThread().getId());
-                        }
-
-                        groovyHandler.runCallbacks();
-
+            thread = new Thread(() -> {
+                try{
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Executing groovyHandler on thread: {}", Thread.currentThread().getId());
                     }
-                    catch (Exception e) {
-                        groovyHandler.getClient().notifyFailure(e.getMessage());
-                    }
+
+                    groovyHandler.runCallbacks();
+
+                }
+                catch (Exception e) {
+                    groovyHandler.getClient().notifyFailure(e.getMessage());
                 }
             });
 
@@ -317,8 +314,8 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(StopAgent note) {
-        extensionPoints.stream().filter(ep -> ep.isTransient()).forEach(this::cleanExtensionPoints);
-        extensionPoints.removeIf(ep -> ep.isTransient());
+        extensionPoints.stream().filter(ExtensionPoint::isTransient).forEach(this::cleanExtensionPoints);
+        extensionPoints.removeIf(ExtensionPoint::isTransient);
     }
 
     // @TODO jstejska: move this into agent somehow?

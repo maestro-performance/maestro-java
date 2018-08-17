@@ -84,7 +84,7 @@ public class ReportGenerator {
 
         Properties prop = new Properties();
 
-        indexProperties.forEach((k, v) -> prop.setProperty(k, v));
+        indexProperties.forEach(prop::setProperty);
 
         try (FileOutputStream fos = new FileOutputStream(testProperties)) {
             prop.store(fos, "mpt-index");
@@ -136,7 +136,7 @@ public class ReportGenerator {
         logger.info("There are {} files to be processed", fileList.size());
 
         fileList.parallelStream()
-                .filter(item -> isMaestroReport(item))
+                .filter(this::isMaestroReport)
                 .forEach(this::plotReportFile);
 
 

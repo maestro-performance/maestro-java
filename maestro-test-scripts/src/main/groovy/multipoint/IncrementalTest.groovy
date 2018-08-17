@@ -116,9 +116,9 @@ if (maxLatency == null) {
 logLevel = System.getenv("LOG_LEVEL")
 LogConfigurator.configureLogLevel(logLevel)
 
-managementInterface = System.getenv("MANAGEMENT_INTERFACE");
-inspectorName = System.getenv("INSPECTOR_NAME");
-downloaderName = System.getenv("DOWNLOADER_NAME");
+managementInterface = System.getenv("MANAGEMENT_INTERFACE")
+inspectorName = System.getenv("INSPECTOR_NAME")
+downloaderName = System.getenv("DOWNLOADER_NAME")
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
@@ -145,9 +145,9 @@ ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
 
-boolean ret = testExecutor.run();
+boolean ret = testExecutor.run()
 
-reportsDownloader.waitForComplete();
+reportsDownloader.waitForComplete()
 maestro.stop()
 
 if (!ret) {

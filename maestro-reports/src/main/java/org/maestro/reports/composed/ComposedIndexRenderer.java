@@ -23,17 +23,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.Enumeration;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.zip.ZipEntry;
 
 public class ComposedIndexRenderer extends AbstractRenderer {
     private static final Logger logger = LoggerFactory.getLogger(ComposedIndexRenderer.class);
-    private final List<String> filteredResources = Arrays.asList("resources");
+    private final List<String> filteredResources = Collections.singletonList("resources");
     @Override
     public String render(Map<String, Object> context) throws Exception {
         return super.render("/org/maestro/reports/modern/index-composed.html", context);
@@ -62,7 +59,7 @@ public class ComposedIndexRenderer extends AbstractRenderer {
         else{
             logger.debug("Copying file {} to {}", entry.getName(), destPath);
             try(InputStream inputStream = jarFile.getInputStream(entry);
-                FileOutputStream outputStream = new FileOutputStream(destPath);
+                FileOutputStream outputStream = new FileOutputStream(destPath)
             ){
                 IOUtils.copy(inputStream, outputStream);
             }

@@ -51,7 +51,7 @@ CompletableFuture<List<? extends MaestroNote>> future = maestro.flushRequest()
  * Collect any available response
  */
 println "Collecting replies"
-List<MaestroNote> replies = future.get();
+List<MaestroNote> replies = future.get()
 
 /**
  * Process any response given. There may be none if no peers are attached to the

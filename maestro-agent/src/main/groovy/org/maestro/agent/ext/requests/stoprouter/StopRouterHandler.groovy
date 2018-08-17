@@ -22,7 +22,7 @@ class StopRouterHandler extends AbstractHandler {
 
     @Override
     Object handle() {
-        System.out.println("Stop Router note received");
+        System.out.println("Stop Router note received")
         return null
     }
 }

@@ -49,7 +49,7 @@ class QuiverExecutor extends FlexibleTestExecutor {
     QuiverExecutor(Maestro maestro, ReportsDownloader reportsDownloader, AbstractTestProfile testProfile) {
         super(maestro, reportsDownloader, testProfile)
 
-        this.maestro = maestro;
+        this.maestro = maestro
     }
 
     void startServices() {
@@ -74,17 +74,17 @@ class QuiverReportResolver extends AbstractReportResolver {
 
     @Override
     List<String> getFailedFiles(String baseURL) {
-        return getTestFiles(baseURL, "quiver");
+        return getTestFiles(baseURL, "quiver")
     }
 
     @Override
     List<String> getSuccessFiles(String baseURL) {
-        return getTestFiles(baseURL, "quiver");
+        return getTestFiles(baseURL, "quiver")
     }
 
     @Override
     List<String> getTestFiles(String baseURL, String testNum) {
-        return listBuilder(baseURL, "quiver");
+        return listBuilder(baseURL, "quiver")
     }
 }
 
@@ -103,20 +103,20 @@ def plotQuiverFiles(String directory) {
     println "Generating the reports on $directory"
 
     // Create a walker for the directory where the Quiver files are
-    QuiverReportWalker reportWalker = new QuiverReportWalker();
+    QuiverReportWalker reportWalker = new QuiverReportWalker()
 
     // Traverse the directory processing the files and plotting them
-    File outputDirectory = new File(directory);
-    reportWalker.walk(outputDirectory);
+    File outputDirectory = new File(directory)
+    reportWalker.walk(outputDirectory)
 
     // Generate the HTML reports for the files
-    IndexRenderer indexRenderer = new IndexRenderer();
-    renderSenderPage(indexRenderer, outputDirectory);
-    renderReceiverPage(indexRenderer, outputDirectory);
-    renderIndexPage(indexRenderer, outputDirectory);
+    IndexRenderer indexRenderer = new IndexRenderer()
+    renderSenderPage(indexRenderer, outputDirectory)
+    renderReceiverPage(indexRenderer, outputDirectory)
+    renderIndexPage(indexRenderer, outputDirectory)
 
     // Copy the common assets
-    indexRenderer.copyResources(outputDirectory);
+    indexRenderer.copyResources(outputDirectory)
 }
 
 /**
@@ -153,7 +153,7 @@ ReportsDownloader reportsDownloader = new DefaultDownloader(new QuiverOrganizer(
 reportsDownloader.addReportResolver("agent", new QuiverReportResolver())
 
 println "Creating the profile"
-FlexibleTestProfile testProfile = new FlexibleTestProfile();
+FlexibleTestProfile testProfile = new FlexibleTestProfile()
 
 testProfile.setBrokerURL(brokerURL)
 testProfile.setSourceURL(sourceURL)
@@ -161,12 +161,12 @@ testProfile.setSourceURL(sourceURL)
 println "Creating the executor"
 QuiverExecutor executor = new QuiverExecutor(maestro, reportsDownloader, testProfile)
 
-int ret = 0;
+int ret = 0
 
 try {
     println "Running the test"
     if (!executor.run()) {
-        ret = 1;
+        ret = 1
     }
 } finally {
     println "Stopping the workers on the cluster if they haven't already done so"

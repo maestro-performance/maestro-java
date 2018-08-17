@@ -161,8 +161,8 @@ public class InterconnectInspector implements MaestroInspector {
         try (RouteLinkInfoWriter routerLinkInfoWriter = new RouteLinkInfoWriter(logDir, "routerLink");
              ConnectionsInfoWriter connectionsInfoWriter = new ConnectionsInfoWriter(logDir, "connections");
              QDMemoryInfoWriter qdMemoryInfoWriter = new QDMemoryInfoWriter(logDir, "qdmemory");
-             GeneralInfoWriter generalInfoWriter = new GeneralInfoWriter(logDir, "general");
-            )
+             GeneralInfoWriter generalInfoWriter = new GeneralInfoWriter(logDir, "general")
+        )
         {
             startedEpochMillis = System.currentTimeMillis();
             running = true;

@@ -43,12 +43,7 @@ public class PropertyWriter {
             return true;
         }
 
-        if (object instanceof String) {
-            return true;
-        }
-
-
-       return false;
+        return object instanceof String;
     }
 
     private void saveProperties(Object data, Properties prop, final String propertyName) {
@@ -102,7 +97,6 @@ public class PropertyWriter {
             saveProperties(value, prop, combinedName);
         } catch (Throwable t) {
             logger.error("Unable to save property {}: {}", combinedName, t);
-            return;
         }
     }
 

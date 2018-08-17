@@ -25,6 +25,7 @@ import org.maestro.plotter.common.exceptions.EmptyDataSet;
 
 import java.io.File;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.List;
 
 import static org.junit.Assert.*;
@@ -133,7 +134,7 @@ public class ReportGeneratorTest {
             assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
 
             validateRoleDirectoryStructure(new File(path),
-                    Arrays.asList("receiver", "sender", "inspector"), Arrays.asList());
+                    Arrays.asList("receiver", "sender", "inspector"), Collections.emptyList());
         } catch (Exception e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
@@ -202,7 +203,7 @@ public class ReportGeneratorTest {
         assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
 
         validateRoleDirectoryStructure(new File(path),
-                Arrays.asList("inspector"), Arrays.asList());
+                Collections.singletonList("inspector"), Collections.emptyList());
     }
 
     @Test(timeout = 35000)
@@ -217,7 +218,7 @@ public class ReportGeneratorTest {
         assertTrue("Index file does not exist: " + indexFile, indexFile.exists());
 
         validateRoleDirectoryStructure(new File(path),
-                Arrays.asList("inspector"), Arrays.asList());
+                Collections.singletonList("inspector"), Collections.emptyList());
     }
 
     @Test(timeout = 35000, expected = MaestroException.class)

@@ -78,9 +78,9 @@ if (parallelCount == null) {
 
 maxLatency = System.getenv("MAXIMUM_LATENCY")
 
-managementInterface = System.getenv("MANAGEMENT_INTERFACE");
-inspectorName = System.getenv("INSPECTOR_NAME");
-downloaderName = System.getenv("DOWNLOADER_NAME");
+managementInterface = System.getenv("MANAGEMENT_INTERFACE")
+inspectorName = System.getenv("INSPECTOR_NAME")
+downloaderName = System.getenv("DOWNLOADER_NAME")
 
 logLevel = System.getenv("LOG_LEVEL")
 LogConfigurator.configureLogLevel(logLevel)

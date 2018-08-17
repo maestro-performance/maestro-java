@@ -53,8 +53,7 @@ maestro = new Maestro(maestroURL)
  * First, register available data servers on the cluster
  */
 
-CompletableFuture<List<? extends MaestroNote>> future = maestro.getDataServer();
-
+CompletableFuture<List<? extends MaestroNote>> future = maestro.getDataServer()
 
 /**
  * Collect any available response
@@ -70,7 +69,7 @@ BrokerDownloader downloader = new BrokerDownloader(maestro, args[0])
  */
 println "Processing " + replies.size() + " replies"
 
-if (locationType == null || locationType.equals("success")) {
+if (locationType == null || locationType == "success") {
 
     downloader.getOrganizer().setResultType("success")
 

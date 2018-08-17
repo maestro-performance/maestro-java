@@ -22,7 +22,7 @@
 
 import org.maestro.client.Maestro
 import org.maestro.common.client.notes.MaestroNote
-import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletableFuture
 
 /**
  * This example demonstrates how to use a note processor to process

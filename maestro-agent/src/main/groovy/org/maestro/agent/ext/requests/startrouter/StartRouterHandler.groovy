@@ -22,7 +22,7 @@ class StartRouterHandler extends AbstractHandler {
 
     @Override
     Object handle() {
-        System.out.println("Start Router note received");
+        System.out.println("Start Router note received")
 
         def process = "pwd".execute()
 

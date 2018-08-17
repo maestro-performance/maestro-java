@@ -189,7 +189,7 @@ public final class Maestro implements MaestroRequester {
             maestroNote.setDurationType((String) value);
         }
         else {
-            if (Long.class.isInstance(value)) {
+            if (value instanceof Long) {
                 maestroNote.setDurationType(Long.toString((long) value));
             }
             else {

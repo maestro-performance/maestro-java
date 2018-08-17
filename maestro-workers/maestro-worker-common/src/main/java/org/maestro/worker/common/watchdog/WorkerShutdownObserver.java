@@ -141,7 +141,6 @@ public class WorkerShutdownObserver implements WatchdogObserver {
                     if (wsi == null) {
                         logger.error("Invalid worker state information");
 
-                        continue;
                     } else {
                         if (!isCleanExit(wsi)) {
                             failed = true;

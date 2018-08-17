@@ -73,10 +73,10 @@ LogConfigurator.configureLogLevel(logLevel)
 
 maxLatency = System.getenv("MAXIMUM_LATENCY")
 
-managementInterface = System.getenv("MANAGEMENT_INTERFACE");
-inspectorName = System.getenv("INSPECTOR_NAME");
-downloaderName = System.getenv("DOWNLOADER_NAME");
-warmUp = System.getenv("WARM_UP");
+managementInterface = System.getenv("MANAGEMENT_INTERFACE")
+inspectorName = System.getenv("INSPECTOR_NAME")
+downloaderName = System.getenv("DOWNLOADER_NAME")
+warmUp = System.getenv("WARM_UP")
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
@@ -102,9 +102,9 @@ ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 AbstractFixedRateExecutor testExecutor = FixedRateTestExecutorFactory.newTestExecutor(maestro, reportsDownloader,
         testProfile, warmUp)
 
-boolean ret = testExecutor.run();
+boolean ret = testExecutor.run()
 
-reportsDownloader.waitForComplete();
+reportsDownloader.waitForComplete()
 maestro.stop()
 
 if (!ret) {

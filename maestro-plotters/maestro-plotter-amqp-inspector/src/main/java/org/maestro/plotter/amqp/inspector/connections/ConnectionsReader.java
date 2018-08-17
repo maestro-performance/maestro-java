@@ -51,7 +51,6 @@ public class ConnectionsReader extends StreamReader<ConnectionsDataSet> {
                         record.get(11), record.get(12), record.get(13), record.get(14));
             } catch (Throwable t) {
                 logger.warn("Unable to parse record: {}", t.getMessage(), t);
-                continue;
             }
         }
 

@@ -121,9 +121,9 @@ if (maxLatency == null) {
 logLevel = System.getenv("LOG_LEVEL")
 LogConfigurator.configureLogLevel(logLevel)
 
-managementInterface = System.getenv("MANAGEMENT_INTERFACE");
-inspectorName = System.getenv("INSPECTOR_NAME");
-downloaderName = System.getenv("DOWNLOADER_NAME");
+managementInterface = System.getenv("MANAGEMENT_INTERFACE")
+inspectorName = System.getenv("INSPECTOR_NAME")
+downloaderName = System.getenv("DOWNLOADER_NAME")
 
 
 rate = (combinedRate / initialParallelCount ) * (1 - (Math.log10(messageSize.doubleValue())) / 10)
@@ -141,19 +141,19 @@ maestro = new Maestro(maestroURL)
 
 ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
 
-IncrementalTestProfile testProfile = new SimpleTestProfile();
+IncrementalTestProfile testProfile = new SimpleTestProfile()
 
 testProfile.setSendReceiveURL(sendReceiveURL)
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(MessageSize.fixed(messageSize))
-testProfile.setInitialRate(rate.intValue());
+testProfile.setInitialRate(rate.intValue())
 testProfile.setCeilingRate(ceilingRate.intValue())
 testProfile.setRateIncrement(rateIncrement.intValue())
 testProfile.setInitialParallelCount(initialParallelCount)
 testProfile.setCeilingParallelCount(ceilingParallelCount)
 testProfile.setParallelCountIncrement(parallelCountIncrement)
 
-maxLatencyStr = System.getenv("MAXIMUM_LATENCY");
+maxLatencyStr = System.getenv("MAXIMUM_LATENCY")
 if (maxLatencyStr != null) {
     int maxLatency = Integer.parseInt(maxLatencyStr)
     testProfile.setMaximumLatency(maxLatency)
@@ -164,9 +164,9 @@ ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
 
-boolean ret = testExecutor.run();
+boolean ret = testExecutor.run()
 
-reportsDownloader.waitForComplete();
+reportsDownloader.waitForComplete()
 maestro.stop()
 
 if (!ret) {

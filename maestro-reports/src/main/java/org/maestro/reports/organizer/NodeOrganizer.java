@@ -1,7 +1,5 @@
 package org.maestro.reports.organizer;
 
-import org.maestro.common.NodeUtils;
-
 public class NodeOrganizer extends DefaultOrganizer {
     public NodeOrganizer(final String baseDir) {
         super(baseDir);

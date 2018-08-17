@@ -143,8 +143,8 @@ public class ArtemisInspector implements MaestroInspector {
 
         try (JVMMemoryInfoWriter heapMemoryWriter = new JVMMemoryInfoWriter(logDir, "heap");
              JVMMemoryInfoWriter jvmMemoryAreasWriter = new JVMMemoryInfoWriter(logDir, "memory-areas");
-             QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues");
-             )
+             QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues")
+        )
         {
             startedEpochMillis = System.currentTimeMillis();
             running = true;
