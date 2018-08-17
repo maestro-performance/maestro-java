@@ -150,32 +150,34 @@ public class ConnectionsRecord implements Comparable<ConnectionsRecord>, Instant
         return this.getTimestamp().compareTo(routerLinkRecord.getTimestamp());
     }
 
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-        ConnectionsRecord that = (ConnectionsRecord) o;
-        return host == that.host &&
-                role == that.role &&
-                dir == that.dir &&
-                opened == that.opened &&
-                identity == that.identity &&
-                user == that.user &&
-                sasl == that.sasl &&
-                encrypted == that.encrypted &&
-                sslProto == that.sslProto &&
-                sslCipher == that.sslCipher &&
-                tenant == that.tenant &&
-                authenticated == that.authenticated &&
-                properties == that.properties &&
-                Objects.equals(timestamp, that.timestamp) &&
-                Objects.equals(name, that.name);
-    }
+
 
     @Override
     public int hashCode() {
         return Objects.hash(timestamp, name, host, role, dir, opened, identity, user, sasl, encrypted, sslProto,
                 sslCipher, tenant, authenticated, properties);
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        ConnectionsRecord that = (ConnectionsRecord) o;
+        return Objects.equals(timestamp, that.timestamp) &&
+                Objects.equals(name, that.name) &&
+                Objects.equals(host, that.host) &&
+                Objects.equals(role, that.role) &&
+                Objects.equals(dir, that.dir) &&
+                Objects.equals(opened, that.opened) &&
+                Objects.equals(identity, that.identity) &&
+                Objects.equals(user, that.user) &&
+                Objects.equals(sasl, that.sasl) &&
+                Objects.equals(encrypted, that.encrypted) &&
+                Objects.equals(sslProto, that.sslProto) &&
+                Objects.equals(sslCipher, that.sslCipher) &&
+                Objects.equals(tenant, that.tenant) &&
+                Objects.equals(authenticated, that.authenticated) &&
+                Objects.equals(properties, that.properties);
     }
 
     @Override

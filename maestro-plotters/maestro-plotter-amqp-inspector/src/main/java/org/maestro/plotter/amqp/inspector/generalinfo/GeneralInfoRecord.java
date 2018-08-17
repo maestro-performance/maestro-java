@@ -210,9 +210,7 @@ public class GeneralInfoRecord implements Comparable<GeneralInfoRecord>, Instant
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GeneralInfoRecord that = (GeneralInfoRecord) o;
-        return version == that.version &&
-                mode == that.mode &&
-                linkRoutersCount == that.linkRoutersCount &&
+        return linkRoutersCount == that.linkRoutersCount &&
                 autoLinksCount == that.autoLinksCount &&
                 linksCount == that.linksCount &&
                 nodesCount == that.nodesCount &&
@@ -222,6 +220,7 @@ public class GeneralInfoRecord implements Comparable<GeneralInfoRecord>, Instant
                 droppedPresettledCount == that.droppedPresettledCount &&
                 acceptedCount == that.acceptedCount &&
                 rejectedCount == that.rejectedCount &&
+                releasedCount == that.releasedCount &&
                 modifiedCount == that.modifiedCount &&
                 ingressCount == that.ingressCount &&
                 engressCount == that.engressCount &&
@@ -229,7 +228,9 @@ public class GeneralInfoRecord implements Comparable<GeneralInfoRecord>, Instant
                 deliveryFromRouterCount == that.deliveryFromRouterCount &&
                 deliveryToRouterCount == that.deliveryToRouterCount &&
                 Objects.equals(timestamp, that.timestamp) &&
-                Objects.equals(name, that.name);
+                Objects.equals(name, that.name) &&
+                Objects.equals(version, that.version) &&
+                Objects.equals(mode, that.mode);
     }
 
     @Override
