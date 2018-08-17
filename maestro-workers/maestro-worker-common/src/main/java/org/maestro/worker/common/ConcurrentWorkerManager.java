@@ -32,6 +32,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -79,9 +80,9 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
         final File testLogDir = TestLogUtils.nextTestLogDir(logDir);
 
-        setupLatencyEvaluator();
-
         try {
+            setupLatencyEvaluator();
+
             super.writeTestProperties(testLogDir);
 
             final TestWorkerInitializer testWorkerInitializer = new TestWorkerInitializer(workerClass, getWorkerOptions());
@@ -154,27 +155,28 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
 
     private void setupLatencyEvaluator() {
-        Double givenLatency = super.getWorkerOptions().getFclAsDouble();
-        if (givenLatency == null) {
+        long givenLatency = super.getWorkerOptions().getFclAsLong();
+        if (givenLatency <= 0) {
             this.latencyEvaluator = null;
             return;
         }
 
         String policy = config.getString("maestro.worker.fcl.default.policy", "soft");
 
+        // The latency comes as milliseconds from the front-end. Therefore, convert them ...
+        long maxAcceptableLatency = TimeUnit.MILLISECONDS.toMicros(givenLatency);
         if (policy.equals("soft")) {
             double defaultPercentile = config.getDouble("maestro.worker.fcl.soft.percentile", 90.0);
 
-            logger.debug("Setting max latency to {} if at percentile {}", givenLatency, defaultPercentile);
+            logger.debug("Setting max latency to {} ms if at percentile {}", givenLatency, defaultPercentile);
 
-            // The latency comes as milliseconds from the front-end
-            this.latencyEvaluator = new SoftLatencyEvaluator(givenLatency * 1000, defaultPercentile);
+
+            this.latencyEvaluator = new SoftLatencyEvaluator(maxAcceptableLatency, defaultPercentile);
         }
         else {
             logger.debug("Setting max latency to {}", givenLatency);
 
-            // The latency comes as milliseconds from the front-end
-            this.latencyEvaluator = new HardLatencyEvaluator(givenLatency * 1000);
+            this.latencyEvaluator = new HardLatencyEvaluator(maxAcceptableLatency);
         }
     }
 

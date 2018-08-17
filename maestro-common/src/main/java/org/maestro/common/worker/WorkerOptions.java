@@ -16,6 +16,7 @@
 
 package org.maestro.common.worker;
 
+import org.maestro.common.exceptions.MaestroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -200,20 +201,21 @@ public class WorkerOptions {
 
 
     /**
-     * Gets the FCL value as a double
-     * @return the FCL value as a double (or null if unset or invalid)
+     * Gets the FCL value as a long
+     * @return the FCL value as a long (or null if unset or invalid)
      */
-    public Double getFclAsDouble() {
+    public long getFclAsLong() {
         if (fcl != null && !fcl.equals("0")) {
             try {
-                return Double.parseDouble(fcl);
+                return Long.parseLong(fcl);
             }
             catch (Exception e) {
                 logger.warn("Unable to parse the provided FCL {}", fcl);
+                throw new MaestroException("Unable to parse the provided FCL: %s", fcl);
             }
         }
 
-        return null;
+        return -1;
     }
 
 
