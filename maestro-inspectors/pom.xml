@@ -25,7 +25,6 @@
     </parent>
 
     <artifactId>maestro-inspectors</artifactId>
-    <groupId>org.maestro</groupId>
     <packaging>pom</packaging>
 
     <modules>
