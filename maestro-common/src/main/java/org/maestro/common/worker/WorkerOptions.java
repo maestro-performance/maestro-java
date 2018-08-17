@@ -118,15 +118,15 @@ public class WorkerOptions {
         return parallelCount;
     }
 
-    public Integer getParallelCountAsInt() {
+    public int getParallelCountAsInt() {
         try {
             return Integer.parseInt(getParallelCount());
         }
         catch (NumberFormatException e) {
             logger.warn("Unable to parse the provided parallel count {}", getParallelCount());
+            throw new MaestroException("Unable to parse the provided parallel count %s",
+                    getParallelCount());
         }
-
-        return null;
     }
 
     /**
