@@ -43,28 +43,11 @@ public abstract class AbstractPlotter<T> {
     private ChartProperties chartProperties = new ChartProperties();
 
     /**
-     * Sets the output width for the graph
-     * @param outputWidth the width in pixels
-     */
-    public void setOutputWidth(int outputWidth) {
-        this.outputWidth = outputWidth;
-    }
-
-
-    /**
      * Gets the output width
      * @return the output width
      */
     public int getOutputWidth() {
         return outputWidth;
-    }
-
-    /**
-     * Sets the output height for the graph
-     * @param outputHeight the height in pixels
-     */
-    public void setOutputHeight(int outputHeight) {
-        this.outputHeight = outputHeight;
     }
 
 
@@ -74,15 +57,6 @@ public abstract class AbstractPlotter<T> {
      */
     public int getOutputHeight() {
         return outputHeight;
-    }
-
-
-    /**
-     * Sets the the grid lines should be visible
-     * @param plotGridLinesVisible true to make the grid lines visible or false otherwise
-     */
-    public void setPlotGridLinesVisible(boolean plotGridLinesVisible) {
-        this.plotGridLinesVisible = plotGridLinesVisible;
     }
 
 
@@ -101,15 +75,6 @@ public abstract class AbstractPlotter<T> {
     public ChartProperties getChartProperties() {
         return chartProperties;
     }
-
-    /**
-     * Set the chart properties
-     * @param chartProperties the chart properties object
-     */
-    public void setChartProperties(ChartProperties chartProperties) {
-        this.chartProperties = chartProperties;
-    }
-
 
     protected void validateDataSet(final List<?> xData, final List<?> yData) throws EmptyDataSet, IncompatibleDataSet {
         if (xData == null || xData.size() == 0) {

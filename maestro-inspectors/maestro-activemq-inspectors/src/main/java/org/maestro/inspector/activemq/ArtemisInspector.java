@@ -215,7 +215,7 @@ public class ArtemisInspector implements MaestroInspector {
         inspectorProperties.write(propertiesFile);
     }
 
-    public void stop() throws Exception {
+    public void stop() {
         running = false;
     }
 
