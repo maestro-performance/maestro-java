@@ -26,6 +26,7 @@ import org.maestro.plotter.utils.Util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
@@ -87,7 +88,9 @@ public class TestWithCorrection {
 
         Properties ps = new Properties();
 
-        ps.load(new FileInputStream(propertiesFile));
+        try (InputStream inputStream = new FileInputStream(propertiesFile)) {
+            ps.load(inputStream);
+        }
 
         assertEquals("26", ps.getProperty("latency99th"));
         assertEquals("61", ps.getProperty("latency9999th"));

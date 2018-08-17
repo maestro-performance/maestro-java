@@ -27,6 +27,7 @@ import org.maestro.plotter.utils.Util;
 
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.InputStream;
 import java.util.Properties;
 
 import static org.junit.Assert.assertEquals;
@@ -84,7 +85,10 @@ public class SimpleTestWithUnitRatio {
 
         Properties ps = new Properties();
 
-        ps.load(new FileInputStream(propertiesFile));
+        try (InputStream inputStream = new FileInputStream(propertiesFile)) {
+            ps.load(inputStream);
+        }
+
 
         assertEquals("2", ps.getProperty("latency99th"));
         assertEquals("6", ps.getProperty("latency9999th"));

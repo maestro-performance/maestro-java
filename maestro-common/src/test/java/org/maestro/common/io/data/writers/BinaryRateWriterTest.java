@@ -33,13 +33,14 @@ public class BinaryRateWriterTest {
 
             binaryRateWriter.close();
 
-            BinaryRateReader reader = new BinaryRateReader(reportFile);
+            try (BinaryRateReader reader = new BinaryRateReader(reportFile)) {
 
-            FileHeader fileHeader = reader.getHeader();
-            assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
-            assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
-            assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
-            assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+                FileHeader fileHeader = reader.getHeader();
+                assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
+                assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
+                assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
+                assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+            }
         }
         finally {
             clean(reportFile);
