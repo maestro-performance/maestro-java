@@ -43,7 +43,7 @@
     <scm>
         <developerConnection>scm:git:git@github.com:maestro-performance/maestro-java.git</developerConnection>
         <url>https://github.com/maestro-performance/maestro-java</url>
-        <tag>HEAD</tag>
+        <tag>1.4.x</tag>
     </scm>
 
     <licenses>
