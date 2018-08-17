@@ -17,6 +17,7 @@
 package org.maestro.common.inspector.types;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -27,5 +28,5 @@ public interface ConnectionsInfoType {
      * Get the queue properties
      * @return connections properties
      */
-    List getConnectionProperties();
+    List<Map<String, Object>> getConnectionProperties();
 }

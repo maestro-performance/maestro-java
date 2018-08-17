@@ -17,6 +17,7 @@
 package org.maestro.common.inspector.types;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -27,5 +28,5 @@ public interface GeneralInfoType {
      * Get the queue properties
      * @return general properties
      */
-    List getGeneralProperties();
+    List<Map<String, Object>> getGeneralProperties();
 }

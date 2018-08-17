@@ -54,7 +54,7 @@ public class InterconnectReadData {
         Message message = collectResponse();
         if (message == null) {
             logger.warn("No message was received, returning an empty data map");
-            return new HashMap();
+            return new HashMap<>();
         }
 
         return message.getBody(HashMap.class);

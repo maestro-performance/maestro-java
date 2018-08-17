@@ -20,8 +20,7 @@ public class InterconnectInfoConverter {
      * @param map collected data
      * @return parsed into into list of hash maps
      */
-    @SuppressWarnings("unchecked")
-    public List parseReceivedMessage(Map map) {
+    public List<Map<String, Object>> parseReceivedMessage(Map map) {
         List<Map<String, Object>> recordList = new ArrayList<>();
 
         if (map == null || map.isEmpty()) {

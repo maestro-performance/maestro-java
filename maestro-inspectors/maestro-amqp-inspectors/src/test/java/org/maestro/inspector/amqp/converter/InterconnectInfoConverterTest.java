@@ -16,26 +16,26 @@ public class InterconnectInfoConverterTest {
 
         Map<String, Object> fakeMap = buildTestMap();
 
-        List ret = converter.parseReceivedMessage(fakeMap);
+        List<Map<String, Object>> ret = converter.parseReceivedMessage(fakeMap);
 
         assertNotNull(ret);
         assertEquals(3, ret.size());
 
-        Map<String, Object> map1 = (Map<String, Object>) ret.get(0);
+        Map<String, Object> map1 = ret.get(0);
         assertNotNull(map1);
         assertEquals(2, map1.size());
 
         assertEquals(map1.get("attribute1"), "value1.1");
         assertEquals(map1.get("attribute2"), "value1.2");
 
-        Map<String, Object> map2 = (Map<String, Object>) ret.get(1);
+        Map<String, Object> map2 = ret.get(1);
         assertNotNull(map2);
         assertEquals(2, map2.size());
 
         assertEquals(map2.get("attribute1"), "value2.1");
         assertEquals(map2.get("attribute2"), "value2.2");
 
-        Map<String, Object> map3 = (Map<String, Object>) ret.get(2);
+        Map<String, Object> map3 = ret.get(2);
         assertNotNull(map3);
         assertEquals(2, map3.size());
 
@@ -46,7 +46,7 @@ public class InterconnectInfoConverterTest {
     @Test
     public void parseReceivedMessageEmptyMap() {
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
-        List ret = converter.parseReceivedMessage(new HashMap<String, Object>());
+        List<Map<String, Object>> ret = converter.parseReceivedMessage(new HashMap<String, Object>());
 
         assertNotNull(ret);
         assertEquals(0, ret.size());
@@ -55,7 +55,7 @@ public class InterconnectInfoConverterTest {
     @Test
     public void parseReceivedMessageInvalidAttributeNames() {
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
-        List ret = converter.parseReceivedMessage(buildInvalidMap());
+        List<Map<String, Object>> ret = converter.parseReceivedMessage(buildInvalidMap());
 
         assertNotNull(ret);
         assertEquals(0, ret.size());
@@ -64,7 +64,7 @@ public class InterconnectInfoConverterTest {
     @Test
     public void parseReceivedMessageWithEmptyLists() {
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
-        List ret = converter.parseReceivedMessage(buildMapWithEmptyLists());
+        List<Map<String, Object>> ret = converter.parseReceivedMessage(buildMapWithEmptyLists());
 
         assertNotNull(ret);
         assertEquals(0, ret.size());

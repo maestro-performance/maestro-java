@@ -91,7 +91,7 @@ public class ConnectionsInfoWriter implements InspectorDataWriter<ConnectionsInf
     public void write(final LocalDateTime now, final ConnectionsInfo data) {
         logger.trace("Connections information: {}", data);
 
-        List connectionProperties = data.getConnectionProperties();
+        List<Map<String, Object>> connectionProperties = data.getConnectionProperties();
 
         connectionProperties.forEach(map -> write(now, map));
     }

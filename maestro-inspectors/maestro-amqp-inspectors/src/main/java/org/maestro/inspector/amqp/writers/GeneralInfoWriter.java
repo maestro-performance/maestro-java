@@ -89,7 +89,7 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
     public void write(final LocalDateTime now, final GeneralInfo data) {
         logger.trace("Router link information: {}", data);
 
-        List queueProperties = data.getGeneralProperties();
+        List<Map<String, Object>> queueProperties = data.getGeneralProperties();
 
         queueProperties.forEach(map -> write(now, map));
     }

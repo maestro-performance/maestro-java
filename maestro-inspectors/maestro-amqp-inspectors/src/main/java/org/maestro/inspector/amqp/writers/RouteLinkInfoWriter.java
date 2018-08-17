@@ -91,7 +91,7 @@ public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>,
     public void write(final LocalDateTime now, final RouterLinkInfo data) {
         logger.trace("Router link information: {}", data);
 
-        List queueProperties = data.getRouterLinkProperties();
+        List<Map<String, Object>> queueProperties = data.getRouterLinkProperties();
 
         queueProperties.forEach(map -> write(now, map));
     }

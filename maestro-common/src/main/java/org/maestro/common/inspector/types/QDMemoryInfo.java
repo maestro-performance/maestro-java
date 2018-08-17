@@ -14,7 +14,7 @@ public class QDMemoryInfo implements InspectorType, QDMemoryInfoType {
         this.memoryProperties = Collections.unmodifiableList(queueProperties);
     }
 
-    public List getQDMemoryInfoProperties() {
+    public List<Map<String, Object>> getQDMemoryInfoProperties() {
         return memoryProperties;
     }
 

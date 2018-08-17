@@ -17,6 +17,7 @@
 package org.maestro.common.inspector.types;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -27,5 +28,5 @@ public interface QDMemoryInfoType {
      * Get the memory properties
      * @return the memory properties
      */
-    List getQDMemoryInfoProperties();
+    List<Map<String, Object>> getQDMemoryInfoProperties();
 }
