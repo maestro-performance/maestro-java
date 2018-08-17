@@ -47,15 +47,15 @@ public abstract class AbstractHdrPlotter<T, Y> extends AbstractPlotter<Y> {
 
     protected abstract void plotDataAt(final T data, final Double min, final File fileName);
 
-    protected void plot99(final T data, final File outputDir) {
+    private void plot99(final T data, final File outputDir) {
         plotDataAt(data, 99.0, new File(outputDir,baseName + "_99.png"));
     }
 
-    protected void plot90(final T data, final File outputDir) {
+    private void plot90(final T data, final File outputDir) {
         plotDataAt(data, 90.0, new File(outputDir,baseName + "_90.png"));
     }
 
-    protected void plotAll(final T data, final File outputDir) {
+    private void plotAll(final T data, final File outputDir) {
         plotDataAt(data, 5.0, new File(outputDir,baseName + "_all.png"));
     }
 

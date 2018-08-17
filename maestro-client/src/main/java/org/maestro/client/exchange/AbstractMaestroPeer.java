@@ -45,7 +45,7 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     private final MaestroNoteDeserializer<? extends T> deserializer;
     private final PeerInfo peerInfo;
 
-    public AbstractMaestroPeer(final String url, final PeerInfo peerInfo, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
+    protected AbstractMaestroPeer(final String url, final PeerInfo peerInfo, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
         this(MqttClientInstance.getInstance(url).getClient(), peerInfo, deserializer);
     }
 

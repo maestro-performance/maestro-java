@@ -35,7 +35,7 @@ public class AbstractMaestroExecutor implements Runnable {
      * @param maestroPeer a Maestro peer object is capable of exchange maestro data.
      * @throws MaestroConnectionException if unable to connect or subscribe
      */
-    public AbstractMaestroExecutor(final AbstractMaestroPeer maestroPeer) throws MaestroConnectionException {
+    protected AbstractMaestroExecutor(final AbstractMaestroPeer maestroPeer) throws MaestroConnectionException {
         this.maestroPeer = maestroPeer;
     }
 

@@ -27,7 +27,7 @@ import java.io.*;
 public class Sha1Digest implements MessageDigest {
     private static final Logger logger = LoggerFactory.getLogger(Sha1Digest.class);
 
-    public static final String HASH_NAME = "sha1";
+    private static final String HASH_NAME = "sha1";
 
     public String calculate(final InputStream inputStream) throws IOException {
         logger.trace("Calculating message digest");

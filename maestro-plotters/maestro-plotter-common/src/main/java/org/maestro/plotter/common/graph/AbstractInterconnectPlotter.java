@@ -9,7 +9,7 @@ import java.util.Map;
 
 public abstract class AbstractInterconnectPlotter<T> extends DefaultScatterPlotter<T> {
 
-    public abstract String getDefaultName ();
+    protected abstract String getDefaultName();
 
     private String friendlyName(final String areaName) {
         return getDefaultName() + areaName.replace(" ", "_").toLowerCase() + ".png";
