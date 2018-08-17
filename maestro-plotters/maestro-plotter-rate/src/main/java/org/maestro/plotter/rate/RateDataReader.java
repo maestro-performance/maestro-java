@@ -13,7 +13,7 @@ import java.util.concurrent.TimeUnit;
 
 public class RateDataReader implements ReportReader<RateData> {
     private static final Logger logger = LoggerFactory.getLogger(RateDataReader.class);
-    private RateData rateData = new RateData();
+    private final RateData rateData = new RateData();
 
     @Override
     public RateData read(final File file) throws IOException {

@@ -34,7 +34,7 @@ public class ComposedProperties {
     private static final Logger logger = LoggerFactory.getLogger(ComposedProperties.class);
     private final File indexProperties;
     private String dateTime;
-    private Map<String, Object> context = new HashMap<>();
+    private final Map<String, Object> context = new HashMap<>();
 
     public ComposedProperties(final File indexProperties) {
         this.indexProperties = indexProperties;

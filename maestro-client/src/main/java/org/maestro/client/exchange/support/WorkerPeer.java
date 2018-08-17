@@ -1,8 +1,8 @@
 package org.maestro.client.exchange.support;
 
 public class WorkerPeer implements PeerInfo {
-    private String name;
-    private String host;
+    private final String name;
+    private final String host;
 
     public WorkerPeer(final String name, final String host) {
         this.name = name;
