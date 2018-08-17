@@ -42,7 +42,6 @@ public class HdrPlotterWrapper implements PlotterWrapper {
     private static final boolean legacyHdrMode;
 
     private double unitRate;
-    private Histogram histogram;
 
     static {
         DEFAULT_UNIT_RATE = config.getDouble("hdr.plotter.default.unit.rate", 1.0);
@@ -78,6 +77,7 @@ public class HdrPlotterWrapper implements PlotterWrapper {
 
     @Override
     public boolean plot(final File file) {
+
         logger.debug("Plotting HDR file {}", file.getPath());
 
         try {
@@ -85,9 +85,9 @@ public class HdrPlotterWrapper implements PlotterWrapper {
                 throw new IOException("File " + file.getPath() + " does not exist");
             }
 
-            histogram = Util.getAccumulated(file);
+            final Histogram histogram = Util.getAccumulated(file);
 
-            final HdrData hdrData = getHdrData(file);
+            final HdrData hdrData = getHdrData(histogram, file);
 
             // HdrPlotterWrapper
             HdrPlotter plotter = new HdrPlotter(FilenameUtils.removeExtension(file.getName()));
@@ -106,7 +106,7 @@ public class HdrPlotterWrapper implements PlotterWrapper {
         }
     }
 
-    private synchronized HdrData getHdrData(final File file) {
+    private synchronized HdrData getHdrData(final Histogram histogram, final File file) {
         HdrData hdrData;
         if (!legacyHdrMode) {
             TestProperties testProperties = loadProperties(file.getParentFile());
@@ -114,21 +114,21 @@ public class HdrPlotterWrapper implements PlotterWrapper {
                 final long intervalInNanos = WorkerUtils.getExchangeInterval(testProperties.getRate());
 
                 if (intervalInNanos == 0) {
-                    hdrData = getHdrDataUnbounded();
+                    hdrData = getHdrDataUnbounded(histogram);
                 } else {
-                    hdrData = getHdrDataBounded(intervalInNanos);
+                    hdrData = getHdrDataBounded(histogram, intervalInNanos);
                 }
             } else {
-                hdrData = getHdrDataUnbounded();
+                hdrData = getHdrDataUnbounded(histogram);
             }
         }
         else {
-            hdrData = getHdrDataUnbounded();
+            hdrData = getHdrDataUnbounded(histogram);
         }
         return hdrData;
     }
 
-    private HdrData getHdrDataUnbounded() {
+    private HdrData getHdrDataUnbounded(final Histogram histogram) {
         final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
 
 
@@ -136,7 +136,7 @@ public class HdrPlotterWrapper implements PlotterWrapper {
     }
 
 
-    private HdrData getHdrDataBounded(final long interval) {
+    private HdrData getHdrDataBounded(final Histogram histogram, final long interval) {
         final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
 
         return processorWrapper.convertLog(histogram, interval);
