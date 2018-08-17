@@ -104,8 +104,6 @@ public class BinaryRateUpdaterTest {
             File reportFile2 = new File(path, "sender-2.dat");
             BinaryRateUpdater.joinFile(binaryRateUpdater, reportFile2);
 
-            binaryRateUpdater.close();
-
             try (BinaryRateReader reader = new BinaryRateReader(reportFile)) {
                 FileHeader fileHeader = reader.getHeader();
                 assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
