@@ -45,7 +45,7 @@ spec:
               name: config-store
       containers:
         - name: sender
-          image: maestroperf/maestro-sender:1.4.2
+          image: maestroperf/maestro-sender:1.4.3
           command:
             - /bin/bash
             - -c
