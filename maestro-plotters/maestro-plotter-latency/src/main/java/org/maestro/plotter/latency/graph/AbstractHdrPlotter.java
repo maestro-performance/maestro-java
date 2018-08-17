@@ -34,7 +34,7 @@ public abstract class AbstractHdrPlotter<T, Y> extends AbstractPlotter<Y> {
     public AbstractHdrPlotter(final String baseName) {
         this.baseName = baseName;
 
-        getChartProperties().setyTitle("microseconds");
+        getChartProperties().setyTitle("Milliseconds");
         getChartProperties().setSeriesName("Percentiles");
     }
 

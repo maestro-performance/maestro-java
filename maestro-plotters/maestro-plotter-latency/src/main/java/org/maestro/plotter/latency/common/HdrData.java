@@ -18,6 +18,7 @@ package org.maestro.plotter.latency.common;
 
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 /**
@@ -27,9 +28,19 @@ import java.util.stream.Collectors;
  */
 public class HdrData {
     private final List<HdrRecord> records = new LinkedList<>();
+    private final TimeUnit timeUnit;
+
+    public HdrData() {
+        this(TimeUnit.MICROSECONDS);
+    }
+
+    public HdrData(TimeUnit timeUnit) {
+        this.timeUnit = timeUnit;
+    }
 
     public List<Double> getValue() {
-        return records.stream().mapToDouble(HdrRecord::getValue).boxed().collect(Collectors.toList());
+        return records.stream().mapToDouble(record -> timeUnit.toMillis((long) record.getValue()))
+                .boxed().collect(Collectors.toList());
     }
 
     public List<Double> getPercentile() {
