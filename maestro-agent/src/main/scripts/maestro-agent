@@ -57,7 +57,7 @@ mainclass="org.maestro.agent.main.Main"
 pid_file="${installdir}/tmp/maestro-agent.pid"
 
 
-# Evaluate classpath from installdir
+# Evaluate classpath from install dir
 classpath="$(echo "${installdir}"/bin/*maestro-agent-*.jar)"
 classpath="${classpath// /:}"
 
