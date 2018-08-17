@@ -23,6 +23,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.NullProgressMonitor;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
 import org.maestro.common.ConfigurationWrapper;
@@ -62,13 +63,12 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     /**
      * Constructor
      * @param maestroURL maestro_broker URL
-     * @param role agent
-     * @param host host address
+     * @param peerInfo maestro peer information
      * @param dataServer data server object
      * @throws MaestroException if unable to create agent instance
      */
-    public MaestroAgent(String maestroURL, String role, String host, MaestroDataServer dataServer) throws MaestroException {
-        super(maestroURL, role, host, dataServer);
+    public MaestroAgent(final String maestroURL, final PeerInfo peerInfo, MaestroDataServer dataServer) throws MaestroException {
+        super(maestroURL, peerInfo, dataServer);
 
         String pathStr = config.getString("maestro.agent.ext.path.override", null);
 

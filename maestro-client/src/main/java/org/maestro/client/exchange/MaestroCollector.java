@@ -17,11 +17,16 @@
 package org.maestro.client.exchange;
 
 import org.maestro.client.callback.MaestroNoteCallback;
+import org.maestro.client.exchange.support.CollectorPeer;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.common.NetworkUtils;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
+import org.maestro.common.exceptions.MaestroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.net.UnknownHostException;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -47,7 +52,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
      * @throws MaestroConnectionException if unable to connect
      */
     public MaestroCollector(final String url) throws MaestroConnectionException {
-        super(url, "maestro-java-collector",MaestroDeserializer::deserialize);
+        super(url, new CollectorPeer(), MaestroDeserializer::deserialize);
     }
 
 

@@ -20,6 +20,8 @@ import org.apache.commons.cli.*;
 import org.maestro.agent.base.MaestroAgent;
 import org.maestro.client.exchange.AbstractMaestroPeer;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.exchange.support.WorkerPeer;
 import org.maestro.client.notes.MaestroEvent;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
@@ -127,13 +129,13 @@ public class Main {
             MaestroDataServer dataServer = new MaestroDataServer(logDir, host);
 
             MaestroWorkerExecutor executor;
-            AbstractMaestroPeer<MaestroEvent> maestroPeer;
 
-            maestroPeer = new MaestroAgent(maestroUrl, "agent", host, dataServer);
+            final PeerInfo peerInfo = new WorkerPeer("agent", host);
+            AbstractMaestroPeer<MaestroEvent> maestroPeer = new MaestroAgent(maestroUrl, peerInfo, dataServer);
+
             executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
-            String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_AGENT_TOPICS, maestroPeer.getClientName(),
-                    host, maestroPeer.getId());
+            String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_AGENT_TOPICS, peerInfo, maestroPeer.getId());
 
             executor.start(topics);
             executor.run();

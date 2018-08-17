@@ -18,6 +18,8 @@ package org.maestro.worker.tests.support.runner;
 
 import org.apache.commons.io.FileUtils;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.exchange.support.WorkerPeer;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
@@ -64,8 +66,9 @@ public class MiniPeer {
         }
         logDir = new File(logPath);
 
+        final PeerInfo peerInfo = new WorkerPeer("test", "localhost");
 
-        executor = new MaestroWorkerExecutor(maestroUrl, role, host, logDir, clazz, null);
+        executor = new MaestroWorkerExecutor(maestroUrl, peerInfo, logDir, clazz, null);
 
         if (role.equals("sender")) {
             executor.start(MaestroTopics.MAESTRO_SENDER_TOPICS);

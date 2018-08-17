@@ -17,6 +17,7 @@
 package org.maestro.worker.common;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
@@ -50,15 +51,14 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     /**
      * Constructor
      * @param maestroURL Maestro URL
-     * @param role Worker Role
-     * @param host hostname for the worker
+     * @param peerInfo Peer information
      * @param logDir test log directory
      * @param workerClass the class for the worker
      * @param dataServer the data server instance
      */
-    public ConcurrentWorkerManager(final String maestroURL, final String role, final String host, final File logDir,
+    public ConcurrentWorkerManager(final String maestroURL, final PeerInfo peerInfo, final File logDir,
                                    final Class<MaestroWorker> workerClass, final MaestroDataServer dataServer) {
-        super(maestroURL, role, host, dataServer);
+        super(maestroURL, peerInfo, dataServer);
 
         this.container = new WorkerContainer();
         this.workerClass = workerClass;
@@ -255,7 +255,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         }
 
         // Explanation: the role is the name as the role (ie: clientName@host)
-        statsResponse.setRole(getClientName());
+        statsResponse.setRole(getPeerInfo().peerName());
 
         LatencyStats latencyStats = container.latencyStats(latencyEvaluator);
         if (latencyStats != null) {

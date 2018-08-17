@@ -19,6 +19,8 @@ package org.maestro.inspector.main;
 import org.apache.commons.cli.*;
 import org.maestro.client.exchange.AbstractMaestroPeer;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.exchange.support.WorkerPeer;
 import org.maestro.client.notes.MaestroEvent;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
@@ -121,15 +123,16 @@ public class Main {
 
         try {
             MaestroDataServer dataServer = new MaestroDataServer(logDir, host);
-            AbstractMaestroPeer<MaestroEvent> maestroPeer;
-            MaestroWorkerExecutor executor;
 
-            maestroPeer = new InspectorManager(maestroUrl, host, dataServer, logDir);
+            MaestroWorkerExecutor executor;
+            final PeerInfo peerInfo = new WorkerPeer("inspector", host);
+
+            AbstractMaestroPeer<MaestroEvent> maestroPeer
+                    = new InspectorManager(maestroUrl, peerInfo, dataServer, logDir);
 
             executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
-            String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_INSPECTOR_TOPICS, maestroPeer.getClientName(),
-                    host, maestroPeer.getId());
+            String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_INSPECTOR_TOPICS, peerInfo, maestroPeer.getId());
 
             executor.start(topics);
             executor.run();

@@ -28,7 +28,6 @@ import org.maestro.common.NetworkUtils;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.worker.common.ConcurrentWorkerManager;
-import org.maestro.worker.common.VoidWorkerManager;
 import org.maestro.worker.common.ds.MaestroDataServer;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
@@ -99,6 +98,12 @@ public class Main {
         }
         System.setProperty("maestro.worker.role", role);
 
+        worker = cmdLine.getOptionValue('w');
+        if (worker == null) {
+            System.err.println("The worker class is missing (option -w)");
+            help(options, -1);
+        }
+
         host = cmdLine.getOptionValue('H');
         if (host == null) {
             try {
@@ -148,11 +153,13 @@ public class Main {
                 case "sender": {
                     Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
 
-                    maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDir, clazz, dataServer);
+                    final PeerInfo peerInfo = new WorkerPeer("sender", host);
+
+                    maestroPeer = new ConcurrentWorkerManager(maestroUrl, peerInfo, logDir, clazz, dataServer);
                     executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
-                    String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_SENDER_TOPICS, maestroPeer.getClientName(),
-                            host, maestroPeer.getId());
+                    String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_SENDER_TOPICS, peerInfo,
+                            maestroPeer.getId());
 
                     executor.start(topics);
                     executor.run();
@@ -161,11 +168,12 @@ public class Main {
                 case "receiver": {
                     Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
 
-                    maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDir, clazz, dataServer);
+                    final PeerInfo peerInfo = new WorkerPeer("receiver", host);
+                    maestroPeer = new ConcurrentWorkerManager(maestroUrl, peerInfo, logDir, clazz, dataServer);
                     executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
-                    String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_RECEIVER_TOPICS, maestroPeer.getClientName(),
-                            host, maestroPeer.getId());
+                    String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_RECEIVER_TOPICS, peerInfo,
+                            maestroPeer.getId());
 
                     executor.start(topics);
                     executor.run();

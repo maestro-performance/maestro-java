@@ -58,8 +58,8 @@ public class BrokerDownloader implements ReportsDownloader {
                 }
             }
 
-            String type = NodeUtils.getTypeFromName(logResponse.getName());
-            String destDir = organizer.organize(logResponse.getName(), type);
+            String type = logResponse.getRole();
+            String destDir = organizer.organize(logResponse.getHost(), type);
             File outFile = new File(destDir, logResponse.getFileName());
 
             logger.info("Saving file {} to {}", logResponse.getFileName(), outFile);

@@ -18,6 +18,7 @@ package org.maestro.client.exchange;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.maestro.client.exchange.mqtt.MqttClientInstance;
+import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
@@ -41,15 +42,15 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroPeer.class);
 
     private final MqttClient inboundEndPoint;
-    protected String clientName;
     private final MaestroNoteDeserializer<? extends T> deserializer;
+    private final PeerInfo peerInfo;
 
-    public AbstractMaestroPeer(final String url, final String clientName, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
-        this(MqttClientInstance.getInstance(url).getClient(), clientName, deserializer);
+    public AbstractMaestroPeer(final String url, final PeerInfo peerInfo, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
+        this(MqttClientInstance.getInstance(url).getClient(), peerInfo, deserializer);
     }
 
-    protected AbstractMaestroPeer(final MqttClient inboundEndPoint, final String clientName, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
-        this.clientName = clientName;
+    protected AbstractMaestroPeer(final MqttClient inboundEndPoint, final PeerInfo peerInfo, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
+        this.peerInfo = peerInfo;
 
         this.inboundEndPoint = inboundEndPoint;
         this.inboundEndPoint.setCallback(this);
@@ -57,8 +58,9 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
         this.deserializer = deserializer;
     }
 
-    public String getClientName() {
-        return clientName;
+
+    public PeerInfo getPeerInfo() {
+        return peerInfo;
     }
 
     public String getId() {

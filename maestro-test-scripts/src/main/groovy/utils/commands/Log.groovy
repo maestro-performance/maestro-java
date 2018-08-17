@@ -79,7 +79,7 @@ if (locationType == null || locationType.equals("success")) {
             GetResponse gr = (GetResponse) note
 
             String dataServer = gr.getValue()
-            String peerType = NodeUtils.getTypeFromName(gr.getName())
+            String peerType = gr.getRole()
             downloader.downloadLastSuccessful(peerType, dataServer)
         }
     }
@@ -92,7 +92,7 @@ else {
             GetResponse gr = (GetResponse) note
 
             String dataServer = gr.getValue()
-            String peerType = NodeUtils.getTypeFromName(gr.getName())
+            String peerType = gr.getRole()
             downloader.downloadLastFailed(peerType, dataServer)
         }
     }

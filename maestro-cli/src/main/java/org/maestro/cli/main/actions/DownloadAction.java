@@ -192,7 +192,7 @@ public class DownloadAction extends Action {
                 GetResponse reply = (GetResponse) note;
                 Server server = new Server();
 
-                server.type = NodeUtils.getTypeFromName(reply.getName());
+                server.type = reply.getRole();
                 server.address = reply.getValue();
 
                 servers.add(server);

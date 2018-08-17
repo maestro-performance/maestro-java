@@ -19,6 +19,7 @@ package org.maestro.worker.common;
 import org.maestro.client.MaestroReceiverClient;
 import org.maestro.client.exchange.AbstractMaestroPeer;
 import org.maestro.client.exchange.MaestroDeserializer;
+import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.common.URLQuery;
 import org.maestro.common.client.exceptions.MalformedNoteException;
@@ -51,15 +52,14 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     /**
      * Constructor
      * @param maestroURL Maestro broker URL
-     * @param role Worker role
-     * @param host hostname
+     * @param peerInfo Information about this peer
      * @param dataServer the data server instance
      */
-    public MaestroWorkerManager(final String maestroURL, final String role, final String host, final MaestroDataServer dataServer) {
-        super(maestroURL, role, MaestroDeserializer::deserializeEvent);
+    public MaestroWorkerManager(final String maestroURL, final PeerInfo peerInfo, final MaestroDataServer dataServer) {
+        super(maestroURL, peerInfo, MaestroDeserializer::deserializeEvent);
 
         logger.debug("Creating the receiver client");
-        client = new MaestroReceiverClient(maestroURL, clientName, host, getId());
+        client = new MaestroReceiverClient(maestroURL, peerInfo, getId());
 
         workerOptions = new WorkerOptions();
         this.dataServer = dataServer;
@@ -124,7 +124,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         }
 
         // Explanation: the role is the name as the role (ie: clientName@host)
-        statsResponse.setRole(getClientName());
+        statsResponse.setRole(getPeerInfo().peerName());
         statsResponse.setLatency(0);
         statsResponse.setRate(0);
         statsResponse.setRoleInfo("");

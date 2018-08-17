@@ -9,8 +9,6 @@ public class NodeOrganizer extends DefaultOrganizer {
 
     @Override
     public String organize(final String peer, final String hostType) {
-        String host = NodeUtils.getHostFromName(peer);
-
-        return combine(hostType, host);
+        return combine(hostType, peer);
     }
 }

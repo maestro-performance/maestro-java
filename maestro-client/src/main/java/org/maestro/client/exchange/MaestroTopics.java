@@ -16,6 +16,8 @@
 
 package org.maestro.client.exchange;
 
+import org.maestro.client.exchange.support.PeerInfo;
+
 /**
  * Maestro topics contains the list of all topics used by Maestro
  */
@@ -96,16 +98,15 @@ public class MaestroTopics {
      * Returns the full list of topics for a peer including the public and private topics (those that are specific
      * to that peer)
      * @param publicTopics The topics that are public to all peers
-     * @param clientName the client name
-     * @param host the hostname for the peer
+     * @param peerInfo the peer information container
      * @param id the peer ID
      * @return an array with the topics for the given peer
      */
-    public static String[] peerTopics(final String[] publicTopics, final String clientName, final String host,
+    public static String[] peerTopics(final String[] publicTopics, final PeerInfo peerInfo,
                                       final String id) {
         String[] ret = new String[publicTopics.length + 2];
 
-        ret[0] = PEER_TOPIC + "/by-name/" + host + "/" + clientName;
+        ret[0] = PEER_TOPIC + "/by-name/" + peerInfo.peerHost() + "/" + peerInfo.peerName();
         ret[1] = PEER_TOPIC + "/by-id" + id;
 
         System.arraycopy(publicTopics, 0, ret, 2, publicTopics.length);

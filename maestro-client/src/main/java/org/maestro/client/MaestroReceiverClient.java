@@ -20,6 +20,7 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.callback.MaestroNoteCallback;
 import org.maestro.client.exchange.MaestroMqttClient;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
 import org.maestro.common.ConfigurationWrapper;
@@ -59,22 +60,20 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     private static final Logger logger = LoggerFactory.getLogger(MaestroReceiverClient.class);
 
     private final EpochMicroClock epochMicroClock;
-    private final String clientName;
-    private final String host;
+    private final PeerInfo peerInfo;
     private final String id;
 
-    public MaestroReceiverClient(String url, final String clientName, final String host, final String id) {
+    public MaestroReceiverClient(final String url, final PeerInfo peerInfo, final String id) {
         super(url);
 
-        this.clientName = clientName;
-        this.host = host;
+        this.peerInfo = peerInfo;
         this.id = id;
         //it is supposed to be used just by one thread
         this.epochMicroClock = EpochClocks.exclusiveMicro();
     }
 
-    public String getHost() {
-        return host;
+    private String getHost() {
+        return peerInfo.peerHost();
     }
 
     public String getId() {
@@ -86,7 +85,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     }
 
     private String getName() {
-        return clientName;
+        return peerInfo.peerName();
     }
 
     public void replyOk(final MaestroNote note) {
