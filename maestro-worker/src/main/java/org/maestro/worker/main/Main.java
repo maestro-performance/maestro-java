@@ -19,6 +19,8 @@ package org.maestro.worker.main;
 import org.apache.commons.cli.*;
 import org.maestro.client.exchange.AbstractMaestroPeer;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.exchange.support.WorkerPeer;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
@@ -97,14 +99,6 @@ public class Main {
         }
         System.setProperty("maestro.worker.role", role);
 
-        worker = cmdLine.getOptionValue('w');
-        if (worker == null) {
-            if (!role.equals("data-server")) {
-                System.err.println("The worker class is missing (option -w)");
-                help(options, -1);
-            }
-        }
-
         host = cmdLine.getOptionValue('H');
         if (host == null) {
             try {
@@ -168,17 +162,6 @@ public class Main {
                     Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
 
                     maestroPeer = new ConcurrentWorkerManager(maestroUrl, role, host, logDir, clazz, dataServer);
-                    executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
-
-                    String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_RECEIVER_TOPICS, maestroPeer.getClientName(),
-                            host, maestroPeer.getId());
-
-                    executor.start(topics);
-                    executor.run();
-                    break;
-                }
-                case "data-server": {
-                    maestroPeer = new VoidWorkerManager(maestroUrl, role, host, dataServer);
                     executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
                     String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_RECEIVER_TOPICS, maestroPeer.getClientName(),
