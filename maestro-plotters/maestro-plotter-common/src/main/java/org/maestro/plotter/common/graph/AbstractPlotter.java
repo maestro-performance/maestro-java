@@ -133,10 +133,10 @@ public abstract class AbstractPlotter<T> {
         Font defaultFont = new Font("Verdana", Font.PLAIN, 12);
 
         chart.getStyler().setBaseFont(defaultFont);
-        chart.getStyler().setChartTitleFont(defaultFont.deriveFont(Font.BOLD).deriveFont(14));
+        chart.getStyler().setChartTitleFont(defaultFont.deriveFont(Font.BOLD).deriveFont(14.0F));
         chart.getStyler().setLegendFont(defaultFont);
         chart.getStyler().setAxisTitleFont(defaultFont);
-        chart.getStyler().setAxisTickLabelsFont(defaultFont.deriveFont(10));
+        chart.getStyler().setAxisTickLabelsFont(defaultFont.deriveFont(10.0F));
 
         chart.getStyler().setLegendPosition(Styler.LegendPosition.OutsideS);
         chart.getStyler().setLegendLayout(Styler.LegendLayout.Vertical);
