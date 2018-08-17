@@ -127,7 +127,7 @@ public class Main {
             MaestroWorkerExecutor executor;
             final PeerInfo peerInfo = new WorkerPeer("inspector", host);
 
-            AbstractMaestroPeer<MaestroEvent> maestroPeer
+            InspectorManager maestroPeer
                     = new InspectorManager(maestroUrl, peerInfo, dataServer, logDir);
 
             executor = new MaestroWorkerExecutor(maestroPeer, dataServer);

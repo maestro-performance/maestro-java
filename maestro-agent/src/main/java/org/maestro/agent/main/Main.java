@@ -131,7 +131,7 @@ public class Main {
             MaestroWorkerExecutor executor;
 
             final PeerInfo peerInfo = new WorkerPeer("agent", host);
-            AbstractMaestroPeer<MaestroEvent> maestroPeer = new MaestroAgent(maestroUrl, peerInfo, dataServer);
+            MaestroAgent maestroPeer = new MaestroAgent(maestroUrl, peerInfo, dataServer);
 
             executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 

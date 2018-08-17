@@ -147,7 +147,7 @@ public class Main {
             MaestroDataServer dataServer = new MaestroDataServer(logDir, host);
 
             MaestroWorkerExecutor executor;
-            AbstractMaestroPeer maestroPeer;
+
 
             switch (role) {
                 case "sender": {
@@ -155,7 +155,7 @@ public class Main {
 
                     final PeerInfo peerInfo = new WorkerPeer("sender", host);
 
-                    maestroPeer = new ConcurrentWorkerManager(maestroUrl, peerInfo, logDir, clazz, dataServer);
+                    ConcurrentWorkerManager maestroPeer = new ConcurrentWorkerManager(maestroUrl, peerInfo, logDir, clazz, dataServer);
                     executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
                     String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_SENDER_TOPICS, peerInfo,
@@ -169,7 +169,7 @@ public class Main {
                     Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
 
                     final PeerInfo peerInfo = new WorkerPeer("receiver", host);
-                    maestroPeer = new ConcurrentWorkerManager(maestroUrl, peerInfo, logDir, clazz, dataServer);
+                    ConcurrentWorkerManager maestroPeer = new ConcurrentWorkerManager(maestroUrl, peerInfo, logDir, clazz, dataServer);
                     executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
                     String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_RECEIVER_TOPICS, peerInfo,
