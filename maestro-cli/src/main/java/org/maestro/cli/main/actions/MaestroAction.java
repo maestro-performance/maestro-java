@@ -71,7 +71,7 @@ public class MaestroAction extends Action {
         try {
             maestro = new Maestro(maestroUrl);
 
-            CompletableFuture<List<? extends MaestroNote>> completableFuture = null;
+            CompletableFuture<List<? extends MaestroNote>> completableFuture;
 
             switch (command) {
                 case "ping": {

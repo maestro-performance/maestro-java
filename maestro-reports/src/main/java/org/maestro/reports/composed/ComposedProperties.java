@@ -41,7 +41,7 @@ public class ComposedProperties {
 
         PropertyUtils.loadProperties(indexProperties, context);
 
-        BasicFileAttributes attr = null;
+        BasicFileAttributes attr;
         try {
             attr = Files.readAttributes(indexProperties.getParentFile().toPath(), BasicFileAttributes.class);
 

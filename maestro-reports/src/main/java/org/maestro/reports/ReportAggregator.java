@@ -83,7 +83,7 @@ public class ReportAggregator {
     private void aggregateSet(File currentTestNumDir, Set<MptReportFile> currentReports) throws IOException {
         logger.info("Producing aggregated report for directory : {} ({} report(s))", currentTestNumDir, currentReports.size());
 
-        NodeType nodeType = null;
+        NodeType nodeType;
         File aggregatedReportRoot = new File(currentTestNumDir, AGGREGATED_REPORT_DIRNAME);
         Properties props = null;
 
@@ -146,7 +146,7 @@ public class ReportAggregator {
     }
 
     private BinaryRateUpdater getBinaryRateUpdater(NodeType nodeType, File aggregatedReportRoot) throws IOException {
-        File output = null;
+        File output;
         if (nodeType == NodeType.RECEIVER) {
             output = new File(aggregatedReportRoot, "receiver.dat");
         } else {
