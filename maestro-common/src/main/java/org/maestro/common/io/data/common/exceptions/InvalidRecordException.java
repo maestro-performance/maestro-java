@@ -5,6 +5,7 @@ import org.maestro.common.exceptions.MaestroException;
 /**
  * Thrown if trying to save an invalid record
  */
+@SuppressWarnings("serial")
 public class InvalidRecordException extends MaestroException {
     public InvalidRecordException() {
     }

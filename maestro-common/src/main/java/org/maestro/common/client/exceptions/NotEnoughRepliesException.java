@@ -21,6 +21,7 @@ import org.maestro.common.exceptions.MaestroException;
 /**
  * Thrown if there were not enough replies as a response to a command
  */
+@SuppressWarnings("serial")
 public class NotEnoughRepliesException extends MaestroException {
     public NotEnoughRepliesException() {
     }

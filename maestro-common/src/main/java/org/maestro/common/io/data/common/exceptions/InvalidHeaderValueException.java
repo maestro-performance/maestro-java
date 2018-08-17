@@ -5,6 +5,7 @@ import org.maestro.common.exceptions.MaestroException;
 /**
  * Thrown if trying to set an invalid header value
  */
+@SuppressWarnings("serial")
 public class InvalidHeaderValueException extends MaestroException {
     public InvalidHeaderValueException() {
     }
