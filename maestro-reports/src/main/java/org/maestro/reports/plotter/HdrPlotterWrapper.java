@@ -45,7 +45,7 @@ public class HdrPlotterWrapper implements PlotterWrapper {
     private Histogram histogram;
 
     static {
-        DEFAULT_UNIT_RATE = config.getDouble("hdr.plotter.default.unit.rate", 1000.0);
+        DEFAULT_UNIT_RATE = config.getDouble("hdr.plotter.default.unit.rate", 1.0);
         legacyHdrMode = config.getBoolean("hdr.plotter.legacy.mode", false);
     }
 
