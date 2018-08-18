@@ -16,6 +16,7 @@
 
 package org.maestro.client.exchange;
 
+import org.maestro.common.client.notes.MaestroNote;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,13 +37,13 @@ public class MaestroMonitor {
     private final Lock lock = new ReentrantLock();
     private final Condition condition = lock.newCondition();
 
-    private final Predicate object;
+    private final Predicate<? super MaestroNote> object;
 
     /**
      * Constructs a Monitor using the given predicate (ie.: note instanceof TestSuccessfulNotification)
      * @param object the monitoring predicate
      */
-    public MaestroMonitor(Predicate object) {
+    public MaestroMonitor(Predicate<? super MaestroNote> object) {
         this.object = object;
     }
 
@@ -97,7 +98,7 @@ public class MaestroMonitor {
      * @param subject the subject to test (ie.: a new note arriving on the collector)
      * @return true if it matches or false otherwise
      */
-    public boolean shouldAwake(Object subject) {
+    public boolean shouldAwake(MaestroNote subject) {
         return object.test(subject);
     }
 
