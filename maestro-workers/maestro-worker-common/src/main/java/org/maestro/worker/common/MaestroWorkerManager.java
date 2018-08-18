@@ -41,7 +41,7 @@ import java.net.URISyntaxException;
 /**
  * A base worker class that implements the most basic worker functionality
  */
-public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> implements MaestroEventListener {
+public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent<MaestroEventListener>> implements MaestroEventListener {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
 
     private final MaestroReceiverClient client;
@@ -96,7 +96,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
 
     @Override
-    protected final void noteArrived(MaestroEvent note) throws MaestroConnectionException {
+    protected final void noteArrived(MaestroEvent<MaestroEventListener> note) throws MaestroConnectionException {
         if (logger.isTraceEnabled()) {
             logger.trace("Some message arrived: {}", note.toString());
         }

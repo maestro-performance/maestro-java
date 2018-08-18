@@ -16,6 +16,7 @@
 
 package org.maestro.client.exchange;
 
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ import org.slf4j.LoggerFactory;
 public class AbstractMaestroExecutor implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroExecutor.class);
 
-    private final AbstractMaestroPeer maestroPeer;
+    private final AbstractMaestroPeer<? extends MaestroNote> maestroPeer;
     private String[] topics;
 
     /**
@@ -35,7 +36,7 @@ public class AbstractMaestroExecutor implements Runnable {
      * @param maestroPeer a Maestro peer object is capable of exchange maestro data.
      * @throws MaestroConnectionException if unable to connect or subscribe
      */
-    protected AbstractMaestroExecutor(final AbstractMaestroPeer maestroPeer) throws MaestroConnectionException {
+    protected AbstractMaestroExecutor(final AbstractMaestroPeer<? extends MaestroNote> maestroPeer) throws MaestroConnectionException {
         this.maestroPeer = maestroPeer;
     }
 
@@ -44,7 +45,7 @@ public class AbstractMaestroExecutor implements Runnable {
      * Get the Maestro peer
      * @return the maestro peer object
      */
-    protected AbstractMaestroPeer getMaestroPeer() {
+    protected AbstractMaestroPeer<? extends MaestroNote> getMaestroPeer() {
         return maestroPeer;
     }
 

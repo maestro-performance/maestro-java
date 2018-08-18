@@ -29,7 +29,7 @@ import java.io.IOException;
  * @param <Y> Reader type
  * @param <K> Plotter type
  */
-public class BasicPlotter<Y extends ReportReader, K extends AbstractPlotter> {
+public class BasicPlotter<Y extends ReportReader<?>, K extends AbstractPlotter> {
 
     private final Y reader;
     private final K plotter;

@@ -31,7 +31,7 @@ public class RatePlotterWrapper implements PlotterWrapper {
 
     @Override
     public boolean plot(final File file) throws MaestroException {
-        ReportReader rateReader = null;
+        ReportReader<?> rateReader = null;
 
         if (file.getName().endsWith("dat")) {
             rateReader = new RateDataReader();
@@ -40,7 +40,7 @@ public class RatePlotterWrapper implements PlotterWrapper {
 
         logger.debug("Plotting Maestro rate file {}", file.getPath());
 
-        BasicPlotter<? extends ReportReader, RatePlotter> basicPlotter = new BasicPlotter<>(rateReader, new RatePlotter());
+        BasicPlotter<? extends ReportReader<?>, RatePlotter> basicPlotter = new BasicPlotter<>(rateReader, new RatePlotter());
 
         File propertiesFile = new File(file.getParentFile(), "rate.properties");
         File outputFile = new File(file.getParentFile(), "rate.png");
