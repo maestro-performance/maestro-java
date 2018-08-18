@@ -184,37 +184,6 @@ public final class Maestro implements MaestroRequester {
     }
 
 
-
-    /**
-     * Sends a set log level request
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setLogLevel(final String value) throws MaestroConnectionException {
-        return setLogLevel(MaestroTopics.ALL_DAEMONS, value);
-    }
-
-
-    /**
-     * Sends a set log level request
-     * @param topic the topic to send the request to
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setLogLevel(final String topic, final String value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
-
-        maestroNote.setLogLevel(value);
-
-        maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
-
-        return CompletableFuture.supplyAsync(
-                () -> collect(note -> isCorrelated(note, correlation))
-        );
-    }
-
-
     /**
      * Sends a set parallel count request
      * @param value The value to set the (remote) parameter to
@@ -284,35 +253,6 @@ public final class Maestro implements MaestroRequester {
         );
     }
 
-
-    /**
-     * Sends a set throttle request
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setThrottle(final int value) throws MaestroConnectionException {
-        return setThrottle(MaestroTopics.ALL_DAEMONS, value);
-    }
-
-
-    /**
-     * Sends a set throttle request
-     * @param topic the topic to send the request to
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setThrottle(final String topic, final int value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
-
-        maestroNote.setThrottle(Integer.toString(value));
-
-        maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
-
-        return CompletableFuture.supplyAsync(
-                () -> collect(note -> isCorrelated(note, correlation))
-        );
-    }
 
 
     /**

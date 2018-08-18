@@ -86,27 +86,6 @@ public interface MaestroRequester {
     CompletableFuture<List<? extends MaestroNote>> setDuration(final String topic, final Object value) throws MaestroException;
 
 
-
-    /**
-     * Sends a set log level request
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future that can be used to collect the replies for the request
-     */
-    @Deprecated
-    CompletableFuture<List<? extends MaestroNote>> setLogLevel(final String value) throws MaestroConnectionException;
-
-
-    /**
-     * Sends a set log level request
-     * @param topic the topic to send the request to
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future that can be used to collect the replies for the request
-     */
-    CompletableFuture<List<? extends MaestroNote>> setLogLevel(final String topic, final String value) throws MaestroConnectionException;
-
-
     /**
      * Sends a set parallel count request
      * @param value The value to set the (remote) parameter to
@@ -144,36 +123,6 @@ public interface MaestroRequester {
      * @return A completable future that can be used to collect the replies for the request
      */
     CompletableFuture<List<? extends MaestroNote>> setMessageSize(final long value) throws MaestroConnectionException;
-
-
-    /**
-     * Sends a set throttle request
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future that can be used to collect the replies for the request
-     */
-    @Deprecated
-    CompletableFuture<List<? extends MaestroNote>> setThrottle(final int value) throws MaestroConnectionException;
-
-
-    /**
-     * Sends a set throttle request
-     * @param topic the topic to send the request to
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future that can be used to collect the replies for the request
-     */
-    @Deprecated
-    CompletableFuture<List<? extends MaestroNote>> setThrottle(final String topic, final int value) throws MaestroConnectionException;
-
-
-    /**
-     * Sends a set rate request
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future that can be used to collect the replies for the request
-     */
-    CompletableFuture<List<? extends MaestroNote>> setRate(final int value) throws MaestroConnectionException;
 
 
     /**
