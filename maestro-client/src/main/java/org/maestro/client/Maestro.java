@@ -83,28 +83,6 @@ public final class Maestro implements MaestroRequester {
     }
 
     /**
-     * Sends a flush request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> flushRequest() throws MaestroConnectionException {
-        return flushRequest(MaestroTopics.ALL_DAEMONS);
-    }
-
-
-    /**
-     * Sends a flush request
-     * @param topic the topic to send the request to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> flushRequest(final String topic) throws MaestroConnectionException {
-        FlushRequest maestroNote = new FlushRequest();
-
-        maestroClient.publish(topic, maestroNote);
-
-        return getOkErrorCompletableFuture();
-    }
-
-    /**
      * Sends a ping request
      * @throws MaestroConnectionException if unable to send the MQTT request
      */

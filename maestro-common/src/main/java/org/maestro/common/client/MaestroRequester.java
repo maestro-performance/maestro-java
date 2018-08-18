@@ -33,24 +33,6 @@ public interface MaestroRequester {
     void stop() throws MaestroConnectionException;
 
     /**
-     * Sends a flush request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future that can be used to collect the replies for the request
-     */
-    @Deprecated
-    CompletableFuture<List<? extends MaestroNote>> flushRequest() throws MaestroConnectionException;
-
-
-    /**
-     * Sends a flush request
-     * @param topic the topic to send the request to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future that can be used to collect the replies for the request
-     */
-    @Deprecated
-    CompletableFuture<List<? extends MaestroNote>> flushRequest(final String topic) throws MaestroConnectionException;
-
-    /**
      * Sends a ping request
      * @throws MaestroConnectionException if unable to send the MQTT request
      * @return A completable future that can be used to collect the replies for the request

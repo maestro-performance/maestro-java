@@ -155,17 +155,6 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     }
 
     /**
-     * Flush request handler
-     * @param note Flush note
-     */
-    @Override
-    public void handle(FlushRequest note) {
-        super.handle(note);
-
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.FLUSH, note));
-    }
-
-    /**
      * Halt request handler
      * @param note Halt note
      */

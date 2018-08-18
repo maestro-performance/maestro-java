@@ -48,17 +48,6 @@ public class MaestroProtocolTest {
         assertTrue(((PingRequest) parsed).getUsec() != 0);
     }
 
-    @Test
-    public void serializeFlushRequest() throws Exception {
-        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(new FlushRequest()));
-
-        assertTrue("Parsed object is not a flush request",
-                parsed instanceof FlushRequest);
-
-        assertTrue(parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_FLUSH);
-    }
-
 
     @Test
     public void serializeOkResponse() throws Exception {

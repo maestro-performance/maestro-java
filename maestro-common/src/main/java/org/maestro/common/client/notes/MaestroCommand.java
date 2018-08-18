@@ -29,7 +29,6 @@ public enum MaestroCommand {
     /** Inspector execution **/
     MAESTRO_NOTE_START_INSPECTOR(4),
     MAESTRO_NOTE_STOP_INSPECTOR(5),
-    MAESTRO_NOTE_FLUSH(6),
     MAESTRO_NOTE_SET(7),
     MAESTRO_NOTE_STATS(8),
     MAESTRO_NOTE_HALT(9),
@@ -74,7 +73,6 @@ public enum MaestroCommand {
             case 3: return MAESTRO_NOTE_STOP_SENDER;
             case 4: return MAESTRO_NOTE_START_INSPECTOR;
             case 5: return MAESTRO_NOTE_STOP_INSPECTOR;
-            case 6: return MAESTRO_NOTE_FLUSH;
             case 7: return MAESTRO_NOTE_SET;
             case 8: return MAESTRO_NOTE_STATS;
             case 9: return MAESTRO_NOTE_HALT;

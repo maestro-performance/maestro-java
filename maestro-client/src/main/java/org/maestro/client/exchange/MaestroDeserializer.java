@@ -93,7 +93,6 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_STOP_SENDER:
             case MAESTRO_NOTE_START_INSPECTOR:
             case MAESTRO_NOTE_STOP_INSPECTOR:
-            case MAESTRO_NOTE_FLUSH:
             case MAESTRO_NOTE_SET:
             case MAESTRO_NOTE_HALT:
             case MAESTRO_NOTE_START_AGENT:
@@ -116,9 +115,6 @@ public class MaestroDeserializer {
         switch (Objects.requireNonNull(command)) {
             case MAESTRO_NOTE_PING: {
                 return new PingRequest(unpacker);
-            }
-            case MAESTRO_NOTE_FLUSH: {
-                return new FlushRequest();
             }
             case MAESTRO_NOTE_STATS: {
                 return new StatsRequest();

@@ -27,8 +27,6 @@ public interface MaestroEventListener {
 
     void handle(StatsRequest note);
 
-    void handle(FlushRequest note);
-
     void handle(Halt note);
 
     void handle(SetRequest note);

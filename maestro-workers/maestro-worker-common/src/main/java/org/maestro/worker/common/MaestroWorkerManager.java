@@ -135,13 +135,6 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         client.statsResponse(statsResponse);
     }
 
-
-    @Override
-    public void handle(FlushRequest note) {
-        logger.trace("Flush request received");
-    }
-
-
     @Override
     public void handle(Halt note) {
         logger.trace("Halt request received");

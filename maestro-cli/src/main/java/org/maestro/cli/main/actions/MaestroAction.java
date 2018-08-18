@@ -78,10 +78,6 @@ public class MaestroAction extends Action {
                     completableFuture = maestro.pingRequest();
                     break;
                 }
-                case "flush": {
-                    completableFuture = maestro.flushRequest();
-                    break;
-                }
                 case "stats": {
                     completableFuture = maestro.statsRequest();
                     break;
