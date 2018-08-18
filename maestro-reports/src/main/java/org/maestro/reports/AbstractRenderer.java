@@ -100,18 +100,17 @@ public abstract class AbstractRenderer {
      * @throws IOException on multiple I/O related errors
      */
     protected void copyResources(final File path, final String resource, final String destinationName) throws IOException {
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
-
         // Skip duplicate static resources
         File outputFile = new File(path, destinationName);
         if (outputFile.exists()) {
             return;
         }
 
+        InputStream inputStream = null;
+        OutputStream outputStream = null;
         try {
-            inputStream = this.getClass().getResourceAsStream(resource);
-            outputStream = new FileOutputStream(outputFile);
+            inputStream = new BufferedInputStream(this.getClass().getResourceAsStream(resource));
+            outputStream =  new BufferedOutputStream(new FileOutputStream(outputFile));
 
             IOUtils.copy(inputStream, outputStream);
         } finally {

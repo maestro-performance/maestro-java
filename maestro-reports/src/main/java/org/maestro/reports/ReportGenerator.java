@@ -33,9 +33,7 @@ import org.maestro.reports.processors.ReportFileProcessor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileOutputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
@@ -86,7 +84,7 @@ public class ReportGenerator {
 
         indexProperties.forEach(prop::setProperty);
 
-        try (FileOutputStream fos = new FileOutputStream(testProperties)) {
+        try (OutputStream fos = new BufferedOutputStream(new FileOutputStream(testProperties))) {
             prop.store(fos, "mpt-index");
         }
     }
