@@ -58,7 +58,7 @@ public class QueueInfoWriter implements InspectorDataWriter<QueueInfo>, AutoClos
 
     private void write(final LocalDateTime now, final String key, final Object object) {
         if (object instanceof Map) {
-            final Map<String, Object> queueProperties = (Map<String, Object>) object;
+            final Map<?, ?> queueProperties = (Map<?, ?>) object;
             logger.trace("Queue information: {}", queueProperties);
 
             try {
