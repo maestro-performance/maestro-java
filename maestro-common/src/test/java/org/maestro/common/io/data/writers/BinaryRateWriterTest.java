@@ -55,13 +55,14 @@ public class BinaryRateWriterTest {
         try {
             generateDataFileRandom(reportFile);
 
-            BinaryRateReader reader = new BinaryRateReader(reportFile);
+            try (BinaryRateReader reader = new BinaryRateReader(reportFile)) {
 
-            FileHeader fileHeader = reader.getHeader();
-            assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
-            assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
-            assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
-            assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+                FileHeader fileHeader = reader.getHeader();
+                assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
+                assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
+                assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
+                assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+            }
         }
         finally {
             clean(reportFile);
@@ -69,18 +70,17 @@ public class BinaryRateWriterTest {
     }
 
     private void generateDataFileRandom(File reportFile) throws IOException {
-        BinaryRateWriter binaryRateWriter = new BinaryRateWriter(reportFile, FileHeader.WRITER_DEFAULT_SENDER);
+        try (BinaryRateWriter binaryRateWriter = new BinaryRateWriter(reportFile, FileHeader.WRITER_DEFAULT_SENDER)) {
 
-        EpochMicroClock clock = EpochClocks.exclusiveMicro();
-        long now = clock.microTime();
+            EpochMicroClock clock = EpochClocks.exclusiveMicro();
+            long now = clock.microTime();
 
-        for (int i = 0; i < TimeUnit.DAYS.toSeconds(1); i++) {
-            binaryRateWriter.write(1, Double.valueOf(Math.random()).longValue(), now);
+            for (int i = 0; i < TimeUnit.DAYS.toSeconds(1); i++) {
+                binaryRateWriter.write(1, Double.valueOf(Math.random()).longValue(), now);
 
-            now += TimeUnit.SECONDS.toMicros(1);
+                now += TimeUnit.SECONDS.toMicros(1);
+            }
         }
-
-        binaryRateWriter.close();
     }
 
     @Test
@@ -116,22 +116,22 @@ public class BinaryRateWriterTest {
     }
 
     private long generateDataFilePredictable(File reportFile) throws IOException {
-        BinaryRateWriter binaryRateWriter = new BinaryRateWriter(reportFile, FileHeader.WRITER_DEFAULT_SENDER);
+        try (BinaryRateWriter binaryRateWriter = new BinaryRateWriter(reportFile, FileHeader.WRITER_DEFAULT_SENDER)) {
 
-        EpochMicroClock clock = EpochClocks.exclusiveMicro();
+            EpochMicroClock clock = EpochClocks.exclusiveMicro();
 
-        long total = TimeUnit.DAYS.toSeconds(1);
+            long total = TimeUnit.DAYS.toSeconds(1);
 
-        long now = clock.microTime();
+            long now = clock.microTime();
 
-        for (int i = 0; i < total; i++) {
-            binaryRateWriter.write(0, i + 1, now);
+            for (int i = 0; i < total; i++) {
+                binaryRateWriter.write(0, i + 1, now);
 
-            now += TimeUnit.SECONDS.toMicros(1);
+                now += TimeUnit.SECONDS.toMicros(1);
+            }
+
+            return total;
         }
-
-        binaryRateWriter.close();
-        return total;
     }
 
     @Test(expected = InvalidRecordException.class)
@@ -139,9 +139,7 @@ public class BinaryRateWriterTest {
         String path = this.getClass().getResource(".").getPath();
         File reportFile = new File(path, "testHeaderWriteRecordsNonSequential.dat");
 
-        try {
-            BinaryRateWriter binaryRateWriter = new BinaryRateWriter(reportFile, FileHeader.WRITER_DEFAULT_SENDER);
-
+        try (BinaryRateWriter binaryRateWriter = new BinaryRateWriter(reportFile, FileHeader.WRITER_DEFAULT_SENDER)) {
             EpochMicroClock clock = EpochClocks.exclusiveMicro();
 
             long total = TimeUnit.DAYS.toSeconds(1);
@@ -153,8 +151,6 @@ public class BinaryRateWriterTest {
 
                 now -= TimeUnit.SECONDS.toMicros(1);
             }
-
-            binaryRateWriter.close();
         }
         finally {
             clean(reportFile);
