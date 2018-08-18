@@ -14,7 +14,7 @@
  *  limitations under the License.
  */
 
-package org.maestro.test.scripts.support;
+package org.maestro.worker;
 
 import net.orpiske.jms.provider.activemq.ActiveMqProvider;
 import net.orpiske.jms.test.annotations.Provider;
