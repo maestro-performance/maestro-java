@@ -88,7 +88,7 @@ public class QDMemoryInfoWriter implements InspectorDataWriter<QDMemoryInfo>, Au
     public void write(final LocalDateTime now, final QDMemoryInfo data) {
         logger.trace("Memory information: {}", data);
 
-        List connectionProperties = data.getQDMemoryInfoProperties();
+        List<Map<String, Object>> connectionProperties = data.getQDMemoryInfoProperties();
 
         connectionProperties.forEach(map -> write(now, map));
     }

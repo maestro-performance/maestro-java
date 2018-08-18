@@ -48,7 +48,7 @@ public class InterconnectReadData {
      * unable to read the message, returns an empty map
      * @throws JMSException if it can't send or receive message
      */
-    private HashMap collectData(final String component) throws JMSException {
+    private HashMap<?, ?> collectData(final String component) throws JMSException {
         requestProducer.send(createMessage(component));
 
         Message message = collectResponse();
@@ -109,7 +109,7 @@ public class InterconnectReadData {
 
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
 
-        HashMap collectedData = collectData("router.link");
+        HashMap<?, ?> collectedData = collectData("router.link");
 
         return new RouterLinkInfo(converter.parseReceivedMessage(collectedData));
     }
@@ -124,7 +124,7 @@ public class InterconnectReadData {
 
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
 
-        HashMap collectedData = collectData("connection");
+        HashMap<?, ?> collectedData = collectData("connection");
 
         return new ConnectionsInfo(converter.parseReceivedMessage(collectedData));
     }
@@ -138,7 +138,7 @@ public class InterconnectReadData {
     QDMemoryInfo collectMemoryInfo() throws JMSException {
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
 
-        HashMap collectedData = collectData("allocator");
+        HashMap<?, ?> collectedData = collectData("allocator");
 
         return new QDMemoryInfo(converter.parseReceivedMessage(collectedData));
     }
@@ -152,7 +152,7 @@ public class InterconnectReadData {
     GeneralInfo collectGeneralInfo() throws JMSException {
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
 
-        HashMap collectedData = collectData("router");
+        HashMap<?, ?> collectedData = collectData("router");
 
         return new GeneralInfo(converter.parseReceivedMessage(collectedData));
     }

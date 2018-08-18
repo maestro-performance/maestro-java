@@ -1,5 +1,6 @@
 package org.maestro.inspector.amqp.converter;
 
+import org.maestro.common.exceptions.MaestroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +21,7 @@ public class InterconnectInfoConverter {
      * @param map collected data
      * @return parsed into into list of hash maps
      */
-    public List<Map<String, Object>> parseReceivedMessage(Map map) {
+    public List<Map<String, Object>> parseReceivedMessage(Map<?, ?> map) {
         List<Map<String, Object>> recordList = new ArrayList<>();
 
         if (map == null || map.isEmpty()) {
@@ -28,19 +29,30 @@ public class InterconnectInfoConverter {
             return recordList;
         }
 
-        List attributeNames = (List) map.get("attributeNames");
+        Object tmpAttributeNames = map.get("attributeNames");
+        if (tmpAttributeNames != null && !(tmpAttributeNames instanceof List)) {
+            throw new MaestroException("Unexpected type for the returned attribute names: ");
+        }
+
+
+        List<?> attributeNames = (List) tmpAttributeNames;
         if (attributeNames == null) {
             logger.warn("The received attribute map does not contain a list of attribute names");
             return recordList;
         }
 
-        List<List> results = (List<List>) map.get("results");
+        Object tmpResults = map.get("results");
+        if (tmpResults != null && !(tmpResults instanceof List)) {
+            throw new MaestroException("Unexpected type for the returned attribute values");
+        }
+
+        List<List> results = (List<List>) tmpResults;
         if (results == null) {
             logger.warn("The received attribute map does not contain a list of attribute values (results)");
             return recordList;
         }
 
-        for (List result : results) {
+        for (List<?> result : results) {
             Map<String, Object> tmpRecord = new HashMap<>();
             for (Object attributeName: attributeNames) {
                 tmpRecord.put((String) attributeName, result.get(attributeNames.indexOf(attributeName)));
