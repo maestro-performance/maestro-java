@@ -77,7 +77,7 @@ public class InterconnectInfoConverterTest {
         List<String> attributesList2 = Arrays.asList("value2.1", "value2.2");
         List<String> attributesList3 = Arrays.asList("value3.1", "value3.2");
 
-        List<List> results = Arrays.asList(attributesList1, attributesList2, attributesList3);
+        List<List<String>> results = Arrays.asList(attributesList1, attributesList2, attributesList3);
         Map<String, Object> fakeMap = new HashMap<>();
 
         fakeMap.put("attributeNames", attributeNames);
@@ -92,7 +92,7 @@ public class InterconnectInfoConverterTest {
         List<String> attributesList2 = Arrays.asList("value2.1", "value2.2");
         List<String> attributesList3 = Arrays.asList("value3.1", "value3.2");
 
-        List<List> results = Arrays.asList(attributesList1, attributesList2, attributesList3);
+        List<List<String>> results = Arrays.asList(attributesList1, attributesList2, attributesList3);
         Map<String, Object> fakeMap = new HashMap<>();
 
         fakeMap.put("thisIsAnInvalidAttributeKeyName", attributeNames);
@@ -103,7 +103,7 @@ public class InterconnectInfoConverterTest {
     private Map<String, Object> buildMapWithEmptyLists() {
         List<String> attributeNames = new ArrayList<>(1);
 
-        List<List> results = new ArrayList<>(1);
+        List<List<String>> results = new ArrayList<>(1);
         Map<String, Object> fakeMap = new HashMap<>();
 
         fakeMap.put("attributeNames", attributeNames);
