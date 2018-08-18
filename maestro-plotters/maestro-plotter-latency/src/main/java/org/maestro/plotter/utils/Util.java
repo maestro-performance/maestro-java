@@ -29,6 +29,10 @@ public class Util {
         int i = 0;
         while (histogramLogReader.hasNext()) {
             EncodableHistogram eh = histogramLogReader.nextIntervalHistogram();
+            if (eh == null) {
+                logger.error("The histogram library returned an unexpected null value");
+                break;
+            }
 
             if (i == 0) {
                 if (eh instanceof DoubleHistogram) {
