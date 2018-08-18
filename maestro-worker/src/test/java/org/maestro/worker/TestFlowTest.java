@@ -55,11 +55,20 @@ public class TestFlowTest extends EndToEndTest {
     protected Maestro maestro;
 
     @Before
-    public void setUp() {
+    public void setUp() throws Exception {
         LogConfigurator.silent();
+        System.setProperty("maestro.mqtt.no.reuse", "true");
+
+        miniSendingPeer.start();
+        miniReceivingPeer.start();
     }
 
-    @Ignore
+    @After
+    public void tearDown() throws Exception {
+        miniSendingPeer.stop();
+        miniReceivingPeer.stop();
+    }
+
     @Test
     public void testSimpleTest() throws Exception {
         System.out.println("Running a short-lived test");
@@ -89,10 +98,6 @@ public class TestFlowTest extends EndToEndTest {
 
         maestro.startSender();
         maestro.startReceiver();
-
-        // Get the OK replies
-
-        Thread.sleep(2000);
 
         // Get the test result notification
         List<? extends MaestroNote> replies = maestro
