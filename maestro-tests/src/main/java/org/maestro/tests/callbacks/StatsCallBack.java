@@ -39,7 +39,7 @@ public class StatsCallBack implements MaestroNoteCallback {
             logger.debug("Received stats {}", statsResponse);
 
             int targetRate = executor.getTestProfile().getRate();
-            if (statsResponse.getRate() < (targetRate / 2) && statsResponse.getRate() > 0) {
+            if (isSlow(statsResponse, targetRate)) {
                 logger.warn("The warm-up duration might expire of time instead of count because the current " +
                                 "rate {} is much lower than the target rate {}", statsResponse.getRate(),
                         executor.getTestProfile().getRate());
@@ -72,6 +72,10 @@ public class StatsCallBack implements MaestroNoteCallback {
         }
 
         return true;
+    }
+
+    public boolean isSlow(StatsResponse statsResponse, int targetRate) {
+        return (statsResponse.getRate() < ((double) targetRate / 2.0)) && statsResponse.getRate() > 0;
     }
 
     private void updateCounters(StatsResponse statsResponse) {
