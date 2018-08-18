@@ -156,7 +156,7 @@ public class LogResponse extends MaestroResponse {
 
 
     protected InputStream initializeInputStream() throws IOException {
-        return new FileInputStream(file);
+        return new BufferedInputStream(new FileInputStream(file));
     }
 
 
