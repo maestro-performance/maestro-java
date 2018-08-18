@@ -39,6 +39,8 @@ import java.util.HashMap;
 /**
  * Implements network resource exchange via HTTP
  */
+@Deprecated
+@SuppressWarnings("deprecated")
 public class HttpResourceExchange implements ResourceExchange {
     private static final Logger logger = LoggerFactory.getLogger(HttpResourceExchange.class);
 
