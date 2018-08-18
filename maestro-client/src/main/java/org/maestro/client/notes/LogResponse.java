@@ -141,15 +141,21 @@ public class LogResponse extends MaestroResponse {
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
-        packer.packInt(locationType.code);
-        packer.packString(fileName);
-        packer.packInt(index);
-        packer.packInt(total);
+        try {
+            packer.packInt(locationType.code);
+            packer.packString(fileName);
+            packer.packInt(index);
+            packer.packInt(total);
 
-        packer.packLong(fileSize);
-        packer.packString(fileHash);
+            packer.packLong(fileSize);
+            packer.packString(fileHash);
 
-        packData(packer);
+            packData(packer);
+        } catch (Exception e) {
+            packer.close();
+
+            throw e;
+        }
 
         return packer;
     }
