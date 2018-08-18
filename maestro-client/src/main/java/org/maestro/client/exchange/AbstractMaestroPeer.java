@@ -168,7 +168,7 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
 
     @Override
     public void connectComplete(boolean reconnect, final String serverUri) {
-        logger.warn("Connection to {} completed (reconnect = {})", serverUri, reconnect);
+        logger.info("Connection to {} completed (reconnect = {})", serverUri, reconnect);
     }
 
     /**
