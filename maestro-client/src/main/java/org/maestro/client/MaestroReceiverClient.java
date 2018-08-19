@@ -81,11 +81,11 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     }
 
     private String getRole() {
-        return "undefined";
+        return peerInfo.peerName();
     }
 
     private String getName() {
-        return peerInfo.peerName();
+        return peerInfo.peerHost();
     }
 
     public void replyOk(final MaestroNote note) {

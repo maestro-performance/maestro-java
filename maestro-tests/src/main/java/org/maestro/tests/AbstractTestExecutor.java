@@ -158,7 +158,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
             if (note instanceof PingResponse) {
                 if (types != null) {
                     for (String type : types) {
-                        String nodeType = NodeUtils.getTypeFromName(((PingResponse) note).getName());
+                        String nodeType = ((PingResponse) note).getRole();
                         if (type.equals(nodeType)) {
                             String name = ((PingResponse) note).getName();
                             logger.debug("Accounting peer: {}/{}", name, ((PingResponse) note).getId());

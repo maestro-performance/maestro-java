@@ -3,7 +3,6 @@ package org.maestro.tests;
 import org.maestro.client.notes.GetResponse;
 import org.maestro.client.notes.TestFailedNotification;
 import org.maestro.client.notes.TestSuccessfulNotification;
-import org.maestro.common.NodeUtils;
 import org.maestro.common.client.notes.GetOption;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.slf4j.Logger;
@@ -30,17 +29,8 @@ public class DownloadProcessor {
      * @return true if downloaded successfully or false otherwise
      */
     public boolean download(final TestSuccessfulNotification note) {
-        String name = note.getName();
-        if (name != null) {
-            final String type = NodeUtils.getTypeFromName(name);
-            final String host = dataServers.get(name);
-
-            reportsDownloader.downloadLastSuccessful(type, host);
-
-            return true;
-        }
-
-        return false;
+        reportsDownloader.downloadLastSuccessful(note.getRole(), note.getHost());
+        return true;
     }
 
 
@@ -50,16 +40,9 @@ public class DownloadProcessor {
      * @return true if downloaded successfully or false otherwise
      */
     public boolean download(final TestFailedNotification note) {
-        String name = note.getName();
-        if (name != null) {
-            final String type = NodeUtils.getTypeFromName(name);
-            final String host = dataServers.get(name);
+        reportsDownloader.downloadLastFailed(note.getRole(), note.getHost());
 
-            reportsDownloader.downloadLastFailed(type, host);
-
-            return true;
-        }
-        return false;
+        return true;
     }
 
 

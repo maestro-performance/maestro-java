@@ -9,7 +9,6 @@ import org.maestro.client.notes.LocationType;
 import org.maestro.client.notes.LogResponse;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.HostTypes;
-import org.maestro.common.URLUtils;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.contrib.utils.digest.Sha1Digest;
 import org.maestro.reports.ReceiverReportResolver;
@@ -174,22 +173,21 @@ public class BrokerDownloader implements ReportsDownloader {
     }
 
 
-    private void download(final String type, final String dataServer, LocationType locationType) {
-        final String host = URLUtils.getHostnameFromURL(dataServer);
-        final String topic = MaestroTopics.peerTopic(type, host);
+    private void download(final String role, final String host, final LocationType locationType) {
+        final String topic = MaestroTopics.peerTopic(role, host);
 
         maestro.logRequest(topic, locationType , null);
     }
 
     @Override
-    public void downloadLastSuccessful(final String type, final String dataServer) {
-        download(type, dataServer, LocationType.LAST_SUCCESS);
+    public void downloadLastSuccessful(final String role, final String host) {
+        download(role, host, LocationType.LAST_SUCCESS);
     }
 
 
     @Override
-    public void downloadLastFailed(final String type, final String dataServer) {
-        download(type, dataServer, LocationType.LAST_FAILED);
+    public void downloadLastFailed(final String role, final String host) {
+        download(role, host, LocationType.LAST_FAILED);
     }
 
     @Override
