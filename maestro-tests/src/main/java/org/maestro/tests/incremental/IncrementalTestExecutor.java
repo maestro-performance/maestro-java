@@ -18,7 +18,7 @@ package org.maestro.tests.incremental;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
-import org.maestro.client.notes.GetResponse;
+import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroException;
@@ -26,6 +26,7 @@ import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.DownloadProcessor;
 import org.maestro.tests.callbacks.LogRequesterCallback;
+import org.maestro.tests.cluster.DistributionStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +43,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
     private final IncrementalTestProfile testProfile;
 
     private static final long coolDownPeriod;
-    private final DownloadProcessor downloadProcessor;
+    private final DistributionStrategy distributionStrategy;
 
     static {
         coolDownPeriod = config.getLong("test.incremental.cooldown.period", 1) * 1000;
@@ -55,12 +56,15 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
      * @param testProfile the test profile in use for the test
      */
     public IncrementalTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                   final IncrementalTestProfile testProfile) {
+                                   final IncrementalTestProfile testProfile,
+                                   final DistributionStrategy distributionStrategy)
+    {
         super(maestro, reportsDownloader);
 
         this.testProfile = testProfile;
+        this.distributionStrategy = distributionStrategy;
 
-        downloadProcessor = new DownloadProcessor(reportsDownloader);
+        DownloadProcessor downloadProcessor = new DownloadProcessor(reportsDownloader);
         getMaestro().getCollector().addCallback(new LogRequesterCallback(this, downloadProcessor));
     }
 
@@ -79,32 +83,21 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             // Clean up the topic
             getMaestro().clear();
 
-            int numPeers = peerCount(testProfile);
-            if (numPeers == 0) {
-                logger.error("There are not enough peers to run the test");
-
-                return false;
-            }
-
-            List<? extends MaestroNote> dataServers = getMaestro().getDataServer().get();
-            dataServers.stream()
-                    .filter(note -> note instanceof GetResponse)
-                    .forEach(note -> downloadProcessor.addDataServer((GetResponse) note));
-
+            PeerSet peerSet = distributionStrategy.distribute(getMaestro().getPeers());
+            long numPeers = peerSet.workers();
 
             getReportsDownloader().getOrganizer().getTracker().setCurrentTest(testNumber);
-            testProfile.apply(getMaestro());
+            testProfile.apply(getMaestro(), distributionStrategy);
 
             try {
-                startServices(testProfile);
+                startServices(testProfile, distributionStrategy);
 
                 testStart();
-
 
                 long timeout = getTimeout();
                 logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
                 List<? extends MaestroNote> results = getMaestro()
-                        .waitForNotifications(numPeers)
+                        .waitForNotifications((int) numPeers)
                         .get(timeout, TimeUnit.SECONDS);
 
                 long failed = results.stream()
@@ -130,10 +123,12 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             logger.error("Error: {}", e.getMessage(), e);
         }
         finally {
+            distributionStrategy.reset();
+
             testStop();
 
             try {
-                stopServices();
+                stopServices(distributionStrategy);
             }
             catch (MaestroException e) {
                 if (e.getCause() instanceof TimeoutException) {
@@ -167,7 +162,10 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             testNumber++;
         } while (true);
 
-        logger.error("Test execution failed");
+        if (!successful) {
+            logger.error("Test execution failed");
+        }
+
         return successful;
     }
 

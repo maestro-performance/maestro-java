@@ -1,5 +1,6 @@
 package org.maestro.client.notes;
 
+import org.maestro.common.client.notes.LocationType;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
@@ -49,7 +50,7 @@ public class LogRequest extends MaestroRequest<MaestroEventListener> {
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
-        packer.packInt(this.locationType.code);
+        packer.packInt(this.locationType.getCode());
 
         if (locationType == LocationType.ANY) {
             packer.packString(this.typeName);

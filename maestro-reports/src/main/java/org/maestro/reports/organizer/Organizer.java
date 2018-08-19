@@ -16,6 +16,8 @@
 
 package org.maestro.reports.organizer;
 
+import org.maestro.client.exchange.support.PeerInfo;
+
 /**
  * Provides an interface to organize the files in a report directory
  */
@@ -36,11 +38,10 @@ public interface Organizer {
 
     /**
      * Organize the report directory
-     * @param address The original address of the report being downloaded
-     * @param hostType the host type that provided the report
+     * @param peerInfo the peer info from the peer that provided the report
      * @return The organized directory layout to use
      */
-    String organize(final String address, final String hostType);
+    String organize(final PeerInfo peerInfo);
 
 
     /**

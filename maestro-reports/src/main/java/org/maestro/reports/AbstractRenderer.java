@@ -36,6 +36,7 @@ import java.util.Map;
  */
 public abstract class AbstractRenderer {
     private static final Logger logger = LoggerFactory.getLogger(AbstractRenderer.class);
+    protected static String FAVICON_RESOURCE = "/org/maestro/reports/favicon.png";
 
     private final Jinjava jinjava;
 

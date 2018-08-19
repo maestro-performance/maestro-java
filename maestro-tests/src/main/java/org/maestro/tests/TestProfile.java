@@ -17,6 +17,7 @@
 package org.maestro.tests;
 
 import org.maestro.client.Maestro;
+import org.maestro.tests.cluster.DistributionStrategy;
 
 /**
  * A base interface for implementing test profiles.
@@ -48,6 +49,7 @@ public interface TestProfile {
     /**
      * Apply a test profile using a maestro instance
      * @param maestro the maestro instance to apply the profile to
+     * @param distributionStrategy the peer distribution strategy
      */
-    void apply(Maestro maestro);
+    void apply(Maestro maestro, DistributionStrategy distributionStrategy);
 }

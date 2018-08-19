@@ -18,17 +18,20 @@ package org.maestro.maestro;
 
 import org.junit.Test;
 import org.maestro.client.exchange.MaestroDeserializer;
+import org.maestro.client.exchange.support.DefaultGroupInfo;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.exchange.support.WorkerPeer;
 import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
-import org.maestro.common.client.notes.GetOption;
-import org.maestro.common.client.notes.MaestroCommand;
-import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.common.client.notes.MaestroNoteType;
+import org.maestro.common.Role;
+import org.maestro.common.client.notes.*;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class MaestroProtocolTest {
+    private final PeerInfo peerInfo = new WorkerPeer(Role.OTHER, "unittest", "localhost",
+            new DefaultGroupInfo("test", "all"));
 
     private byte[] doSerialize(MaestroNote note) throws Exception {
         return note.serialize();
@@ -54,9 +57,7 @@ public class MaestroProtocolTest {
         OkResponse okResponse = new OkResponse();
 
         okResponse.setId("testid");
-        okResponse.setName("test");
-        okResponse.setRole("unittest");
-        okResponse.setHost("localhost");
+        okResponse.setPeerInfo(peerInfo);
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(okResponse));
 
@@ -72,9 +73,7 @@ public class MaestroProtocolTest {
         TestSuccessfulNotification tsn = new TestSuccessfulNotification();
 
         tsn.setId("asfas45");
-        tsn.setName("test");
-        tsn.setRole("unittest");
-        tsn.setHost("localhost");
+        tsn.setPeerInfo(peerInfo);
         tsn.setMessage("Test completed successfully");
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(tsn));
@@ -90,9 +89,7 @@ public class MaestroProtocolTest {
         TestFailedNotification tsn = new TestFailedNotification();
 
         tsn.setId("asfas45");
-        tsn.setName("test");
-        tsn.setRole("unittest");
-        tsn.setHost("localhost");
+        tsn.setPeerInfo(peerInfo);
         tsn.setMessage("Test failed");
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(tsn));
@@ -124,9 +121,7 @@ public class MaestroProtocolTest {
 
 
         getResponse.setId("testid");
-        getResponse.setName("test");
-        getResponse.setRole("unittest");
-        getResponse.setHost("localhost");
+        getResponse.setPeerInfo(peerInfo);
 
         getResponse.setOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
         getResponse.setValue(url);
@@ -160,11 +155,8 @@ public class MaestroProtocolTest {
         statsResponse.setChildCount(0);
 
         statsResponse.setId("testid");
-        statsResponse.setName("test");
-        statsResponse.setRole("unittest");
-        statsResponse.setHost("localhost");
+        statsResponse.setPeerInfo(peerInfo);
 
-        statsResponse.setRole("tester");
         statsResponse.setLatency(1.123);
         statsResponse.setRate(1122);
         statsResponse.setRoleInfo("");
@@ -176,7 +168,7 @@ public class MaestroProtocolTest {
         assertTrue("Parsed object is not a STATS Request",
                 parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
         assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_STATS);
-        assertEquals("tester", ((StatsResponse) parsed).getRole());
+        assertEquals("unittest", ((StatsResponse) parsed).getPeerInfo().peerName());
         assertTrue(1.123 == ((StatsResponse) parsed).getLatency());
         assertEquals("1521027548", ((StatsResponse) parsed).getTimestamp());
     }
@@ -187,10 +179,8 @@ public class MaestroProtocolTest {
         DrainCompleteNotification note = new DrainCompleteNotification();
 
         note.setId("asfas45");
-        note.setName("unittest");
+        note.setPeerInfo(peerInfo);
         note.setMessage("Test failed");
-        note.setRole("tester");
-        note.setHost("localhost");
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
 
@@ -205,10 +195,8 @@ public class MaestroProtocolTest {
         InternalError note = new InternalError("Something bad happened");
 
         note.setId("asfas45");
-        note.setName("unittest");
+        note.setPeerInfo(peerInfo);
         note.setMessage("Test failed");
-        note.setRole("tester");
-        note.setHost("localhost");
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
 
@@ -220,27 +208,16 @@ public class MaestroProtocolTest {
 
 
     @Test
-    public void serializeStartSenderRequest() throws Exception {
-        StartSender note = new StartSender();
+    public void serializeStartWorkerRequest() throws Exception {
+        StartWorker note = new StartWorker(new WorkerStartOptions("FakeWorker"));
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
 
-        assertTrue(parsed instanceof StartSender);
-        assertTrue("Parsed object is not a Start Sender message",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_START_SENDER);
-    }
-
-    @Test
-    public void serializeStartReceiverRequest() throws Exception {
-        StartReceiver note = new StartReceiver();
-
-        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
-
-        assertTrue(parsed instanceof StartReceiver);
+        assertTrue(parsed instanceof StartWorker);
         assertTrue("Parsed object is not a Start Receiver message",
                 parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_START_RECEIVER);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_START_WORKER);
+        assertTrue(((StartWorker) parsed).getOptions().getWorkerName().equals("FakeWorker"));
     }
 
     @Test
@@ -258,27 +235,15 @@ public class MaestroProtocolTest {
     }
 
     @Test
-    public void serializeStopSenderRequest() throws Exception {
-        StopSender note = new StopSender();
+    public void serializeStopWorkerRequest() throws Exception {
+        StopWorker note = new StopWorker();
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
 
-        assertTrue(parsed instanceof StopSender);
-        assertTrue("Parsed object is not a Stop Sender message",
+        assertTrue(parsed instanceof StopWorker);
+        assertTrue("Parsed object is not a Stop Worker message",
                 parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_STOP_SENDER);
-    }
-
-    @Test
-    public void serializeStopReceiverRequest() throws Exception {
-        StopReceiver note = new StopReceiver();
-
-        MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
-
-        assertTrue(parsed instanceof StopReceiver);
-        assertTrue("Parsed object is not a Start Receiver message",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_STOP_RECEIVER);
+        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_STOP_WORKER);
     }
 
     @Test

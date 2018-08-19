@@ -87,10 +87,8 @@ public class MaestroDeserializer {
 
                 return instance.join(new LogResponse(unpacker));
             }
-            case MAESTRO_NOTE_START_RECEIVER:
-            case MAESTRO_NOTE_STOP_RECEIVER:
-            case MAESTRO_NOTE_START_SENDER:
-            case MAESTRO_NOTE_STOP_SENDER:
+            case MAESTRO_NOTE_START_WORKER:
+            case MAESTRO_NOTE_STOP_WORKER:
             case MAESTRO_NOTE_START_INSPECTOR:
             case MAESTRO_NOTE_STOP_INSPECTOR:
             case MAESTRO_NOTE_SET:
@@ -119,17 +117,11 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_STATS: {
                 return new StatsRequest();
             }
-            case MAESTRO_NOTE_START_RECEIVER: {
-                return new StartReceiver();
+            case MAESTRO_NOTE_START_WORKER: {
+                return new StartWorker(unpacker);
             }
-            case MAESTRO_NOTE_STOP_RECEIVER: {
-                return new StopReceiver();
-            }
-            case MAESTRO_NOTE_START_SENDER: {
-                return new StartSender();
-            }
-            case MAESTRO_NOTE_STOP_SENDER: {
-                return new StopSender();
+            case MAESTRO_NOTE_STOP_WORKER: {
+                return new StopWorker();
             }
             case MAESTRO_NOTE_START_INSPECTOR: {
                 return new StartInspector(unpacker);
@@ -163,6 +155,18 @@ public class MaestroDeserializer {
             }
             case MAESTRO_NOTE_DRAIN: {
                 return new DrainRequest(unpacker);
+            }
+            case MAESTRO_NOTE_GROUP_JOIN: {
+                return new GroupJoinRequest(unpacker);
+            }
+            case MAESTRO_NOTE_GROUP_LEAVE: {
+                return new GroupLeaveRequest(unpacker);
+            }
+            case MAESTRO_NOTE_ROLE_ASSIGN: {
+                return new RoleAssign(unpacker);
+            }
+            case MAESTRO_NOTE_ROLE_UNASSIGN: {
+                return new RoleUnassign(unpacker);
             }
             default: {
                 throw new MalformedNoteException("Invalid request command: " + tmpCommand);

@@ -19,6 +19,7 @@ package org.maestro.tests.rate;
 import org.maestro.client.Maestro;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.callbacks.StatsCallBack;
+import org.maestro.tests.cluster.DistributionStrategy;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
@@ -33,8 +34,9 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
     private volatile boolean warmUp = false;
 
     public FixedRateTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                 final FixedRateTestProfile testProfile) {
-        super(maestro, reportsDownloader, testProfile);
+                                 final FixedRateTestProfile testProfile,
+                                 final DistributionStrategy distributionStrategy) {
+        super(maestro, reportsDownloader, testProfile, distributionStrategy);
 
         getMaestro().getCollector().addCallback(new StatsCallBack(this));
     }

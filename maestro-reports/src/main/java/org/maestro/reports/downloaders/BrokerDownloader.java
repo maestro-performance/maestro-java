@@ -5,16 +5,18 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
 import org.maestro.client.callback.MaestroNoteCallback;
 import org.maestro.client.exchange.MaestroTopics;
-import org.maestro.client.notes.LocationType;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.common.client.notes.LocationType;
 import org.maestro.client.notes.LogResponse;
+import org.maestro.client.notes.MaestroResponse;
 import org.maestro.common.ConfigurationWrapper;
-import org.maestro.common.HostTypes;
+import org.maestro.common.Role;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.contrib.utils.digest.Sha1Digest;
 import org.maestro.reports.ReceiverReportResolver;
 import org.maestro.reports.ReportResolver;
 import org.maestro.reports.SenderReportResolver;
-import org.maestro.reports.organizer.NodeOrganizer;
+import org.maestro.reports.organizer.DefaultOrganizer;
 import org.maestro.reports.organizer.Organizer;
 import org.maestro.client.Maestro;
 import org.maestro.reports.organizer.ResultStrings;
@@ -25,8 +27,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.time.Instant;
 import java.util.HashMap;
 import java.util.Map;
@@ -36,11 +36,11 @@ public class BrokerDownloader implements ReportsDownloader {
 
     private static class DownloadCallback implements MaestroNoteCallback {
         private static final Logger logger = LoggerFactory.getLogger(DownloadCallback.class);
-        private final NodeOrganizer organizer;
+        private final Organizer organizer;
         private final Sha1Digest digest = new Sha1Digest();
         private long lastDownloadTime = 0;
 
-        DownloadCallback(final NodeOrganizer organizer) {
+        DownloadCallback(final Organizer organizer) {
             this.organizer = organizer;
         }
 
@@ -56,8 +56,7 @@ public class BrokerDownloader implements ReportsDownloader {
                 }
             }
 
-            String type = logResponse.getRole();
-            String destDir = organizer.organize(logResponse.getHost(), type);
+            String destDir = organizer.organize(logResponse.getPeerInfo());
             File outFile = new File(destDir, logResponse.getFileName());
 
             logger.info("Saving file {} to {}", logResponse.getFileName(), outFile);
@@ -103,10 +102,10 @@ public class BrokerDownloader implements ReportsDownloader {
             if (note instanceof LogResponse) {
                 LogResponse logResponse = (LogResponse) note;
                 if (logResponse.getLocationType() == LocationType.LAST_FAILED) {
-                    logger.info("About to download last failed reports from {}", ((LogResponse) note).getName());
+                    logger.info("About to download last failed reports from {}", logResponse.getPeerInfo().prettyName());
                 }
                 else {
-                    logger.info("About to download last successful reports from {}", ((LogResponse) note).getName());
+                    logger.info("About to download last successful reports from {}", logResponse.getPeerInfo().prettyName());
                 }
                 try {
                     save(logResponse);
@@ -127,27 +126,22 @@ public class BrokerDownloader implements ReportsDownloader {
     }
 
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
-    private final Map<String, ReportResolver> resolverMap = new HashMap<>();
+    private final Map<Role, ReportResolver> resolverMap = new HashMap<>();
     private final Maestro maestro;
 
-    private final NodeOrganizer organizer;
+    private final Organizer organizer;
     private final DownloadCallback downloadCallback;
 
     public BrokerDownloader(final Maestro maestro, final String baseDir) {
-        this(maestro, new NodeOrganizer(baseDir));
+        this(maestro, new DefaultOrganizer(baseDir));
     }
 
-    // For the builder. TODO: improve
-    BrokerDownloader(final Maestro maestro, final Organizer organizer) {
-        this(maestro, (NodeOrganizer) organizer);
-    }
-
-    public BrokerDownloader(final Maestro maestro, final NodeOrganizer organizer) {
+    public BrokerDownloader(final Maestro maestro, final Organizer organizer) {
         this.maestro = maestro;
         this.organizer = organizer;
 
-        resolverMap.put(HostTypes.SENDER_HOST_TYPE, new SenderReportResolver());
-        resolverMap.put(HostTypes.RECEIVER_HOST_TYPE, new ReceiverReportResolver());
+        resolverMap.put(Role.SENDER, new SenderReportResolver());
+        resolverMap.put(Role.RECEIVER, new ReceiverReportResolver());
 
 
         maestro.getCollector().subscribe(MaestroTopics.MAESTRO_LOGS_TOPIC, 0);
@@ -162,44 +156,34 @@ public class BrokerDownloader implements ReportsDownloader {
     }
 
     @Override
-    public void addReportResolver(final String hostType, final ReportResolver reportResolver) {
-        resolverMap.put(hostType, reportResolver);
+    public void addReportResolver(final Role role, final ReportResolver reportResolver) {
+        resolverMap.put(role, reportResolver);
     }
 
-    private String getDataServerHost(final String dataServer) throws MalformedURLException {
-        final URL url = new URL(dataServer);
+    private void download(final String id, final PeerInfo peerInfo, final LocationType locationType) {
+        final String topic = MaestroTopics.peerTopic(id);
 
-        return url.getHost();
-    }
-
-
-    private void download(final String role, final String host, final LocationType locationType) {
-        final String topic = MaestroTopics.peerTopic(role, host);
+        logger.debug("Sending log request to {}", topic);
 
         maestro.logRequest(topic, locationType , null);
     }
 
     @Override
-    public void downloadLastSuccessful(final String role, final String host) {
-        download(role, host, LocationType.LAST_SUCCESS);
+    public void downloadLastSuccessful(final String id, final PeerInfo peerInfo) {
+        download(id, peerInfo, LocationType.LAST_SUCCESS);
     }
 
 
     @Override
-    public void downloadLastFailed(final String role, final String host) {
-        download(role, host, LocationType.LAST_FAILED);
+    public void downloadLastFailed(final String id, final PeerInfo peerInfo) {
+        download(id, peerInfo, LocationType.LAST_FAILED);
     }
 
     @Override
-    public void downloadAny(final String type, final String dataServer, final String testNumber) {
-        try {
-            final String host = getDataServerHost(dataServer);
-            final String topic = MaestroTopics.peerTopic(type, host);
+    public void downloadAny(final PeerInfo peerInfo, final String testNumber) {
+        final String topic = MaestroTopics.peerTopic(peerInfo);
 
-            maestro.logRequest(topic, LocationType.ANY , testNumber);
-        } catch (MalformedURLException e) {
-            logger.error("Unable to parse data server URL {}: {}", dataServer, e.getMessage());
-        }
+        maestro.logRequest(topic, LocationType.ANY , testNumber);
     }
 
     private Instant lastDownloadTime() {

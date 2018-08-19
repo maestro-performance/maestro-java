@@ -18,6 +18,7 @@ package org.maestro.exporter.collectors;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
+import org.maestro.client.notes.MaestroResponse;
 import org.maestro.client.notes.StatsResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -49,8 +50,8 @@ public class MessageCount extends Collector {
         logger.trace("Number of values to process: {}", records.values().size());
 
         for (StatsResponse stats : records.values()) {
-            logger.trace("Adding record for {}/{}", stats.getName(), stats.getId());
-            labeledGauge.addMetric(Arrays.asList(stats.getName(), stats.getRole()), stats.getCount());
+            logger.trace("Adding record for {}/{}", stats.getPeerInfo().prettyName(), stats.getId());
+            labeledGauge.addMetric(Arrays.asList(stats.getPeerInfo().peerName(), stats.getPeerInfo().peerName()), stats.getCount());
         }
 
         mfs.add(labeledGauge);
@@ -59,7 +60,7 @@ public class MessageCount extends Collector {
     }
 
     public void record(StatsResponse stats) {
-        logger.trace("Recording message count for {}/{}", stats.getName(), stats.getId());
+        logger.trace("Recording message count for {}/{}", stats.getPeerInfo().prettyName(), stats.getId());
         records.put(stats.getId(), stats);
     }
 }

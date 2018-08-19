@@ -18,23 +18,24 @@ package org.maestro.tests;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
+import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.support.PeerEndpoint;
 import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
-import org.maestro.common.NodeUtils;
+import org.maestro.common.Role;
 import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.WorkerStartOptions;
 import org.maestro.common.exceptions.MaestroConnectionException;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.downloaders.ReportsDownloader;
+import org.maestro.tests.cluster.DistributionStrategy;
 import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
-import java.util.LinkedHashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -88,22 +89,83 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     /**
      * Start connected peers
-     * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
-     */
-    protected void startServices() throws MaestroConnectionException {
-        maestro.startAll(null);
-    }
-
-    /**
-     * Start connected peers
      * @param testProfile the test profile in use
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
-    protected void startServices(final AbstractTestProfile testProfile) throws MaestroConnectionException {
-        final String inspectorName = testProfile.getInspectorName();
+    protected void startServices(final AbstractTestProfile testProfile, final DistributionStrategy distributionStrategy)
+            throws MaestroConnectionException
+    {
+        Set<PeerEndpoint> endpoints = distributionStrategy.endpoints();
 
-        exec(maestro::startAll, inspectorName);
+        for (PeerEndpoint endpoint : endpoints) {
+            String destination = endpoint.getDestination();
+            logger.debug("Sending the start request to the {} peers on the destination {}", endpoint.getRole(), destination);
+
+            if (endpoint.getRole() == Role.SENDER) {
+                final String senderName = "JmsSender";
+
+                try {
+                    exec(maestro::startWorker, destination, new WorkerStartOptions(senderName));
+                }
+                catch (NotEnoughRepliesException e) {
+                    logger.warn("While starting the sender: {}", e.getMessage());
+                }
+            }
+            else {
+                if (endpoint.getRole() == Role.RECEIVER) {
+                    final String receiverName = "JmsReceiver";
+
+                    try {
+                        exec(maestro::startWorker, destination, new WorkerStartOptions(receiverName));
+                    }
+                    catch (NotEnoughRepliesException e) {
+                        logger.warn("While starting the receiver: {}", e.getMessage());
+                    }
+                }
+            }
+        }
+
+        try {
+            final String inspectorName = testProfile.getInspectorName();
+
+            if (inspectorName != null) {
+                exec(maestro::startInspector, inspectorName);
+            }
+            else {
+                logger.info("The is no inspector setup for this test");
+            }
+        }
+        catch (NotEnoughRepliesException e) {
+            logger.warn("While starting the inspector: {}", e.getMessage());
+        }
     }
+
+    /**
+     * Stop connected peers
+     * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
+     */
+    protected final void stopServices(final DistributionStrategy distributionStrategy) throws MaestroConnectionException {
+        Set<PeerEndpoint> endpoints = distributionStrategy.endpoints();
+
+        for (PeerEndpoint endpoint : endpoints) {
+            String destination = endpoint.getDestination();
+
+            try {
+                exec(maestro::stopWorker, destination);
+            }
+            catch (NotEnoughRepliesException e) {
+                logger.warn("While stopping the {}: {}", endpoint.getRole(), e.getMessage());
+            }
+        }
+
+        try {
+            exec(maestro::stopInspector, MaestroTopics.peerTopic(Role.INSPECTOR));
+        }
+        catch (NotEnoughRepliesException e) {
+            logger.warn("While stopping the inspector: {}", e.getMessage());
+        }
+    }
+
 
     /**
      * Stop connected peers
@@ -111,75 +173,18 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      */
     final public void stopServices() throws MaestroConnectionException {
         try {
-            exec(maestro::stopSender);
+            exec(maestro::stopWorker, MaestroTopics.WORKERS_TOPIC);
         }
         catch (NotEnoughRepliesException e) {
-            logger.warn("While stopping the sender: {}", e.getMessage());
+            logger.warn("While stopping the peers: {}", e.getMessage());
         }
 
-        try {
-            exec(maestro::stopReceiver);
-        }
-        catch (NotEnoughRepliesException e) {
-            logger.warn("While stopping the receiver: {}", e.getMessage());
-        }
 
         try {
-            exec(maestro::stopInspector);
+            exec(maestro::stopInspector, MaestroTopics.peerTopic(Role.INSPECTOR));
         }
         catch (NotEnoughRepliesException e) {
             logger.warn("While stopping the inspector: {}", e.getMessage());
-        }
-    }
-
-    /**
-     * Try to guess the number of connected peers
-     * @param types A variable argument list of peer types to count
-     * @return the number of connected peers (best guess)
-     * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
-     * @throws InterruptedException if interrupted
-     */
-    private int getNumPeers(String... types) throws MaestroConnectionException, InterruptedException {
-        logger.debug("Collecting responses to ensure topic is clean prior to pinging nodes");
-        maestro.clear();
-
-        logger.debug("Sending ping request");
-        CompletableFuture<List<? extends MaestroNote>> repliesFuture = maestro.pingRequest();
-
-        List<? extends MaestroNote> replies;
-        try {
-            replies = repliesFuture.get();
-        } catch (ExecutionException e) {
-            throw new MaestroException("Unable to collect peers", e);
-        }
-        Set<String> knownPeers = new LinkedHashSet<>(replies.size());
-
-        for (MaestroNote note : replies) {
-            if (note instanceof PingResponse) {
-                if (types != null) {
-                    for (String type : types) {
-                        String nodeType = ((PingResponse) note).getRole();
-                        if (type.equals(nodeType)) {
-                            String name = ((PingResponse) note).getName();
-                            logger.debug("Accounting peer: {}/{}", name, ((PingResponse) note).getId());
-                            knownPeers.add(((PingResponse) note).getId());
-                        }
-                    }
-                }
-            }
-        }
-
-        logger.info("Known peers recorded: {}", knownPeers.size());
-        return knownPeers.size();
-    }
-
-
-    protected int peerCount(final AbstractTestProfile testProfile) throws InterruptedException {
-        if (testProfile.getManagementInterface() != null) {
-            return getNumPeers("sender", "receiver", "inspector");
-        }
-        else {
-            return getNumPeers("sender", "receiver");
         }
     }
 
@@ -187,7 +192,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     protected boolean isTestFailed(final MaestroNote note) {
         if (note instanceof TestFailedNotification) {
             TestFailedNotification testFailedNotification = (TestFailedNotification) note;
-            logger.error("Test failed on {}: {}", testFailedNotification.getName(), testFailedNotification.getMessage());
+            logger.error("Test failed on {}: {}", testFailedNotification.getPeerInfo().prettyName(), testFailedNotification.getMessage());
             return true;
         }
 
@@ -200,7 +205,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         if (note instanceof DrainCompleteNotification) {
             success = ((DrainCompleteNotification) note).isSuccessful();
             if (!success) {
-                logger.error("Drained failed for {}", ((DrainCompleteNotification) note).getName());
+                logger.error("Drained failed for {}", ((DrainCompleteNotification) note).getPeerInfo().prettyName());
             }
         }
 

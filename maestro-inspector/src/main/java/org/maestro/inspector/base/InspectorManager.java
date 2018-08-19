@@ -99,14 +99,14 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
 
             if (value != null) {
                 setUrl(value);
-
-                getClient().replyOk(note);
             }
             else {
                 logger.error("Unable to set management interface URL: null URL");
                 getClient().replyInternalError(note,"Unable to set management interface URL: null URL");
             }
         }
+
+        getClient().replyOk(note);
 
     }
 
@@ -178,6 +178,26 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
     @Override
     public void handle(final LogRequest note) {
         super.handle(note, logDir);
+    }
+
+    @Override
+    public void handle(RoleAssign note) {
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(RoleUnassign note) {
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(StartWorker note) {
+        // NO-OP for now
+    }
+
+    @Override
+    public void handle(StopWorker note) {
+        // NO-OP for now
     }
 }
 

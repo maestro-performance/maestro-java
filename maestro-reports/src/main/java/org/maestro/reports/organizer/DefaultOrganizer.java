@@ -16,7 +16,8 @@
 
 package org.maestro.reports.organizer;
 
-import org.maestro.common.URLUtils;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.common.HostTypes;
 
 import java.io.File;
 
@@ -50,15 +51,13 @@ public class DefaultOrganizer implements Organizer {
         return tracker;
     }
 
-    protected String combine(final String hostType, final String host) {
-        return baseDir + File.separator + hostType + File.separator + resultType + File.separator +
-                tracker.currentTestString() + File.separator + host;
+    protected String combine(final PeerInfo peerInfo) {
+        return baseDir + File.separator + peerInfo.getRole() + File.separator + resultType + File.separator +
+                tracker.currentTestString() + File.separator + peerInfo.peerHost();
     }
 
     @Override
-    public String organize(String address, String hostType) {
-        String host = URLUtils.getHostnameFromURL(address);
-
-        return combine(hostType, host);
+    public String organize(final PeerInfo peerInfo) {
+        return combine(peerInfo);
     }
 }

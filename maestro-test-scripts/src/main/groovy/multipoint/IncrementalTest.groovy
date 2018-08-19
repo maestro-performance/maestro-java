@@ -17,10 +17,11 @@
 package multipoint
 
 import org.maestro.client.Maestro
-import org.maestro.client.exchange.MaestroTopics
+import org.maestro.common.Role
 import org.maestro.reports.downloaders.DownloaderBuilder
 import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.MultiPointProfile
+import org.maestro.tests.cluster.DistributionStrategyFactory
 import org.maestro.tests.incremental.IncrementalTestExecutor
 import org.maestro.tests.incremental.IncrementalTestProfile
 import org.maestro.tests.incremental.multipoint.SimpleTestProfile
@@ -123,12 +124,14 @@ downloaderName = System.getenv("DOWNLOADER_NAME")
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
+distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
+
 ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
 
 IncrementalTestProfile testProfile = new SimpleTestProfile()
 
-testProfile.addEndPoint(new MultiPointProfile.EndPoint("sender", MaestroTopics.SENDER_DAEMONS, sendURL))
-testProfile.addEndPoint(new MultiPointProfile.EndPoint("receiver", MaestroTopics.RECEIVER_DAEMONS, receiveURL))
+testProfile.addEndPoint(Role.SENDER, new MultiPointProfile.TestEndpoint(senderBrokerURL))
+testProfile.addEndPoint(Role.RECEIVER, new MultiPointProfile.TestEndpoint(receiverBrokerURL))
 
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(messageSize)
@@ -143,7 +146,8 @@ testProfile.setCeilingParallelCount(Integer.parseInt(ceilingParallelCount))
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
 ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
-IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
+IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile,
+        distributionStrategy)
 
 boolean ret = testExecutor.run()
 

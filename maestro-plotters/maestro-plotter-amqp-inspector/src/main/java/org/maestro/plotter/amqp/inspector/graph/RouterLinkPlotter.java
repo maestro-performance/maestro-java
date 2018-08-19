@@ -13,7 +13,7 @@ import java.util.Map;
  * A plotter for router link data
  */
 public class RouterLinkPlotter extends AbstractInterconnectPlotter<RouterLinkDataSet> {
-    public static final String DEFAULT_FILENAME = "routerLink_";
+    private static final String DEFAULT_FILENAME = "routerLink_";
 
     /**
      * Plotter

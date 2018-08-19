@@ -14,14 +14,24 @@
  * limitations under the License.
  */
 
-package org.maestro.agent.ext.requests.stopsender
+package org.maestro.common.client.notes;
 
-import org.maestro.agent.base.AbstractHandler
 
-class StopSenderHandler extends AbstractHandler {
+public class WorkerStartOptions {
+    private final String workerName;
+
+    public WorkerStartOptions(String workerName) {
+        this.workerName = workerName;
+    }
+
+    public String getWorkerName() {
+        return workerName;
+    }
 
     @Override
-    Object handle() {
-        return null
+    public String toString() {
+        return "WorkerStartOptions{" +
+                "workerName='" + workerName + '\'' +
+                '}';
     }
 }

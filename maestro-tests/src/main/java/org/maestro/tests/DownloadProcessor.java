@@ -1,6 +1,7 @@
 package org.maestro.tests;
 
 import org.maestro.client.notes.GetResponse;
+import org.maestro.client.notes.MaestroResponse;
 import org.maestro.client.notes.TestFailedNotification;
 import org.maestro.client.notes.TestSuccessfulNotification;
 import org.maestro.common.client.notes.GetOption;
@@ -29,7 +30,8 @@ public class DownloadProcessor {
      * @return true if downloaded successfully or false otherwise
      */
     public boolean download(final TestSuccessfulNotification note) {
-        reportsDownloader.downloadLastSuccessful(note.getRole(), note.getHost());
+        logger.debug("Downloading {}", note);
+        reportsDownloader.downloadLastSuccessful(note.getId(), note.getPeerInfo());
         return true;
     }
 
@@ -40,7 +42,8 @@ public class DownloadProcessor {
      * @return true if downloaded successfully or false otherwise
      */
     public boolean download(final TestFailedNotification note) {
-        reportsDownloader.downloadLastFailed(note.getRole(), note.getHost());
+        logger.debug("Downloading {}", note);
+        reportsDownloader.downloadLastFailed(note.getId(), note.getPeerInfo());
 
         return true;
     }
@@ -53,7 +56,7 @@ public class DownloadProcessor {
     public void addDataServer(final GetResponse note) {
         if (note.getOption() == GetOption.MAESTRO_NOTE_OPT_GET_DS) {
             logger.info("Registering data server at {}", note.getValue());
-            dataServers.put(note.getName(), note.getValue());
+            dataServers.put(note.getPeerInfo().prettyName(), note.getValue());
         }
     }
 }

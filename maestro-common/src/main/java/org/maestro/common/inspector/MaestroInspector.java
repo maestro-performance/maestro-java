@@ -60,5 +60,5 @@ public interface MaestroInspector extends TestDuration.TestProgress {
 
     int start() throws Exception;
 
-    void stop() throws Exception;
+    void stop();
 }

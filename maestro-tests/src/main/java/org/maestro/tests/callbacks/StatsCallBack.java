@@ -1,8 +1,9 @@
 package org.maestro.tests.callbacks;
 
 import org.maestro.client.callback.MaestroNoteCallback;
+import org.maestro.client.notes.MaestroResponse;
 import org.maestro.client.notes.StatsResponse;
-import org.maestro.common.NodeUtils;
+import org.maestro.common.Role;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.duration.DurationCount;
 import org.maestro.tests.rate.FixedRateTestExecutor;
@@ -74,18 +75,18 @@ public class StatsCallBack implements MaestroNoteCallback {
         return true;
     }
 
-    public boolean isSlow(StatsResponse statsResponse, int targetRate) {
+    private boolean isSlow(StatsResponse statsResponse, int targetRate) {
         return (statsResponse.getRate() < ((double) targetRate / 2.0)) && statsResponse.getRate() > 0;
     }
 
     private void updateCounters(StatsResponse statsResponse) {
-        final String name = statsResponse.getName();
-        String type = NodeUtils.getTypeFromName(name);
-        if (type.equals("inspector") || type.equals("agent")) {
+        final Role role = statsResponse.getPeerInfo().getRole();
+        if (role == Role.INSPECTOR || role == Role.AGENT) {
             return;
         }
 
-        Long nodeCount = counters.get(name);
+        final String key = statsResponse.getPeerInfo().prettyName();
+        Long nodeCount = counters.get(key);
         if (nodeCount == null) {
             nodeCount = statsResponse.getCount();
         }
@@ -93,6 +94,6 @@ public class StatsCallBack implements MaestroNoteCallback {
             nodeCount += statsResponse.getCount();
         }
 
-        counters.put(name, nodeCount);
+        counters.put(key, nodeCount);
     }
 }

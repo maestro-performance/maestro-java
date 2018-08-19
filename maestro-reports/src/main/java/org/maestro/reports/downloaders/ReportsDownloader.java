@@ -16,6 +16,8 @@
 
 package org.maestro.reports.downloaders;
 
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.common.Role;
 import org.maestro.reports.ReportResolver;
 import org.maestro.reports.organizer.Organizer;
 
@@ -27,13 +29,35 @@ public interface ReportsDownloader {
 
     /**
      * Add a new report resolver with the given host type
-     * @param hostType the host type
+     * @param role the peer role
      * @param reportResolver the report resolver to use for the host type
      */
-    void addReportResolver(final String hostType, final ReportResolver reportResolver);
-    void downloadLastSuccessful(final String type, final String host);
-    void downloadLastFailed(final String type, final String host);
-    void downloadAny(final String type, final String host, final String testNumber);
+    void addReportResolver(final Role role, final ReportResolver reportResolver);
 
+    /**
+     * Download the last successful reports
+     * @param id peer id
+     * @param peerInfo the peer information
+     */
+    void downloadLastSuccessful(final String id, final PeerInfo peerInfo);
+
+    /**
+     * Download the last failed reports
+     * @param id peer id
+     * @param peerInfo the peer information
+     */
+    void downloadLastFailed(final String id, final PeerInfo peerInfo);
+
+    /**
+     * Download any report
+     * @param peerInfo the peer information
+     * @param testNumber test number to download the reports
+     */
+    void downloadAny(final PeerInfo peerInfo, final String testNumber);
+
+
+    /**
+     * Wait for the downloads to complete
+     */
     void waitForComplete();
 }

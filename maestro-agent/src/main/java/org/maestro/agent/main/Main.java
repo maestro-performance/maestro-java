@@ -18,16 +18,14 @@ package org.maestro.agent.main;
 
 import org.apache.commons.cli.*;
 import org.maestro.agent.base.MaestroAgent;
-import org.maestro.client.exchange.AbstractMaestroPeer;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerInfo;
-import org.maestro.client.exchange.support.WorkerPeer;
-import org.maestro.client.notes.MaestroEvent;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.NetworkUtils;
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.data.server.http.HttpDataServer;
 import org.maestro.worker.common.ds.MaestroDataServer;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
@@ -126,18 +124,18 @@ public class Main {
         LogConfigurator.defaultForDaemons();
 
         try {
-            MaestroDataServer dataServer = new MaestroDataServer(logDir, host);
+            MaestroDataServer dataServer = new HttpDataServer(logDir, host);
 
             MaestroWorkerExecutor executor;
 
-            final PeerInfo peerInfo = new WorkerPeer("agent", host);
+            final PeerInfo peerInfo = new AgentPeer(host);
             MaestroAgent maestroPeer = new MaestroAgent(maestroUrl, peerInfo, dataServer);
 
             executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
 
-            String[] topics = MaestroTopics.peerTopics(MaestroTopics.MAESTRO_AGENT_TOPICS, peerInfo, maestroPeer.getId());
+            String[] topics = MaestroTopics.agentTopics(maestroPeer.getId(), peerInfo);
 
-            executor.start(topics);
+            executor.start(topics, 10, 1000);
             executor.run();
 
             System.out.println("Finished execution ...");

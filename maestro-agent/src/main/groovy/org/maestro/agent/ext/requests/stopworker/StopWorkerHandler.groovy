@@ -14,11 +14,11 @@
  * limitations under the License.
  */
 
-package org.maestro.agent.ext.requests.stopreceiver
+package org.maestro.agent.ext.requests.stopworker
 
 import org.maestro.agent.base.AbstractHandler
 
-class StopReceiverHandler extends AbstractHandler {
+class StopWorkerHandler extends AbstractHandler {
 
     @Override
     Object handle() {

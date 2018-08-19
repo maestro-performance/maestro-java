@@ -16,7 +16,6 @@
 
 package org.maestro.tests.incremental;
 
-import org.maestro.client.Maestro;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.tests.AbstractTestProfile;
 import org.slf4j.Logger;
@@ -127,8 +126,6 @@ public abstract class IncrementalTestProfile extends AbstractTestProfile {
     public void setParallelCountIncrement(int parallelCountIncrement) {
         this.parallelCountIncrement = parallelCountIncrement;
     }
-
-    abstract public void apply(Maestro maestro);
 
     public boolean isOverCeiling() {
         return (rate > ceilingRate && parallelCount >= ceilingParallelCount);

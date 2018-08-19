@@ -77,7 +77,7 @@ public class IndexRenderer extends AbstractRenderer {
 
 
     public void copyResources(File path) throws IOException {
-        super.copyResources(path, "/org/maestro/reports/favicon.png", "favicon.png");
+        super.copyResources(path, FAVICON_RESOURCE, "favicon.png");
 
         File jarPath = new File(getClass().getProtectionDomain().getCodeSource().getLocation().getPath());
 

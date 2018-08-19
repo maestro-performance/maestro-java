@@ -18,22 +18,25 @@ package org.maestro.tests.rate;
 
 import org.maestro.client.Maestro;
 import org.maestro.reports.downloaders.ReportsDownloader;
+import org.maestro.tests.cluster.DistributionStrategy;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 
 public class FixedRateTestExecutorFactory {
 
     public static AbstractFixedRateExecutor newTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                                            final FixedRateTestProfile testProfile, boolean warmUp) {
+                                                            final FixedRateTestProfile testProfile, boolean warmUp,
+                                                            final DistributionStrategy distributionStrategy) {
         if (warmUp) {
-            return new FixedRateTestExecutor(maestro, reportsDownloader, testProfile);
+            return new FixedRateTestExecutor(maestro, reportsDownloader, testProfile, distributionStrategy);
         }
         else {
-            return new StraightFixedRateTestExecutor(maestro, reportsDownloader, testProfile);
+            return new StraightFixedRateTestExecutor(maestro, reportsDownloader, testProfile, distributionStrategy);
         }
     }
 
     public static AbstractFixedRateExecutor newTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                                            final FixedRateTestProfile testProfile, String warmUp) {
-        return newTestExecutor(maestro, reportsDownloader, testProfile, Boolean.valueOf(warmUp));
+                                                            final FixedRateTestProfile testProfile, String warmUp,
+                                                            final DistributionStrategy distributionStrategy) {
+        return newTestExecutor(maestro, reportsDownloader, testProfile, Boolean.valueOf(warmUp), distributionStrategy);
     }
 }

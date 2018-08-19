@@ -29,10 +29,8 @@ public class WorkerOptions {
 
     private String brokerURL;
     private String duration;
-    private String logLevel;
     private String parallelCount;
     private String messageSize;
-    private String throttle;
     private String rate;
     private String fcl;
 
@@ -40,20 +38,16 @@ public class WorkerOptions {
     }
 
     public WorkerOptions(final WorkerOptions workerOptions) {
-        this(workerOptions.getBrokerURL(), workerOptions.getDuration(), workerOptions.getLogLevel(),
-                workerOptions.getParallelCount(), workerOptions.getMessageSize(), workerOptions.getThrottle(),
-                workerOptions.getRate(), workerOptions.getFcl());
+        this(workerOptions.getBrokerURL(), workerOptions.getDuration(), workerOptions.getParallelCount(),
+                workerOptions.getMessageSize(), workerOptions.getRate(), workerOptions.getFcl());
     }
 
-    public WorkerOptions(final String brokerURL, final String duration, final String logLevel,
-                         final String parallelCount, final String messageSize, final String throttle,
-                         final String rate, final String fcl) {
+    public WorkerOptions(final String brokerURL, final String duration, final String parallelCount,
+                         final String messageSize, final String rate, final String fcl) {
         this.brokerURL = brokerURL;
         this.duration = duration;
-        this.logLevel = logLevel;
         this.parallelCount = parallelCount;
         this.messageSize = messageSize;
-        this.throttle = throttle;
         this.rate = rate;
         this.fcl = fcl;
     }
@@ -92,23 +86,6 @@ public class WorkerOptions {
         this.duration = duration;
     }
 
-
-    /**
-     * Gets the log level
-     * @return the log level
-     */
-    public String getLogLevel() {
-        return logLevel;
-    }
-
-
-    /**
-     * Set the log level
-     * @param logLevel the log level
-     */
-    public void setLogLevel(String logLevel) {
-        this.logLevel = logLevel;
-    }
 
     /**
      * Gets the parallel count
@@ -153,23 +130,6 @@ public class WorkerOptions {
      */
     public void setMessageSize(String messageSize) {
         this.messageSize = messageSize;
-    }
-
-
-    /**
-     * Gets the throttling
-     * @return the throttling value
-     */
-    public String getThrottle() {
-        return throttle;
-    }
-
-    /**
-     * Sets the throttling value
-     * @param throttle throttle value
-     */
-    public void setThrottle(String throttle) {
-        this.throttle = throttle;
     }
 
 

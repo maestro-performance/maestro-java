@@ -45,7 +45,9 @@ public class InterconnectInspector implements MaestroInspector {
     private long startedEpochMillis = Long.MIN_VALUE;
     private boolean running = false;
     private String url;
+    @SuppressWarnings("FieldCanBeLocal")
     private String user;
+    @SuppressWarnings("FieldCanBeLocal")
     private String password;
     private File baseLogDir;
     private TestDuration duration;

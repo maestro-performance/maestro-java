@@ -14,15 +14,18 @@
  * limitations under the License.
  */
 
-package org.maestro.agent.ext.requests.stoprouter
+package org.maestro.agent.main;
 
-import org.maestro.agent.base.AbstractHandler
+import org.maestro.client.exchange.support.WorkerPeer;
+import org.maestro.common.Role;
 
-class StopRouterHandler extends AbstractHandler {
+/**
+ * Agent-specific peer class
+ */
+public class AgentPeer extends WorkerPeer {
+    private static final String NAME = "agent";
 
-    @Override
-    Object handle() {
-        System.out.println("Stop Router note received")
-        return null
+    public AgentPeer(final String host) {
+        super(NAME, host, Role.AGENT);
     }
 }

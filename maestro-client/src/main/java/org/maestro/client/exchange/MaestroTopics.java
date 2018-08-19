@@ -16,7 +16,10 @@
 
 package org.maestro.client.exchange;
 
+import org.maestro.client.exchange.support.GroupInfo;
 import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.common.HostTypes;
+import org.maestro.common.Role;
 
 /**
  * Maestro topics contains the list of all topics used by Maestro
@@ -37,60 +40,21 @@ public class MaestroTopics {
      */
     public final static String NOTIFICATION_TOPIC = "/mpt/notifications";
 
-    /**
-     * This topic is used to publish requests for all daemons
-     */
-    public final static String ALL_DAEMONS = "/mpt/daemon";
-
-    /**
-     * This topic is used to publish requests for sender daemons
-     */
-    public final static String SENDER_DAEMONS = "/mpt/daemon/sender";
-
-    /**
-     * This topic is used to publish requests for receiver daemons
-     */
-    public final static String RECEIVER_DAEMONS ="/mpt/daemon/receiver";
-
-    /**
-     * This topic is used to publish requests for inspector daemons
-     */
-    public final static String INSPECTOR_DAEMONS = "/mpt/daemon/inspector";
-
-    /**
-     * This topic is used to publish requests for agent daemons
-     */
-    public final static String AGENT_DAEMONS = "/mpt/daemon/agent";
-
-    /**
+        /**
      * This topic is used to publish the peer responses for a maestro request
      */
     public final static String PEER_TOPIC = "/mpt/peer";
+
+    /**
+     * This topic addresses all worker peers
+     */
+    public final static String WORKERS_TOPIC = PEER_TOPIC + "/worker";
 
     /**
      * These topics are the ones subscribed by a Maestro client
      */
     public final static String[] MAESTRO_TOPICS = {MAESTRO_TOPIC, NOTIFICATION_TOPIC};
 
-    /**
-     * These topics are the ones subscribed by a Maestro sender
-     */
-    public final static String[] MAESTRO_SENDER_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC, SENDER_DAEMONS};
-
-    /**
-     * These topics are the ones subscribed by a Maestro receiver
-     */
-    public final static String[] MAESTRO_RECEIVER_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC, RECEIVER_DAEMONS};
-
-    /**
-     * These topics are the ones subscribed by a Maestro inspector
-     */
-    public final static String[] MAESTRO_INSPECTOR_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC, INSPECTOR_DAEMONS};
-
-    /**
-     * These topics are the ones subscribed by a Maestro agent
-     */
-    public final static String[] MAESTRO_AGENT_TOPICS = {ALL_DAEMONS, NOTIFICATION_TOPIC, AGENT_DAEMONS};
 
     private MaestroTopics() {}
 
@@ -107,7 +71,7 @@ public class MaestroTopics {
         String[] ret = new String[publicTopics.length + 2];
 
         ret[0] = PEER_TOPIC + "/by-name/" + peerInfo.peerHost() + "/" + peerInfo.peerName();
-        ret[1] = PEER_TOPIC + "/by-id" + id;
+        ret[1] = PEER_TOPIC + "/by-id/" + id;
 
         System.arraycopy(publicTopics, 0, ret, 2, publicTopics.length);
 
@@ -131,7 +95,72 @@ public class MaestroTopics {
      * @param id the peer id
      * @return The peer-specific topic (for that client name)
      */
+    public static String[] peerTopics(final String id) {
+        return new String[] { peerTopic(id) ,
+                WORKERS_TOPIC + "/",
+                PEER_TOPIC
+        };
+    }
+
+    /**
+     * Get the peer specific topic by name and host
+     * @param groupInfo group information
+     * @return The peer-specific topic (for that client name)
+     */
+    public static String peerTopic(final GroupInfo groupInfo) {
+        return PEER_TOPIC + "/by-group/" + groupInfo.groupName() + "/" + groupInfo.memberName();
+    }
+
+    /**
+     * Get the peer specific topic by id
+     * @param id peer id
+     * @return The peer-specific topic (for that client id)
+     */
     public static String peerTopic(final String id) {
         return PEER_TOPIC + "/by-id/" + id;
     }
+
+    /**
+     * Get the peer specific topic by id
+     * @param peerInfo the peer information container
+     * @return The peer-specific topic (for that client id)
+     */
+    public static String peerTopic(final PeerInfo peerInfo) {
+        return PEER_TOPIC + "/by-name/" + peerInfo.peerHost() + "/" + peerInfo.peerName() + "/";
+    }
+
+
+    /**
+     * Get the role-specific topic
+     * @param role the peer role
+     * @return The peer-specific topic (for that client id)
+     */
+    public static String peerTopic(final Role role) {
+        String roleName = role.toString();
+
+        return PEER_TOPIC + "/by-role/" + roleName + "/";
+    }
+
+    public static String[] inspectorTopics(final String id, final PeerInfo peerInfo) {
+        return new String[] {
+                PEER_TOPIC,
+                NOTIFICATION_TOPIC,
+                MaestroTopics.peerTopic(Role.INSPECTOR),
+                peerTopic(id),
+                peerTopic(peerInfo),
+
+        };
+    }
+
+
+    public static String[] agentTopics(final String id, final PeerInfo peerInfo) {
+        return new String[] {
+                PEER_TOPIC,
+                NOTIFICATION_TOPIC,
+                MaestroTopics.peerTopic(Role.AGENT),
+                peerTopic(id),
+                peerTopic(peerInfo),
+        };
+    }
+
 }

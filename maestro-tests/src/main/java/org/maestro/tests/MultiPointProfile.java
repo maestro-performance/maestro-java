@@ -16,45 +16,25 @@
 
 package org.maestro.tests;
 
-import java.util.List;
+import org.maestro.common.Role;
+
+import java.util.Map;
 
 public interface MultiPointProfile {
-    final class EndPoint {
-        private String topic;
-        private String name;
-        private String brokerURL;
 
-        public EndPoint(String name, String topic, String brokerURL) {
-            this.topic = topic;
-            this.name = name;
+    final class TestEndpoint {
+        private final String brokerURL;
+
+        public TestEndpoint(final String brokerURL) {
             this.brokerURL = brokerURL;
-        }
-
-        public String getTopic() {
-            return topic;
-        }
-
-        public void setTopic(String topic) {
-            this.topic = topic;
-        }
-
-        public String getName() {
-            return name;
-        }
-
-        public void setName(String name) {
-            this.name = name;
         }
 
         public String getSendReceiveURL() {
             return brokerURL;
         }
-
-        public void setSendReceiverURL(final String brokerURL) {
-            this.brokerURL = brokerURL;
-        }
     }
 
-    void addEndPoint(EndPoint endPoint);
-    List<EndPoint> getEndPoints();
+    void addEndPoint(Role role, TestEndpoint testEndpoint);
+
+    Map<Role, TestEndpoint> getTestEndpoints();
 }

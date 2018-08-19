@@ -18,8 +18,11 @@ package org.maestro.cli.main.actions;
 
 import org.apache.commons.cli.*;
 import org.maestro.client.Maestro;
+import org.maestro.client.exchange.support.GroupInfo;
+import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.GetResponse;
 import org.maestro.common.LogConfigurator;
+import org.maestro.common.Role;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.reports.downloaders.DefaultDownloader;
 import org.maestro.reports.InspectorReportResolver;
@@ -34,7 +37,7 @@ import java.util.concurrent.TimeoutException;
 
 public class DownloadAction extends Action {
     private static class Server {
-        String type;
+        PeerInfo peerInfo;
         String address;
     }
 
@@ -116,7 +119,32 @@ public class DownloadAction extends Action {
                 Server server = new Server();
                 String[] serverString = item.split("@");
 
-                server.type = serverString[0];
+                server.peerInfo = new PeerInfo() {
+                    @Override
+                    public void setRole(Role role) {
+
+                    }
+
+                    @Override
+                    public Role getRole() {
+                        return Role.hostTypeByName(serverString[0]);
+                    }
+
+                    @Override
+                    public String peerName() {
+                        return serverString[0];
+                    }
+
+                    @Override
+                    public String peerHost() {
+                        return serverString[1];
+                    }
+
+                    @Override
+                    public GroupInfo groupInfo() {
+                        return null;
+                    }
+                };
                 server.address = serverString[1];
 
                 servers.add(server);
@@ -144,11 +172,11 @@ public class DownloadAction extends Action {
                 ReportsDownloader rd = new DefaultDownloader(directory);
 
                 if (customResolver.equals("InterconnectInspector")) {
-                    rd.addReportResolver("inspector", new InterconnectInspectorReportResolver());
+                    rd.addReportResolver(Role.INSPECTOR, new InterconnectInspectorReportResolver());
                 }
                 else {
                     if (customResolver.equals("ArtemisInspector")) {
-                        rd.addReportResolver("inspector", new InspectorReportResolver());
+                        rd.addReportResolver(Role.INSPECTOR, new InspectorReportResolver());
                     }
                 }
 
@@ -160,7 +188,7 @@ public class DownloadAction extends Action {
                     System.out.println("Downloading reports from http://" + server + "/" + resourcePath);
 
                     rd.getOrganizer().getTracker().setCurrentTest(i);
-                    rd.downloadAny(server.type, server.address, resourcePath +"/");
+                    rd.downloadAny(server.peerInfo, resourcePath +"/");
                     i++;
                 } while (i <= to);
             }
@@ -176,13 +204,13 @@ public class DownloadAction extends Action {
     }
 
     private void resolveDataServers() throws InterruptedException, ExecutionException, TimeoutException {
-        System.out.printf("Resolving data servers");
+        System.out.println("Resolving data servers");
 
         if (servers == null) {
             servers = new LinkedList<>();
             Maestro maestro = new Maestro(maestroUrl);
 
-            System.out.printf("Sending the request");
+            System.out.println("Sending the request");
             List<? extends MaestroNote> replies = maestro
                     .getDataServer()
                     .get(10, TimeUnit.SECONDS);
@@ -191,7 +219,7 @@ public class DownloadAction extends Action {
                 GetResponse reply = (GetResponse) note;
                 Server server = new Server();
 
-                server.type = reply.getRole();
+                server.peerInfo = reply.getPeerInfo();
                 server.address = reply.getValue();
 
                 servers.add(server);

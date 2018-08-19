@@ -18,14 +18,17 @@ package org.maestro.tests.rate.singlepoint;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
+import org.maestro.client.exchange.support.PeerEndpoint;
 import org.maestro.common.ConfigurationWrapper;
-import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.tests.AbstractTestProfile;
 import org.maestro.tests.SinglePointProfile;
+import org.maestro.tests.cluster.DistributionStrategy;
 import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Set;
 
 import static org.maestro.client.Maestro.set;
 
@@ -45,34 +48,6 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     private int maximumLatency = 0;
     private TestDuration duration;
     private String messageSize;
-
-    private String extPointSource;
-    private String extPointBranch;
-    private String extPointCommand;
-
-    public String getExtPointSource() {
-        return extPointSource;
-    }
-
-    public void setExtPointSource(String extPointSource) {
-        this.extPointSource = extPointSource;
-    }
-
-    public String getExtPointBranch() {
-        return extPointBranch;
-    }
-
-    public void setExtPointBranch(String extPointBranch) {
-        this.extPointBranch = extPointBranch;
-    }
-
-    public String getExtPointCommand() {
-        return extPointCommand;
-    }
-
-    public void setExtPointCommand(String extPointCommand) {
-        this.extPointCommand = extPointCommand;
-    }
 
     public void setParallelCount(int parallelCount) {
         this.parallelCount = parallelCount;
@@ -156,77 +131,62 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
         return CompletionTime.estimate(getDuration().getWarmUpDuration(), warmUpRate);
     }
 
-    protected void apply(final Maestro maestro, boolean warmUp) {
-        logger.info("Setting endpoint URL to {}", getSendReceiveURL());
-        set(maestro::setBroker, getSendReceiveURL());
+    protected void apply(final Maestro maestro, boolean warmUp, final DistributionStrategy distributionStrategy) {
+        Set<PeerEndpoint> endpoints = distributionStrategy.endpoints();
 
-        if (warmUp) {
-            logger.info("Setting warm-up rate to {}", warmUpRate);
-            set(maestro::setRate, warmUpRate);
+        for (PeerEndpoint endpoint : endpoints) {
+            String destination = endpoint.getDestination();
+            String roleName = endpoint.getRole().toString();
 
-            TestDuration warmUpDuration = getDuration().getWarmUpDuration();
-            long balancedDuration = Math.round((double) warmUpDuration.getNumericDuration() / (double) getParallelCount());
+            logger.info("Setting {} endpoint URL to {} via {}", roleName, getSendReceiveURL(), destination);
+            set(maestro::setBroker, destination, getSendReceiveURL());
 
-            logger.info("Setting warm-up duration to {}", balancedDuration);
-            set(maestro::setDuration, balancedDuration);
+            if (warmUp) {
+                logger.info("Setting {} warm-up rate to {}", roleName, warmUpRate);
+                set(maestro::setRate, destination, warmUpRate);
 
-            logger.info("Setting warm-up parallel count to {}", this.warmUpParallelCount);
-            set(maestro::setParallelCount, this.warmUpParallelCount);
-        }
-        else {
-            logger.info("Setting test rate to {}", getRate());
-            set(maestro::setRate, rate);
+                TestDuration warmUpDuration = getDuration().getWarmUpDuration();
+                long balancedDuration = Math.round((double) warmUpDuration.getNumericDuration() / (double) getParallelCount());
 
-            logger.info("Setting test duration to {}", getDuration());
-            set(maestro::setDuration, this.getDuration().toString());
+                logger.info("Setting {} warm-up duration to {}", roleName, balancedDuration);
+                set(maestro::setDuration, destination, balancedDuration);
 
-            logger.info("Setting parallel count to {}", this.parallelCount);
-            set(maestro::setParallelCount, this.parallelCount);
-        }
-
-        logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
-        set(maestro::setFCL, getMaximumLatency());
-
-        logger.info("Setting message size to {}", getMessageSize());
-        set(maestro::setMessageSize, getMessageSize());
-
-        if (getManagementInterface() != null) {
-            if (getInspectorName() != null) {
-                logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
-                        getInspectorName());
-                try {
-                    set(maestro::setManagementInterface, getManagementInterface());
-                }
-                catch (NotEnoughRepliesException ne) {
-                    logger.warn("Apparently no inspector nodes are enabled on this cluster. Ignoring ...");
-                }
+                logger.info("Setting {} warm-up parallel count to {}", roleName, this.warmUpParallelCount);
+                set(maestro::setParallelCount, destination, this.warmUpParallelCount);
             }
-        }
+            else {
+                logger.info("Setting {} test rate to {}", roleName, getRate());
+                set(maestro::setRate, destination, rate);
 
-        if (getExtPointSource() != null) {
-            if (getExtPointBranch() != null) {
-                logger.info("Setting the extension point source to {} using the {} branch", getExtPointSource(),
-                        getExtPointBranch());
-                set(maestro::sourceRequest, getExtPointSource(), getExtPointBranch());
+                logger.info("Setting {} test duration to {}", roleName, getDuration());
+                set(maestro::setDuration, destination, this.getDuration().toString());
+
+                logger.info("Setting {} parallel count to {}", roleName, this.parallelCount);
+                set(maestro::setParallelCount, destination, this.parallelCount);
             }
-        }
 
-        if (getExtPointCommand() != null) {
-            logger.info("Setting command to Agent execution to {}", getExtPointCommand());
-            set(maestro::userCommand, 0L, getExtPointCommand());
+            logger.info("Setting {} fail-condition-latency to {}", roleName, getMaximumLatency());
+            set(maestro::setFCL, destination, getMaximumLatency());
+
+            logger.info("Setting {} message size to {}", roleName, getMessageSize());
+            set(maestro::setMessageSize, destination, getMessageSize());
+
+            applyInspector(maestro, endpoint, destination);
+
+            applyAgent(maestro, endpoint, destination);
         }
     }
 
     @Override
-    public void apply(final Maestro maestro) {
+    public void apply(final Maestro maestro, final DistributionStrategy distributionStrategy) {
         logger.info("Applying test execution profile");
-        apply(maestro, false);
+        apply(maestro, false, distributionStrategy);
         logger.info("Estimated time for test completion: {} seconds", getEstimatedCompletionTime());
     }
 
-    public void warmUp(final Maestro maestro) {
+    public void warmUp(final Maestro maestro, final DistributionStrategy distributionStrategy) {
         logger.info("Applying test warm-up profile");
-        apply(maestro, true);
+        apply(maestro, true, distributionStrategy);
         logger.info("Estimated time for warm-up completion: {} seconds", getWarmUpEstimatedCompletionTime());
     }
 

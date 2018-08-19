@@ -20,6 +20,7 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.Role;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.evaluators.HardLatencyEvaluator;
 import org.maestro.common.evaluators.LatencyEvaluator;
@@ -32,7 +33,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.TimeUnit;
 
 
@@ -44,25 +47,26 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
     private final WorkerContainer container;
-    private final Class<MaestroWorker> workerClass;
     private final File logDir;
     private LatencyEvaluator latencyEvaluator;
+    private final Map<String, String> workersMap = new HashMap<>();
 
     /**
      * Constructor
      * @param maestroURL Maestro URL
      * @param peerInfo Peer information
      * @param logDir test log directory
-     * @param workerClass the class for the worker
      * @param dataServer the data server instance
      */
     public ConcurrentWorkerManager(final String maestroURL, final PeerInfo peerInfo, final File logDir,
-                                   final Class<MaestroWorker> workerClass, final MaestroDataServer dataServer) {
+                                   final MaestroDataServer dataServer) {
         super(maestroURL, peerInfo, dataServer);
 
         this.container = new WorkerContainer();
-        this.workerClass = workerClass;
         this.logDir = logDir;
+
+        workersMap.put("JmsSender", "org.maestro.worker.jms.JMSSenderWorker");
+        workersMap.put("JmsReceiver", "org.maestro.worker.jms.JMSReceiverWorker");
     }
 
 
@@ -70,7 +74,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
      * Starts the workers and add them to a container
      * @return true if started correctly or false otherwise
      */
-    private boolean doWorkerStart(final MaestroNote note) {
+    private boolean doWorkerStart(final MaestroNote note, final Class<MaestroWorker> workerClass) {
         if (container.isTestInProgress()) {
             logger.warn("Trying to start a new test, but a test execution is already in progress");
             getClient().notifyFailure("Test already in progress");
@@ -196,51 +200,6 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     }
 
     @Override
-    public void handle(final StartReceiver note) {
-        logger.info("Start receiver request received");
-
-        if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
-            if (!doWorkerStart(note)) {
-                logger.warn("::handle {} can't start worker", note);
-            }
-        }
-    }
-
-    @Override
-    public void handle(final StartSender note) {
-        logger.info("Start sender request received");
-
-        if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
-            if (!doWorkerStart(note)) {
-                logger.warn("::handle {} can't start worker", note);
-            }
-        }
-    }
-
-    @Override
-    public void handle(final StopReceiver note) {
-        logger.info("Stop receiver request received");
-
-        if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
-            getClient().replyOk(note);
-
-            container.stop();
-        }
-    }
-
-    @Override
-    public void handle(StopSender note) {
-        logger.info("Stop sender request received");
-
-        if (MaestroSenderWorker.class.isAssignableFrom(workerClass)) {
-            getClient().replyOk(note);
-
-            container.stop();
-        }
-    }
-
-
-    @Override
     public void handle(StatsRequest note) {
         logger.trace("Stats request received");
         StatsResponse statsResponse = new StatsResponse();
@@ -255,7 +214,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         }
 
         // Explanation: the role is the name as the role (ie: clientName@host)
-        statsResponse.setRole(getPeerInfo().peerName());
+        statsResponse.setPeerInfo(getPeerInfo());
 
         LatencyStats latencyStats = container.latencyStats(latencyEvaluator);
         if (latencyStats != null) {
@@ -306,7 +265,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         super.handle(note, logDir);
     }
 
-    private boolean drainStart(final WorkerOptions drainOptions, final MaestroNote note) {
+    private boolean drainStart(final WorkerOptions drainOptions, final MaestroNote note, final Class<MaestroWorker> workerClass) {
         if (container.isTestInProgress()) {
             logger.warn("Trying to start a new test, but a test execution is already in progress");
             getClient().notifyFailure("Test already in progress");
@@ -354,18 +313,58 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(final DrainRequest note) {
-        if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
+        String className = workersMap.get(note.getWorkerName());
+        try {
+            Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(className);
+
             WorkerOptions drainOptions = new WorkerOptions();
 
             drainOptions.setBrokerURL(note.getUrl());
             drainOptions.setDuration(note.getDuration());
             drainOptions.setParallelCount(note.getParallelCount());
 
-            if (!drainStart(drainOptions, note)) {
+            if (!drainStart(drainOptions, note, clazz)) {
                 logger.error("Unable to start draining from the SUT");
             }
+        } catch (ClassNotFoundException e) {
+            getClient().replyInternalError(note, "Unable to create a drain worker for %s", note.getWorkerName());
+
+            return;
         }
     }
 
 
+    @Override
+    public void handle(final StartWorker note) {
+        final String workerName = note.getOptions().getWorkerName();
+        logger.info("Start worker {} request received", workerName);
+
+        if (getPeerInfo().getRole() != Role.SENDER && getPeerInfo().getRole() != Role.RECEIVER) {
+            getClient().replyInternalError(note, "The worker does not have a role. Set one with RoleAssign");
+
+            return;
+        }
+
+        String className = workersMap.get(workerName);
+        try {
+            Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(className);
+
+            if (!doWorkerStart(note, clazz)) {
+                logger.warn("::handle {} can't start worker", note);
+            }
+        } catch (ClassNotFoundException e) {
+            getClient().replyInternalError(note, "Unable to create an worker for %s", workerName);
+
+            return;
+        }
+    }
+
+    @Override
+    public void handle(final StopWorker note) {
+        logger.info("Stop worker request received");
+
+        getClient().replyOk(note);
+
+        container.stop();
+    }
 }

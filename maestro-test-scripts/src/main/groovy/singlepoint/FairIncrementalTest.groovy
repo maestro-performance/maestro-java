@@ -18,6 +18,7 @@ package singlepoint
 import org.maestro.client.Maestro
 import org.maestro.reports.downloaders.DownloaderBuilder
 import org.maestro.reports.downloaders.ReportsDownloader
+import org.maestro.tests.cluster.DistributionStrategyFactory
 import org.maestro.tests.incremental.IncrementalTestExecutor
 import org.maestro.tests.incremental.IncrementalTestProfile
 import org.maestro.tests.incremental.singlepoint.SimpleTestProfile
@@ -139,6 +140,8 @@ println "Calculated rate increment $rateIncrement"
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
+distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
+
 ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
 
 IncrementalTestProfile testProfile = new SimpleTestProfile()
@@ -162,7 +165,7 @@ if (maxLatencyStr != null) {
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
 ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
-IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
+IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile, distributionStrategy)
 
 boolean ret = testExecutor.run()
 

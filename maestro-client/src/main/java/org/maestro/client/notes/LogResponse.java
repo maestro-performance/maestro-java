@@ -1,6 +1,7 @@
 package org.maestro.client.notes;
 
 import org.apache.commons.io.FileUtils;
+import org.maestro.common.client.notes.LocationType;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.exceptions.MaestroException;
 import org.msgpack.core.MessageBufferPacker;
@@ -142,7 +143,7 @@ public class LogResponse extends MaestroResponse {
         MessageBufferPacker packer = super.pack();
 
         try {
-            packer.packInt(locationType.code);
+            packer.packInt(locationType.getCode());
             packer.packString(fileName);
             packer.packInt(index);
             packer.packInt(total);

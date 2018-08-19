@@ -48,7 +48,7 @@ public class DownloaderBuilder {
      * Build a report downloader
      * @param name The name of the downloader ("broker" or "default")
      * @param maestro Maestro instance (required for "broker")
-     * @param organizer Report directory organizer (must be NodeOrganizer for "broker")
+     * @param organizer Report directory organizer
      * @return The reports downloader
      */
     public static ReportsDownloader build(String name, final Maestro maestro, final Organizer organizer) {

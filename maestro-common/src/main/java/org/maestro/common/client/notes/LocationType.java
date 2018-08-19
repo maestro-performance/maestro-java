@@ -1,4 +1,20 @@
-package org.maestro.client.notes;
+/*
+ * Copyright 2018 Otavio R. Piske <angusyoung@gmail.com>
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
+package org.maestro.common.client.notes;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,12 +52,16 @@ public enum LocationType {
         this.code = code;
     }
 
+    public int getCode() {
+        return code;
+    }
+
     /**
      * Gets a location type by code
      * @param code location code integer as represent by this enum (ie: 0 to 3)
      * @return A location type object
      */
-    static LocationType byCode(int code) {
+    public static LocationType byCode(int code) {
         switch (code) {
             case 0: return ANY;
             case 1: return LAST_SUCCESS;

@@ -35,6 +35,7 @@ import org.maestro.tests.AbstractTestProfile
 
 import net.orpiske.qdp.main.QuiverReportWalker
 import net.orpiske.qdp.plot.renderer.IndexRenderer
+import org.maestro.tests.cluster.NonAssigningStrategy
 import org.maestro.tests.flex.FlexibleTestExecutor
 import org.maestro.tests.flex.singlepoint.FlexibleTestProfile
 
@@ -159,7 +160,7 @@ testProfile.setSendReceiveURL(brokerURL)
 testProfile.setSourceURL(sourceURL)
 
 println "Creating the executor"
-QuiverExecutor executor = new QuiverExecutor(maestro, reportsDownloader, testProfile)
+QuiverExecutor executor = new QuiverExecutor(maestro, reportsDownloader, testProfile, new NonAssigningStrategy(maestro))
 
 int ret = 0
 

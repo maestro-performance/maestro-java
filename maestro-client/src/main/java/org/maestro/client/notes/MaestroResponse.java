@@ -16,6 +16,10 @@
 
 package org.maestro.client.notes;
 
+import org.maestro.client.exchange.support.DefaultGroupInfo;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.exchange.support.WorkerPeer;
+import org.maestro.common.Role;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.client.notes.MaestroNoteType;
 import org.msgpack.core.MessageBufferPacker;
@@ -25,9 +29,7 @@ import java.io.IOException;
 
 public class MaestroResponse extends AbstractMaestroNote {
     private String id;
-    private String name;
-    private String role;
-    private String host;
+    private PeerInfo peerInfo;
 
     public MaestroResponse(MaestroCommand maestroCommand) {
         super(MaestroNoteType.MAESTRO_TYPE_RESPONSE, maestroCommand);
@@ -37,9 +39,17 @@ public class MaestroResponse extends AbstractMaestroNote {
         super(MaestroNoteType.MAESTRO_TYPE_RESPONSE, maestroCommand, unpacker);
 
         id = unpacker.unpackString();
-        name = unpacker.unpackString();
-        role = unpacker.unpackString();
-        host = unpacker.unpackString();
+
+
+        final String memberName = unpacker.unpackString();
+        final String groupName = unpacker.unpackString();
+
+        final int role = unpacker.unpackInt();
+        final String name = unpacker.unpackString();
+        final String host = unpacker.unpackString();
+
+        this.peerInfo = new WorkerPeer(Role.from(role), name, host,
+                new DefaultGroupInfo(memberName, groupName));
     }
 
     public String getId() {
@@ -50,28 +60,12 @@ public class MaestroResponse extends AbstractMaestroNote {
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public PeerInfo getPeerInfo() {
+        return peerInfo;
     }
 
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    public String getRole() {
-        return role;
-    }
-
-    public void setRole(String role) {
-        this.role = role;
-    }
-
-    public String getHost() {
-        return host;
-    }
-
-    public void setHost(String host) {
-        this.host = host;
+    public void setPeerInfo(PeerInfo peerInfo) {
+        this.peerInfo = peerInfo;
     }
 
     @Override
@@ -79,9 +73,11 @@ public class MaestroResponse extends AbstractMaestroNote {
         MessageBufferPacker packer = super.pack();
 
         packer.packString(this.id);
-        packer.packString(this.name);
-        packer.packString(this.role);
-        packer.packString(this.host);
+        packer.packString(peerInfo.groupInfo().memberName());
+        packer.packString(peerInfo.groupInfo().groupName());
+        packer.packInt(peerInfo.getRole().getCode());
+        packer.packString(peerInfo.peerName());
+        packer.packString(peerInfo.peerHost());
 
         return packer;
     }
@@ -90,9 +86,7 @@ public class MaestroResponse extends AbstractMaestroNote {
     public String toString() {
         return "MaestroResponse{" +
                 "id='" + id + '\'' +
-                ", name='" + name + '\'' +
-                ", role='" + role + '\'' +
-                ", host='" + host + '\'' +
+                ", peerInfo=" + peerInfo +
                 "} " + super.toString();
     }
 }

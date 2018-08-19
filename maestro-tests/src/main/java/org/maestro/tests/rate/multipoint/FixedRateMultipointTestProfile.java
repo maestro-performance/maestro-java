@@ -17,14 +17,16 @@
 package org.maestro.tests.rate.multipoint;
 
 import org.maestro.client.Maestro;
+import org.maestro.client.exchange.support.PeerEndpoint;
+import org.maestro.common.Role;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.tests.MultiPointProfile;
+import org.maestro.tests.cluster.DistributionStrategy;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 import static org.maestro.client.Maestro.set;
 
@@ -33,73 +35,69 @@ import static org.maestro.client.Maestro.set;
  */
 public class FixedRateMultipointTestProfile extends FixedRateTestProfile implements MultiPointProfile {
     private static final Logger logger = LoggerFactory.getLogger(FixedRateMultipointTestProfile.class);
-    private final List<EndPoint> endPoints = new LinkedList<>();
+    private final Map<Role, TestEndpoint> endPoints = new HashMap<>();
 
     @Override
-    public void addEndPoint(EndPoint endPoint) {
-        endPoints.add(endPoint);
+    public void addEndPoint(Role role, TestEndpoint testEndpoint) {
+        endPoints.put(role, testEndpoint);
     }
 
     @Override
-    public List<EndPoint> getEndPoints() {
-        return endPoints;
+    public Map<Role, TestEndpoint> getTestEndpoints() {
+        return Collections.unmodifiableMap(endPoints);
     }
 
     @Override
-    protected void apply(final Maestro maestro, boolean warmUp) {
-        for (EndPoint endPoint : endPoints) {
-            logger.info("Setting {} end point to {}", endPoint.getName(), endPoint.getSendReceiveURL());
-            logger.debug(" {} end point located at {}", endPoint.getName(), endPoint.getTopic());
+    protected void apply(final Maestro maestro, boolean warmUp, final DistributionStrategy distributionStrategy) {
+        Set<PeerEndpoint> endpoints = distributionStrategy.endpoints();
 
-            set(maestro::setBroker, endPoint.getTopic(), endPoint.getSendReceiveURL());
-        }
+        for (PeerEndpoint endpoint : endpoints) {
+            String destination = endpoint.getDestination();
+            TestEndpoint testEndpoint = endPoints.get(endpoint.getRole());
 
-        if (warmUp) {
-            logger.info("Setting warm up rate to {}", getRate());
-            set(maestro::setRate, warmUpRate);
-
-            TestDuration warmUpDuration = getDuration().getWarmUpDuration();
-            long balancedDuration = Math.round((double) warmUpDuration.getNumericDuration() / (double) getParallelCount());
-
-            logger.info("Setting warm up duration to {}", balancedDuration);
-            set(maestro::setDuration, balancedDuration);
-        }
-        else {
-            logger.info("Setting test rate to {}", getRate());
-            set(maestro::setRate, getRate());
-
-            logger.info("Setting test duration to {}", getDuration());
-            set(maestro::setDuration, getDuration().toString());
-        }
-
-        logger.info("Setting parallel count to {}", getParallelCount());
-        set(maestro::setParallelCount, getParallelCount());
-
-        logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
-        set(maestro::setFCL, getMaximumLatency());
-
-        logger.info("Setting message size to {}", getMessageSize());
-        set(maestro::setMessageSize, getMessageSize());
-
-        if (getManagementInterface() != null) {
-            if (getInspectorName() != null) {
-                logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
-                        getInspectorName());
-                set(maestro::setManagementInterface, getManagementInterface());
+            if (testEndpoint == null) {
+                if (endpoint.getRole().isWorker()) {
+                    logger.info("There is not test end point set for peers w/ role {}", endpoint.getRole());
+                }
+                else {
+                    logger.info("There is no test end point to {}", endpoint.getRole());
+                }
             }
-        }
+            else {
+                logger.info("Setting {} end point to {}", endpoint.getRole(), testEndpoint.getSendReceiveURL());
 
-        if (getExtPointSource() != null) {
-            if (getExtPointBranch() != null) {
-                logger.info("Setting the extension point source to {} using the {} branch", getExtPointSource(),
-                        getExtPointBranch());
-                set(maestro::sourceRequest, getExtPointSource(), getExtPointBranch());
+                set(maestro::setBroker, endpoint.getDestination(), testEndpoint.getSendReceiveURL());
             }
-        }
 
-        if (getExtPointCommand() != null) {
-            logger.info("Setting command to Agent execution to {}", getExtPointCommand());
-            set(maestro::userCommand, 0L, getExtPointCommand());
+            if (warmUp) {
+                logger.info("Setting warm up rate to {}", getRate());
+                set(maestro::setRate, destination, warmUpRate);
+
+                TestDuration warmUpDuration = getDuration().getWarmUpDuration();
+                long balancedDuration = Math.round((double) warmUpDuration.getNumericDuration() / (double) getParallelCount());
+
+                logger.info("Setting warm up duration to {}", balancedDuration);
+                set(maestro::setDuration, destination, balancedDuration);
+            } else {
+                logger.info("Setting test rate to {}", getRate());
+                set(maestro::setRate, destination, getRate());
+
+                logger.info("Setting test duration to {}", getDuration());
+                set(maestro::setDuration, destination, getDuration().toString());
+            }
+
+            logger.info("Setting parallel count to {}", getParallelCount());
+            set(maestro::setParallelCount, destination, getParallelCount());
+
+            logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
+            set(maestro::setFCL, destination, getMaximumLatency());
+
+            logger.info("Setting message size to {}", getMessageSize());
+            set(maestro::setMessageSize, destination, getMessageSize());
+
+            applyInspector(maestro, endpoint, destination);
+
+            applyAgent(maestro, endpoint, destination);
         }
     }
 

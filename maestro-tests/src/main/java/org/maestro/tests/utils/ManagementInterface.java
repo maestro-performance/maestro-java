@@ -16,6 +16,7 @@
 
 package org.maestro.tests.utils;
 
+import org.maestro.common.Role;
 import org.maestro.reports.InspectorReportResolver;
 import org.maestro.reports.InterconnectInspectorReportResolver;
 import org.maestro.reports.downloaders.ReportsDownloader;
@@ -65,10 +66,10 @@ public class ManagementInterface {
         }
 
         if (inspectorName.equals("InterconnectInspector")) {
-            reportsDownloader.addReportResolver("inspector", new InterconnectInspectorReportResolver());
+            reportsDownloader.addReportResolver(Role.INSPECTOR, new InterconnectInspectorReportResolver());
         }
         else {
-            reportsDownloader.addReportResolver("inspector", new InspectorReportResolver());
+            reportsDownloader.addReportResolver(Role.INSPECTOR, new InspectorReportResolver());
         }
     }
 }

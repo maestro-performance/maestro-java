@@ -42,6 +42,12 @@
         </dependency>
 
         <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-data-server-http</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
             <version>2.4.14</version>

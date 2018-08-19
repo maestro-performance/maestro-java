@@ -16,10 +16,11 @@
 package multipoint
 
 import org.maestro.client.Maestro
-import org.maestro.client.exchange.MaestroTopics
+import org.maestro.common.Role
 import org.maestro.reports.downloaders.DownloaderBuilder
 import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.MultiPointProfile
+import org.maestro.tests.cluster.DistributionStrategyFactory
 import org.maestro.tests.incremental.IncrementalTestExecutor
 import org.maestro.tests.incremental.IncrementalTestProfile
 import org.maestro.tests.incremental.multipoint.SimpleTestProfile
@@ -134,7 +135,6 @@ managementInterface = System.getenv("MANAGEMENT_INTERFACE")
 inspectorName = System.getenv("INSPECTOR_NAME")
 downloaderName = System.getenv("DOWNLOADER_NAME")
 
-
 rate = (combinedRate / initialParallelCount ) * (1 - (Math.log10(messageSize.doubleValue())) / 10)
 println "Calculated base rate $rate"
 
@@ -148,12 +148,14 @@ println "Calculated rate increment $rateIncrement"
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
+distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
+
 ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
 
 IncrementalTestProfile testProfile = new SimpleTestProfile()
 
-testProfile.addEndPoint(new MultiPointProfile.EndPoint("sender", MaestroTopics.SENDER_DAEMONS, sendURL))
-testProfile.addEndPoint(new MultiPointProfile.EndPoint("receiver", MaestroTopics.RECEIVER_DAEMONS, receiveURL))
+testProfile.addEndPoint(Role.SENDER, new MultiPointProfile.TestEndpoint(sendURL))
+testProfile.addEndPoint(Role.RECEIVER, new MultiPointProfile.TestEndpoint(receiveURL))
 
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(MessageSize.fixed(messageSize))
@@ -173,7 +175,8 @@ if (maxLatencyStr != null) {
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
 ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
-IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
+IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile,
+        distributionStrategy)
 
 boolean ret = testExecutor.run()
 
