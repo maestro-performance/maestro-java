@@ -23,7 +23,4 @@ package org.maestro.client.notes;
 @SuppressWarnings("unused")
 public interface MaestroSenderEventListener {
 
-    void handle(StartSender note);
-
-    void handle(StopSender note);
 }

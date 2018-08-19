@@ -14,14 +14,25 @@
  * limitations under the License.
  */
 
-package org.maestro.agent.ext.requests.startreceiver
+package org.maestro.tests.cluster;
 
-import org.maestro.agent.base.AbstractHandler
+import org.maestro.client.Maestro;
 
-class StartReceiverHandler extends AbstractHandler {
+public class DistributionStrategyFactory {
 
-    @Override
-    Object handle() {
-        return null
+    public static DistributionStrategy createStrategy(final String name, final Maestro maestro) {
+        if (name == null) {
+            return new BalancedStrategy(maestro);
+        }
+
+        switch (name) {
+            case "legacy": {
+                return new LegacyStrategy(maestro);
+            }
+            case "balanced":
+            default: {
+                return new BalancedStrategy(maestro);
+            }
+        }
     }
 }

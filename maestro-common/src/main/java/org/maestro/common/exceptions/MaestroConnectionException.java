@@ -34,7 +34,7 @@ public class MaestroConnectionException extends MaestroException {
         super(cause);
     }
 
-    protected MaestroConnectionException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+    public MaestroConnectionException(String message, Object...args) {
+        super(message, args);
     }
 }

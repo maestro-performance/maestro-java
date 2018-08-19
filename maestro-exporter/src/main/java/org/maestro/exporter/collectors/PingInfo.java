@@ -18,8 +18,8 @@ package org.maestro.exporter.collectors;
 
 import io.prometheus.client.Collector;
 import io.prometheus.client.GaugeMetricFamily;
+import org.maestro.client.notes.MaestroResponse;
 import org.maestro.client.notes.PingResponse;
-import org.maestro.common.NodeUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,11 +50,9 @@ public class PingInfo extends Collector {
 
         logger.trace("Number of values to process: {}", records.values().size());
         for (PingResponse pingResponse : records.values()) {
-            String nodeName = pingResponse.getName();
-            String type = NodeUtils.getTypeFromName(nodeName);
 
-            logger.trace("Adding record for {}/{}", pingResponse.getName(), pingResponse.getId());
-            labeledGauge.addMetric(Arrays.asList(pingResponse.getName(), type),
+            logger.trace("Adding record for {}/{}", pingResponse.getPeerInfo().prettyName(), pingResponse.getId());
+            labeledGauge.addMetric(Arrays.asList(pingResponse.getPeerInfo().peerName(), pingResponse.getPeerInfo().peerHost()),
                     pingResponse.getElapsed());
         }
 
@@ -64,7 +62,7 @@ public class PingInfo extends Collector {
     }
 
     public void record(PingResponse pingResponse) {
-        logger.trace("Recording ping for {}/{}", pingResponse.getName(), pingResponse.getId());
+        logger.trace("Recording ping for {}/{}", pingResponse.getPeerInfo().prettyName(), pingResponse.getId());
         records.put(pingResponse.getId(), pingResponse);
     }
 

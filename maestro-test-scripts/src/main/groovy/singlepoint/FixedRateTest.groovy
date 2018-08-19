@@ -19,6 +19,7 @@ package singlepoint
 import org.maestro.client.Maestro
 import org.maestro.reports.downloaders.DownloaderBuilder
 import org.maestro.reports.downloaders.ReportsDownloader
+import org.maestro.tests.cluster.DistributionStrategyFactory
 import org.maestro.tests.rate.AbstractFixedRateExecutor
 import org.maestro.tests.rate.FixedRateTestExecutorFactory
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile
@@ -81,6 +82,8 @@ warmUp = System.getenv("WARM_UP")
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
+distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
+
 ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
 
 FixedRateTestProfile testProfile = new FixedRateTestProfile()
@@ -100,7 +103,7 @@ ManagementInterface.setupInterface(managementInterface, inspectorName, testProfi
 ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
 AbstractFixedRateExecutor testExecutor = FixedRateTestExecutorFactory.newTestExecutor(maestro, reportsDownloader,
-        testProfile, warmUp)
+        testProfile, warmUp, distributionStrategy)
 
 boolean ret = testExecutor.run()
 

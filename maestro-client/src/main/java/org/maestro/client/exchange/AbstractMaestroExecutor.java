@@ -58,13 +58,58 @@ public class AbstractMaestroExecutor implements Runnable {
         logger.debug("Connecting the Maestro broker");
         this.topics = topics;
 
-
         maestroPeer.connect();
         if (topics == null) {
             logger.error("Trying to subscribe to a null topic");
         }
         else {
             maestroPeer.subscribe(topics);
+        }
+    }
+
+    /**
+     * Start running the executor
+     * @param topics the list of topics associated with this executor
+     * @throws MaestroConnectionException if unable to connect to the broker and subscribe to the topics
+     */
+    public void start(final String[] topics, int connectionRetries, long retryDelay) throws MaestroConnectionException {
+        logger.debug("Connecting the Maestro broker");
+        this.topics = topics;
+
+        boolean connected = false;
+        do {
+            try {
+                maestroPeer.connect();
+                connected = true;
+                System.out.println("Connected to the Maestro Broker");
+                break;
+            }
+            catch (MaestroConnectionException e) {
+                logger.error("Maestro did not connect. Waiting and retrying {} more times", connectionRetries);
+                connectionRetries--;
+
+                if (connectionRetries > 0) {
+                    try {
+                        Thread.sleep(retryDelay);
+                    } catch (InterruptedException e1) {
+                        break;
+                    }
+                }
+                else {
+                    System.err.println(e.getMessage());
+                }
+            }
+        } while (connectionRetries > 0);
+
+        if (connected) {
+            if (topics == null) {
+                logger.error("Trying to subscribe to a null topic");
+            } else {
+                maestroPeer.subscribe(topics);
+            }
+        }
+        else {
+            throw new MaestroConnectionException("The peer did not connect to the Maestro Broker");
         }
     }
 

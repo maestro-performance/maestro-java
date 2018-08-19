@@ -86,18 +86,18 @@ public class GroovyHandler implements AgentHandler {
         this.context = context;
     }
 
-    private void runCallback(final File file, String callbackName) {
+    private void runCallback(final File file) {
         GroovyObject groovyObject = getObject(file);
 
         groovyObject.invokeMethod("setMaestroNote", this.maestroNote);
         groovyObject.invokeMethod("setWorkerOptions", this.workerOptions);
         groovyObject.invokeMethod("setMaestroClient", this.client);
-        groovyObject.invokeMethod(callbackName, context);
+        groovyObject.invokeMethod("handle", context);
     }
 
     public void runCallbacks(){
         for (File file : fileList){
-            runCallback(file, "handle");
+            runCallback(file);
         }
     }
 

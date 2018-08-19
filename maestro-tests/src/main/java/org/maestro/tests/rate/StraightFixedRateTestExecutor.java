@@ -18,6 +18,7 @@ package org.maestro.tests.rate;
 
 import org.maestro.client.Maestro;
 import org.maestro.reports.downloaders.ReportsDownloader;
+import org.maestro.tests.cluster.DistributionStrategy;
 import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,8 +31,10 @@ public class StraightFixedRateTestExecutor extends AbstractFixedRateExecutor {
     private static final Logger logger = LoggerFactory.getLogger(StraightFixedRateTestExecutor.class);
 
     public StraightFixedRateTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                         final FixedRateTestProfile testProfile) {
-        super(maestro, reportsDownloader, testProfile);
+                                         final FixedRateTestProfile testProfile,
+                                         final DistributionStrategy distributionStrategy)
+    {
+        super(maestro, reportsDownloader, testProfile, distributionStrategy);
     }
 
     protected void reset() { }
@@ -47,7 +50,6 @@ public class StraightFixedRateTestExecutor extends AbstractFixedRateExecutor {
 
     public boolean run() {
         logger.info("Starting the test execution");
-
 
         return runTest(0, getTestProfile()::apply);
     }

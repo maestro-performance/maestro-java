@@ -35,6 +35,7 @@ import java.util.List;
 /**
  * A base class for HDR plotters
  */
+@SuppressWarnings("FieldCanBeLocal")
 public abstract class AbstractPlotter<T> {
     private int outputWidth = 1200;
     private int outputHeight = 700;

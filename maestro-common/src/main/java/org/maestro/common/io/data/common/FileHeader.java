@@ -2,83 +2,13 @@ package org.maestro.common.io.data.common;
 
 import org.apache.commons.lang3.StringUtils;
 import org.maestro.common.Constants;
-import org.maestro.common.HostTypes;
+import org.maestro.common.Role;
 import org.maestro.common.io.data.common.exceptions.InvalidHeaderValueException;
 
 /**
  * Maestro data file header
  */
 public class FileHeader {
-    public enum Role {
-        OTHER(0),
-        SENDER(1),
-        RECEIVER(2),
-        INSPECTOR(3),
-        AGENT(3),
-        EXPORTER(4);
-
-        private final int code;
-
-        Role(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public static Role from(int code) {
-            switch (code) {
-                case 0: {
-                    return OTHER;
-                }
-                case 1: {
-                    return SENDER;
-                }
-                case 2: {
-                    return RECEIVER;
-                }
-                case 3: {
-                    return INSPECTOR;
-                }
-                case 4: {
-                    return AGENT;
-                }
-                default: {
-                    return OTHER;
-                }
-            }
-        }
-
-        public static Role hostTypeByName(final String name) {
-            if (name == null) {
-                return OTHER;
-            }
-
-            switch (name) {
-                case HostTypes.SENDER_HOST_TYPE: {
-                    return SENDER;
-                }
-                case HostTypes.RECEIVER_HOST_TYPE: {
-                    return RECEIVER;
-                }
-                case HostTypes.INSPECTOR_HOST_TYPE: {
-                    return INSPECTOR;
-                }
-                case HostTypes.AGENT_HOST_TYPE: {
-                    return AGENT;
-                }
-                case HostTypes.EXPORTER_HOST_TYPE: {
-                    return EXPORTER;
-                }
-                default: {
-                    return OTHER;
-                }
-            }
-        }
-    }
-
-
     public static final int FORMAT_NAME_SIZE = 8;
 
     private final String formatName;

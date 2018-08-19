@@ -182,4 +182,31 @@ public class MaestroMqttClient implements MaestroClient {
     public synchronized void publish(final String topic, final MaestroNote note) throws MalformedNoteException, MaestroConnectionException {
         publish(topic, note, 0, false);
     }
+
+    /**
+     * Subscribe to a topic
+     *
+     * @param topic the topic to subscribe
+     * @param qos   the QOS for the topic
+     */
+    public void subscribe(final String topic, int qos) {
+        try {
+            mqttClient.subscribe(topic, qos);
+        } catch (MqttException e) {
+            throw new MaestroConnectionException("Unable to subscribe to topic %s : %s", topic, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Unsubscribe from a topic
+     *
+     * @param topic the topic to unsubscribe from
+     */
+    public void unsubscribe(final String topic) {
+        try {
+            mqttClient.unsubscribe(topic);
+        } catch (MqttException e) {
+            throw new MaestroConnectionException("Unable to unsubscribe to topic %s : %s", topic, e.getMessage(), e);
+        }
+    }
 }

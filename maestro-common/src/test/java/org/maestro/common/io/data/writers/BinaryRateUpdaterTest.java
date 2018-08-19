@@ -19,6 +19,7 @@ package org.maestro.common.io.data.writers;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.maestro.common.Constants;
+import org.maestro.common.Role;
 import org.maestro.common.io.data.common.FileHeader;
 import org.maestro.common.io.data.common.RateEntry;
 import org.maestro.common.io.data.readers.BinaryRateReader;
@@ -63,7 +64,7 @@ public class BinaryRateUpdaterTest {
 
                 // The file was generated w/ when the code was still marked as 1.3.8-SNAPSHOT
                 assertEquals(138, fileHeader.getMaestroVersion());
-                assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+                assertEquals(Role.SENDER, fileHeader.getRole());
 
                 long count = 0;
                 RateEntry entry = reader.readRecord();
@@ -109,7 +110,7 @@ public class BinaryRateUpdaterTest {
                 assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
                 assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
                 assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
-                assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+                assertEquals(Role.SENDER, fileHeader.getRole());
 
                 long count = 0;
                 RateEntry entry = reader.readRecord();

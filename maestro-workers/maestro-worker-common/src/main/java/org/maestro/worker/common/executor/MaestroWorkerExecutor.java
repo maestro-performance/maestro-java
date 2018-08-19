@@ -22,7 +22,6 @@ import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.MaestroEvent;
 import org.maestro.client.notes.MaestroEventListener;
 import org.maestro.common.exceptions.MaestroException;
-import org.maestro.common.worker.MaestroWorker;
 import org.maestro.worker.common.ConcurrentWorkerManager;
 import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
@@ -32,7 +31,6 @@ import java.io.File;
 
 public class MaestroWorkerExecutor extends AbstractMaestroExecutor {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerExecutor.class);
-    private Thread dataServerThread;
 
 
     public MaestroWorkerExecutor(final AbstractMaestroPeer<MaestroEvent<MaestroEventListener>> maestroPeer, final MaestroDataServer dataServer) {
@@ -41,9 +39,8 @@ public class MaestroWorkerExecutor extends AbstractMaestroExecutor {
         initDataServer(dataServer);
     }
 
-    public MaestroWorkerExecutor(final String url, final PeerInfo peerInfo, final File logDir,
-                                 final Class<MaestroWorker> workerClass, final MaestroDataServer dataServer) throws MaestroException {
-        super(new ConcurrentWorkerManager(url, peerInfo, logDir, workerClass, dataServer));
+    public MaestroWorkerExecutor(final String url, final PeerInfo peerInfo, final File logDir, final MaestroDataServer dataServer) throws MaestroException {
+        super(new ConcurrentWorkerManager(url, peerInfo, logDir, dataServer));
 
         initDataServer(dataServer);
     }
@@ -51,7 +48,7 @@ public class MaestroWorkerExecutor extends AbstractMaestroExecutor {
     private void initDataServer(MaestroDataServer dataServer) {
         logger.info("Creating the data server");
 
-        dataServerThread = new Thread(dataServer);
+        Thread dataServerThread = new Thread(dataServer);
         dataServerThread.start();
     }
 }

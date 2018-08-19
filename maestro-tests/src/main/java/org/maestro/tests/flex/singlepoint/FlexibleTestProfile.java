@@ -17,8 +17,11 @@
 package org.maestro.tests.flex.singlepoint;
 
 import org.maestro.client.Maestro;
+import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.common.agent.Source;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestProfile;
+import org.maestro.tests.cluster.DistributionStrategy;
 
 import static org.maestro.client.Maestro.set;
 
@@ -45,8 +48,8 @@ public class FlexibleTestProfile extends AbstractTestProfile {
     }
 
     @Override
-    public void apply(final Maestro maestro) throws MaestroException {
-        set(maestro::setBroker, this.brokerURL);
-        set(maestro::sourceRequest, sourceURL, null);
+    public void apply(final Maestro maestro, final DistributionStrategy distributionStrategy) throws MaestroException {
+        set(maestro::setBroker, MaestroTopics.WORKERS_TOPIC, this.brokerURL);
+        set(maestro::sourceRequest, MaestroTopics.WORKERS_TOPIC, new Source(sourceURL, null));
     }
 }

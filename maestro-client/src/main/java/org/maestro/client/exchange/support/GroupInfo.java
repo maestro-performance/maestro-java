@@ -12,16 +12,24 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package org.maestro.agent.ext.requests.startsender
+package org.maestro.client.exchange.support;
 
-import org.maestro.agent.base.AbstractHandler
+/**
+ * Peer group information
+ */
+public interface GroupInfo {
+    /**
+     * Member name within the group
+     * @return the member name
+     */
+    String memberName();
 
-class StartSenderHandler extends AbstractHandler {
-
-    @Override
-    Object handle() {
-        return null
-    }
+    /**
+     * The group name
+     * @return the group name
+     */
+    String groupName();
 }

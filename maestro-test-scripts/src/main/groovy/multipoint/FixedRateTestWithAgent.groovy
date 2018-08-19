@@ -17,14 +17,13 @@
 package multipoint
 
 import org.maestro.client.Maestro
-import org.maestro.client.exchange.MaestroTopics
 import org.maestro.common.LogConfigurator
+import org.maestro.common.Role
 import org.maestro.common.duration.TestDurationBuilder
-import org.maestro.reports.InspectorReportResolver
-import org.maestro.reports.InterconnectInspectorReportResolver
 import org.maestro.reports.downloaders.DownloaderBuilder
 import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.MultiPointProfile
+import org.maestro.tests.cluster.DistributionStrategyFactory
 import org.maestro.tests.rate.FixedRateTestExecutor
 import org.maestro.tests.rate.multipoint.FixedRateMultipointTestProfile
 import org.maestro.tests.utils.ManagementInterface
@@ -94,12 +93,14 @@ LogConfigurator.configureLogLevel(logLevel)
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
+distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
+
 ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
 
 FixedRateMultipointTestProfile testProfile = new FixedRateMultipointTestProfile()
 
-testProfile.addEndPoint(new MultiPointProfile.EndPoint("sender", MaestroTopics.SENDER_DAEMONS, senderBrokerURL))
-testProfile.addEndPoint(new MultiPointProfile.EndPoint("receiver", MaestroTopics.RECEIVER_DAEMONS, receiverBrokerURL))
+testProfile.addEndPoint(Role.SENDER, new MultiPointProfile.TestEndpoint(senderBrokerURL))
+testProfile.addEndPoint(Role.RECEIVER, new MultiPointProfile.TestEndpoint(receiverBrokerURL))
 
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(messageSize)
@@ -118,7 +119,8 @@ testProfile.setExtPointCommand(extPointCommand)
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
 ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
-FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, reportsDownloader, testProfile)
+FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, reportsDownloader, testProfile,
+        distributionStrategy)
 
 boolean ret = testExecutor.run()
 

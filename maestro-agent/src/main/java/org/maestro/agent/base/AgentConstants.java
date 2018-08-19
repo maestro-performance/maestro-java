@@ -48,16 +48,18 @@ class AgentConstants {
 
     static final String START_INSPECTOR = "startinspector";
 
-    static final String START_RECEIVER = "startreceiver";
+    static final String START_WORKER = "startworker";
 
+    @Deprecated
     static final String START_SENDER = "startsender";
 
     static final String STATS = "stats";
 
     static final String STOP_INSPECTOR = "stopinspector";
 
-    static final String STOP_RECEIVER = "stopreceiver";
+    static final String STOP_WORKER = "stopworker";
 
+    @Deprecated
     static final String STOP_SENDER = "stopsender";
 
     static final String START_AGENT = "startagent";

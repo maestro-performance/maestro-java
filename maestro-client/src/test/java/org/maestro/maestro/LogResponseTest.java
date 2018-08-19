@@ -18,8 +18,12 @@ package org.maestro.maestro;
 
 import org.junit.Test;
 import org.maestro.client.exchange.MaestroDeserializer;
-import org.maestro.client.notes.LocationType;
+import org.maestro.client.exchange.support.DefaultGroupInfo;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.exchange.support.WorkerPeer;
+import org.maestro.common.client.notes.LocationType;
 import org.maestro.client.notes.LogResponse;
+import org.maestro.common.Role;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.MaestroNoteType;
@@ -32,6 +36,8 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class LogResponseTest {
+    private static final PeerInfo peerInfo = new WorkerPeer(Role.RECEIVER, "unittest", "localhost",
+            new DefaultGroupInfo("test", "all"));
 
     static class TestLogResponse extends LogResponse {
         private int testChunkSize = LogResponse.LOG_RESPONSE_MAX_PAYLOAD_SIZE;
@@ -84,9 +90,7 @@ public class LogResponseTest {
         TestLogResponse logResponse = new TestLogResponse();
 
         logResponse.setId("testid");
-        logResponse.setName("test");
-        logResponse.setRole("unittest");
-        logResponse.setHost("localhost");
+        logResponse.setPeerInfo(peerInfo);
 
         logResponse.setFileName("test.properties");
         logResponse.setFileSize(318);
@@ -114,9 +118,7 @@ public class LogResponseTest {
         TestLogResponse logResponse = new TestLogResponse();
 
         logResponse.setId("testid");
-        logResponse.setName("test");
-        logResponse.setRole("unittest");
-        logResponse.setHost("localhost");
+        logResponse.setPeerInfo(peerInfo);
 
         logResponse.setFileName("sample.txt");
         logResponse.setFileSize(20);

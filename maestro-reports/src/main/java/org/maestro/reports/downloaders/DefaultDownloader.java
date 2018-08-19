@@ -1,7 +1,9 @@
 package org.maestro.reports.downloaders;
 
 import org.apache.http.HttpStatus;
+import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.common.HostTypes;
+import org.maestro.common.Role;
 import org.maestro.contrib.utils.Downloader;
 import org.maestro.contrib.utils.resource.exceptions.ResourceExchangeException;
 import org.maestro.reports.ReceiverReportResolver;
@@ -20,7 +22,7 @@ import java.util.Map;
 public class DefaultDownloader implements ReportsDownloader {
     private static final Logger logger = LoggerFactory.getLogger(DefaultDownloader.class);
 
-    private final Map<String, ReportResolver> resolverMap = new HashMap<>();
+    private final Map<Role, ReportResolver> resolverMap = new HashMap<>();
 
     private final Organizer organizer;
     private long lastDownloadedTime;
@@ -32,8 +34,8 @@ public class DefaultDownloader implements ReportsDownloader {
     public DefaultDownloader(final String baseDir) {
         this.organizer = new DefaultOrganizer(baseDir);
 
-        resolverMap.put(HostTypes.SENDER_HOST_TYPE, new SenderReportResolver());
-        resolverMap.put(HostTypes.RECEIVER_HOST_TYPE, new ReceiverReportResolver());
+        resolverMap.put(Role.SENDER, new SenderReportResolver());
+        resolverMap.put(Role.RECEIVER, new ReceiverReportResolver());
     }
 
     /**
@@ -43,8 +45,8 @@ public class DefaultDownloader implements ReportsDownloader {
     public DefaultDownloader(final Organizer organizer) {
         this.organizer = organizer;
 
-        resolverMap.put(HostTypes.SENDER_HOST_TYPE, new SenderReportResolver());
-        resolverMap.put(HostTypes.RECEIVER_HOST_TYPE, new ReceiverReportResolver());
+        resolverMap.put(Role.SENDER, new SenderReportResolver());
+        resolverMap.put(Role.RECEIVER, new ReceiverReportResolver());
     }
 
     public Organizer getOrganizer() {
@@ -52,19 +54,20 @@ public class DefaultDownloader implements ReportsDownloader {
     }
 
 
-    public void addReportResolver(final String hostType, final ReportResolver reportResolver) {
-        resolverMap.put(hostType, reportResolver);
+    public void addReportResolver(final Role role, final ReportResolver reportResolver) {
+        resolverMap.put(role, reportResolver);
     }
 
 
-    private void downloadReport(final String targetURL, final String hostType) throws ResourceExchangeException {
-        final String destinationDir = organizer.organize(targetURL, hostType);
+    private void downloadReport(final String targetURL, final PeerInfo peerInfo) throws ResourceExchangeException {
+        final String destinationDir = organizer.organize(peerInfo);
 
         if (logger.isDebugEnabled()) {
-            logger.debug("Downloading the {} report file {} to {}", hostType, targetURL, destinationDir);
+            logger.debug("Downloading the {} report file {} to {}", peerInfo.getRole(),
+                    targetURL, destinationDir);
         }
         else {
-            logger.info("Downloading the {} report file {}", hostType, targetURL);
+            logger.info("Downloading the {} report file {}", peerInfo.getRole(), targetURL);
         }
 
         boolean downloaded = false;
@@ -93,21 +96,21 @@ public class DefaultDownloader implements ReportsDownloader {
 
     /**
      * Download files from the peers when a test is successful
-     * @param type the type of the peer (sender, receiver, inspector, etc)
-     * @param host the host to download the files from
+     * @param peerInfo the peer information
      */
-    public synchronized void downloadLastSuccessful(final String type, final String host) {
-        ReportResolver reportResolver = resolverMap.get(type);
+    @Override
+    public synchronized void downloadLastSuccessful(final String id, final PeerInfo peerInfo) {
+        ReportResolver reportResolver = resolverMap.get(peerInfo.getRole());
 
         getOrganizer().setResultType(ResultStrings.SUCCESS);
 
-        List<String> files = reportResolver.getSuccessFiles(host);
+        List<String> files = reportResolver.getSuccessFiles(peerInfo.peerHost());
         for (String url : files) {
             try {
-                downloadReport(url, type);
+                downloadReport(url, peerInfo);
             } catch (ResourceExchangeException e) {
                 if (e.getCode() != HttpStatus.SC_NOT_FOUND) {
-                    logger.warn("Resource {} not found at {} ", e.getUrl(), host);
+                    logger.warn("Resource {} not found at {} ", e.getUrl(), peerInfo.peerHost());
                 }
                 else {
                     logger.error("Error: {}", e.getMessage(), e);
@@ -120,21 +123,21 @@ public class DefaultDownloader implements ReportsDownloader {
 
     /**
      * Download files from the peers when a test failed
-     * @param type the type of the peer (sender, receiver, inspector, etc)
-     * @param host the host to download the files from
+     * @param peerInfo the peer information
      */
-    public void downloadLastFailed(final String type, final String host) {
-        ReportResolver reportResolver = resolverMap.get(type);
+    @Override
+    public void downloadLastFailed(final String id, final PeerInfo peerInfo) {
+        ReportResolver reportResolver = resolverMap.get(peerInfo.getRole());
 
         getOrganizer().setResultType(ResultStrings.FAILED);
 
-        List<String> files = reportResolver.getFailedFiles(host);
+        List<String> files = reportResolver.getFailedFiles(peerInfo.peerHost());
         for (String url : files) {
             try {
-                downloadReport(url, type);
+                downloadReport(url, peerInfo);
             } catch (ResourceExchangeException e) {
                 if (e.getCode() == HttpStatus.SC_NOT_FOUND) {
-                    logger.warn("Resource {} not found at {} ", e.getUrl(), host);
+                    logger.warn("Resource {} not found at {} ", e.getUrl(), peerInfo.peerHost());
                 }
                 else {
                     logger.error("Error: {}", e.getMessage(), e);
@@ -146,15 +149,15 @@ public class DefaultDownloader implements ReportsDownloader {
     }
 
 
-    private void downloadAny(final ReportResolver reportResolver, final String host, final String testNumber) {
-        List<String> files = reportResolver.getTestFiles(host, testNumber);
+    private void downloadAny(final ReportResolver reportResolver, final PeerInfo peerInfo, final String testNumber) {
+        List<String> files = reportResolver.getTestFiles(peerInfo.peerHost(), testNumber);
         for (String url : files) {
             try {
-                downloadReport(url, HostTypes.SENDER_HOST_TYPE);
+                downloadReport(url, peerInfo);
             }
             catch (ResourceExchangeException e) {
                 if (e.getCode() == HttpStatus.SC_NOT_FOUND) {
-                    logger.warn("Resource {} not found at {} ", e.getUrl(), host);
+                    logger.warn("Resource {} not found at {} ", e.getUrl(), peerInfo.peerHost());
                 }
                 else {
                     logger.error("Unable to download files from {}", e.getUrl());
@@ -164,18 +167,14 @@ public class DefaultDownloader implements ReportsDownloader {
     }
 
 
-    /**
-     * Download files from the peers
-     * @param host the host to download the files from
-     * @param testNumber the test execution number from the peer or one of the links (last, lastSuccessful, lastFailed)
-     */
-    public void downloadAny(final String type, final String host, final String testNumber) {
-        ReportResolver reportResolver = resolverMap.get(type);
+    @Override
+    public void downloadAny(final PeerInfo peerInfo, final String testNumber) {
+        ReportResolver reportResolver = resolverMap.get(peerInfo.getRole());
         if (reportResolver != null) {
-            downloadAny(reportResolver, host, testNumber);
+            downloadAny(reportResolver, peerInfo, testNumber);
         }
         else {
-            logger.warn("There is no report resolver registered for host type {}", type);
+            logger.warn("There is no report resolver registered for host type {}", peerInfo.getRole());
         }
 
         lastDownloadedTime = System.currentTimeMillis();

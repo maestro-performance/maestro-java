@@ -19,8 +19,11 @@ package org.maestro.worker.common;
 import org.maestro.client.MaestroReceiverClient;
 import org.maestro.client.exchange.AbstractMaestroPeer;
 import org.maestro.client.exchange.MaestroDeserializer;
+import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.support.GroupInfo;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
+import org.maestro.common.Role;
 import org.maestro.common.URLQuery;
 import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.GetOption;
@@ -48,6 +51,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     private final WorkerOptions workerOptions;
     private boolean running = true;
     private final MaestroDataServer dataServer;
+    private GroupInfo groupInfo;
 
     /**
      * Constructor
@@ -123,8 +127,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
             statsResponse.setChildCount(Integer.parseInt(parallelCount));
         }
 
-        // Explanation: the role is the name as the role (ie: clientName@host)
-        statsResponse.setRole(getPeerInfo().peerName());
+        statsResponse.setPeerInfo(getPeerInfo());
         statsResponse.setLatency(0);
         statsResponse.setRate(0);
         statsResponse.setRoleInfo("");
@@ -156,20 +159,12 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
                 workerOptions.setDuration(note.getValue());
                 break;
             }
-            case MAESTRO_NOTE_OPT_SET_LOG_LEVEL: {
-                workerOptions.setLogLevel(note.getValue());
-                break;
-            }
             case MAESTRO_NOTE_OPT_SET_PARALLEL_COUNT: {
                 workerOptions.setParallelCount(note.getValue());
                 break;
             }
             case MAESTRO_NOTE_OPT_SET_MESSAGE_SIZE: {
                 workerOptions.setMessageSize(note.getValue());
-                break;
-            }
-            case MAESTRO_NOTE_OPT_SET_THROTTLE: {
-                workerOptions.setThrottle(note.getValue());
                 break;
             }
             case MAESTRO_NOTE_OPT_SET_RATE: {
@@ -236,17 +231,17 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     @Override
     public void handle(TestFailedNotification note) {
-        logger.info("Test failed notification received from {}: {}", note.getName(), note.getMessage());
+        logger.info("Test failed notification received from {}: {}", note.getPeerInfo().prettyName(), note.getMessage());
     }
 
     @Override
     public void handle(TestSuccessfulNotification note) {
-        logger.info("Test successful notification received from {}: {}", note.getName(), note.getMessage());
+        logger.info("Test successful notification received from {}: {}", note.getPeerInfo().prettyName(), note.getMessage());
     }
 
     @Override
     public void handle(AbnormalDisconnect note) {
-        logger.info("Abnormal disconnect notification received from {}: {}", note.getName(), note.getMessage());
+        logger.info("Abnormal disconnect notification received from {}: {}", note.getPeerInfo().prettyName(), note.getMessage());
     }
 
     @Override
@@ -344,6 +339,78 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
             getClient().logResponse(file, note.getLocationType(), hash);
         }
+    }
+
+
+    @Override
+    public void handle(final GroupJoinRequest note) {
+        GroupInfo requested = note.getGroupInfo();
+
+        if (groupInfo != null) {
+            getClient().replyInternalError(note, "Cannot join group %s as %s: the worker is already part of the worker group %s as %s",
+                requested.groupName(), requested.memberName(), groupInfo.groupName(), groupInfo.memberName());
+
+            return;
+        }
+
+        final String topicName = MaestroTopics.peerTopic(requested);
+        getClient().subscribe(topicName, 0);
+        this.groupInfo = requested;
+
+        logger.info("Successfully joined group {} as {}", groupInfo.groupName(), groupInfo.memberName());
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(final GroupLeaveRequest note) {
+        if (groupInfo == null) {
+            logger.warn("Ignoring a group leave request because not a member of any group");
+
+            getClient().replyOk(note);
+
+            return;
+        }
+
+        final String peerTopics = MaestroTopics.peerTopic(groupInfo);
+        getClient().unsubscribe(peerTopics);
+
+        final  GroupInfo old = groupInfo;
+        groupInfo = null;
+        getClient().replyOk(note);
+
+        logger.info("Successfully left group {} as {}", old.groupName(), old.memberName());
+    }
+
+    @Override
+    public void handle(final RoleAssign note) {
+        Role role = note.getRole();
+
+        if (getPeerInfo().getRole() != Role.OTHER) {
+            getClient().replyInternalError(note, "The node is already assigned the %s role",
+                    getPeerInfo().getRole().toString());
+
+            return;
+        }
+
+        String roleTopic = MaestroTopics.peerTopic(role);
+        getClient().subscribe(roleTopic, 0);
+        logger.debug("Subscribed to the role topic at {}", roleTopic);
+
+        logger.info("The worker was assigned the {} role", role);
+        getPeerInfo().setRole(role);
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(final RoleUnassign note) {
+        if (getPeerInfo().getRole() != Role.OTHER) {
+            String roleTopic = MaestroTopics.peerTopic(getPeerInfo().getRole());
+            getClient().unsubscribe(roleTopic);
+            logger.debug("Unsubscribed to the role topic at {}", roleTopic);
+        }
+
+        getPeerInfo().setRole(Role.OTHER);
+        getClient().replyOk(note);
     }
 
     @Override

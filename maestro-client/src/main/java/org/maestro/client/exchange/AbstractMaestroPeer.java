@@ -59,7 +59,7 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     }
 
 
-    public PeerInfo getPeerInfo() {
+    protected PeerInfo getPeerInfo() {
         return peerInfo;
     }
 

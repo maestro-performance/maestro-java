@@ -4,6 +4,7 @@ import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 import org.maestro.common.Constants;
+import org.maestro.common.Role;
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
 import org.maestro.common.io.data.common.FileHeader;
@@ -39,7 +40,7 @@ public class BinaryRateWriterTest {
                 assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
                 assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
                 assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
-                assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+                assertEquals(Role.SENDER, fileHeader.getRole());
             }
         }
         finally {
@@ -61,7 +62,7 @@ public class BinaryRateWriterTest {
                 assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
                 assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
                 assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
-                assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+                assertEquals(Role.SENDER, fileHeader.getRole());
             }
         }
         finally {
@@ -97,7 +98,7 @@ public class BinaryRateWriterTest {
                 assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
                 assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
                 assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
-                assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+                assertEquals(Role.SENDER, fileHeader.getRole());
 
                 long count = 0;
                 RateEntry entry = reader.readRecord();

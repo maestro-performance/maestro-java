@@ -18,6 +18,7 @@ package org.maestro.tests.flex;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
+import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.client.notes.GetResponse;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
@@ -25,6 +26,7 @@ import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.AbstractTestProfile;
 import org.maestro.tests.DownloadProcessor;
+import org.maestro.tests.cluster.DistributionStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +44,7 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
 
     private final DownloadProcessor downloadProcessor;
     private final AbstractTestProfile testProfile;
+    private final DistributionStrategy distributionStrategy;
 
     /**
      * Constructor
@@ -50,12 +53,13 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
      * @param testProfile the test profile in use for the test
      */
     public FlexibleTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                final AbstractTestProfile testProfile)
+                                final AbstractTestProfile testProfile, final DistributionStrategy distributionStrategy)
     {
         super(maestro, reportsDownloader);
 
         this.maestro = maestro;
         this.testProfile = testProfile;
+        this.distributionStrategy = distributionStrategy;
 
         downloadProcessor = new DownloadProcessor(reportsDownloader);
     }
@@ -92,23 +96,18 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
             // Clean up the topic
             getMaestro().clear();
 
-            int numPeers = peerCount(testProfile);
-            if (numPeers == 0) {
-                logger.error("There are not enough peers to run the test");
-
-                return false;
-            }
+            PeerSet peerSet = distributionStrategy.distribute(getMaestro().getPeers());
+            long numPeers = peerSet.workers();
 
             List<? extends MaestroNote> dataServers = getMaestro().getDataServer().get();
             dataServers.stream()
                     .filter(note -> note instanceof GetResponse)
                     .forEach(note -> downloadProcessor.addDataServer((GetResponse) note));
 
-
             getReportsDownloader().getOrganizer().getTracker().setCurrentTest(number);
 
             logger.info("Applying the test profile");
-            testProfile.apply(maestro);
+            testProfile.apply(maestro, distributionStrategy);
 
             logger.info("Starting the services");
             startServices();
@@ -117,7 +116,7 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
             long timeout = getTimeout();
             logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
             List<? extends MaestroNote> results = getMaestro()
-                    .waitForNotifications(numPeers)
+                    .waitForNotifications((int) numPeers)
                     .get();
 
             logger.info("Processing the notifications");
@@ -135,6 +134,8 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
         } catch (Exception e) {
             logger.info("Test execution interrupted");
         } finally {
+            distributionStrategy.reset();
+
             testStop();
 
             stopServices();

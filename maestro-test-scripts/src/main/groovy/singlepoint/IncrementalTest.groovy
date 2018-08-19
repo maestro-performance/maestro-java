@@ -24,6 +24,7 @@ import org.maestro.tests.incremental.singlepoint.SimpleTestProfile
 import org.maestro.common.LogConfigurator
 import org.maestro.common.duration.TestDurationBuilder
 import org.maestro.tests.utils.ManagementInterface
+import org.maestro.tests.cluster.DistributionStrategyFactory;
 
 maestroURL = System.getenv("MAESTRO_BROKER")
 if (maestroURL == null) {
@@ -112,6 +113,8 @@ downloaderName = System.getenv("DOWNLOADER_NAME")
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
+distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
+
 ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
 
 IncrementalTestProfile testProfile = new SimpleTestProfile()
@@ -130,7 +133,7 @@ testProfile.setCeilingParallelCount(Integer.parseInt(ceilingParallelCount))
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
 ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
-IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
+IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile, distributionStrategy)
 
 boolean ret = testExecutor.run()
 

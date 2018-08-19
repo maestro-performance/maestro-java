@@ -6,12 +6,15 @@ import org.maestro.client.notes.TestSuccessfulNotification;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.DownloadProcessor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * A callback that request/downloads log files based on the test notification
  * received.
  */
 public class LogRequesterCallback implements MaestroNoteCallback {
+    private static final Logger logger = LoggerFactory.getLogger(LogRequesterCallback.class);
     private final AbstractTestExecutor executor;
     private final DownloadProcessor downloadProcessor;
 

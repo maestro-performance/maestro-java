@@ -19,11 +19,48 @@
 package org.maestro.reports.organizer;
 
 import org.junit.Test;
+import org.maestro.client.exchange.support.GroupInfo;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.common.Role;
 
 import static junit.framework.TestCase.assertEquals;
 import static junit.framework.TestCase.assertTrue;
 
 public class DefaultOrganizerTest {
+    private class TestPeerInfo implements PeerInfo {
+        private final Role role;
+
+
+        public TestPeerInfo(Role role) {
+            this.role = role;
+        }
+
+        @Override
+        public void setRole(Role role) {
+
+        }
+
+        @Override
+        public Role getRole() {
+            return role;
+        }
+
+        @Override
+        public String peerName() {
+            return null;
+        }
+
+        @Override
+        public String peerHost() {
+            return "localhost";
+        }
+
+        @Override
+        public GroupInfo groupInfo() {
+            return null;
+        }
+    }
+
 
     @Test
     public void testOrganizer() {
@@ -34,12 +71,16 @@ public class DefaultOrganizerTest {
                 defaultOrganizer.getTracker() != null);
 
         defaultOrganizer.setResultType("failed");
-        String sampleReceiver = defaultOrganizer.organize("http://localhost", "receiver");
+
+        PeerInfo receiverPeerInfo = new TestPeerInfo(Role.RECEIVER);
+        String sampleReceiver = defaultOrganizer.organize(receiverPeerInfo);
         assertEquals("Unexpected directory layout", "/sample/receiver/failed/0/localhost",
                 sampleReceiver);
 
         defaultOrganizer.setResultType("success");
-        String sampleSender = defaultOrganizer.organize("http://localhost", "sender");
+
+        PeerInfo senderPeerInfo = new TestPeerInfo(Role.SENDER);
+        String sampleSender = defaultOrganizer.organize(senderPeerInfo);
         assertEquals("Unexpected directory layout", "/sample/sender/success/0/localhost",
                 sampleSender);
     }

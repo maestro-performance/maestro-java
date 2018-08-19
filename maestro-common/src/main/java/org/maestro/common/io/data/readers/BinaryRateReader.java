@@ -1,5 +1,6 @@
 package org.maestro.common.io.data.readers;
 
+import org.maestro.common.Role;
 import org.maestro.common.io.data.common.FileHeader;
 import org.maestro.common.io.data.common.RateEntry;
 import org.maestro.common.io.data.common.exceptions.InvalidHeaderValueException;
@@ -64,7 +65,7 @@ public class BinaryRateReader implements AutoCloseable {
         int maestroVersion = byteBuffer.getInt();
         logger.trace("Maestro version: '{}'", maestroVersion);
 
-        FileHeader.Role role = FileHeader.Role.from(byteBuffer.getInt());
+        Role role = Role.from(byteBuffer.getInt());
         logger.trace("Role: '{}'", role.getCode());
 
         return new FileHeader(new String(name), fileVersion, maestroVersion, role);

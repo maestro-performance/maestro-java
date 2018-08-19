@@ -242,6 +242,9 @@ Additional project documentation is available [here](http://www.orpiske.net/file
 
 **Note**: replace version with the latest available version you wish to use.
 
+Writing Tests
+----
 
+Continue to the [Writing Tests Guide](extra/doc/WritingTests.md).
 
 

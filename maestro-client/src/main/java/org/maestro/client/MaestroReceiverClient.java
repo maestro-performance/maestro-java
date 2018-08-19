@@ -25,6 +25,7 @@ import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.MaestroReceiver;
+import org.maestro.common.client.notes.LocationType;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
@@ -72,32 +73,17 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         this.epochMicroClock = EpochClocks.exclusiveMicro();
     }
 
-    private String getHost() {
-        return peerInfo.peerHost();
-    }
-
     public String getId() {
         return id;
-    }
-
-    private String getRole() {
-        return peerInfo.peerName();
-    }
-
-    private String getName() {
-        return peerInfo.peerHost();
     }
 
     public void replyOk(final MaestroNote note) {
         logger.trace("Sending the OK response from {}", this.toString());
         OkResponse okResponse = new OkResponse();
 
-        okResponse.setName(getName());
+        okResponse.setPeerInfo(peerInfo);
         okResponse.setId(id);
         okResponse.correlate(note);
-
-        okResponse.setRole(getRole());
-        okResponse.setHost(getHost());
 
         try {
             super.publish(MaestroTopics.MAESTRO_TOPIC, okResponse);
@@ -110,12 +96,9 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         logger.trace("Sending the internal error response from {}", this.toString());
         InternalError errResponse = new InternalError(String.format(message, (Object[]) args));
 
-        errResponse.setName(getName());
+        errResponse.setPeerInfo(peerInfo);
         errResponse.setId(id);
         errResponse.correlate(note);
-
-        errResponse.setRole(getRole());
-        errResponse.setHost(getHost());
 
         try {
             super.publish(MaestroTopics.MAESTRO_TOPIC, errResponse);
@@ -135,12 +118,9 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         PingResponse response = new PingResponse();
 
         response.setElapsed(TimeUnit.MICROSECONDS.toMillis(elapsedMicros));
-        response.setName(getName());
+        response.setPeerInfo(peerInfo);
         response.setId(id);
         response.correlate(note);
-
-        response.setRole(getRole());
-        response.setHost(getHost());
 
         super.publish(MaestroTopics.MAESTRO_TOPIC, response);
     }
@@ -151,11 +131,8 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         logger.trace("Sending the test success notification from {}", this.toString());
         TestSuccessfulNotification notification = new TestSuccessfulNotification();
 
-        notification.setName(getName());
+        notification.setPeerInfo(peerInfo);
         notification.setId(id);
-
-        notification.setRole(getRole());
-        notification.setHost(getHost());
 
         notification.setMessage(message);
 
@@ -171,11 +148,8 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         logger.trace("Sending the test success notification from {}", this.toString());
         TestFailedNotification notification = new TestFailedNotification();
 
-        notification.setName(getName());
+        notification.setPeerInfo(peerInfo);
         notification.setId(id);
-
-        notification.setRole(getRole());
-        notification.setHost(getHost());
 
         notification.setMessage(message);
 
@@ -196,11 +170,8 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
      * @param statsResponse the stats response to publish
      */
     public void statsResponse(final StatsResponse statsResponse) {
-        statsResponse.setName(getName());
+        statsResponse.setPeerInfo(peerInfo);
         statsResponse.setId(id);
-
-        statsResponse.setRole(getRole());
-        statsResponse.setHost(getHost());
 
         try {
             super.publish(MaestroTopics.MAESTRO_TOPIC, statsResponse, 0, false);
@@ -215,11 +186,8 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
      * @param getResponse the get response to publish
      */
     public void getResponse(final GetResponse getResponse) {
-        getResponse.setName(getName());
+        getResponse.setPeerInfo(peerInfo);
         getResponse.setId(id);
-
-        getResponse.setRole(getRole());
-        getResponse.setHost(getHost());
 
         try {
             super.publish(MaestroTopics.MAESTRO_TOPIC, getResponse, 0, false);
@@ -237,11 +205,8 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     public void logResponse(final File logFile, final LocationType locationType, final String hash) {
         LogResponse logResponse = new LogResponse();
 
-        logResponse.setName(getName());
+        logResponse.setPeerInfo(peerInfo);
         logResponse.setId(id);
-
-        logResponse.setRole(getRole());
-        logResponse.setHost(getHost());
 
         logResponse.setLocationType(locationType);
         logResponse.setFile(logFile);
@@ -257,8 +222,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         logger.trace("Sending the drain complete notification from {}", this.toString());
         DrainCompleteNotification notification = new DrainCompleteNotification();
 
-        notification.setName(getName());
-        notification.setRole(getRole());
+        notification.setPeerInfo(peerInfo);
         notification.setId(id);
 
         notification.setSuccessful(status);

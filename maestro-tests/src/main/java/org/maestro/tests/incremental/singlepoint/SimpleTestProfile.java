@@ -17,11 +17,14 @@
 package org.maestro.tests.incremental.singlepoint;
 
 import org.maestro.client.Maestro;
-import org.maestro.common.client.exceptions.NotEnoughRepliesException;
+import org.maestro.client.exchange.support.PeerEndpoint;
 import org.maestro.tests.SinglePointProfile;
+import org.maestro.tests.cluster.DistributionStrategy;
 import org.maestro.tests.incremental.IncrementalTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Set;
 
 import static org.maestro.client.Maestro.set;
 
@@ -40,43 +43,40 @@ public class SimpleTestProfile extends IncrementalTestProfile implements SingleP
         return brokerURL;
     }
 
-    public void apply(Maestro maestro) {
-        logger.info("Setting broker to {}", getSendReceiveURL());
-        set(maestro::setBroker, getSendReceiveURL());
+    public void apply(final Maestro maestro, final DistributionStrategy distributionStrategy) {
+        Set<PeerEndpoint> endpoints = distributionStrategy.endpoints();
 
-        logger.info("Setting rate to {}", getRate());
-        set(maestro::setRate, rate);
+        for (PeerEndpoint endpoint : endpoints) {
+            String destination = endpoint.getDestination();
 
-        logger.info("Rate increment value is {}", getRateIncrement());
+            logger.info("Setting broker to {}", getSendReceiveURL());
+            set(maestro::setBroker, destination, getSendReceiveURL());
 
-        logger.info("Setting parallel count to {}", this.parallelCount);
-        set(maestro::setParallelCount, this.parallelCount);
+            logger.info("Setting rate to {}", getRate());
+            set(maestro::setRate, destination, rate);
 
-        logger.info("Parallel count increment value is {}", getParallelCountIncrement());
+            logger.info("Rate increment value is {}", getRateIncrement());
 
-        logger.info("Setting duration to {}", getDuration());
-        set(maestro::setDuration, this.getDuration().toString());
+            logger.info("Setting parallel count to {}", this.parallelCount);
+            set(maestro::setParallelCount, destination, this.parallelCount);
 
-        logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
-        set(maestro::setFCL, getMaximumLatency());
+            logger.info("Parallel count increment value is {}", getParallelCountIncrement());
 
-        // Variable message messageSize
-        logger.info("Setting message size to: {}", getMessageSize());
-        set(maestro::setMessageSize, getMessageSize());
+            logger.info("Setting duration to {}", getDuration());
+            set(maestro::setDuration, destination, this.getDuration().toString());
 
-        if (getManagementInterface() != null) {
-            if (getInspectorName() != null) {
-                logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
-                        getInspectorName());
-                try {
-                    set(maestro::setManagementInterface, getManagementInterface());
-                }
-                catch (NotEnoughRepliesException ne) {
-                    logger.warn("Apparently no inspector nodes are enabled on this cluster. Ignoring ...");
-                }
-            }
+            logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
+            set(maestro::setFCL, destination, getMaximumLatency());
+
+            // Variable message messageSize
+            logger.info("Setting message size to: {}", getMessageSize());
+            set(maestro::setMessageSize, destination, getMessageSize());
+
+            applyInspector(maestro, endpoint, destination);
+
+            applyAgent(maestro, endpoint, destination);
+
+            logger.info("Estimated time for test completion: {} seconds", getEstimatedCompletionTime());
         }
-
-        logger.info("Estimated time for test completion: {} seconds", getEstimatedCompletionTime());
     }
 }

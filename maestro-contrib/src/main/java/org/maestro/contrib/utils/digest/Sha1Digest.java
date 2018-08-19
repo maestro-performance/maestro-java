@@ -38,7 +38,7 @@ public class Sha1Digest implements MessageDigest {
         InputStream fileInputStream = null;
 
         try {
-            fileInputStream = new FileInputStream(file);
+            fileInputStream = new BufferedInputStream(new FileInputStream(file));
 
             return calculate(fileInputStream);
         }

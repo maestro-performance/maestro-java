@@ -16,6 +16,8 @@
 
 package org.maestro.reports.downloaders;
 
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.common.Role;
 import org.maestro.reports.ReportResolver;
 import org.maestro.reports.organizer.Organizer;
 import org.slf4j.Logger;
@@ -51,23 +53,24 @@ public class PooledDownloaderDecorator implements ReportsDownloader {
     }
 
     @Override
-    public void addReportResolver(String hostType, ReportResolver reportResolver) {
-        reportsDownloader.addReportResolver(hostType, reportResolver);
+    public void addReportResolver(final Role role, ReportResolver reportResolver) {
+        reportsDownloader.addReportResolver(role, reportResolver);
     }
 
     @Override
-    public void downloadLastSuccessful(String type, String host) {
-        futures.add(CompletableFuture.runAsync(() -> reportsDownloader.downloadLastSuccessful(type, host), executorService));
+    public void downloadLastSuccessful(final String id, final PeerInfo peerInfo) {
+        futures.add(CompletableFuture.runAsync(() -> reportsDownloader.downloadLastSuccessful(id, peerInfo), executorService));
     }
 
     @Override
-    public void downloadLastFailed(String type, String host) {
-        futures.add(CompletableFuture.runAsync(() -> reportsDownloader.downloadLastFailed(type, host), executorService));
+    public void downloadLastFailed(final String id, final PeerInfo peerInfo) {
+        futures.add(CompletableFuture.runAsync(() -> reportsDownloader.downloadLastFailed(id, peerInfo), executorService));
     }
 
     @Override
-    public void downloadAny(String type, String host, String testNumber) {
-        futures.add(CompletableFuture.runAsync(() -> reportsDownloader.downloadAny(type, host, testNumber), executorService));
+    public void downloadAny(final PeerInfo peerInfo, final String testNumber) {
+        futures.add(CompletableFuture.runAsync(() -> reportsDownloader.downloadAny(peerInfo, testNumber),
+                executorService));
     }
 
     @Override
