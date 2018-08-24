@@ -132,7 +132,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
                 exec(maestro::startInspector, inspectorName);
             }
             else {
-                logger.info("The is no inspector setup for this test");
+                logger.info("There is no inspector setup for this test");
             }
         }
         catch (NotEnoughRepliesException e) {

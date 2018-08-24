@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 networks:
     cluster:
       driver: bridge
@@ -11,75 +11,56 @@ services:
       - cluster
     ports:
       - "18161:8161"
-  receiver:
+  worker:
     build:
-      context: workers/receiver
+      context: maestro
       args:
-        - MAESTRO_WORKER_VERSION=1.5.0-SNAPSHOT
-    ports:
-      - "18000:8000"
-    volumes:
-      - ${HOME}/tmp/maestro:/maestro
+        - MAESTRO_VERSION=1.5.0-SNAPSHOT
+      target: maestro-worker
     networks:
       - cluster
       - test
     depends_on:
       - broker
       - sut
-  sender:
-    build:
-      context: workers/sender
-      args:
-        - MAESTRO_WORKER_VERSION=1.5.0-SNAPSHOT
-    ports:
-      - "28000:8000"
-    volumes:
-      - ${HOME}/tmp/maestro:/maestro
-    networks:
-      - cluster
-      - test
-    depends_on:
-      - receiver
   inspector:
       build:
-        context: workers/inspector
+        context: maestro
         args:
-          - MAESTRO_WORKER_VERSION=1.5.0-SNAPSHOT
+          - MAESTRO_VERSION=1.5.0-SNAPSHOT
+        target: maestro-inspector
       ports:
         - "38000:8000"
-      volumes:
-        - ${HOME}/tmp/maestro:/maestro
       networks:
         - cluster
         - test
       depends_on:
-        - receiver
+        - sut
+        - broker
   agent:
-        build:
-          context: workers/agent
-          args:
-            - MAESTRO_WORKER_VERSION=1.5.0-SNAPSHOT
-        ports:
-          - "48000:8000"
-        volumes:
-          - ${HOME}/tmp/maestro:/maestro
-        networks:
-          - cluster
-          - test
-        depends_on:
-          - broker
+      build:
+        context: maestro
+        args:
+          - MAESTRO_VERSION=1.5.0-SNAPSHOT
+        target: maestro-agent
+      ports:
+        - "48000:8000"
+      networks:
+        - cluster
+        - test
+      depends_on:
+        - broker
   client:
-    build:
-      context: client
-      args:
-        - MAESTRO_VERSION=1.5.0-SNAPSHOT
-    volumes:
-      - ${HOME}/tmp/maestro:/maestro
-    networks:
-      - cluster
-    ports:
-      - "8000:8000"
-    depends_on:
-      - sender
-      - receiver
-      - broker
+      build:
+        context: maestro
+        args:
+          - MAESTRO_VERSION=1.5.0-SNAPSHOT
+        target: maestro-client
+      networks:
+        - cluster
+      ports:
+        - "8000:8000"
+      depends_on:
+        - worker
+        - broker
+

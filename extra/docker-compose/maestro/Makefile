@@ -1,47 +1,34 @@
 MAESTRO_VERSION=1.5.0-SNAPSHOT
-MAESTRO_BRANCH=maestro-java-1.5.0-SNAPSHOT
-
-.PHONY: broker clean all client exporter
+MAESTRO_BRANCH=dynamic-worker-execution
 
 clean:
-    docker rmi -f maestroperf/maestro-broker:${MAESTRO_VERSION}
-    docker rmi -f maestroperf/maestro-client:${MAESTRO_VERSION}
-    docker rmi -f maestroperf/maestro-sender:${MAESTRO_VERSION}
-    docker rmi -f maestroperf/maestro-receiver:${MAESTRO_VERSION}
-    docker rmi -f maestroperf/maestro-agent:${MAESTRO_VERSION}
-    docker rmi -f maestroperf/maestro-inspector:${MAESTRO_VERSION}
-    docker rmi -f maestroperf/maestro-exporter:${MAESTRO_VERSION}
+	docker rmi -f maestroperf/maestro-broker:${MAESTRO_VERSION}
+	docker rmi -f maestroperf/maestro-client:${MAESTRO_VERSION}
+	docker rmi -f maestroperf/maestro-agent:${MAESTRO_VERSION}
+	docker rmi -f maestroperf/maestro-inspector:${MAESTRO_VERSION}
+	docker rmi -f maestroperf/maestro-exporter:${MAESTRO_VERSION}
+	docker rmi -f maestroperf/maestro-worker:${MAESTRO_VERSION}
 
 broker:
 	cd broker && docker build -t maestroperf/maestro-broker:${MAESTRO_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} .
 
-client:
-	cd client && docker build -t maestroperf/maestro-client:${MAESTRO_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
+maestro:
+	cd maestro && docker build --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} -t maestroperf/maestro-worker:${MAESTRO_VERSION} --target maestro-worker .
+	cd maestro && docker build --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} -t maestroperf/maestro-inspector:${MAESTRO_VERSION} --target maestro-inspector .
+	cd maestro && docker build --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} -t maestroperf/maestro-agent:${MAESTRO_VERSION} --target maestro-agent .
+	cd maestro && docker build --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} -t maestroperf/maestro-exporter:${MAESTRO_VERSION} --target maestro-exporter .
+	cd maestro && docker build --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} -t maestroperf/maestro-client:${MAESTRO_VERSION} --target maestro-client .
 
-exporter:
-	cd exporter && docker build -t maestroperf/maestro-exporter:${MAESTRO_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
-
-worker-sender:
-	cd workers/sender && docker build -t maestroperf/maestro-sender:${MAESTRO_VERSION} --build-arg MAESTRO_WORKER_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
-
-worker-receiver:
-	cd workers/receiver && docker build -t maestroperf/maestro-receiver:${MAESTRO_VERSION} --build-arg MAESTRO_WORKER_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
-
-agent:
-	cd workers/agent && docker build -t maestroperf/maestro-agent:${MAESTRO_VERSION} --build-arg MAESTRO_WORKER_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
-
-inspector:
-	cd workers/inspector && docker build -t maestroperf/maestro-inspector:${MAESTRO_VERSION} --build-arg MAESTRO_WORKER_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} .
-
-build: exporter broker client worker-sender worker-receiver agent inspector
+build: broker maestro
 
 push: build
 	docker push maestroperf/maestro-broker:${MAESTRO_VERSION}
 	docker push maestroperf/maestro-client:${MAESTRO_VERSION}
-	docker push maestroperf/maestro-receiver:${MAESTRO_VERSION}
-	docker push maestroperf/maestro-sender:${MAESTRO_VERSION}
+	docker push maestroperf/maestro-worker:${MAESTRO_VERSION}
 	docker push maestroperf/maestro-agent:${MAESTRO_VERSION}
 	docker push maestroperf/maestro-inspector:${MAESTRO_VERSION}
 	docker push maestroperf/maestro-exporter:${MAESTRO_VERSION}
 
 all: push
+
+.PHONY: broker clean all client exporter maestro
