@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 networks:
     cluster:
       driver: bridge
@@ -11,8 +11,8 @@ services:
       - cluster
     ports:
       - "18161:8161"
-  receiver:
-    image: maestroperf/maestro-receiver:1.5.0-SNAPSHOT
+  worker:
+    image: maestroperf/maestro-worker:1.5.0-SNAPSHOT
     ports:
       - "18000:8000"
     volumes:
@@ -23,17 +23,6 @@ services:
     depends_on:
       - broker
       - sut
-  sender:
-    image: maestroperf/maestro-sender:1.5.0-SNAPSHOT
-    ports:
-      - "28000:8000"
-    volumes:
-      - ${HOME}/tmp/maestro:/maestro
-    networks:
-      - cluster
-      - test
-    depends_on:
-      - receiver
   inspector:
       image: maestroperf/maestro-inspector:1.5.0-SNAPSHOT
       ports:
@@ -44,7 +33,7 @@ services:
         - cluster
         - test
       depends_on:
-        - receiver
+        - worker
   agent:
       image: maestroperf/maestro-agent:1.5.0-SNAPSHOT
       ports:
