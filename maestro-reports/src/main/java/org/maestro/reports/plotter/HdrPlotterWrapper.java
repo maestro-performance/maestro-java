@@ -88,10 +88,6 @@ public class HdrPlotterWrapper implements PlotterWrapper {
 
             final Histogram histogram = Util.getAccumulated(file);
 
-            if (histogram == null) {
-                throw new EmptyDataSet("The HDR data file did not contain any histogram data");
-            }
-
             final HdrData hdrData = getHdrData(histogram, file);
 
             // HdrPlotterWrapper
