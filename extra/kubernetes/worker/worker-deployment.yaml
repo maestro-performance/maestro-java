@@ -1,17 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: maestro-receiver
+  name: maestro-worker
 spec:
   replicas: 0
   selector:
     matchLabels:
-      component: receiver
+      component: worker
       app: maestro
   template:
     metadata:
       labels:
-        component: receiver
+        component: worker
         app: maestro
     spec:
       strategy:
@@ -44,8 +44,8 @@ spec:
             - mountPath: /opt/maestro/maestro-worker/config
               name: config-store
       containers:
-        - name: receiver
-          image: maestroperf/maestro-receiver:1.5.0-SNAPSHOT
+        - name: worker
+          image: maestroperf/maestro-worker:1.5.0-SNAPSHOT
           env:
             - name: MAESTRO_BROKER
               value: mqtt://broker
@@ -64,4 +64,4 @@ spec:
           emptyDir: {}
         - name: config
           configMap:
-            name: receiver-config
+            name: worker-config
