@@ -24,6 +24,7 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.test.TestProperties;
 import org.maestro.common.worker.WorkerUtils;
+import org.maestro.plotter.common.exceptions.EmptyDataSet;
 import org.maestro.plotter.latency.HdrLogProcessorWrapper;
 import org.maestro.plotter.latency.common.HdrData;
 import org.maestro.plotter.latency.graph.HdrPlotter;
@@ -86,6 +87,10 @@ public class HdrPlotterWrapper implements PlotterWrapper {
             }
 
             final Histogram histogram = Util.getAccumulated(file);
+
+            if (histogram == null) {
+                throw new EmptyDataSet("The HDR data file did not contain any histogram data");
+            }
 
             final HdrData hdrData = getHdrData(histogram, file);
 
