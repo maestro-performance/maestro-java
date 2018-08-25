@@ -22,21 +22,17 @@ To deploy the ActiveMQ broker:
     kubectl apply -f broker/activemq-deployment.yaml -f broker/cluster-service.yaml -f broker/external-service.yaml
 
 
-## Deploy sender
+## Deploy worker
 
-The sender connects to the maestro broker through the service.
+The worker connects to the maestro broker through the service.
 
-To deploy the sender:
+To deploy the worker:
 
-    kubectl apply -f sender/
+    kubectl apply -f worker/
 
-## Deploy receiver
+Scale the workers up to the amount of replicas that you need for your test: 
 
-The receiver connects to the maestro broker through the service.
-
-To deploy the receiver:
-
-    kubectl apply -f receiver/
+    kubectl scale --replicas=2 -f worker/worker-deployment.yaml
 
 ## Running the client
 
