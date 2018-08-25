@@ -4,6 +4,7 @@ import org.HdrHistogram.DoubleHistogram;
 import org.HdrHistogram.EncodableHistogram;
 import org.HdrHistogram.Histogram;
 import org.HdrHistogram.HistogramLogReader;
+import org.maestro.plotter.common.exceptions.EmptyDataSet;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +59,10 @@ public class Util {
             }
 
             i++;
+        }
+
+        if (accumulatedHistogram == null) {
+            throw new EmptyDataSet("The HDR data file did not contain any histogram data");
         }
 
         return accumulatedHistogram;
