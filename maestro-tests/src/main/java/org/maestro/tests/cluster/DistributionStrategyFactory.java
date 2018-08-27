@@ -29,6 +29,9 @@ public class DistributionStrategyFactory {
             case "legacy": {
                 return new LegacyStrategy(maestro);
             }
+            case "balanced-exclusive": {
+                return new ExclusiveBalancedStrategy(maestro);
+            }
             case "balanced":
             default: {
                 return new BalancedStrategy(maestro);

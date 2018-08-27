@@ -22,6 +22,7 @@ import org.maestro.common.agent.Source;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestProfile;
 import org.maestro.tests.cluster.DistributionStrategy;
+import org.maestro.tests.support.TestEndpointResolver;
 
 import static org.maestro.client.Maestro.set;
 
@@ -47,9 +48,16 @@ public class FlexibleTestProfile extends AbstractTestProfile {
         return 0;
     }
 
+
+    @Override
+    public void setTestEndpointResolver(TestEndpointResolver endPointResolver) {
+        // NO-OP for flexible tests
+    }
+
     @Override
     public void apply(final Maestro maestro, final DistributionStrategy distributionStrategy) throws MaestroException {
         set(maestro::setBroker, MaestroTopics.WORKERS_TOPIC, this.brokerURL);
+
         set(maestro::sourceRequest, MaestroTopics.WORKERS_TOPIC, new Source(sourceURL, null));
     }
 }

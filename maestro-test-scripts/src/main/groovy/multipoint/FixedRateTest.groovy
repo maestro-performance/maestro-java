@@ -22,10 +22,11 @@ import org.maestro.common.Role
 import org.maestro.common.duration.TestDurationBuilder
 import org.maestro.reports.downloaders.DownloaderBuilder
 import org.maestro.reports.downloaders.ReportsDownloader
-import org.maestro.tests.MultiPointProfile
 import org.maestro.tests.cluster.DistributionStrategyFactory
 import org.maestro.tests.rate.FixedRateTestExecutor
-import org.maestro.tests.rate.multipoint.FixedRateMultipointTestProfile
+import org.maestro.tests.rate.FixedRateTestProfile
+import org.maestro.tests.support.DefaultTestEndpoint
+import org.maestro.tests.support.TestEndpointResolver
 import org.maestro.tests.utils.ManagementInterface
 
 maestroURL = System.getenv("MAESTRO_BROKER")
@@ -35,15 +36,15 @@ if (maestroURL == null) {
     System.exit(1)
 }
 
-senderBrokerURL = System.getenv("SEND_URL")
-if (senderBrokerURL == null) {
+senderURL = System.getenv("SEND_URL")
+if (senderURL == null) {
     println "Error: the sender point URL was not given"
 
     System.exit(1)
 }
 
-receiverBrokerURL = System.getenv("RECEIVE_URL")
-if (receiverBrokerURL == null) {
+receiverURL = System.getenv("RECEIVE_URL")
+if (receiverURL == null) {
     println "Error: the receiver point URL was not given"
 
     System.exit(1)
@@ -93,10 +94,14 @@ distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv(
 
 ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
 
-FixedRateMultipointTestProfile testProfile = new FixedRateMultipointTestProfile()
+FixedRateTestProfile testProfile = new FixedRateTestProfile()
 
-testProfile.addEndPoint(Role.SENDER, new MultiPointProfile.TestEndpoint(senderBrokerURL))
-testProfile.addEndPoint(Role.RECEIVER, new MultiPointProfile.TestEndpoint(receiverBrokerURL))
+TestEndpointResolver endpointResolver = TestEndpointResolverFactory.createTestEndpointResolver(System.getenv("ENDPOINT_RESOLVER_NAME"))
+
+endpointResolver.register(Role.SENDER, new DefaultTestEndpoint(sendURL))
+endpointResolver.register(Role.RECEIVER, new DefaultTestEndpoint(receiveURL))
+
+testProfile.setTestEndpointResolver(endpointResolver)
 
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(messageSize)

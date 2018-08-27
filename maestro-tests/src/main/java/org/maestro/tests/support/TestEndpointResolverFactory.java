@@ -14,10 +14,23 @@
  * limitations under the License.
  */
 
-package org.maestro.tests;
+package org.maestro.tests.support;
 
-public interface SinglePointProfile {
-    void setSendReceiveURL(final String url);
+public class TestEndpointResolverFactory {
 
-    String getSendReceiveURL();
+    public static TestEndpointResolver createTestEndpointResolver(final String name) {
+        if (name == null) {
+            return new RoleBasedEndpointResolver();
+        }
+
+        switch (name) {
+            case "one-to-one": {
+                return new OneToOneEndpointResolver();
+            }
+            case "role":
+            default: {
+                return new RoleBasedEndpointResolver();
+            }
+        }
+    }
 }

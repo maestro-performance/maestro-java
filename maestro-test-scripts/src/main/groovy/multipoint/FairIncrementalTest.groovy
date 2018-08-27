@@ -19,14 +19,14 @@ import org.maestro.client.Maestro
 import org.maestro.common.Role
 import org.maestro.reports.downloaders.DownloaderBuilder
 import org.maestro.reports.downloaders.ReportsDownloader
-import org.maestro.tests.MultiPointProfile
 import org.maestro.tests.cluster.DistributionStrategyFactory
 import org.maestro.tests.incremental.IncrementalTestExecutor
 import org.maestro.tests.incremental.IncrementalTestProfile
-import org.maestro.tests.incremental.multipoint.SimpleTestProfile
 import org.maestro.common.LogConfigurator
 import org.maestro.common.content.MessageSize
 import org.maestro.common.duration.TestDurationBuilder
+import org.maestro.tests.support.DefaultTestEndpoint
+import org.maestro.tests.support.TestEndpointResolver
 import org.maestro.tests.utils.ManagementInterface
 
 
@@ -152,10 +152,14 @@ distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv(
 
 ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
 
-IncrementalTestProfile testProfile = new SimpleTestProfile()
+IncrementalTestProfile testProfile = new IncrementalTestProfile()
 
-testProfile.addEndPoint(Role.SENDER, new MultiPointProfile.TestEndpoint(sendURL))
-testProfile.addEndPoint(Role.RECEIVER, new MultiPointProfile.TestEndpoint(receiveURL))
+TestEndpointResolver endpointResolver = TestEndpointResolverFactory.createTestEndpointResolver(System.getenv("ENDPOINT_RESOLVER_NAME"))
+
+endpointResolver.register(Role.SENDER, new DefaultTestEndpoint(sendURL))
+endpointResolver.register(Role.RECEIVER, new DefaultTestEndpoint(receiveURL))
+
+testProfile.setTestEndpointResolver(endpointResolver)
 
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(MessageSize.fixed(messageSize))

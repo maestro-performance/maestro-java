@@ -21,7 +21,6 @@ import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.exchange.support.WorkerPeer;
 import org.maestro.common.*;
-import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.common.ConcurrentWorkerManager;
 import org.maestro.data.server.http.HttpDataServer;
@@ -38,7 +37,6 @@ public class Main {
     private static String maestroUrl;
     private static String host;
     private static File logDir;
-    private static int initialRetries = 10;
 
     /**
      * Prints the help for the action and exit

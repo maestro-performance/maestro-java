@@ -18,12 +18,16 @@ package singlepoint
 
 import org.maestro.client.Maestro
 import org.maestro.common.LogConfigurator
+import org.maestro.common.Role
 import org.maestro.common.duration.TestDurationBuilder
 import org.maestro.reports.downloaders.DownloaderBuilder
 import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.cluster.DistributionStrategyFactory
 import org.maestro.tests.rate.FixedRateTestExecutor
-import org.maestro.tests.rate.singlepoint.FixedRateTestProfile
+import org.maestro.tests.rate.FixedRateTestProfile
+import org.maestro.tests.support.DefaultTestEndpoint
+import org.maestro.tests.support.TestEndpointResolver
+import org.maestro.tests.support.TestEndpointResolverFactory
 import org.maestro.tests.utils.ManagementInterface
 
 maestroURL = System.getenv("MAESTRO_BROKER")
@@ -33,8 +37,8 @@ if (maestroURL == null) {
     System.exit(1)
 }
 
-brokerURL = System.getenv("SEND_RECEIVE_URL")
-if (brokerURL == null) {
+sendReceiveURL = System.getenv("SEND_RECEIVE_URL")
+if (sendReceiveURL == null) {
     println "Error: the send/receive URL was not given"
 
     System.exit(1)
@@ -89,7 +93,13 @@ ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, ma
 
 FixedRateTestProfile testProfile = new FixedRateTestProfile()
 
-testProfile.setSendReceiveURL(brokerURL)
+TestEndpointResolver endpointResolver = TestEndpointResolverFactory.createTestEndpointResolver(System.getenv("ENDPOINT_RESOLVER_NAME"))
+
+endpointResolver.register(Role.SENDER, new DefaultTestEndpoint(sendReceiveURL))
+endpointResolver.register(Role.RECEIVER, new DefaultTestEndpoint(sendReceiveURL))
+
+testProfile.setTestEndpointResolver(endpointResolver)
+
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(messageSize)
 

@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.maestro.tests.rate.singlepoint;
+package org.maestro.tests.rate;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
@@ -22,7 +22,6 @@ import org.maestro.client.exchange.support.PeerEndpoint;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.tests.AbstractTestProfile;
-import org.maestro.tests.SinglePointProfile;
 import org.maestro.tests.cluster.DistributionStrategy;
 import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
@@ -35,7 +34,7 @@ import static org.maestro.client.Maestro.set;
 /**
  * A test profile for fixed rate tests
  */
-public class FixedRateTestProfile extends AbstractTestProfile implements SinglePointProfile {
+public class FixedRateTestProfile extends AbstractTestProfile {
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestProfile.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
@@ -43,7 +42,6 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     protected int warmUpRate;
     private int parallelCount;
     private int warmUpParallelCount;
-    private String brokerURL;
 
     private int maximumLatency = 0;
     private TestDuration duration;
@@ -113,16 +111,6 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
     }
 
     @Override
-    public void setSendReceiveURL(String url) {
-        this.brokerURL = url;
-    }
-
-    @Override
-    public String getSendReceiveURL() {
-        return brokerURL;
-    }
-
-    @Override
     public long getEstimatedCompletionTime() {
         return getEstimatedCompletionTime(duration, getRate());
     }
@@ -138,8 +126,7 @@ public class FixedRateTestProfile extends AbstractTestProfile implements SingleP
             String destination = endpoint.getDestination();
             String roleName = endpoint.getRole().toString();
 
-            logger.info("Setting {} endpoint URL to {} via {}", roleName, getSendReceiveURL(), destination);
-            set(maestro::setBroker, destination, getSendReceiveURL());
+            setSendReceiveURL(maestro, endpoint);
 
             if (warmUp) {
                 logger.info("Setting {} warm-up rate to {}", roleName, warmUpRate);
