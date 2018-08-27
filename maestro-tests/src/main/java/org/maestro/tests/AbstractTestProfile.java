@@ -24,6 +24,8 @@ import org.maestro.common.agent.UserCommandData;
 import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.duration.DurationCount;
 import org.maestro.common.duration.TestDuration;
+import org.maestro.tests.support.TestEndpoint;
+import org.maestro.tests.support.TestEndpointResolver;
 import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,6 +35,7 @@ import static org.maestro.client.Maestro.set;
 public abstract class AbstractTestProfile implements TestProfile {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTestProfile.class);
 
+    private TestEndpointResolver endpointResolver;
     private int testExecutionNumber;
     private String managementInterface;
     private String inspectorName;
@@ -97,6 +100,11 @@ public abstract class AbstractTestProfile implements TestProfile {
         }
     }
 
+    @Override
+    public void setTestEndpointResolver(TestEndpointResolver endPointResolver) {
+        this.endpointResolver = endpointResolver;
+    }
+
     protected void applyAgent(Maestro maestro, PeerEndpoint endpoint, String destination) {
         if (endpoint.getRole() == Role.AGENT) {
             if (getExtPointSource() != null) {
@@ -128,6 +136,24 @@ public abstract class AbstractTestProfile implements TestProfile {
                     }
                 }
             }
+        }
+    }
+
+    protected void setSendReceiveURL(Maestro maestro, PeerEndpoint endpoint) {
+        final TestEndpoint testEndpoint = endpointResolver.resolve(endpoint);
+
+        if (testEndpoint == null) {
+            if (endpoint.getRole().isWorker()) {
+                logger.info("There is not test end point set for peers w/ role {}", endpoint.getRole());
+            }
+            else {
+                logger.info("There is no test end point to {}", endpoint.getRole());
+            }
+        }
+        else {
+            logger.info("Setting {} end point to {}", endpoint.getRole(), testEndpoint.getURL());
+
+            set(maestro::setBroker, endpoint.getDestination(), testEndpoint.getURL());
         }
     }
 

@@ -21,6 +21,7 @@ import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerEndpoint;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.exchange.support.PeerSet;
+import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.exceptions.MaestroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -55,7 +56,13 @@ public abstract class AbstractStrategy implements DistributionStrategy {
             String topic = MaestroTopics.peerTopic(id);
 
             logger.info("Unassigning node {}@{} as {}", peerInfo.peerName(), peerInfo.peerHost(), peerInfo.getRole());
-            Maestro.exec(maestro::roleUnassign, topic);
+            try {
+                Maestro.exec(maestro::roleUnassign, topic);
+            }
+            catch (NotEnoughRepliesException e) {
+                logger.error("Not enough replies trying to unassign node {}@{} as {}", peerInfo.peerName(), peerInfo.peerHost(),
+                        peerInfo.getRole());
+            }
         }
     }
 

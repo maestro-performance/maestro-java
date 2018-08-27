@@ -27,9 +27,7 @@ import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.DownloadProcessor;
 import org.maestro.tests.callbacks.LogRequesterCallback;
-import org.maestro.tests.cluster.BalancedStrategy;
 import org.maestro.tests.cluster.DistributionStrategy;
-import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

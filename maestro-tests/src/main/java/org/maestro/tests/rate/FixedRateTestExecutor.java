@@ -20,7 +20,6 @@ import org.maestro.client.Maestro;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.callbacks.StatsCallBack;
 import org.maestro.tests.cluster.DistributionStrategy;
-import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
 import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

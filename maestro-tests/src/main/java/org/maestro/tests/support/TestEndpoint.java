@@ -12,29 +12,11 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package org.maestro.tests;
+package org.maestro.tests.support;
 
-import org.maestro.common.Role;
-
-import java.util.Map;
-
-public interface MultiPointProfile {
-
-    final class TestEndpoint {
-        private final String brokerURL;
-
-        public TestEndpoint(final String brokerURL) {
-            this.brokerURL = brokerURL;
-        }
-
-        public String getSendReceiveURL() {
-            return brokerURL;
-        }
-    }
-
-    void addEndPoint(Role role, TestEndpoint testEndpoint);
-
-    Map<Role, TestEndpoint> getTestEndpoints();
+public interface TestEndpoint {
+    String getURL();
 }
