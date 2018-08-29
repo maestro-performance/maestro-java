@@ -63,23 +63,6 @@ function start() {
     fi
 }
 
-function start() {
-    if [[ -z "$MAESTRO_LOCAL_HOSTNAME" ]] ; then
-        MAESTRO_LOCAL_HOSTNAME=$(hostname -f)
-    fi
-
-    echo -en "Starting the worker daemon: "
-    "${installdir}/bin/maestro-worker" -m "${MAESTRO_BROKER}" -l "${MAESTRO_LOG_DIR}" -H "$MAESTRO_LOCAL_HOSTNAME" "${@}" >/dev/null 2>/dev/null &
-
-    pid=$!
-    if ! kill -0 ${pid} ; then
-        eerror "Maestro worker did not start successfully"
-        exit 1
-    fi
-    disown ${pid}
-    echo -e "Maestro worker started:${GREEN} ${pid} ${RESET}"
-}
-
 function stop() {
     for pid in $(pgrep -f ".*java.*bin/maestro-worker.*") ; do
         echo "Killing maestro-worker ${pid}"
