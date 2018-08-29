@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #   Copyright 2017 Otavio Rodolfo Piske
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -37,15 +37,26 @@ function eerror() {
 }
 
 function start() {
-    echo -en "Starting the daemon: "
-    "${installdir}/bin/maestro-exporter" -m "${MAESTRO_BROKER}" "${@}" >/dev/null 2>/dev/null &
-    pid=$!
-    if ! kill -0 ${pid} ; then
-        eerror "Maestro exporter did not start successfully"
+    echo -en "Starting the exporter daemon: "
+    nohup "${installdir}/bin/maestro-exporter" -m "${MAESTRO_BROKER}" "${@}" >/dev/null 2>/dev/null &
+    if [[ $? -ne 0 ]] ; then
+        eerror "failed to daemonize the Maestro exporter"
         exit 1
     fi
-    disown ${pid}
-    echo -e "Maestro exporter started:${GREEN} ${pid} ${RESET}"
+
+    sleep 1s
+    processCount=0
+    for pid in $(ps -ef | grep -i maestro-exporter | grep java | grep -v grep | awk ' { print $2 } ') ; do
+        if [[ processCount -eq 0 ]] ; then
+            esuccess
+        fi
+        echo -e "Maestro exporter started:${GREEN} ${pid} ${RESET}"
+        ((processCount++))
+    done
+
+    if [[ procCount -eq 0 ]] ; then
+        eerror "Maestro exporter did not start successfully"
+    fi
 }
 
 function stop() {

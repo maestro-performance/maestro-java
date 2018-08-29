@@ -37,16 +37,28 @@ function eerror() {
 }
 
 function start() {
-    echo -en "Starting the daemon: "
-    "${installdir}/bin/maestro-agent" -m "${MAESTRO_BROKER}" -l "${MAESTRO_LOG_DIR}" "${@}" >/dev/null 2>/dev/null &
-    pid=$!
-    if ! kill -0 ${pid} ; then
-        eerror "Maestro agent did not start successfully"
+    echo -en "Starting the agent daemon: "
+    nohup "${installdir}/bin/maestro-agent" -m "${MAESTRO_BROKER}" -l "${MAESTRO_LOG_DIR}" "${@}" >/dev/null 2>/dev/null &
+    if [[ $? -ne 0 ]] ; then
+        eerror "failed to daemonize the Maestro agent"
         exit 1
     fi
-    disown ${pid}
-    echo -e "Maestro agent started:${GREEN} ${pid} ${RESET}"
+
+    sleep 1s
+    processCount=0
+    for pid in $(ps -ef | grep -i maestro-agent | grep java | grep -v grep | awk ' { print $2 } ') ; do
+        if [[ processCount -eq 0 ]] ; then
+            esuccess
+        fi
+        echo -e "Maestro agent started:${GREEN} ${pid} ${RESET}"
+        ((processCount++))
+    done
+
+    if [[ procCount -eq 0 ]] ; then
+        eerror "Maestro agent did not start successfully"
+    fi
 }
+
 
 function stop() {
     for pid in $(pgrep -f ".*java.*bin/maestro-agent.*") ; do
