@@ -14,34 +14,33 @@
 #   limitations under the License.
 
 
-cygwin=false;
-darwin=false;
-mingw=false;
+cygwin=false
+darwin=false
+mingw=false
 
 # OS specific support.  $var _must_ be set to either true or false.
-case "`uname`" in
-  CYGWIN*) cygwin=true ;;
-  MINGW*) mingw=true;;
-  Darwin*) darwin=true
-           if [ -z "$JAVA_VERSION" ] ; then
-             JAVA_VERSION="CurrentJDK"
-           fi
-           if [ -z "$JAVA_HOME" ] ; then
-             JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/${JAVA_VERSION}/Home
-           fi
-           ;;
+case "$(uname)" in
+    CYGWIN*) cygwin=true ;;
+    MINGW*) mingw=true ;;
+    Darwin*) darwin=true ;;
 esac
 
 # For Cygwin, ensure paths are in UNIX format before anything is touched
-if ${cygwin} ; then
-  [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
-  [ -n "$CLASSPATH" ] && CLASSPATH=`cygpath --path --unix "$CLASSPATH"`
+if ${cygwin}; then
+    : ${JAVA_HOME:=$(cygpath --unix "${JAVA_HOME}")}
+    : ${CLASSPATH:=$(cygpath --path --unix "${CLASSPATH}")}
 fi
 
-localdir=`dirname $0`
-installdir=`dirname ${localdir}`
+if ${darwin}; then
+    : ${JAVA_VERSION:="CurrentJDK"}
+    : ${JAVA_HOME:="/System/Library/Frameworks/JavaVM.framework/Versions/${JAVA_VERSION}/Home"}
+fi
 
-if [ "$installdir" = "." ] ; then
+# Installation paths
+localdir="$(dirname $0)"
+installdir="$(dirname "${localdir}")"
+
+if [[ ${installdir} == "." ]] ; then
 	installdir=".."
 fi
 
@@ -49,11 +48,15 @@ source "$installdir/config/maestro-worker.jvm.conf"
 
 export MAESTRO_JVM_FLAGS="${MAESTRO_JVM_OTHER_OPTS} ${MAESTRO_JVM_MEM_OPTS}"
 
-if [ "${MAESTRO_DEBUG}" == "y" ] ; then
+if [[  ${MAESTRO_DEBUG} == "y" ]] ; then
     MAESTRO_JVM_FLAGS="${MAESTRO_JVM_FLAGS} ${MAESTRO_WORKER_DEBUG_ARGS}"
 fi
 
-mainclass=org.maestro.worker.main.Main
+mainclass="org.maestro.worker.main.Main"
 pid_file="$installdir"/tmp/maestro-worker.pid
 
-java ${MAESTRO_JVM_FLAGS} -classpath "$installdir"/bin/*maestro-worker-*.jar -Dorg.maestro.home="$installdir" $MAESTRO_JAVA_OPTS "$mainclass" $@
+classpath="$(echo "${installdir}"/bin/*maestro-worker-*.jar)"
+classpath="${classpath// /:}"
+
+java ${MAESTRO_JVM_FLAGS} -classpath "${classpath}" -Dorg.maestro.home="$installdir" \
+    $MAESTRO_JAVA_OPTS "$mainclass" "$@"
