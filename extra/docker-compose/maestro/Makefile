@@ -1,5 +1,5 @@
 MAESTRO_VERSION=1.5.0-SNAPSHOT
-MAESTRO_BRANCH=dynamic-worker-execution
+MAESTRO_BRANCH=devel
 
 clean:
 	docker rmi -f maestroperf/maestro-broker:${MAESTRO_VERSION}
