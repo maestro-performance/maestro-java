@@ -47,7 +47,8 @@ Overall, the base set of variables for the tests are:
 | `MANAGEMENT_INTERFACE` | `null` | The URL for the [management interface](Inspectors.md) |
 | `INSPECTOR_NAME` | `null` | The name of the [inspector](Inspectors.md) |
 | `DOWNLOADER_NAME` | `null` | The report download method (see below) |
-
+| `DISTRIBUTION_STRATEGY` | `balanced` | Determines how to distribute the worker pool (see below) |
+| `ENDPOINT_RESOLVER_NAME` | `role` | Determines how to distribute the test endpoints among the worker pool (see below) |
 
 Default Tests
 ----
@@ -113,6 +114,44 @@ Configuring the Report Download Method
   * Used whenever the environment variable DOWNLOADER_NAME is set to "broker"
   * Optional client configuration is available on ```maestro-cli.properties```.
   * Optional worker configuration is available on ```maestro-worker.properties```.
+
+
+**Distribution Strategy**
+
+Starting with Maestro 1.5, there is no more dedicated roles to the workers. As a result, the code launches a "worker"
+daemon that can act either as a receiver or as a sender, according to the test needs. In order to distribute the worker
+pool, it is necessary to set a distribution strategy. This behavior is manipulated via the DISTRIBUTION_STRATEGY environment
+variable.
+
+Currently, the following distribution strategies are available:
+
+* [legacy](http://www.orpiske.net/files/javadoc/maestro-java-1.5/apidocs/org/maestro/tests/cluster/LegacyStrategy.html): a distribution strategy the retains the legacy behavior. Useful for Maestro development and debugging.
+* balanced: this strategy a balanced worker pool where half of the workers will be senders and the other half will be 
+receivers 
+* balanced-exclusive: the same as the `balanced` one, but forces the usage of peer-specific topics for communication, 
+thus allowing the tests to manage the nodes individually instead of as a group. This requires a longer test startup time, 
+since the test front-end will send the test parameters individually to each node, but allows a finer grained control over
+each node behavior.  
+
+**Test Endpoint Resolvers**
+
+Test endpoint resolvers are used to dynamically assign test endpoints per worker. For example, it makes possible to 
+assign different test endpoints based on the worker role. This behavior is manipulated via the ENDPOINT_RESOLVER_NAME environment
+variable.
+
+The following resolvers are available:
+
+* role: this test endpoint resolver assigns a test endpoint (ie.: the broker URL, address, etc) based on the worker role. 
+For example, if you are testing multi node scenarios (ie.: clustered broker, multi node QPid Dispatch, etc) and wants to
+ use a different address for the senders than for the receivers.
+* one-to-one: this resolver handles the test endpoint on a per worker+role basis ensuring that each sender/receiver 
+instance will have a dedicated queue/topic/address for the test data exchange.  For example, if you have a balanced pool
+ of 4 workers (2 senders and 2 receivers) and the test uses `amqp://sut:5672/test.performance.queue` as the send/receive 
+ URL, then each sender/receiver pair will use `amqp://sut:5672/test.performance.queue.[N]` as the send/receiver URL 
+ (ie.: `amqp://sut:5672/test.performance.queue.1` for the first pair,  `amqp://sut:5672/test.performance.queue.2` for 
+ the second pair, etc). This test **must** use the `balanced-exclusive` distribution strategy.
+
+ 
 
 Fixed Rate Test Variables
 ----
