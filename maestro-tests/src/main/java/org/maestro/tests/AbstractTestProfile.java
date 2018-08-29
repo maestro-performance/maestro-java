@@ -101,7 +101,7 @@ public abstract class AbstractTestProfile implements TestProfile {
     }
 
     @Override
-    public void setTestEndpointResolver(TestEndpointResolver endPointResolver) {
+    public void setTestEndpointResolver(TestEndpointResolver endpointResolver) {
         this.endpointResolver = endpointResolver;
     }
 
