@@ -46,7 +46,7 @@ function start() {
 
     sleep 1s
     processCount=0
-    for pid in $(ps -ef | grep -i maestro-agent | grep java | grep -v grep | awk ' { print $2 } ') ; do
+    for pid in $(pgrep -f ".*java.*bin/maestro-agent.*") ; do
         if [[ processCount -eq 0 ]] ; then
             esuccess
         fi

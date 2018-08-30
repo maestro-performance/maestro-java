@@ -50,7 +50,7 @@ function start() {
 
     sleep 1s
     processCount=0
-    for pid in $(ps -ef | grep -i maestro-worker | grep java | grep -v worker-service | grep -v grep | awk ' { print $2 } ') ; do
+    for pid in $(pgrep -f ".*java.*bin/maestro-worker.*") ; do
         if [[ processCount -eq 0 ]] ; then
             esuccess
         fi
