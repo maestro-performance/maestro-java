@@ -54,8 +54,6 @@ if [[  ${MAESTRO_DEBUG} == "y" ]] ; then
 fi
 
 mainClass="org.maestro.agent.main.Main"
-pid_file="${installDir}/tmp/maestro-agent.pid"
-
 
 # Evaluate classpath from install dir
 classpath="$(echo "${installDir}"/bin/*maestro-agent-*.jar)"
