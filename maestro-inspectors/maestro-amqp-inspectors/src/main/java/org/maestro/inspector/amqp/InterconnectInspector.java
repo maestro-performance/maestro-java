@@ -132,7 +132,9 @@ public class InterconnectInspector implements MaestroInspector {
 
     private void closeConnection() throws JMSException {
         try {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
         catch (JMSException e) {
             logger.warn("Error closing the JMS session: {}", e.getMessage(), e);
@@ -140,7 +142,9 @@ public class InterconnectInspector implements MaestroInspector {
         }
 
         try {
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
         }
         catch (JMSException e) {
             logger.warn("Error closing the JMS connection: {}", e.getMessage(), e);
