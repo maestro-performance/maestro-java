@@ -53,10 +53,9 @@ if [[  ${MAESTRO_DEBUG} == "y" ]] ; then
 fi
 
 mainclass="org.maestro.worker.main.Main"
-pid_file="$installdir"/tmp/maestro-worker.pid
 
 classpath="$(echo "${installdir}"/bin/*maestro-worker-*.jar)"
 classpath="${classpath// /:}"
 
-java ${MAESTRO_JVM_FLAGS} -classpath "${classpath}" -Dorg.maestro.home="$installdir" \
-    $MAESTRO_JAVA_OPTS "$mainclass" "$@"
+java ${MAESTRO_JVM_FLAGS} -classpath "${classpath}" -Dorg.maestro.home="${installdir}" \
+    ${MAESTRO_JAVA_OPTS} "${mainclass}" "$@"
