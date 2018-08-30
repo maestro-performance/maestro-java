@@ -52,7 +52,7 @@ if [[  ${MAESTRO_DEBUG} == "y" ]] ; then
     MAESTRO_JVM_FLAGS="${MAESTRO_JVM_FLAGS} ${MAESTRO_WORKER_DEBUG_ARGS}"
 fi
 
-mainClass="org.maestro.worker.main.Main"
+mainClass="org.maestro.worker.main.MaestroWorkerMain"
 
 classpath="$(echo "${installDir}"/bin/*maestro-worker-*.jar)"
 classpath="${classpath// /:}"

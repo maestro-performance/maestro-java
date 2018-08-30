@@ -80,7 +80,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>../lib</classpathPrefix>
-                            <mainClass>org.maestro.inspector.main.Main</mainClass>
+                            <mainClass>org.maestro.inspector.main.MaestroInspectorMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

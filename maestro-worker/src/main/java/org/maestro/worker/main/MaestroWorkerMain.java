@@ -31,7 +31,7 @@ import java.io.File;
 import java.net.UnknownHostException;
 
 
-public class Main {
+public class MaestroWorkerMain {
     private static CommandLine cmdLine;
 
     private static String maestroUrl;

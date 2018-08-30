@@ -79,7 +79,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>../lib</classpathPrefix>
-                            <mainClass>org.maestro.agent.main.Main</mainClass>
+                            <mainClass>org.maestro.agent.main.MaestroAgentMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

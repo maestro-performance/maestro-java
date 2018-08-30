@@ -77,7 +77,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>../lib</classpathPrefix>
-                            <mainClass>org.maestro.exporter.main.Main</mainClass>
+                            <mainClass>org.maestro.exporter.main.MaestroExporterMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

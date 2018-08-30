@@ -86,7 +86,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>org.maestro.cli.main.Main</mainClass>
+                            <mainClass>org.maestro.cli.main.MaestroCliMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

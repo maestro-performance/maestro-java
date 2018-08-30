@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="CLI - Ping" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.Main" />
+    <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.MaestroCliMain" />
     <module name="maestro-cli" />
     <option name="PROGRAM_PARAMETERS" value="maestro -c ping -m mqtt://localhost:1884" />
     <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes" />

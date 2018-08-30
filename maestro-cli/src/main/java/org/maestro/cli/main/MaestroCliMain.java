@@ -23,7 +23,7 @@ import org.maestro.common.LogConfigurator;
 
 import static java.util.Arrays.copyOfRange;
 
-public class Main {
+public class MaestroCliMain {
     static {
         LogConfigurator.defaultForDaemons();
     }

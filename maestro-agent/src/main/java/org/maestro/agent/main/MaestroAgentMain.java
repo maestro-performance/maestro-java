@@ -33,7 +33,7 @@ import java.io.File;
 import java.net.UnknownHostException;
 
 
-public class Main {
+public class MaestroAgentMain {
     private static CommandLine cmdLine;
 
     private static String maestroUrl;

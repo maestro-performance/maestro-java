@@ -24,7 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 
-public class Main {
+public class MaestroExporterMain {
     private static CommandLine cmdLine;
 
     private static String maestroUrl;
@@ -96,7 +96,7 @@ public class Main {
             exporter.run(port);
             System.exit(0);
         } catch (Exception e) {
-            Logger logger = LoggerFactory.getLogger(Main.class);
+            Logger logger = LoggerFactory.getLogger(MaestroExporterMain.class);
 
             logger.error("Unable to start Maestro exporter: {}", e.getMessage(), e);
 

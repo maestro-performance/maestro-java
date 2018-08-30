@@ -1,7 +1,7 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="Maestro Worker: JMS Receiver" type="Application" factoryName="Application" singleton="false">
     <log_file alias="Receiver Log" path="$PROJECT_DIR$/maestro-worker/target/classes/logs/receiver.log" skipped="false" />
-    <option name="MAIN_CLASS_NAME" value="org.maestro.worker.main.Main" />
+    <option name="MAIN_CLASS_NAME" value="org.maestro.worker.main.MaestroWorkerMain" />
     <module name="maestro-worker" />
     <option name="PROGRAM_PARAMETERS" value="-m mqtt://localhost:1884 -H localhost -l $MODULE_DIR$/target/classes/receiver-logs" />
     <option name="VM_PARAMETERS" value="-Xmx2g -Dorg.maestro.home=$MODULE_DIR$/target/classes -Dmaestro.worker.role=receiver" />
