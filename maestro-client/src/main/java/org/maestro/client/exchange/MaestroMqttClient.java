@@ -34,7 +34,6 @@ import java.io.IOException;
 
 public class MaestroMqttClient implements MaestroClient {
     private static final Logger logger = LoggerFactory.getLogger(MaestroClient.class);
-
     private final MqttClient mqttClient;
 
     /**
@@ -180,7 +179,7 @@ public class MaestroMqttClient implements MaestroClient {
      * @throws MalformedNoteException     in case of other I/O errors
      */
     public synchronized void publish(final String topic, final MaestroNote note) throws MalformedNoteException, MaestroConnectionException {
-        publish(topic, note, 0, false);
+        publish(topic, note, MqttServiceLevel.AT_LEAST_ONCE, false);
     }
 
     /**

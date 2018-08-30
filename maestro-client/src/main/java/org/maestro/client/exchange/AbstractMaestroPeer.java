@@ -128,12 +128,16 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     }
 
     public void subscribe(final String[] topics) throws MaestroConnectionException {
+        subscribe(topics, MqttServiceLevel.AT_LEAST_ONCE);
+    }
+
+    public void subscribe(final String[] topics, int allQos) throws MaestroConnectionException {
         logger.debug("Subscribing to maestro topics {}", Arrays.toString(topics));
 
         int qos[] = new int[topics.length];
 
         for (int i = 0; i < topics.length; i++) {
-            qos[i] = 0;
+            qos[i] = allQos;
         }
 
         try {

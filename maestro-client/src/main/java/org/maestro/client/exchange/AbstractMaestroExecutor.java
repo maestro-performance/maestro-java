@@ -63,7 +63,7 @@ public class AbstractMaestroExecutor implements Runnable {
             logger.error("Trying to subscribe to a null topic");
         }
         else {
-            maestroPeer.subscribe(topics);
+            maestroPeer.subscribe(topics, MqttServiceLevel.AT_LEAST_ONCE);
         }
     }
 

@@ -20,6 +20,7 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.callback.MaestroNoteCallback;
 import org.maestro.client.exchange.MaestroMqttClient;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.MqttServiceLevel;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
@@ -101,7 +102,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         errResponse.correlate(note);
 
         try {
-            super.publish(MaestroTopics.MAESTRO_TOPIC, errResponse);
+            super.publish(MaestroTopics.MAESTRO_TOPIC, errResponse, MqttServiceLevel.AT_LEAST_ONCE, false);
         } catch (Exception e) {
             logger.error("Unable to publish the internal error response: {}", e.getMessage(), e);
         }
@@ -122,7 +123,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         response.setId(id);
         response.correlate(note);
 
-        super.publish(MaestroTopics.MAESTRO_TOPIC, response);
+        super.publish(MaestroTopics.MAESTRO_TOPIC, response, MqttServiceLevel.AT_MOST_ONCE, false);
     }
 
 
@@ -137,7 +138,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         notification.setMessage(message);
 
         try {
-            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, false);
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, MqttServiceLevel.EXACTLY_ONCE, false);
         } catch (Exception e) {
             logger.error("Unable to publish the success notification: {}", e.getMessage(), e);
         }
@@ -154,7 +155,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         notification.setMessage(message);
 
         try {
-            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, false);
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, MqttServiceLevel.EXACTLY_ONCE, false);
         } catch (Exception e) {
             logger.error("Unable to publish the failure notification: {}", e.getMessage(), e);
         }
@@ -174,7 +175,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         statsResponse.setId(id);
 
         try {
-            super.publish(MaestroTopics.MAESTRO_TOPIC, statsResponse, 0, false);
+            super.publish(MaestroTopics.MAESTRO_TOPIC, statsResponse, MqttServiceLevel.AT_MOST_ONCE, false);
         } catch (Exception e) {
             logger.error("Unable to publish the status response: {}", e.getMessage(), e);
         }
@@ -190,7 +191,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         getResponse.setId(id);
 
         try {
-            super.publish(MaestroTopics.MAESTRO_TOPIC, getResponse, 0, false);
+            super.publish(MaestroTopics.MAESTRO_TOPIC, getResponse, MqttServiceLevel.AT_MOST_ONCE, false);
         } catch (Exception e) {
             logger.error("Unable to publish the get response: {}", e.getMessage(), e);
         }
@@ -214,7 +215,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
 
         ThrottleCallback throttleCallback = new ThrottleCallback();
 
-        super.publish(MaestroTopics.MAESTRO_LOGS_TOPIC, logResponse, 0, false, throttleCallback);
+        super.publish(MaestroTopics.MAESTRO_LOGS_TOPIC, logResponse, MqttServiceLevel.EXACTLY_ONCE, false, throttleCallback);
     }
 
 
@@ -229,7 +230,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         notification.setMessage(message);
 
         try {
-            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, false);
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, MqttServiceLevel.AT_LEAST_ONCE, false);
         } catch (Exception e) {
             logger.error("Unable to publish the drain complete notification: {}", e.getMessage(), e);
         }
