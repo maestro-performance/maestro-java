@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/usr/bin/env bash
 #   Copyright 2017 Otavio Rodolfo Piske
 #
 #   Licensed under the Apache License, Version 2.0 (the "License");
@@ -13,71 +13,70 @@
 #   See the License for the specific language governing permissions and
 #   limitations under the License.
 
-
-cygwin=false;
-darwin=false;
-mingw=false;
+cygwin=false
+darwin=false
+mingw=false
 
 # OS specific support.  $var _must_ be set to either true or false.
-case "`uname`" in
-  CYGWIN*) cygwin=true ;;
-  MINGW*) mingw=true;;
-  Darwin*) darwin=true
-           if [ -z "$JAVA_VERSION" ] ; then
-             JAVA_VERSION="CurrentJDK"
-           fi
-           if [ -z "$JAVA_HOME" ] ; then
-             JAVA_HOME=/System/Library/Frameworks/JavaVM.framework/Versions/${JAVA_VERSION}/Home
-           fi
-           ;;
+case "$(uname)" in
+    CYGWIN*) cygwin=true ;;
+    MINGW*) mingw=true ;;
+    Darwin*) darwin=true ;;
 esac
 
 # For Cygwin, ensure paths are in UNIX format before anything is touched
-if ${cygwin} ; then
-  [ -n "$JAVA_HOME" ] && JAVA_HOME=`cygpath --unix "$JAVA_HOME"`
-  [ -n "$CLASSPATH" ] && CLASSPATH=`cygpath --path --unix "$CLASSPATH"`
+if ${cygwin}; then
+    : ${JAVA_HOME:=$(cygpath --unix "${JAVA_HOME}")}
+    : ${CLASSPATH:=$(cygpath --path --unix "${CLASSPATH}")}
 fi
 
-localdir=`dirname $0`
-installdir=`dirname ${localdir}`
+if ${darwin}; then
+    : ${JAVA_VERSION:="CurrentJDK"}
+    : ${JAVA_HOME:="/System/Library/Frameworks/JavaVM.framework/Versions/${JAVA_VERSION}/Home"}
+fi
 
-if [ "$installdir" = "." ] ; then
-	installdir=".."
+# Installation paths
+localDir="$(dirname $0)"
+installDir="$(dirname "${localDir}")"
+
+if [[ ${installDir} == "." ]] ; then
+	installDir=".."
 fi
 
 MAESTRO_CLASSPATH=""
 
-for jarfile in "$installdir"/bin/*.jar ; do
-    if [ -z "$MAESTRO_CLASSPATH" ] ; then
-        export MAESTRO_CLASSPATH="$jarfile"
+for jarfile in "${installDir}"/bin/*.jar ; do
+    if [[ -z "${MAESTRO_CLASSPATH}" ]] ; then
+        MAESTRO_CLASSPATH="${jarfile}"
     else
-        export MAESTRO_CLASSPATH="$MAESTRO_CLASSPATH:$jarfile"
+        MAESTRO_CLASSPATH="${MAESTRO_CLASSPATH}:${jarfile}"
     fi
 done
 
 
-for jarfile in "$installdir"/lib/*.jar ; do
-    if [ -z "$MAESTRO_CLASSPATH" ] ; then
-        export MAESTRO_CLASSPATH="$jarfile"
+for jarfile in "${installDir}"/lib/*.jar ; do
+    if [[ -z "${MAESTRO_CLASSPATH}" ]] ; then
+        MAESTRO_CLASSPATH="${jarfile}"
     else
-        export MAESTRO_CLASSPATH="$MAESTRO_CLASSPATH:$jarfile"
+        MAESTRO_CLASSPATH="${MAESTRO_CLASSPATH}:${jarfile}"
     fi
 done
 
-for jarfile in "$installdir"/lib/ext/*.jar ; do
-    if [ -z "$MAESTRO_CLASSPATH" ] ; then
-        export MAESTRO_CLASSPATH="$jarfile"
+for jarfile in "${installDir}"/lib/ext/*.jar ; do
+    if [[ -z "${MAESTRO_CLASSPATH}" ]] ; then
+        MAESTRO_CLASSPATH="${jarfile}"
     else
-        export MAESTRO_CLASSPATH="$MAESTRO_CLASSPATH:$jarfile"
+        MAESTRO_CLASSPATH="${MAESTRO_CLASSPATH}:${jarfile}"
     fi
 done
 
 
 export MAESTRO_CLI_DEBUG_ARGS=""
-if [  "$MAESTRO_DEBUG" == "y" ] ; then
+if [[ "${MAESTRO_DEBUG}" == "y" ]] ; then
     MAESTRO_CLI_DEBUG_ARGS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
 fi
 
-mainclass=org.maestro.cli.main.Main
+mainClass="org.maestro.cli.main.Main"
 
-java -classpath ${MAESTRO_CLASSPATH} ${MAESTRO_CLI_DEBUG_ARGS} -Dorg.maestro.home="$installdir" -Djava.awt.headless=true "$mainclass" $@
+java -classpath ${MAESTRO_CLASSPATH} ${MAESTRO_CLI_DEBUG_ARGS} \
+    -Dorg.maestro.home="${installDir}" -Djava.awt.headless=true "${mainClass}" "$@"
