@@ -37,14 +37,14 @@ if ${darwin}; then
 fi
 
 # Installation paths
-localdir="$(dirname $0)"
-installdir="$(dirname "${localdir}")"
+localDir="$(dirname $0)"
+installDir="$(dirname "${localDir}")"
 
-if [[ ${installdir} == "." ]] ; then
-	installdir=".."
+if [[ ${installDir} == "." ]] ; then
+	installDir=".."
 fi
 
-source "$installdir/config/maestro-worker.jvm.conf"
+source "${installDir}/config/maestro-worker.jvm.conf"
 
 export MAESTRO_JVM_FLAGS="${MAESTRO_JVM_OTHER_OPTS} ${MAESTRO_JVM_MEM_OPTS}"
 
@@ -52,10 +52,10 @@ if [[  ${MAESTRO_DEBUG} == "y" ]] ; then
     MAESTRO_JVM_FLAGS="${MAESTRO_JVM_FLAGS} ${MAESTRO_WORKER_DEBUG_ARGS}"
 fi
 
-mainclass="org.maestro.worker.main.Main"
+mainClass="org.maestro.worker.main.Main"
 
-classpath="$(echo "${installdir}"/bin/*maestro-worker-*.jar)"
+classpath="$(echo "${installDir}"/bin/*maestro-worker-*.jar)"
 classpath="${classpath// /:}"
 
-java ${MAESTRO_JVM_FLAGS} -classpath "${classpath}" -Dorg.maestro.home="${installdir}" \
-    ${MAESTRO_JAVA_OPTS} "${mainclass}" "$@"
+java ${MAESTRO_JVM_FLAGS} -classpath "${classpath}" -Dorg.maestro.home="${installDir}" \
+    ${MAESTRO_JAVA_OPTS} "${mainClass}" "$@"

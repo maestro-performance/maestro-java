@@ -15,14 +15,14 @@
 
 RETVAL=0
 
-localdir="$(dirname $0)"
-installdir="$(dirname "${localdir}")"
+localDir="$(dirname $0)"
+installDir="$(dirname "${localDir}")"
 
-if [[ ${installdir} == "." ]] ; then
-	installdir=".."
+if [[ ${installDir} == "." ]] ; then
+	installDir=".."
 fi
 
-source "${installdir}/config/maestro-inspector-service.conf"
+source "${installDir}/config/maestro-inspector-service.conf"
 
 RED="\e[0;31m"
 GREEN="\e[0;32m"
@@ -39,7 +39,7 @@ function eerror() {
 
 function start() {
     echo -en "Starting the daemon: "
-    nohup "${installdir}/bin/maestro-inspector" -m "${MAESTRO_BROKER}" -l "${MAESTRO_LOG_DIR}" "$@" >/dev/null 2>/dev/null &
+    nohup "${installDir}/bin/maestro-inspector" -m "${MAESTRO_BROKER}" -l "${MAESTRO_LOG_DIR}" "$@" >/dev/null 2>/dev/null &
     if [[ $? -ne 0 ]] ; then
         eerror "failed to daemonize the Maestro inspector"
         exit 1

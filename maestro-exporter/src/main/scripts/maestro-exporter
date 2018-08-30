@@ -37,11 +37,11 @@ if ${darwin}; then
 fi
 
 # Installation paths
-localdir="$(dirname $0)"
-installdir="$(dirname "${localdir}")"
+localDir="$(dirname $0)"
+installDir="$(dirname "${localDir}")"
 
-if [[ ${installdir} == "." ]] ; then
-	installdir=".."
+if [[ ${installDir} == "." ]] ; then
+	installDir=".."
 fi
 
 # Maestro options
@@ -52,11 +52,11 @@ if [[  ${MAESTRO_DEBUG} == "y" ]] ; then
     MAESTRO_INSPECTOR_DEBUG_ARGS="-Xdebug -Xrunjdwp:transport=dt_socket,address=8000,server=y,suspend=n"
 fi
 
-mainclass=org.maestro.exporter.main.Main
+mainClass=org.maestro.exporter.main.Main
 
 # Evaluate classpath from install dir
-classpath="$(echo "${installdir}"/bin/*maestro-exporter-*.jar)"
+classpath="$(echo "${installDir}"/bin/*maestro-exporter-*.jar)"
 classpath="${classpath// /:}"
 
 java -classpath "${classpath}" ${MAESTRO_EXPORTER_DEBUG_ARGS} \
-     -Dorg.maestro.home="${installdir}" ${MAESTRO_JAVA_OPTS} "${mainclass}" "${@}"
+     -Dorg.maestro.home="${installDir}" ${MAESTRO_JAVA_OPTS} "${mainClass}" "${@}"
