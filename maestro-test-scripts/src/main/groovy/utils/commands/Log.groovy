@@ -74,11 +74,7 @@ if (locationType == null || locationType == "success") {
 
     for (MaestroNote note : replies) {
         if (note instanceof GetResponse) {
-            GetResponse gr = (GetResponse) note
-
-            String dataServer = gr.getValue()
-            String peerType = gr.getRole()
-            downloader.downloadLastSuccessful(peerType, dataServer)
+            downloader.downloadLastSuccessful(note.getId(), note.getPeerInfo())
         }
     }
 }
@@ -87,11 +83,7 @@ else {
 
     for (MaestroNote note : replies) {
         if (note instanceof GetResponse) {
-            GetResponse gr = (GetResponse) note
-
-            String dataServer = gr.getValue()
-            String peerType = gr.getRole()
-            downloader.downloadLastFailed(peerType, dataServer)
+            downloader.downloadLastSuccessful(note.getId(), note.getPeerInfo())
         }
     }
 }
