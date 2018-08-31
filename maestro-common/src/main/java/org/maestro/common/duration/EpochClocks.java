@@ -34,7 +34,7 @@ public final class EpochClocks {
     static {
         //TODO handle any failures while loading the native libs
         final String OS_NAME = System.getProperty("os.name").toLowerCase();
-        if (OS_NAME.indexOf("linux") >= 0) {
+        if (OS_NAME.contains("linux")) {
             SUPPORT_MICRO_CLOCKS = true;
             SHARED_CLOCK = new ThreadLocalEpochMicroClock(JnaDirectNativeClock::new);
         } else {
