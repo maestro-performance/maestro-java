@@ -27,7 +27,7 @@ import org.maestro.tests.support.DefaultTestEndpoint
 import org.maestro.tests.support.TestEndpointResolver
 import org.maestro.tests.support.TestEndpointResolverFactory
 import org.maestro.tests.utils.ManagementInterface
-import org.maestro.tests.cluster.DistributionStrategyFactory;
+import org.maestro.tests.cluster.DistributionStrategyFactory
 
 maestroURL = System.getenv("MAESTRO_BROKER")
 if (maestroURL == null) {
