@@ -35,6 +35,7 @@ import java.util.List;
  * creating, starting and stopping multiple workerRuntimeInfos at once.
  */
 public final class WorkerContainer {
+    private static final Logger logger = LoggerFactory.getLogger(WorkerContainer.class);
 
     private final List<WorkerRuntimeInfo> workerRuntimeInfos = new ArrayList<>();
     private final List<WatchdogObserver> observers = new LinkedList<>();
@@ -51,6 +52,12 @@ public final class WorkerContainer {
         workerRuntimeInfos.clear();
 
         List<MaestroWorker> workers = new ArrayList<>(count);
+
+        if (count > Runtime.getRuntime().availableProcessors()) {
+            logger.warn("Trying the create {} worker threads but there is only {} processors available. This can " +
+                    "test instability and too many variations on the load generations", count,
+                    Runtime.getRuntime().availableProcessors());
+        }
 
         for (int i = 0; i < count; i++) {
             final MaestroWorker worker = initializer.initialize(i);
