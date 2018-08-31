@@ -97,7 +97,7 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
     @SuppressWarnings("unchecked")
     public void write(InspectorProperties inspectorProperties, final Object object){
         if (object instanceof GeneralInfo) {
-            final Map<String, Object> generalInfo = (Map) ((GeneralInfo) object).getGeneralProperties().get(0);
+            final Map<String, Object> generalInfo = ((GeneralInfo) object).getGeneralProperties().get(0);
 
             logger.trace("Router Link information: {}", generalInfo);
 
