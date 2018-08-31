@@ -56,11 +56,10 @@ public final class WorkerContainer {
             final MaestroWorker worker = initializer.initialize(i);
 
             workers.add(worker);
-
             WorkerRuntimeInfo ri = new WorkerRuntimeInfo();
 
             ri.worker = worker;
-            ri.thread = new Thread(ri.worker);
+            ri.thread = new Thread(ri.worker, String.format("worker-%d", i));
             workerRuntimeInfos.add(ri);
         }
 
