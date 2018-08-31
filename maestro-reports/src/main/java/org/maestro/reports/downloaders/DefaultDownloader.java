@@ -2,7 +2,6 @@ package org.maestro.reports.downloaders;
 
 import org.apache.http.HttpStatus;
 import org.maestro.client.exchange.support.PeerInfo;
-import org.maestro.common.HostTypes;
 import org.maestro.common.Role;
 import org.maestro.contrib.utils.Downloader;
 import org.maestro.contrib.utils.resource.exceptions.ResourceExchangeException;

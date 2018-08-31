@@ -43,7 +43,7 @@ public class ReportDirInfo {
      * to generate the index pages.
      *
      * @param reportDir The report directory (ie.: the parent directory for a ReportFile)
-     * @throws IOException
+     * @throws IOException in case of I/O errors
      */
     ReportDirInfo(final File reportDir) throws IOException {
         this.reportDir = reportDir;

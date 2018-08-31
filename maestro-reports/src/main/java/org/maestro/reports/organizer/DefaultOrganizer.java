@@ -17,7 +17,6 @@
 package org.maestro.reports.organizer;
 
 import org.maestro.client.exchange.support.PeerInfo;
-import org.maestro.common.HostTypes;
 
 import java.io.File;
 

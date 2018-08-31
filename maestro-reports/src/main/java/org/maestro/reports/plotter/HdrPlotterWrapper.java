@@ -24,7 +24,6 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.test.TestProperties;
 import org.maestro.common.worker.WorkerUtils;
-import org.maestro.plotter.common.exceptions.EmptyDataSet;
 import org.maestro.plotter.latency.HdrLogProcessorWrapper;
 import org.maestro.plotter.latency.common.HdrData;
 import org.maestro.plotter.latency.graph.HdrPlotter;

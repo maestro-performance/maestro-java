@@ -8,7 +8,6 @@ import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.common.client.notes.LocationType;
 import org.maestro.client.notes.LogResponse;
-import org.maestro.client.notes.MaestroResponse;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Role;
 import org.maestro.common.client.notes.MaestroNote;
