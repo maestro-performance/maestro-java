@@ -59,7 +59,7 @@ public class PeerSet {
      * @return the number of available peers
      */
     public long workers() {
-        return peers.values().stream().filter(peerInfo -> isWorker(peerInfo)).count();
+        return peers.values().stream().filter(this::isWorker).count();
     }
 
     private boolean isWorker(PeerInfo peerInfo) {
