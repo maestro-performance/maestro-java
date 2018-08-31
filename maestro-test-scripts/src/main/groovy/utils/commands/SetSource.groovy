@@ -23,9 +23,12 @@ package utils.commands
 @Grab(group='org.maestro', module='maestro-tests', version='1.5.0-SNAPSHOT')
 
 import org.maestro.client.Maestro
+import org.maestro.client.exchange.MaestroTopics
+import org.maestro.common.Role
 import org.maestro.common.client.notes.MaestroNote
 
 import java.util.concurrent.CompletableFuture
+import java.util.concurrent.TimeUnit
 
 
 /**
@@ -49,17 +52,18 @@ maestro = new Maestro(maestroURL)
  * Sends a stop command to all the test cluster
  */
 println "Sending the source command"
-CompletableFuture<List<? extends MaestroNote>> sourceFuture = maestro.sourceRequest(sourceURL, branch)
+CompletableFuture<List<? extends MaestroNote>> sourceFuture = maestro.sourceRequest(MaestroTopics.peerTopic(Role.AGENT),
+        sourceURL, branch)
 
 
 println "Collecting the replies"
-List<? extends MaestroNote> sourceReplies = sourceFuture.get(12000)
+List<? extends MaestroNote> sourceReplies = sourceFuture.get(12000, TimeUnit.MILLISECONDS)
 println "Number of source replies: " + sourceReplies.size()
 
 println "Sending ping ..."
 CompletableFuture<List<? extends MaestroNote>> pingFuture = maestro.pingRequest()
 
-int peers = pingFuture.get(2000).size()
+int peers = pingFuture.get(2000, TimeUnit.MILLISECONDS).size()
 println "Number of ping replies: " + peers
 
 println "Stopping the agent"

@@ -26,7 +26,9 @@ package singlepoint
 @Grab(group='net.orpiske', module='quiver-data-plotter', version='1.0.0')
 
 import org.maestro.client.Maestro
+import org.maestro.client.exchange.MaestroTopics
 import org.maestro.common.LogConfigurator
+import org.maestro.common.Role
 import org.maestro.reports.AbstractReportResolver
 import org.maestro.reports.downloaders.DefaultDownloader
 import org.maestro.reports.downloaders.ReportsDownloader
@@ -47,13 +49,13 @@ class QuiverExecutor extends FlexibleTestExecutor {
     private Maestro maestro
 
     QuiverExecutor(Maestro maestro, ReportsDownloader reportsDownloader, AbstractTestProfile testProfile) {
-        super(maestro, reportsDownloader, testProfile)
+        super(maestro, reportsDownloader, testProfile, new NonAssigningStrategy(maestro))
 
         this.maestro = maestro
     }
 
     void startServices() {
-        maestro.userCommand(0, "rhea")
+        maestro.userCommand(MaestroTopics.peerTopic(Role.AGENT), 0, "rhea")
         // Wait for up to 2 minutes for the test to complete
         Thread.sleep(60*1000*2)
     }
@@ -139,7 +141,7 @@ println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
 ReportsDownloader reportsDownloader = new DefaultDownloader(args[0])
-reportsDownloader.addReportResolver("agent", new QuiverReportResolver())
+reportsDownloader.addReportResolver(Role.AGENT, new QuiverReportResolver())
 
 println "Creating the profile"
 FlexibleTestProfile testProfile = new FlexibleTestProfile()
@@ -148,7 +150,7 @@ testProfile.setSendReceiveURL(brokerURL)
 testProfile.setSourceURL(sourceURL)
 
 println "Creating the executor"
-QuiverExecutor executor = new QuiverExecutor(maestro, reportsDownloader, testProfile, new NonAssigningStrategy(maestro))
+QuiverExecutor executor = new QuiverExecutor(maestro, reportsDownloader, testProfile)
 
 int ret = 0
 

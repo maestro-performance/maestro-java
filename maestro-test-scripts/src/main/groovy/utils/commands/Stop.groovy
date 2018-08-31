@@ -41,10 +41,7 @@ maestro = new Maestro(maestroURL)
  * Sends a stop command to all the test cluster
  */
 println "Sending the stop commands"
-maestro.stopSender()
-maestro.stopReceiver()
-maestro.stopInspector()
-maestro.stopAgent()
+maestro.stopAll()
 
 println "Sent"
 maestro.stop()
