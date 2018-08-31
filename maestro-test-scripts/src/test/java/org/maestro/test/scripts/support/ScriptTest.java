@@ -82,7 +82,7 @@ public class ScriptTest extends EndToEndTest {
                 .pingRequest(MaestroTopics.WORKERS_TOPIC)
                 .get(10, TimeUnit.SECONDS);
 
-        assertTrue(replies.size() == 2);
+        assertTrue("Unexpected reply size", replies.size() == 2);
 
         MaestroNote note = replies.get(0);
         assertEquals(note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);
@@ -168,7 +168,7 @@ public class ScriptTest extends EndToEndTest {
                 .statsRequest()
                 .get(10, TimeUnit.SECONDS);
 
-        assertTrue(replies.size() == 2);
+        assertTrue("Unexpected reply size", replies.size() == 2);
 
         MaestroNote note = replies.get(0);
         assertEquals(note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);
