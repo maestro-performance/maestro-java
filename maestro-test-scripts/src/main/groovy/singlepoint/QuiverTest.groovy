@@ -30,7 +30,6 @@ import org.maestro.common.LogConfigurator
 import org.maestro.reports.AbstractReportResolver
 import org.maestro.reports.downloaders.DefaultDownloader
 import org.maestro.reports.downloaders.ReportsDownloader
-import org.maestro.reports.organizer.DefaultOrganizer
 import org.maestro.tests.AbstractTestProfile
 
 import net.orpiske.qdp.main.QuiverReportWalker
@@ -89,17 +88,6 @@ class QuiverReportResolver extends AbstractReportResolver {
     }
 }
 
-class QuiverOrganizer extends DefaultOrganizer {
-    QuiverOrganizer(String baseDir) {
-        super(baseDir)
-    }
-
-    @Override
-    String organize(String address, String hostType) {
-        return getBaseDir()
-    }
-}
-
 def plotQuiverFiles(String directory) {
     println "Generating the reports on $directory"
 
@@ -150,7 +138,7 @@ LogConfigurator.configureLogLevel(logLevel)
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new DefaultDownloader(new QuiverOrganizer(args[0]))
+ReportsDownloader reportsDownloader = new DefaultDownloader(args[0])
 reportsDownloader.addReportResolver("agent", new QuiverReportResolver())
 
 println "Creating the profile"
