@@ -112,7 +112,6 @@ public class DownloadAction extends Action {
         }
         else {
             servers = new LinkedList<>();
-            assert serverList != null;
             // ie.: sender@host:4423,receiver@host:4421
             String[] items = serverList.split(",");
             for (String item : items) {
