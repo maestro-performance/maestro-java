@@ -54,7 +54,7 @@ function start() {
         ((processCount++))
     done
 
-    if (( procCount == 0 )) ; then
+    if (( processCount == 0 )) ; then
         eerror "Maestro exporter did not start successfully"
     fi
 }

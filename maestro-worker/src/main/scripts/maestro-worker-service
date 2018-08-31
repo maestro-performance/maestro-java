@@ -58,7 +58,7 @@ function start() {
         ((processCount++))
     done
 
-    if (( procCount == 0 )) ; then
+    if (( processCount == 0 )) ; then
         eerror "Maestro agent did not start successfully"
     fi
 }
