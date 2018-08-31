@@ -52,11 +52,6 @@ public class MiniPeer {
         this.host = host;
     }
 
-    /**
-     * Starts the peer
-     *
-     * @throws Exception
-     */
     public void start() throws Exception {
         @SuppressWarnings("unchecked")
         Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
@@ -95,9 +90,6 @@ public class MiniPeer {
     }
 
 
-    /**
-     * Stops the peer
-     */
     public void stop() {
         if (executor != null) {
             executor.stop();

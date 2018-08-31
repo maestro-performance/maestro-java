@@ -74,7 +74,7 @@ public abstract class AbstractHandler implements AgentEndpoint {
 
     /**
      * Gets the worker options
-     * @return
+     * @return the worker options
      */
     public WorkerOptions getWorkerOptions() {
         return workerOptions;

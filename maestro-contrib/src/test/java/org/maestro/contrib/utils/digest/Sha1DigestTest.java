@@ -1,4 +1,4 @@
-/**
+/*
  Copyright 2012 Otavio Rodolfo Piske
 
  Licensed under the Apache License, Version 2.0 (the "License");
@@ -40,10 +40,6 @@ public class Sha1DigestTest {
 
     private static final String MESSAGE_DIGEST = "6367c48dd193d56ea7b0baad25b19455e529f5ee";
 
-    /**
-     * Test method for {@link Sha1Digest}.
-     * @throws IOException
-     */
     @Test
     public void testCalculateInputStream() throws IOException {
         try (InputStream inputStream = getClass().getResourceAsStream("message.txt")) {
@@ -56,10 +52,6 @@ public class Sha1DigestTest {
     }
 
 
-    /**
-     * Test method for {@link Sha1Digest#verify(java.lang.String, java.lang.String)}.
-     * @throws IOException
-     */
     @Test
     public void testVerify() throws IOException {
         Sha1Digest sha1Digest = new Sha1Digest();
@@ -69,10 +61,6 @@ public class Sha1DigestTest {
         assertTrue("The message digest do not match", ret);
     }
 
-    /**
-     * Test method for {@link Sha1Digest#save(java.lang.String)}.
-     * @throws IOException
-     */
     @Test
     public void testSave() throws IOException {
         Sha1Digest sha1Digest = new Sha1Digest();

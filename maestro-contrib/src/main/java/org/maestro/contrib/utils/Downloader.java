@@ -60,8 +60,8 @@ public class Downloader {
 	 * @param url file URL
 	 * @param overwrite whether to overwrite existent files
 	 * @return A new File object pointing to the output file
-	 * @throws MalformedURLException
-	 * @throws URISyntaxException
+	 * @throws MalformedURLException if the URL is malformed
+	 * @throws URISyntaxException in case of problems in the URI syntax
 	 * @throws IOException if unable to create the output directory, file or remove an
 	 * existent file
 	 */

@@ -50,7 +50,7 @@ public interface TestProfile {
 
     /**
      * Sets the test endpoint resolver
-     * @param endPointResolver
+     * @param endPointResolver the test endpoint resolver
      */
     void setTestEndpointResolver(TestEndpointResolver endPointResolver);
 

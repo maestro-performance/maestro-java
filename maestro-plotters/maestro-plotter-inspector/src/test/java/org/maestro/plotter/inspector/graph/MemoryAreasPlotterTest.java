@@ -51,7 +51,7 @@ public class MemoryAreasPlotterTest {
     /**
      * Results in nothing because there can be 0 or more memory areas data
      * mapped in the CSV.
-     * @throws IOException
+     * @throws IOException for I/O related errors
      */
     @Test
     public void testPlotEmpty() throws IOException {

@@ -38,7 +38,7 @@ public class DefaultJolokiaParser {
 
     /**
      * Parse a jolokia property
-     * @param converter
+     * @param converter the jolokia converter to use
      * @param key
      * @param object
      */
