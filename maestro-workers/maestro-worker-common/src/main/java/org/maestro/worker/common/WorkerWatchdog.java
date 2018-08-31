@@ -66,7 +66,7 @@ class WorkerWatchdog implements Runnable {
             }
 
             endSignal.await();
-            logger.info("Watchdog is good to continue ...");
+            logger.debug("All workers have finished. Proceeding to run the shutdown observers");
         } catch (InterruptedException e) {
             logger.debug("Watchdog was interrupted");
         } finally {
