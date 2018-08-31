@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.Session;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
@@ -53,6 +54,8 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     private final Supplier<? extends SenderClient> clientFactory;
     private final WorkerStateInfo workerStateInfo = new WorkerStateInfo();
+    private CountDownLatch startSignal;
+    private CountDownLatch endSignal;
 
     public JMSSenderWorker() {
         this(JMSSenderClient::new);
@@ -62,6 +65,11 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         this.clientFactory = clientFactory;
     }
 
+    @Override
+    public synchronized void setupBarriers(final CountDownLatch startSignal, final CountDownLatch endSignal) {
+        this.startSignal = startSignal;
+        this.endSignal = endSignal;
+    }
 
     @Override
     public long startedEpochMillis() {
@@ -125,12 +133,14 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         try {
             doClientStartup(client);
 
+            startSignal.countDown();
+
             runLoadLoop(client);
         } catch (InterruptedException e) {
             logger.error("JMS sender worker {} interrupted while sending messages: {}", id,
                     e.getMessage());
 
-            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
+            stop();
         } catch (Exception e) {
             if (!workerStateInfo.isRunning()) {
                 logger.error("Unable to start the sender worker: {}", e.getMessage(), e);
@@ -139,13 +149,14 @@ public class JMSSenderWorker implements MaestroSenderWorker {
                 logger.error("Unexpected error while running the sender worker: {}", e.getMessage(), e);
             }
 
-            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
+            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED, null);
         } finally {
             exitStateCheck(id);
 
             //the test could be considered already stopped here, but cleaning up JMS resources could take some time anyway
             client.stop();
             logger.info("Finalized worker {} after sending {} messages", id, messageCount);
+            endSignal.countDown();
         }
     }
 
@@ -229,7 +240,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     @Override
     public boolean isRunning() {
-        return workerStateInfo.isRunning();
+        return workerStateInfo.isRunning() && !Thread.currentThread().isInterrupted();
     }
 
     @Override

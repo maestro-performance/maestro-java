@@ -19,6 +19,8 @@ package org.maestro.common.worker;
 import org.HdrHistogram.Histogram;
 import org.maestro.common.duration.TestDuration;
 
+import java.util.concurrent.CountDownLatch;
+
 /**
  * A common interface for any type of Maestro worker.
  */
@@ -30,6 +32,12 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
      * @return true if it is in running state or false otherwise
      */
     boolean isRunning();
+
+    /**
+     * Worker initialization
+     * @param startSignal
+     */
+    void setupBarriers(CountDownLatch startSignal, CountDownLatch endSignal);
 
 
     /**

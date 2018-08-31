@@ -19,6 +19,8 @@ package org.maestro.worker.common.container.initializers;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.worker.WorkerOptions;
 
+import java.util.concurrent.CountDownLatch;
+
 public class TestWorkerInitializer implements WorkerInitializer {
     private final Class<MaestroWorker> clazz;
     private final WorkerOptions workerOptions;
@@ -34,9 +36,10 @@ public class TestWorkerInitializer implements WorkerInitializer {
 
 
     @Override
-    public MaestroWorker initialize(int number) throws IllegalAccessException, InstantiationException {
+    public MaestroWorker initialize(int number, final CountDownLatch startSignal, final CountDownLatch endSignal) throws IllegalAccessException, InstantiationException {
         final MaestroWorker worker = clazz.newInstance();
 
+        worker.setupBarriers(startSignal, endSignal);
         worker.setWorkerOptions(workerOptions);
         worker.setWorkerNumber(number);
 

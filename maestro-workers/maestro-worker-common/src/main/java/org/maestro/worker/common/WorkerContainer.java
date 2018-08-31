@@ -16,6 +16,8 @@
 
 package org.maestro.worker.common;
 
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.evaluators.Evaluator;
 import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.worker.*;
@@ -29,6 +31,8 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This is a container class for multiple workerRuntimeInfos. It is responsible for
@@ -36,13 +40,23 @@ import java.util.List;
  */
 public final class WorkerContainer {
     private static final Logger logger = LoggerFactory.getLogger(WorkerContainer.class);
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
     private final List<WorkerRuntimeInfo> workerRuntimeInfos = new ArrayList<>();
     private final List<WatchdogObserver> observers = new LinkedList<>();
+    private static final long TIMEOUT_STOP_WORKER_MILLIS;
 
     private WorkerWatchdog workerWatchdog;
+    private ExecutorService executorService;
     private Thread watchDogThread;
     private LocalDateTime startTime;
+    private CountDownLatch startSignal;
+    private CountDownLatch endSignal;
+
+    static {
+        TIMEOUT_STOP_WORKER_MILLIS = config.getLong("maestro.worker.stop.timeout", 1000);
+    }
+
 
     public WorkerContainer() {
     }
@@ -59,14 +73,25 @@ public final class WorkerContainer {
                     Runtime.getRuntime().availableProcessors());
         }
 
+        executorService = Executors.newFixedThreadPool(count, new ThreadFactory() {
+            AtomicInteger count = new AtomicInteger();
+
+            @Override
+            public Thread newThread(Runnable runnable) {
+                return new Thread(runnable, String.format("worker-%d", count.incrementAndGet()));
+            }
+        });
+
+        startSignal = new CountDownLatch(count);
+        endSignal = new CountDownLatch(count);
+
         for (int i = 0; i < count; i++) {
-            final MaestroWorker worker = initializer.initialize(i);
+            final MaestroWorker worker = initializer.initialize(i, startSignal, endSignal);
 
             workers.add(worker);
             WorkerRuntimeInfo ri = new WorkerRuntimeInfo();
 
             ri.worker = worker;
-            ri.thread = new Thread(ri.worker, String.format("worker-%d", i));
             workerRuntimeInfos.add(ri);
         }
 
@@ -79,22 +104,38 @@ public final class WorkerContainer {
     public void start() {
         try {
             for (WorkerRuntimeInfo workerRuntimeInfo : workerRuntimeInfos) {
-                workerRuntimeInfo.thread.start();
+                executorService.submit(workerRuntimeInfo.worker);
             }
 
-            workerWatchdog = new WorkerWatchdog(this, workerRuntimeInfos);
+            workerWatchdog = new WorkerWatchdog(this, workerRuntimeInfos, endSignal);
+
+            startSignal.await(10, TimeUnit.SECONDS);
 
             watchDogThread = new Thread(workerWatchdog);
             watchDogThread.start();
 
             startTime = LocalDateTime.now();
-
         }
         catch (Throwable t) {
             workerRuntimeInfos.clear();
 
-            throw t;
+            try {
+                throw t;
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
+    }
+
+    private static long getDeadLine(int runningCount) {
+        long deadLineAmount = runningCount * TIMEOUT_STOP_WORKER_MILLIS * 2;
+        long deadLineMax = config.getLong("worker.active.deadline.max", 65000);
+
+        if (deadLineAmount > deadLineMax) {
+            deadLineAmount = deadLineMax;
+        }
+
+        return deadLineAmount;
     }
 
     public void stop() {
@@ -108,6 +149,13 @@ public final class WorkerContainer {
             }
 
             startTime = null;
+        }
+
+        try {
+            executorService.awaitTermination(getDeadLine(workerRuntimeInfos.size()), TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+            logger.warn("Interrupted ... forcing workers shutdown");
+            executorService.shutdownNow();
         }
     }
 

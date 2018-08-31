@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.concurrent.CountDownLatch;
 
 /**
  * The watchdog inspects the active workers to check whether they are still active, completed their job
@@ -40,28 +41,19 @@ class WorkerWatchdog implements Runnable {
     private final List<WorkerRuntimeInfo> workers;
 
     private volatile WatchdogState watchdogState = WatchdogState.STOPPED;
-
+    private final CountDownLatch endSignal;
 
     /**
      * Constructor
      * @param workers A list of workers to inspect
      */
     public WorkerWatchdog(final WorkerContainer workerContainer,
-                          final List<WorkerRuntimeInfo> workers) {
+                          final List<WorkerRuntimeInfo> workers, final CountDownLatch endSignal) {
         this.workerContainer = workerContainer;
         this.workers = new ArrayList<>(workers);
+        this.endSignal = endSignal;
     }
 
-
-    private boolean workersRunning() {
-        for (WorkerRuntimeInfo ri : workers) {
-            if (!ri.thread.isAlive()) {
-                return false;
-            }
-        }
-
-        return true;
-    }
 
     @Override
     public void run() {
@@ -73,15 +65,10 @@ class WorkerWatchdog implements Runnable {
                 observer.onStart();
             }
 
-            while (isRunning() && workersRunning()) {
-                try {
-                    Thread.sleep(1000);
-                } catch (InterruptedException e) {
-                    logger.info("The worker thread was interrupted", e);
-
-                    break;
-                }
-            }
+            endSignal.await();
+            logger.info("Watchdog is good to continue ...");
+        } catch (InterruptedException e) {
+            logger.debug("Watchdog was interrupted");
         } finally {
             watchdogState = WatchdogState.STOPPING;
             logger.debug("Waiting for flushing workers's data");

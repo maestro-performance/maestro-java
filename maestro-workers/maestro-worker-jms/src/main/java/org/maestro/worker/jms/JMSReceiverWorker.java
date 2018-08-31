@@ -31,6 +31,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.Session;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
@@ -54,6 +55,22 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
     private String url;
     private final Supplier<? extends ReceiverClient> clientFactory;
     private int number;
+    private CountDownLatch startSignal;
+    private CountDownLatch endSignal;
+
+    public JMSReceiverWorker() {
+        this(JMSReceiverClient::new);
+    }
+
+    private JMSReceiverWorker(Supplier<? extends ReceiverClient> clientFactory) {
+        this.clientFactory = clientFactory;
+    }
+
+    @Override
+    public synchronized void setupBarriers(final CountDownLatch startSignal, final CountDownLatch endSignal) {
+        this.startSignal = startSignal;
+        this.endSignal = endSignal;
+    }
 
     @Override
     public long messageCount() {
@@ -81,14 +98,6 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         } catch (DurationParseException e) {
             e.printStackTrace();
         }
-    }
-
-    public JMSReceiverWorker() {
-        this(JMSReceiverClient::new);
-    }
-
-    private JMSReceiverWorker(Supplier<? extends ReceiverClient> clientFactory) {
-        this.clientFactory = clientFactory;
     }
 
     @Override
@@ -131,12 +140,14 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         try {
             doClientStartup(client);
 
+            startSignal.countDown();
+
             runReceiveLoop(client);
         } catch (InterruptedException e) {
             logger.error("JMS receiver worker {} interrupted while receiving messages: {}", id,
                     e.getMessage());
 
-            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
+            stop();
         }
         catch (Exception e) {
             if (!workerStateInfo.isRunning()) {
@@ -153,6 +164,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
             //the test could be considered already stopped here, but cleaning up JMS resources could take some time anyway
             client.stop();
             logger.info("Finalized worker {} after receiving {} messages", id, messageCount);
+            endSignal.countDown();
         }
     }
 
@@ -229,7 +241,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
     @Override
     public boolean isRunning() {
-        return workerStateInfo.isRunning();
+        return workerStateInfo.isRunning() && !Thread.currentThread().isInterrupted();
     }
 
     @Override

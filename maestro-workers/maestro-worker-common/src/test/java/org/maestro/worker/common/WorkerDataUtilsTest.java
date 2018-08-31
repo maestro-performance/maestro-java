@@ -9,6 +9,7 @@ import org.maestro.common.worker.WorkerStateInfo;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.concurrent.CountDownLatch;
 
 public class WorkerDataUtilsTest {
 
@@ -66,6 +67,11 @@ public class WorkerDataUtilsTest {
         @Override
         public long messageCount() {
             return 0;
+        }
+
+        @Override
+        public void setupBarriers(CountDownLatch startSignal, CountDownLatch endSignal) {
+            // no-op
         }
     }
 
