@@ -47,8 +47,9 @@ public final class WorkerContainer {
     private static final long TIMEOUT_STOP_WORKER_MILLIS;
 
     private WorkerWatchdog workerWatchdog;
-    private ExecutorService executorService;
-    private Thread watchDogThread;
+    private ExecutorService workerExecutorService;
+    private ExecutorService watchdogExecutorService;
+
     private LocalDateTime startTime;
     private CountDownLatch startSignal;
     private CountDownLatch endSignal;
@@ -73,7 +74,7 @@ public final class WorkerContainer {
                     Runtime.getRuntime().availableProcessors());
         }
 
-        executorService = Executors.newFixedThreadPool(count, new ThreadFactory() {
+        workerExecutorService = Executors.newFixedThreadPool(count, new ThreadFactory() {
             AtomicInteger count = new AtomicInteger();
 
             @Override
@@ -95,6 +96,8 @@ public final class WorkerContainer {
             workerRuntimeInfos.add(ri);
         }
 
+        watchdogExecutorService = Executors.newSingleThreadScheduledExecutor();
+
         return workers;
     }
 
@@ -104,15 +107,14 @@ public final class WorkerContainer {
     public void start() {
         try {
             for (WorkerRuntimeInfo workerRuntimeInfo : workerRuntimeInfos) {
-                executorService.submit(workerRuntimeInfo.worker);
+                workerExecutorService.submit(workerRuntimeInfo.worker);
             }
 
             workerWatchdog = new WorkerWatchdog(this, workerRuntimeInfos, endSignal);
 
             startSignal.await(10, TimeUnit.SECONDS);
 
-            watchDogThread = new Thread(workerWatchdog);
-            watchDogThread.start();
+            watchdogExecutorService.submit(workerWatchdog);
 
             startTime = LocalDateTime.now();
         }
@@ -140,31 +142,26 @@ public final class WorkerContainer {
 
     public void stop() {
         if (workerWatchdog != null) {
-            if (workerWatchdog.isRunning()) {
-                for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
-                    ri.worker.stop();
-                }
-
-                workerWatchdog.stop();
+            for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
+                ri.worker.stop();
             }
 
             startTime = null;
-        }
 
-        try {
-            executorService.awaitTermination(getDeadLine(workerRuntimeInfos.size()), TimeUnit.MILLISECONDS);
-        } catch (InterruptedException e) {
-            logger.warn("Interrupted ... forcing workers shutdown");
-            executorService.shutdownNow();
-        }
-    }
+            try {
+                workerExecutorService.awaitTermination(getDeadLine(workerRuntimeInfos.size()), TimeUnit.MILLISECONDS);
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted ... forcing workers shutdown");
+                workerExecutorService.shutdownNow();
+            }
 
-    private boolean watchdogRunning() {
-        if (workerWatchdog == null) {
-            return false;
+            try {
+                watchdogExecutorService.awaitTermination(60, TimeUnit.SECONDS);
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted ... forcing watchdog shutdown");
+                watchdogExecutorService.shutdownNow();
+            }
         }
-
-        return workerWatchdog.isRunning();
     }
 
     /**
@@ -172,7 +169,7 @@ public final class WorkerContainer {
      * @return true if a test is in progress or false otherwise
      */
     public boolean isTestInProgress() {
-        if (!watchdogRunning()) {
+        if (workerRuntimeInfos.isEmpty()) {
             return false;
         }
 
@@ -192,7 +189,7 @@ public final class WorkerContainer {
      * @return the throughput statistics
      */
     public ThroughputStats throughputStats() {
-        if (!watchdogRunning()) {
+        if (workerRuntimeInfos.isEmpty()) {
             return null;
         }
 
@@ -218,7 +215,7 @@ public final class WorkerContainer {
      * @return the latency statistics or null if not applicable for the work set in the container
      */
     public LatencyStats latencyStats(final Evaluator<?> evaluator) {
-        if (!watchdogRunning()) {
+        if (workerRuntimeInfos.isEmpty()) {
             return null;
         }
 
@@ -245,16 +242,14 @@ public final class WorkerContainer {
 
     public boolean waitForComplete(long timeout) {
         try {
-            watchDogThread.join(timeout);
+            endSignal.await(timeout, TimeUnit.SECONDS);
             stop();
 
-            return watchDogThread.isAlive();
+            return true;
         } catch (InterruptedException e) {
-            Logger logger = LoggerFactory.getLogger(WorkerContainer.class);
-
             logger.debug("Interrupted while waiting for the watchdog to complete running");
-        }
 
-        return false;
+            return false;
+        }
     }
 }

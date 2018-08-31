@@ -43,13 +43,8 @@ public class DrainObserver implements WatchdogObserver {
             logger.info("Starting to drain the queues after the test was executed");
             workerContainer.start();
 
-            boolean ret = workerContainer.waitForComplete(drainRetries * 1000);
-            if (!ret) {
-                logger.info("Drain completed successfully {}");
-            }
-            else {
-                logger.info("Drain completed successfully but the watchdog is still running");
-            }
+            workerContainer.waitForComplete(drainRetries);
+            logger.info("Drain completed successfully");
 
             client.notifyDrainComplete(true, "Drain completed successfully");
         } catch (Throwable t) {

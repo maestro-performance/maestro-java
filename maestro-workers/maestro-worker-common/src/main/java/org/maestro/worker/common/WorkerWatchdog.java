@@ -29,18 +29,11 @@ import java.util.concurrent.CountDownLatch;
  * or failed
  */
 class WorkerWatchdog implements Runnable {
-    public enum WatchdogState {
-        STOPPED,
-        RUNNING,
-        STOPPING
-    }
-
     private static final Logger logger = LoggerFactory.getLogger(WorkerWatchdog.class);
 
     private final WorkerContainer workerContainer;
     private final List<WorkerRuntimeInfo> workers;
 
-    private volatile WatchdogState watchdogState = WatchdogState.STOPPED;
     private final CountDownLatch endSignal;
 
     /**
@@ -58,40 +51,26 @@ class WorkerWatchdog implements Runnable {
     @Override
     public void run() {
         logger.info("Running the worker watchdog");
-        watchdogState = WatchdogState.RUNNING;
-
         try {
             for (WatchdogObserver observer : workerContainer.getObservers()) {
                 observer.onStart();
             }
 
             endSignal.await();
-            logger.debug("All workers have finished. Proceeding to run the shutdown observers");
+
+            logger.debug("All workers have finished");
         } catch (InterruptedException e) {
             logger.debug("Watchdog was interrupted");
         } finally {
-            watchdogState = WatchdogState.STOPPING;
-            logger.debug("Waiting for flushing workers's data");
+            logger.info("Number of workers observers to run: {}", workerContainer.getObservers().size());
 
             for (WatchdogObserver observer : workerContainer.getObservers()) {
                 if (!observer.onStop(workers)) {
                     logger.debug("Stopping observers because {} returned false", observer.getClass().getName());
                 }
             }
-
-            watchdogState = WatchdogState.STOPPED;
         }
 
         logger.info("Finished running the worker watchdog");
-    }
-
-    public boolean isRunning() {
-        return watchdogState == WatchdogState.RUNNING;
-    }
-
-    public void stop() {
-        if (watchdogState == WatchdogState.RUNNING) {
-            watchdogState = WatchdogState.STOPPING;
-        }
     }
 }
