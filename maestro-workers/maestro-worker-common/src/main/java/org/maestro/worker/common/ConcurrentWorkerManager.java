@@ -335,7 +335,6 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         } catch (ClassNotFoundException e) {
             getClient().replyInternalError(note, "Unable to create a drain worker for %s", note.getWorkerName());
 
-            return;
         }
     }
 
@@ -361,7 +360,6 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         } catch (ClassNotFoundException e) {
             getClient().replyInternalError(note, "Unable to create an worker for %s", workerName);
 
-            return;
         }
     }
 
