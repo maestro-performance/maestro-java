@@ -42,8 +42,8 @@ function start() {
     fi
 
     echo -en "Starting the worker daemon: "
-    nohup "${installDir}"/bin/maestro-worker -m "${MAESTRO_BROKER}" -l "${MAESTRO_LOG_DIR}" -H "${MAESTRO_LOCAL_HOSTNAME}" "$@" >/dev/null 2>/dev/null &
-    if [[ $? -ne 0 ]] ; then
+    nohup "${installDir}/bin/maestro-worker" -m "${MAESTRO_BROKER}" -l "${MAESTRO_LOG_DIR}" -H "${MAESTRO_LOCAL_HOSTNAME}" "$@" >/dev/null 2>/dev/null &
+    if [[ $? == 0 ]] ; then
         eerror "failed to daemonize the Maestro worker"
         exit 1
     fi
@@ -51,14 +51,14 @@ function start() {
     sleep 1s
     processCount=0
     for pid in $(pgrep -f ".*java.*bin/maestro-worker.*") ; do
-        if [[ processCount -eq 0 ]] ; then
+        if (( processCount == 0 )) ; then
             esuccess
         fi
         echo -e "Maestro worker started:${GREEN} ${pid} ${RESET}"
         ((processCount++))
     done
 
-    if [[ procCount -eq 0 ]] ; then
+    if (( procCount == 0 )) ; then
         eerror "Maestro agent did not start successfully"
     fi
 }

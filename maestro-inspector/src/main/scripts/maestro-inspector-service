@@ -40,7 +40,7 @@ function eerror() {
 function start() {
     echo -en "Starting the daemon: "
     nohup "${installDir}/bin/maestro-inspector" -m "${MAESTRO_BROKER}" -l "${MAESTRO_LOG_DIR}" "$@" >/dev/null 2>/dev/null &
-    if [[ $? -ne 0 ]] ; then
+    if [[ $? == 0 ]] ; then
         eerror "failed to daemonize the Maestro inspector"
         exit 1
     fi
@@ -48,7 +48,7 @@ function start() {
     sleep 2s
     processCount=0
     for pid in $(pgrep -f ".*java.*bin/maestro-inspector.*") ; do
-        if [[ processCount -eq 0 ]] ; then
+        if (( processCount == 0 )) ; then
             esuccess
         fi
 
@@ -56,7 +56,7 @@ function start() {
         ((processCount++))
     done
 
-    if [ processCount -eq 0 ] ; then
+    if (( procCount == 0 )) ; then
         eerror "Maestro inspector did not start successfully"
     fi
 }
