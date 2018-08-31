@@ -169,7 +169,7 @@ public class MaestroProtocolTest {
                 parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
         assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_STATS);
         assertEquals("unittest", ((StatsResponse) parsed).getPeerInfo().peerName());
-        assertTrue(1.123 == ((StatsResponse) parsed).getLatency());
+        assertEquals(1.123, ((StatsResponse) parsed).getLatency(), 0.0);
         assertEquals("1521027548", ((StatsResponse) parsed).getTimestamp());
     }
 

@@ -82,7 +82,7 @@ public class ScriptTest extends EndToEndTest {
                 .pingRequest(MaestroTopics.WORKERS_TOPIC)
                 .get(10, TimeUnit.SECONDS);
 
-        assertTrue("Unexpected reply size", replies.size() == 2);
+        assertEquals("Unexpected reply size", 2, replies.size());
 
         MaestroNote note = replies.get(0);
         assertEquals(note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);
@@ -96,7 +96,7 @@ public class ScriptTest extends EndToEndTest {
                 .setMessageSize(MaestroTopics.WORKERS_TOPIC, 100)
                 .get(10, TimeUnit.SECONDS);
 
-        assertTrue(replies.size() == 2);
+        assertEquals(2, replies.size());
 
         MaestroNote note = replies.get(0);
         assertEquals(note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);
@@ -109,7 +109,7 @@ public class ScriptTest extends EndToEndTest {
         List<? extends MaestroNote> replies = maestro.setMessageSize(MaestroTopics.WORKERS_TOPIC, "~100")
                 .get(10, TimeUnit.SECONDS);
 
-        assertTrue("Current size = " + replies.size(), replies.size() == 2);
+        assertEquals("Current size = " + replies.size(), 2, replies.size());
 
         MaestroNote note = replies.get(0);
         assertEquals(note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);
@@ -123,7 +123,7 @@ public class ScriptTest extends EndToEndTest {
                 .setBroker(MaestroTopics.WORKERS_TOPIC, "amqp://localhost/unit.test.queue")
                 .get(10, TimeUnit.SECONDS);
 
-        assertTrue(replies.size() == 2);
+        assertEquals(2, replies.size());
 
         MaestroNote note = replies.get(0);
         assertEquals(note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);
@@ -137,7 +137,7 @@ public class ScriptTest extends EndToEndTest {
                 .setParallelCount(MaestroTopics.WORKERS_TOPIC, 100)
                 .get(10, TimeUnit.SECONDS);
 
-        assertTrue(replies.size() == 2);
+        assertEquals(2, replies.size());
 
         MaestroNote note = replies.get(0);
         assertEquals(note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);
@@ -151,7 +151,7 @@ public class ScriptTest extends EndToEndTest {
                 .setFCL(MaestroTopics.WORKERS_TOPIC, 100)
                 .get(10, TimeUnit.SECONDS);
 
-        assertTrue(replies.size() == 2);
+        assertEquals(2, replies.size());
 
         MaestroNote note = replies.get(0);
         assertEquals(note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);
@@ -168,7 +168,7 @@ public class ScriptTest extends EndToEndTest {
                 .statsRequest()
                 .get(10, TimeUnit.SECONDS);
 
-        assertTrue("Unexpected reply size", replies.size() == 2);
+        assertEquals("Unexpected reply size", 2, replies.size());
 
         MaestroNote note = replies.get(0);
         assertEquals(note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);

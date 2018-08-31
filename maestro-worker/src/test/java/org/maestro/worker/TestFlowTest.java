@@ -77,24 +77,24 @@ public class TestFlowTest extends EndToEndTest {
         System.out.println("Running a short-lived test");
 
         List<? extends MaestroNote> set1 = maestro.setParallelCount(MaestroTopics.WORKERS_TOPIC, 1).get();
-        assertTrue( "Set parallel count replies don't match: " + set1.size(), set1.size() == 2);
+        assertEquals("Set parallel count replies don't match: " + set1.size(), 2, set1.size());
 
         List<? extends MaestroNote> set2 = maestro.setDuration(MaestroTopics.WORKERS_TOPIC, "5").get();
-        assertTrue( "Set duration replies don't match: " + set2.size(), set2.size() == 2);
+        assertEquals("Set duration replies don't match: " + set2.size(), 2, set2.size());
 
         List<? extends MaestroNote> set3 = maestro.setMessageSize(MaestroTopics.WORKERS_TOPIC, 100).get();
-        assertTrue( "Set message size replies don't match: " + set3.size(), set3.size() == 2);
+        assertEquals("Set message size replies don't match: " + set3.size(), 2, set3.size());
 
         List<? extends MaestroNote> set4 = maestro.setFCL(MaestroTopics.WORKERS_TOPIC, 1000).get();
-        assertTrue( "Set FCL replies don't match: " + set4.size(), set4.size() == 2);
+        assertEquals("Set FCL replies don't match: " + set4.size(), 2, set4.size());
 
         List<? extends MaestroNote> set5 = maestro.setRate(MaestroTopics.WORKERS_TOPIC, 100).get();
-        assertTrue( "Set rate replies don't match: " + set5.size(), set5.size() == 2);
+        assertEquals("Set rate replies don't match: " + set5.size(), 2, set5.size());
 
         List<? extends MaestroNote> set6 = maestro
                 .setBroker(MaestroTopics.WORKERS_TOPIC, "amqp://localhost:5672/unit.test.queue")
                 .get();
-        assertTrue( "Set broker replies don't match: " + set6.size(), set6.size() == 2);
+        assertEquals("Set broker replies don't match: " + set6.size(), 2, set6.size());
 
 
         // 12 = 6 commands * 2 peers (sending and receiving peers)
@@ -108,7 +108,7 @@ public class TestFlowTest extends EndToEndTest {
                 .waitForNotifications(2)
                 .get(3, TimeUnit.SECONDS);
 
-        assertTrue( "Replies don't match: " + replies.size(), replies.size() == 2);
+        assertEquals("Replies don't match: " + replies.size(), 2, replies.size());
 
         MaestroNote firstNote = replies.get(0);
         assertEquals(firstNote.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);

@@ -16,15 +16,14 @@
 
 package org.maestro.plotter.rate;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 class CommonRateProcessorTest {
 
     public void testRecordCount(final int count, final RateData rateData) {
-        assertTrue("Incorrect loaded size for the rate periods",
-                count == rateData.getPeriods().size());
-        assertTrue("Incorrect loaded size for the rate values",
-                count == rateData.getPeriods().size());
+        assertEquals("Incorrect loaded size for the rate periods", count, rateData.getPeriods().size());
+        assertEquals("Incorrect loaded size for the rate values", count, rateData.getPeriods().size());
     }
 
     protected RateData getData(final String resource) throws Exception {
