@@ -18,7 +18,6 @@ package org.maestro.worker.common;
 
 import org.maestro.common.evaluators.Evaluator;
 import org.maestro.common.evaluators.LatencyEvaluator;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.*;
 import org.maestro.worker.common.container.initializers.WorkerInitializer;
 import org.maestro.worker.common.watchdog.WatchdogObserver;

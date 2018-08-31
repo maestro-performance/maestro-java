@@ -1,7 +1,6 @@
 package org.maestro.tests;
 
 import org.maestro.client.notes.GetResponse;
-import org.maestro.client.notes.MaestroResponse;
 import org.maestro.client.notes.TestFailedNotification;
 import org.maestro.client.notes.TestSuccessfulNotification;
 import org.maestro.common.client.notes.GetOption;

@@ -18,7 +18,6 @@ package org.maestro.client.exchange;
 
 import org.maestro.client.exchange.support.GroupInfo;
 import org.maestro.client.exchange.support.PeerInfo;
-import org.maestro.common.HostTypes;
 import org.maestro.common.Role;
 
 /**
