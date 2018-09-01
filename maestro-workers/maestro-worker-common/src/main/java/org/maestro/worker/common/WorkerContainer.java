@@ -62,6 +62,14 @@ public final class WorkerContainer {
     }
 
 
+    /**
+     * Create the worker list
+     * @param initializer the test worker initializer
+     * @param count how many workers to create
+     * @return A list of workers
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
     public List<MaestroWorker> create(final WorkerInitializer initializer, int count) throws IllegalAccessException, InstantiationException {
         workerRuntimeInfos.clear();
 
@@ -139,6 +147,9 @@ public final class WorkerContainer {
         return deadLineAmount;
     }
 
+    /**
+     * Stops the workers on the container
+     */
     public void stop() {
         for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
             ri.worker.stop();
@@ -236,10 +247,20 @@ public final class WorkerContainer {
         return null;
     }
 
+    /**
+     * Gets the observers setup of the workers
+     * @return a list of observers
+     */
     public List<WatchdogObserver> getObservers() {
         return observers;
     }
 
+
+    /**
+     * Waits until the work is complete
+     * @param timeout how much to wait before timing out
+     * @return false if interrupted or true otherwise
+     */
     public boolean waitForComplete(long timeout) {
         try {
             endSignal.await(timeout, TimeUnit.SECONDS);
