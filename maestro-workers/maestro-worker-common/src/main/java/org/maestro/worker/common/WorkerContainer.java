@@ -43,7 +43,7 @@ public final class WorkerContainer {
     private static final Logger logger = LoggerFactory.getLogger(WorkerContainer.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
-    private final List<MaestroWorker> workers = new ArrayList<>();
+    private final List<MaestroWorker> workers = new LinkedList<>();
     private final List<WatchdogObserver> observers = new LinkedList<>();
     private static final long TIMEOUT_STOP_WORKER_MILLIS;
 
@@ -104,9 +104,7 @@ public final class WorkerContainer {
      */
     public void start() {
         try {
-            for (MaestroWorker worker : workers) {
-                workerExecutorService.submit(worker);
-            }
+            workers.forEach(w -> workerExecutorService.submit(w));
 
             startSignal.await(10, TimeUnit.SECONDS);
 
@@ -142,9 +140,7 @@ public final class WorkerContainer {
      * Stops the workers on the container
      */
     public void stop() {
-        for (MaestroWorker worker : workers) {
-            worker.stop();
-        }
+        workers.forEach(w -> w.stop());
 
         startTime = null;
 
