@@ -31,8 +31,6 @@ public class WorkerRateWriter implements Runnable {
     private final List<? extends MaestroWorker> workers;
     private final EpochMicroClock microClock = EpochClocks.exclusiveMicro();
 
-    private volatile boolean running = false;
-
     public WorkerRateWriter(final File reportFolder, final List<? extends MaestroWorker> workers) throws IOException  {
         for (MaestroWorker worker : workers) {
             WriterCache cache = cachedWriters.get(worker.getClass());
@@ -87,12 +85,12 @@ public class WorkerRateWriter implements Runnable {
 
     @Override
     public void run() {
-        running = true;
-
         final long interval = 1_000_000_000L;
         long nextFireTime = System.nanoTime() + interval;
 
-        while (running) {
+        final Thread currentThread = Thread.currentThread();
+
+        while (!currentThread.isInterrupted()) {
             final long now = WorkerUtils.waitNanoInterval(nextFireTime, interval);
 
             final long drift = TimeUnit.NANOSECONDS.toMillis(now - nextFireTime);
@@ -110,12 +108,4 @@ public class WorkerRateWriter implements Runnable {
         cachedWriters.values().forEach(writerCache -> writerCache.writer.close());
     }
 
-
-    public boolean isRunning() {
-        return running;
-    }
-
-    public void setRunning(boolean running) {
-        this.running = running;
-    }
 }
