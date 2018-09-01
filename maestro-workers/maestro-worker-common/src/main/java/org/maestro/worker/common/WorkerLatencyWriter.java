@@ -138,7 +138,7 @@ public final class WorkerLatencyWriter implements Runnable {
         final long anyWorkers = this.workers.stream()
                 .filter(w -> w instanceof MaestroReceiverWorker).count();
         //avoid creating any file if there aren't  any MaestroReceiverWorker
-        if (anyWorkers > 0) {
+        if (anyWorkers == 0) {
             return;
         }
 
