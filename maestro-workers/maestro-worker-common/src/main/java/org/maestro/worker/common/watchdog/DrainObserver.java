@@ -4,9 +4,9 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.MaestroReceiverClient;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.duration.DurationDrain;
+import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.worker.common.WorkerContainer;
-import org.maestro.worker.common.WorkerRuntimeInfo;
 import org.maestro.worker.common.container.initializers.WorkerInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,7 +33,7 @@ public class DrainObserver implements WatchdogObserver {
 
 
     @Override
-    public boolean onStop(List<WorkerRuntimeInfo> workerRuntimeInfos) {
+    public boolean onStop(List<MaestroWorker> workers) {
         final int drainRetries = (config.getInt("worker.auto.drain.retries", 10) + 5);
 
         int count = workerOptions.getParallelCountAsInt();

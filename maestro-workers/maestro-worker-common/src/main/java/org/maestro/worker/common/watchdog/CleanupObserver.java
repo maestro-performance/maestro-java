@@ -1,6 +1,6 @@
 package org.maestro.worker.common.watchdog;
 
-import org.maestro.worker.common.WorkerRuntimeInfo;
+import org.maestro.common.worker.MaestroWorker;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +13,7 @@ public class CleanupObserver implements WatchdogObserver {
     private static final Logger logger = LoggerFactory.getLogger(CleanupObserver.class);
 
     @Override
-    public boolean onStop(List<WorkerRuntimeInfo> workerRuntimeInfos) {
+    public boolean onStop(List<MaestroWorker> workerRuntimeInfos) {
         logger.info("Cleaning up the list of worker runtimes");
 
         workerRuntimeInfos.clear();

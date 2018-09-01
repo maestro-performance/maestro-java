@@ -16,6 +16,7 @@
 
 package org.maestro.worker.common;
 
+import org.maestro.common.worker.MaestroWorker;
 import org.maestro.worker.common.watchdog.WatchdogObserver;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,7 +33,7 @@ class WorkerWatchdog implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(WorkerWatchdog.class);
 
     private final WorkerContainer workerContainer;
-    private final List<WorkerRuntimeInfo> workers;
+    private final List<MaestroWorker> workers;
 
     private final CountDownLatch endSignal;
 
@@ -41,7 +42,7 @@ class WorkerWatchdog implements Runnable {
      * @param workers A list of workers to inspect
      */
     public WorkerWatchdog(final WorkerContainer workerContainer,
-                          final List<WorkerRuntimeInfo> workers, final CountDownLatch endSignal) {
+                          final List<MaestroWorker> workers, final CountDownLatch endSignal) {
         this.workerContainer = workerContainer;
         this.workers = new ArrayList<>(workers);
         this.endSignal = endSignal;

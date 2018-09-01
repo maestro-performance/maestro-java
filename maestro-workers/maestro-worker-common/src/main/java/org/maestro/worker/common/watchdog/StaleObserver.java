@@ -1,6 +1,6 @@
 package org.maestro.worker.common.watchdog;
 
-import org.maestro.worker.common.WorkerRuntimeInfo;
+import org.maestro.common.worker.MaestroWorker;
 import org.maestro.worker.common.WorkerStaleChecker;
 
 import java.util.List;
@@ -22,7 +22,7 @@ public class StaleObserver implements WatchdogObserver {
     }
 
     @Override
-    public boolean onStop(List<WorkerRuntimeInfo> workerRuntimeInfos) {
+    public boolean onStop(List<MaestroWorker> workers) {
         workerStaleChecker.stop();
         return true;
     }

@@ -1,7 +1,7 @@
 package org.maestro.worker.common.watchdog;
 
+import org.maestro.common.worker.MaestroWorker;
 import org.maestro.worker.common.WorkerEvaluatorChecker;
-import org.maestro.worker.common.WorkerRuntimeInfo;
 
 import java.util.List;
 
@@ -19,7 +19,7 @@ public class EvaluatorObserver implements WatchdogObserver {
     }
 
     @Override
-    public boolean onStop(List<WorkerRuntimeInfo> workerRuntimeInfos) {
+    public boolean onStop(List<MaestroWorker> workers) {
         evaluatorChecker.stop();
         return true;
     }

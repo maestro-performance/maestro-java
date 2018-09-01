@@ -16,12 +16,10 @@
 
 package org.maestro.worker.common.watchdog;
 
-import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.MaestroReceiverClient;
-import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerStateInfo;
-import org.maestro.worker.common.WorkerRuntimeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -63,14 +61,14 @@ public class WorkerShutdownObserver implements WatchdogObserver {
     }
 
     @Override
-    public boolean onStop(final List<WorkerRuntimeInfo> workers) {
+    public boolean onStop(final List<MaestroWorker> workers) {
         boolean failed = false;
         String exceptionMessage = null;
 
         try {
-            for (WorkerRuntimeInfo ri : workers) {
-                if (ri.worker != null) {
-                    WorkerStateInfo wsi = ri.worker.getWorkerState();
+            for (MaestroWorker worker : workers) {
+                if (worker != null) {
+                    WorkerStateInfo wsi = worker.getWorkerState();
                     if (wsi == null) {
                         logger.error("Invalid worker state information");
 

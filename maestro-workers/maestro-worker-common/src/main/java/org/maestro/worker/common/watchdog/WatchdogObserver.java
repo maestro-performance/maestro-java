@@ -16,7 +16,7 @@
 
 package org.maestro.worker.common.watchdog;
 
-import org.maestro.worker.common.WorkerRuntimeInfo;
+import org.maestro.common.worker.MaestroWorker;
 
 import java.util.List;
 
@@ -39,7 +39,7 @@ public interface WatchdogObserver {
      * @param workerRuntimeInfos a list of active workers and their information
      * @return true if processing should continue or false otherwise
      */
-    default boolean onStop(final List<WorkerRuntimeInfo> workerRuntimeInfos) {
+    default boolean onStop(final List<MaestroWorker> workerRuntimeInfos) {
         return true;
     }
 

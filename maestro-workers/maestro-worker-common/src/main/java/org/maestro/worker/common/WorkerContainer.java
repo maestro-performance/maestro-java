@@ -42,7 +42,7 @@ public final class WorkerContainer {
     private static final Logger logger = LoggerFactory.getLogger(WorkerContainer.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
-    private final List<WorkerRuntimeInfo> workerRuntimeInfos = new ArrayList<>();
+    private final List<MaestroWorker> workers = new ArrayList<>();
     private final List<WatchdogObserver> observers = new LinkedList<>();
     private static final long TIMEOUT_STOP_WORKER_MILLIS;
 
@@ -58,10 +58,6 @@ public final class WorkerContainer {
     }
 
 
-    public WorkerContainer() {
-    }
-
-
     /**
      * Create the worker list
      * @param initializer the test worker initializer
@@ -71,9 +67,7 @@ public final class WorkerContainer {
      * @throws InstantiationException
      */
     public List<MaestroWorker> create(final WorkerInitializer initializer, int count) throws IllegalAccessException, InstantiationException {
-        workerRuntimeInfos.clear();
-
-        List<MaestroWorker> workers = new ArrayList<>(count);
+        workers.clear();
 
         if (count > Runtime.getRuntime().availableProcessors()) {
             logger.warn("Trying the create {} worker threads but there is only {} processors available. This can " +
@@ -97,10 +91,6 @@ public final class WorkerContainer {
             final MaestroWorker worker = initializer.initialize(i, startSignal, endSignal);
 
             workers.add(worker);
-            WorkerRuntimeInfo ri = new WorkerRuntimeInfo();
-
-            ri.worker = worker;
-            workerRuntimeInfos.add(ri);
         }
 
         watchdogExecutorService = Executors.newSingleThreadScheduledExecutor();
@@ -113,20 +103,20 @@ public final class WorkerContainer {
      */
     public void start() {
         try {
-            for (WorkerRuntimeInfo workerRuntimeInfo : workerRuntimeInfos) {
-                workerExecutorService.submit(workerRuntimeInfo.worker);
+            for (MaestroWorker worker : workers) {
+                workerExecutorService.submit(worker);
             }
 
             startSignal.await(10, TimeUnit.SECONDS);
 
-            final WorkerWatchdog workerWatchdog = new WorkerWatchdog(this, workerRuntimeInfos, endSignal);
+            final WorkerWatchdog workerWatchdog = new WorkerWatchdog(this, workers, endSignal);
 
             watchdogExecutorService.submit(workerWatchdog);
 
             startTime = LocalDateTime.now();
         }
         catch (Throwable t) {
-            workerRuntimeInfos.clear();
+            workers.clear();
 
             try {
                 throw t;
@@ -151,15 +141,15 @@ public final class WorkerContainer {
      * Stops the workers on the container
      */
     public void stop() {
-        for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
-            ri.worker.stop();
+        for (MaestroWorker worker : workers) {
+            worker.stop();
         }
 
         startTime = null;
 
         if (workerExecutorService != null) {
             try {
-                workerExecutorService.awaitTermination(getDeadLine(workerRuntimeInfos.size()), TimeUnit.MILLISECONDS);
+                workerExecutorService.awaitTermination(getDeadLine(workers.size()), TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 logger.warn("Interrupted ... forcing workers shutdown");
                 workerExecutorService.shutdownNow();
@@ -181,14 +171,14 @@ public final class WorkerContainer {
      * @return true if a test is in progress or false otherwise
      */
     public boolean isTestInProgress() {
-        if (workerRuntimeInfos.isEmpty()) {
+        if (workers.isEmpty()) {
             return false;
         }
 
-        for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
+        for (MaestroWorker worker : workers) {
             // A worker should only be in "not running" state if it is being
             // shutdown
-            if (!ri.worker.isRunning()) {
+            if (!worker.isRunning()) {
                 return false;
             }
         }
@@ -201,15 +191,15 @@ public final class WorkerContainer {
      * @return the throughput statistics
      */
     public ThroughputStats throughputStats() {
-        if (workerRuntimeInfos.isEmpty()) {
+        if (workers.isEmpty()) {
             return null;
         }
 
         ThroughputStats ret = new ThroughputStats();
 
         long messageCount = 0;
-        for (WorkerRuntimeInfo runtimeInfo : workerRuntimeInfos) {
-            messageCount += runtimeInfo.worker.messageCount();
+        for (MaestroWorker worker : workers) {
+            messageCount += worker.messageCount();
         }
         ret.setCount(messageCount);
 
@@ -226,7 +216,7 @@ public final class WorkerContainer {
      * @return the latency statistics or null if not applicable for the work set in the container
      */
     public LatencyStats latencyStats(final Evaluator<?> evaluator) {
-        if (workerRuntimeInfos.isEmpty()) {
+        if (workers.isEmpty()) {
             return null;
         }
 

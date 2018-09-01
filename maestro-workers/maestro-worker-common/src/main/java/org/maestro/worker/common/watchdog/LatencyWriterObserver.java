@@ -17,8 +17,8 @@
 package org.maestro.worker.common.watchdog;
 
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.worker.MaestroWorker;
 import org.maestro.worker.common.WorkerLatencyWriter;
-import org.maestro.worker.common.WorkerRuntimeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -66,7 +66,7 @@ public class LatencyWriterObserver implements WatchdogObserver {
     }
 
     @Override
-    public boolean onStop(final List<WorkerRuntimeInfo> workerRuntimeInfos) {
+    public boolean onStop(final List<MaestroWorker> workers) {
         this.latencyWriterThread.interrupt();
 
         try {
