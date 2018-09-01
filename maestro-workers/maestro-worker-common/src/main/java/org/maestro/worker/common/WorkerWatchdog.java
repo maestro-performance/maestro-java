@@ -44,7 +44,7 @@ class WorkerWatchdog implements Runnable {
     public WorkerWatchdog(final WorkerContainer workerContainer,
                           final List<MaestroWorker> workers, final CountDownLatch endSignal) {
         this.workerContainer = workerContainer;
-        this.workers = new ArrayList<>(workers);
+        this.workers = workers;
         this.endSignal = endSignal;
     }
 

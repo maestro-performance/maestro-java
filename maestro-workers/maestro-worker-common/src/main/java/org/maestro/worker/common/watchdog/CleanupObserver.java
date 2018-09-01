@@ -13,10 +13,10 @@ public class CleanupObserver implements WatchdogObserver {
     private static final Logger logger = LoggerFactory.getLogger(CleanupObserver.class);
 
     @Override
-    public boolean onStop(List<MaestroWorker> workerRuntimeInfos) {
-        logger.info("Cleaning up the list of worker runtimes");
+    public boolean onStop(List<MaestroWorker> workers) {
+        logger.info("Cleaning up the list of workers");
 
-        workerRuntimeInfos.clear();
+        workers.clear();
         return false;
     }
 }

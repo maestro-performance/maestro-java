@@ -110,7 +110,7 @@ public final class WorkerLatencyWriter implements Runnable {
 
     public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers) {
         this.reportFolder = reportFolder;
-        this.workers = new ArrayList<>(workers);
+        this.workers = workers;
         //the first sleep will be a very long one :)
         this.reportingIntervalMs = TimeUnit.DAYS.toMillis(365);
         this.reportIntervalLatencies = false;
@@ -119,7 +119,7 @@ public final class WorkerLatencyWriter implements Runnable {
     public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers,
                                final LatencyEvaluator latencyEvaluator, long reportingIntervalMs) {
         this.reportFolder = reportFolder;
-        this.workers = new ArrayList<>(workers);
+        this.workers = workers;
         this.latencyEvaluator = latencyEvaluator;
         this.reportingIntervalMs = reportingIntervalMs;
         this.reportIntervalLatencies = true;

@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.*;
@@ -95,7 +96,7 @@ public final class WorkerContainer {
 
         watchdogExecutorService = Executors.newSingleThreadScheduledExecutor();
 
-        return workers;
+        return Collections.unmodifiableList(workers);
     }
 
     /**
