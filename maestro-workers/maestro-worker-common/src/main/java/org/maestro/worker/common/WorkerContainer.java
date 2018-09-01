@@ -192,7 +192,7 @@ public final class WorkerContainer {
      * @return the throughput statistics
      */
     public ThroughputStats throughputStats() {
-        if (workers.isEmpty()) {
+        if (!isTestInProgress()) {
             return null;
         }
 
@@ -217,7 +217,7 @@ public final class WorkerContainer {
      * @return the latency statistics or null if not applicable for the work set in the container
      */
     public LatencyStats latencyStats(final Evaluator<?> evaluator) {
-        if (workers.isEmpty()) {
+        if (!isTestInProgress()) {
             return null;
         }
 
