@@ -46,7 +46,6 @@ public final class WorkerContainer {
     private final List<WatchdogObserver> observers = new LinkedList<>();
     private static final long TIMEOUT_STOP_WORKER_MILLIS;
 
-    private WorkerWatchdog workerWatchdog;
     private ExecutorService workerExecutorService;
     private ExecutorService watchdogExecutorService;
 
@@ -110,9 +109,9 @@ public final class WorkerContainer {
                 workerExecutorService.submit(workerRuntimeInfo.worker);
             }
 
-            workerWatchdog = new WorkerWatchdog(this, workerRuntimeInfos, endSignal);
-
             startSignal.await(10, TimeUnit.SECONDS);
+
+            final WorkerWatchdog workerWatchdog = new WorkerWatchdog(this, workerRuntimeInfos, endSignal);
 
             watchdogExecutorService.submit(workerWatchdog);
 
@@ -141,20 +140,22 @@ public final class WorkerContainer {
     }
 
     public void stop() {
-        if (workerWatchdog != null) {
-            for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
-                ri.worker.stop();
-            }
+        for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
+            ri.worker.stop();
+        }
 
-            startTime = null;
+        startTime = null;
 
+        if (workerExecutorService != null) {
             try {
                 workerExecutorService.awaitTermination(getDeadLine(workerRuntimeInfos.size()), TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 logger.warn("Interrupted ... forcing workers shutdown");
                 workerExecutorService.shutdownNow();
             }
+        }
 
+        if (watchdogExecutorService != null) {
             try {
                 watchdogExecutorService.awaitTermination(60, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
@@ -207,7 +208,6 @@ public final class WorkerContainer {
 
         return ret;
     }
-
 
 
     /**
