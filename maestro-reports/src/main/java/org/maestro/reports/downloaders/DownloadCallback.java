@@ -33,7 +33,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * The Maestro Note callback mechanism responsible for downloading the log files
@@ -43,7 +42,7 @@ class DownloadCallback implements MaestroNoteCallback {
     private final Organizer organizer;
     private final Sha1Digest digest = new Sha1Digest();
     private Monitor<Object> monitor;
-    private AtomicInteger downloadCount = new AtomicInteger(0);
+    private volatile int downloadCount = 0;
 
     DownloadCallback(final Organizer organizer, final Monitor<Object> monitor) {
         this.organizer = organizer;
@@ -117,7 +116,7 @@ class DownloadCallback implements MaestroNoteCallback {
                 save(logResponse);
             }
             finally {
-                downloadCount.incrementAndGet();
+                downloadCount++;
                 monitor.doUnlock();
             }
 
@@ -128,6 +127,6 @@ class DownloadCallback implements MaestroNoteCallback {
     }
 
     public int getDownloadCount() {
-        return downloadCount.get();
+        return downloadCount;
     }
 }
