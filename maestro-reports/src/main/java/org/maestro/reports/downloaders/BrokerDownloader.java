@@ -92,7 +92,7 @@ public class BrokerDownloader implements ReportsDownloader {
     @Override
     public void waitForComplete() {
         int expiryTime = config.getInt("download.broker.expiry", 20);
-        logger.info("Waiting for up to {} retries all the logs to arrive", expiryTime);
+        logger.info("Waiting for up to {} retries for all the logs to arrive", expiryTime);
 
         StaleChecker staleChecker = new NonProgressingStaleChecker(expiryTime);
 
