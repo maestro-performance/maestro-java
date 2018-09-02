@@ -114,8 +114,6 @@ testProfile.setRate(Integer.parseInt(rate))
 testProfile.setParallelCount(Integer.parseInt(parallelCount))
 
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
-ManagementInterface.setupResolver(inspectorName, reportsDownloader)
-
 
 FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, reportsDownloader, testProfile,
         distributionStrategy)

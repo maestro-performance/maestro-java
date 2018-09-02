@@ -18,38 +18,25 @@ package org.maestro.cli.main.actions;
 
 import org.apache.commons.cli.*;
 import org.maestro.client.Maestro;
-import org.maestro.client.exchange.support.GroupInfo;
 import org.maestro.client.exchange.support.PeerInfo;
-import org.maestro.client.notes.GetResponse;
+import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.common.LogConfigurator;
-import org.maestro.common.Role;
-import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.reports.downloaders.DefaultDownloader;
-import org.maestro.reports.InspectorReportResolver;
-import org.maestro.reports.InterconnectInspectorReportResolver;
+import org.maestro.reports.downloaders.BrokerDownloader;
 import org.maestro.reports.downloaders.ReportsDownloader;
 
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
 
 public class DownloadAction extends Action {
-    private static class Server {
-        PeerInfo peerInfo;
-        String address;
-    }
-
     private CommandLine cmdLine;
 
     private String maestroUrl;
     private String directory;
-    private List<Server> servers;
+    private List<String> servers;
     private String result;
     private int from;
     private int to;
-    private String customResolver;
 
     public DownloadAction(String[] args) {
         processCommand(args);
@@ -68,7 +55,6 @@ public class DownloadAction extends Action {
         options.addOption("s", "servers", true, "a command separated list of servers (ie: sender@host0:port,receiver@host1:port)");
         options.addOption("r", "result", true, "the result to assign to the downloaded files [success,failed]");
         options.addOption("m", "maestro-url", true, "maestro URL to connect to");
-        options.addOption("", "with-inspector-resolver", true, "add custom resolver");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -95,59 +81,23 @@ public class DownloadAction extends Action {
             help(options, 1);
         }
 
-
         if (to < from) {
             System.err.println("The 'from' must not be smaller than 'to'");
             help(options, 1);
         }
 
-        String serverList = cmdLine.getOptionValue('s');
-        if (serverList == null) {
-            maestroUrl = cmdLine.getOptionValue('m');
-            if (maestroUrl == null) {
-                System.err.println("Either the a server list specified via 'servers' option or a maestro " +
-                    "URL (for dynamic resolution) are required");
-                help(options, 1);
-            }
+        maestroUrl = cmdLine.getOptionValue('m');
+        if (maestroUrl == null) {
+            System.err.println("The maestro path is required");
+            help(options, 1);
         }
-        else {
+
+        String serverList = cmdLine.getOptionValue('s');
+        if (serverList != null) {
             servers = new LinkedList<>();
-            // ie.: sender@host:4423,receiver@host:4421
+
             String[] items = serverList.split(",");
-            for (String item : items) {
-                Server server = new Server();
-                String[] serverString = item.split("@");
-
-                server.peerInfo = new PeerInfo() {
-                    @Override
-                    public void setRole(Role role) {
-
-                    }
-
-                    @Override
-                    public Role getRole() {
-                        return Role.hostTypeByName(serverString[0]);
-                    }
-
-                    @Override
-                    public String peerName() {
-                        return serverString[0];
-                    }
-
-                    @Override
-                    public String peerHost() {
-                        return serverString[1];
-                    }
-
-                    @Override
-                    public GroupInfo groupInfo() {
-                        return null;
-                    }
-                };
-                server.address = serverString[1];
-
-                servers.add(server);
-            }
+            servers = Arrays.asList(items);
         }
 
         result = cmdLine.getOptionValue('r');
@@ -159,39 +109,21 @@ public class DownloadAction extends Action {
         if (logLevel != null) {
             LogConfigurator.configureLogLevel(logLevel);
         }
-
-        customResolver = cmdLine.getOptionValue("with-inspector-resolver");
     }
 
     public int run() {
         try {
-            resolveDataServers();
 
-            for (Server server : servers) {
-                ReportsDownloader rd = new DefaultDownloader(directory);
+            Maestro maestro = new Maestro(maestroUrl);
+            ReportsDownloader rd = new BrokerDownloader(maestro, directory);
 
-                if (customResolver.equals("InterconnectInspector")) {
-                    rd.addReportResolver(Role.INSPECTOR, new InterconnectInspectorReportResolver());
-                }
-                else {
-                    if (customResolver.equals("ArtemisInspector")) {
-                        rd.addReportResolver(Role.INSPECTOR, new InspectorReportResolver());
-                    }
-                }
+            PeerSet peerSet = maestro.getPeers();
 
-                rd.getOrganizer().setResultType(result);
+            rd.getOrganizer().setResultType(result);
 
-                int i = from;
-                do {
-                    String resourcePath = Integer.toString(i);
-                    System.out.println("Downloading reports from http://" + server + "/" + resourcePath);
-
-                    rd.getOrganizer().getTracker().setCurrentTest(i);
-                    rd.downloadAny(server.peerInfo, resourcePath +"/");
-                    i++;
-                } while (i <= to);
+            for (String server : servers) {
+                peerSet.getPeers().forEach((k,v) -> download(rd, server, k, v));
             }
-
 
             return 0;
         }
@@ -202,27 +134,25 @@ public class DownloadAction extends Action {
         }
     }
 
-    private void resolveDataServers() throws InterruptedException, ExecutionException, TimeoutException {
-        System.out.println("Resolving data servers");
-
-        if (servers == null) {
-            servers = new LinkedList<>();
-            Maestro maestro = new Maestro(maestroUrl);
-
-            System.out.println("Sending the request");
-            List<? extends MaestroNote> replies = maestro
-                    .getDataServer()
-                    .get(10, TimeUnit.SECONDS);
-
-            for (MaestroNote note : replies) {
-                GetResponse reply = (GetResponse) note;
-                Server server = new Server();
-
-                server.peerInfo = reply.getPeerInfo();
-                server.address = reply.getValue();
-
-                servers.add(server);
-            }
+    private void download(final ReportsDownloader rd, final String host, final String id, final PeerInfo peerInfo) {
+        if (!peerInfo.peerHost().equals(host)) {
+            return;
         }
+
+        System.out.println("Downloading reports from " + peerInfo.prettyName());
+
+        int i = from;
+        do {
+            String resourcePath = Integer.toString(i);
+
+            rd.getOrganizer().getTracker().setCurrentTest(i);
+
+            rd.downloadAny(id, resourcePath);
+
+            rd.waitForComplete();
+
+            i++;
+        } while (i <= to);
+
     }
 }

@@ -40,13 +40,6 @@
             <version>1.7.25</version>
         </dependency>
 
-        <!-- TODO: upgrade for 1.4 (requires the ancient commons-codec -->
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.3.3</version>
-        </dependency>
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>

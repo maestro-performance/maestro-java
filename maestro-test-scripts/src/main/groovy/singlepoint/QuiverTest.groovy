@@ -29,8 +29,8 @@ import org.maestro.client.Maestro
 import org.maestro.client.exchange.MaestroTopics
 import org.maestro.common.LogConfigurator
 import org.maestro.common.Role
-import org.maestro.reports.AbstractReportResolver
-import org.maestro.reports.downloaders.DefaultDownloader
+import org.maestro.reports.downloaders.BrokerDownloader
+
 import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.AbstractTestProfile
 
@@ -39,8 +39,6 @@ import net.orpiske.qdp.plot.renderer.IndexRenderer
 import org.maestro.tests.cluster.NonAssigningStrategy
 import org.maestro.tests.flex.FlexibleTestExecutor
 import org.maestro.tests.flex.singlepoint.FlexibleTestProfile
-
-import static net.orpiske.qdp.plot.renderer.EasyRender.*
 
 /**
  * This test executes tests via Maestro Agent using Quiver (https://github.com/ssorj/quiver/)
@@ -63,30 +61,6 @@ class QuiverExecutor extends FlexibleTestExecutor {
     @Override
     boolean run() {
         return run(0)
-    }
-}
-
-class QuiverReportResolver extends AbstractReportResolver {
-    private static final String[] FILES = ["receiver-snapshots.csv", "receiver-transfers.csv.xz", "receiver-transfers.csv", "sender-summary.json",
-                          "receiver-summary.json", "sender-snapshots.csv", "sender-transfers.csv.xz", "sender-transfers.csv"]
-
-    QuiverReportResolver() {
-        super(FILES)
-    }
-
-    @Override
-    List<String> getFailedFiles(String baseURL) {
-        return getTestFiles(baseURL, "quiver")
-    }
-
-    @Override
-    List<String> getSuccessFiles(String baseURL) {
-        return getTestFiles(baseURL, "quiver")
-    }
-
-    @Override
-    List<String> getTestFiles(String baseURL, String testNum) {
-        return listBuilder(baseURL, "quiver")
     }
 }
 
@@ -140,8 +114,7 @@ LogConfigurator.configureLogLevel(logLevel)
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new DefaultDownloader(args[0])
-reportsDownloader.addReportResolver(Role.AGENT, new QuiverReportResolver())
+ReportsDownloader reportsDownloader = new BrokerDownloader(maestro, args[0])
 
 println "Creating the profile"
 FlexibleTestProfile testProfile = new FlexibleTestProfile()
