@@ -148,7 +148,6 @@ testProfile.setInitialParallelCount(Integer.parseInt(initialParallelCount))
 testProfile.setCeilingParallelCount(Integer.parseInt(ceilingParallelCount))
 
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
-ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile,
         distributionStrategy)

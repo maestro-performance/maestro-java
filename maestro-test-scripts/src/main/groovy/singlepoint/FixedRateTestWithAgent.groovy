@@ -115,7 +115,6 @@ testProfile.setExtPointBranch(extPointBranch)
 testProfile.setExtPointCommand(extPointCommand)
 
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
-ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
 FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, reportsDownloader, testProfile, distributionStrategy)
 if (!testExecutor.run()) {

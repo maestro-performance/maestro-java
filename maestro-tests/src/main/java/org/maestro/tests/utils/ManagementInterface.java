@@ -16,10 +16,6 @@
 
 package org.maestro.tests.utils;
 
-import org.maestro.common.Role;
-import org.maestro.reports.InspectorReportResolver;
-import org.maestro.reports.InterconnectInspectorReportResolver;
-import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestProfile;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -51,25 +47,6 @@ public class ManagementInterface {
         }
         else {
             logger.info("No management interface address was given");
-        }
-    }
-
-
-    /**
-     * Setup the report resolver for the management interface (when provided)
-     * @param inspectorName the name of the inspector to use
-     * @param reportsDownloader the reports downloader in use for the test
-     */
-    public static void setupResolver(final String inspectorName, final ReportsDownloader reportsDownloader) {
-        if (inspectorName == null) {
-            return;
-        }
-
-        if (inspectorName.equals("InterconnectInspector")) {
-            reportsDownloader.addReportResolver(Role.INSPECTOR, new InterconnectInspectorReportResolver());
-        }
-        else {
-            reportsDownloader.addReportResolver(Role.INSPECTOR, new InspectorReportResolver());
         }
     }
 }

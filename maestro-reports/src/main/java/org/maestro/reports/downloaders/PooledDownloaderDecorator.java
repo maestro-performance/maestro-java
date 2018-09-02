@@ -17,8 +17,6 @@
 package org.maestro.reports.downloaders;
 
 import org.maestro.client.exchange.support.PeerInfo;
-import org.maestro.common.Role;
-import org.maestro.reports.ReportResolver;
 import org.maestro.reports.organizer.Organizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,11 +51,6 @@ public class PooledDownloaderDecorator implements ReportsDownloader {
     }
 
     @Override
-    public void addReportResolver(final Role role, ReportResolver reportResolver) {
-        reportsDownloader.addReportResolver(role, reportResolver);
-    }
-
-    @Override
     public void downloadLastSuccessful(final String id, final PeerInfo peerInfo) {
         futures.add(CompletableFuture.runAsync(() -> reportsDownloader.downloadLastSuccessful(id, peerInfo), executorService));
     }
@@ -68,8 +61,8 @@ public class PooledDownloaderDecorator implements ReportsDownloader {
     }
 
     @Override
-    public void downloadAny(final PeerInfo peerInfo, final String testNumber) {
-        futures.add(CompletableFuture.runAsync(() -> reportsDownloader.downloadAny(peerInfo, testNumber),
+    public void downloadAny(final String id, final String testNumber) {
+        futures.add(CompletableFuture.runAsync(() -> reportsDownloader.downloadAny(id, testNumber),
                 executorService));
     }
 

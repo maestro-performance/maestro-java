@@ -177,7 +177,6 @@ if (maxLatencyStr != null) {
 }
 
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
-ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile,
         distributionStrategy)

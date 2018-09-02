@@ -84,37 +84,21 @@ The default log level is "info".
 
 **Report Downloaders**
 
-After the test is complete, Maestro Client downloads the files for processing them and creating the reports. There are
-two possible ways for the client to do this: 
+After the test is complete, Maestro Client downloads the files for processing them and creating the reports. The files 
 
-* Direct method via HTTP: in this method, the client downloads the files directly from every single peer on the cluster. The client does
-not need to know the peer addresses prior to the test. During the initial phases of the test, the client uses the Get 
-command from the Maestro protocol to request the Data Server address of every peer on the test cluster.
+* Pooled: in this method, the client requests the peers on the test cluster to push the logs into the Maestro broker 
+into a specific topic for logs. Then, the client downloads those files concurrently. 
 * Broker method via MQTT: in this method, the client requests the peers on the test cluster to push the logs into the 
 Maestro broker into a specific topic for logs. Then, the client downloads those files one at a time. 
 
-Choosing the correct method depends on the topology and specifics of your test network. Overall:
-
-* Direct method via HTTP
-  * Is ideal if the client and the peers are on the same network
-  * The peers have valid addresses that can be accessed via the client
-  * The tests are high scale running for a very long time (ie: several hours), thus, generating files that are several 
-  gigabytes in size 
-  * Is ideal if the Maestro Broker is JVM-based and runs on a constrained memory environment (ie.: < 1Gb)
-* Broker method via MQTT
-  * Is ideal if the client and the peers are on different networks with the broker on the edge
-  * Is ideal if the addresses of the peers are unknown
-
 Configuring the Report Download Method
 
-* Direct method via HTTP
-  * No configuration needed. It is the default method
-  * Used whenever the environment variable DOWNLOADER_NAME is null or "default"
 * Broker method via MQTT
   * Used whenever the environment variable DOWNLOADER_NAME is set to "broker"
   * Optional client configuration is available on ```maestro-cli.properties```.
   * Optional worker configuration is available on ```maestro-worker.properties```.
-
+* Pooled
+  * Used whenever the environment variable DOWNLOADER_NAME is set to "pooled-broker"
 
 **Distribution Strategy**
 
