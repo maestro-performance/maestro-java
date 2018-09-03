@@ -66,7 +66,6 @@ public class WorkerRateWriter implements Runnable {
     private void updateForWorker(Class<?> clazz, WriterCache cache) {
         long currentCount = 0;
         boolean stopped = false;
-        long currentTime = microClock.microTime();
 
         for (MaestroWorker worker : workers) {
             if (worker.getClass() == clazz) {
@@ -80,17 +79,19 @@ public class WorkerRateWriter implements Runnable {
         }
 
         if (!stopped) {
-            writeRecord(clazz, cache, currentCount, currentTime);
+            writeRecord(clazz, cache, currentCount);
         }
     }
 
-    private void writeRecord(Class<?> clazz, WriterCache cache, long currentCount, long currentTime) {
+    private void writeRecord(Class<?> clazz, WriterCache cache, long currentCount) {
         BinaryRateWriter writer = cache.writer;
 
         try {
             long delta = currentCount - cache.count;
 
+            final long currentTime = microClock.microTime();
             writer.write(0, delta, currentTime);
+
             cache.count = currentCount;
         } catch (IOException e) {
             logger.error("Unable to record the rate entry for worker class {}: {}", clazz, e.getMessage(), e);

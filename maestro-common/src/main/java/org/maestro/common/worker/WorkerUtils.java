@@ -39,10 +39,10 @@ public class WorkerUtils {
         long now;
         do {
             now = System.nanoTime();
-            if (now - expectedFireTime < 0) {
+            if ((now - expectedFireTime) < 0) {
                 LockSupport.parkNanos(expectedFireTime - now);
             }
-        } while (now - expectedFireTime < 0);
+        } while ((now - expectedFireTime) < 0);
 
         return now;
     }
