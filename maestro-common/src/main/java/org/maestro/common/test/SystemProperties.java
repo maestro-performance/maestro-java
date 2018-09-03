@@ -45,14 +45,14 @@ public class SystemProperties extends CommonProperties {
         try (FileInputStream in = new FileInputStream(systemProperties)) {
             prop.load(in);
 
-            jvmName = prop.getProperty("jvmName");
-            jvmVersion = prop.getProperty("jvmVersion");
-            jvmPackageVersion = prop.getProperty("jvmPackageVersion");
-            operatingSystemName = prop.getProperty("operatingSystemName");
-            operatingSystemArch = prop.getProperty("operatingSystemArch");
-            operatingSystemVersion = prop.getProperty("operatingSystemVersion");
+            jvmName = prop.getProperty("workerJvmName");
+            jvmVersion = prop.getProperty("workerJvmVersion");
+            jvmPackageVersion = prop.getProperty("workerJvmPackageVersion");
+            operatingSystemName = prop.getProperty("workerOperatingSystemName");
+            operatingSystemArch = prop.getProperty("workerOperatingSystemArch");
+            operatingSystemVersion = prop.getProperty("workerOperatingSystemVersion");
 
-            String systemCpuCountStr = prop.getProperty("systemCpuCount");
+            String systemCpuCountStr = prop.getProperty("workerSystemCpuCount");
             if (systemCpuCountStr != null) {
                 systemCpuCount = Integer.parseInt(systemCpuCountStr);
             }
@@ -60,7 +60,7 @@ public class SystemProperties extends CommonProperties {
                 systemCpuCount = UNSET_INT;
             }
 
-            String systemMemoryStr = prop.getProperty("systemMemory");
+            String systemMemoryStr = prop.getProperty("workerSystemMemory");
             if (systemMemoryStr != null) {
                 systemMemory = Long.parseLong(systemMemoryStr);
             }
@@ -68,7 +68,7 @@ public class SystemProperties extends CommonProperties {
                 systemMemory = UNSET_INT;
             }
 
-            loadedSwap = prop.getProperty("systemSwap");
+            loadedSwap = prop.getProperty("workerSystemSwap");
             systemSwap = (loadedSwap != null) ? Long.parseLong(loadedSwap) : UNSET_INT;
 
             logger.debug("Read properties: {}", this.toString());
@@ -85,26 +85,26 @@ public class SystemProperties extends CommonProperties {
 
         Properties prop = new Properties();
 
-        prop.setProperty("javaVersion", javaVersion);
-        prop.setProperty("javaHome", javaHome);
-        prop.setProperty("jvmName", jvmName);
-        prop.setProperty("jvmVersion", jvmVersion);
+        prop.setProperty("workerJavaVersion", javaVersion);
+        prop.setProperty("workerJavaHome", javaHome);
+        prop.setProperty("workerJvmName", jvmName);
+        prop.setProperty("workerJvmVersion", jvmVersion);
 
         if (jvmPackageVersion != null) {
-            prop.setProperty("jvmPackageVersion", jvmPackageVersion);
+            prop.setProperty("workerJvmPackageVersion", jvmPackageVersion);
         }
 
-        prop.setProperty("operatingSystemName", operatingSystemName);
-        prop.setProperty("operatingSystemArch", operatingSystemArch);
-        prop.setProperty("operatingSystemVersion", operatingSystemVersion);
-        prop.setProperty("systemCpuCount", Long.toString(systemCpuCount));
-        prop.setProperty("systemMemory", Long.toString(systemMemory));
+        prop.setProperty("workerOperatingSystemName", operatingSystemName);
+        prop.setProperty("workerOperatingSystemArch", operatingSystemArch);
+        prop.setProperty("workerOperatingSystemVersion", operatingSystemVersion);
+        prop.setProperty("workerSystemCpuCount", Long.toString(systemCpuCount));
+        prop.setProperty("workerSystemMemory", Long.toString(systemMemory));
         if (systemSwap != UNSET_INT) {
-            prop.setProperty("systemSwap", Long.toString(systemSwap));
+            prop.setProperty("workerSystemSwap", Long.toString(systemSwap));
         }
 
         try (FileOutputStream fos = new FileOutputStream(systemProperties)) {
-            prop.store(fos, "system-info");
+            prop.store(fos, "worker-system-info");
         }
     }
 
@@ -117,103 +117,95 @@ public class SystemProperties extends CommonProperties {
         SystemProperties.FILENAME = FILENAME;
     }
 
-    public static int getUnsetInt() {
-        return UNSET_INT;
-    }
-
-    public static void setUnsetInt(int unsetInt) {
-        UNSET_INT = unsetInt;
-    }
-
     public static Logger getLogger() {
         return logger;
     }
 
-    public String getJvmName() {
+    public String getWorkerJvmName() {
         return jvmName;
     }
 
-    public void setJvmName(String jvmName) {
+    public void setWorkerJvmName(String jvmName) {
         this.jvmName = jvmName;
     }
 
-    public String getJvmVersion() {
+    public String getWorkerJvmVersion() {
         return jvmVersion;
     }
 
-    public void setJvmVersion(String jvmVersion) {
+    public void setWorkerJvmVersion(String jvmVersion) {
         this.jvmVersion = jvmVersion;
     }
 
-    public String getJvmPackageVersion() {
+    public String getWorkerJvmPackageVersion() {
         return jvmPackageVersion;
     }
 
-    public void setJvmPackageVersion(String jvmPackageVersion) {
+    public void setWorkerJvmPackageVersion(String jvmPackageVersion) {
         this.jvmPackageVersion = jvmPackageVersion;
     }
 
-    public String getJavaVersion() {
+    public String getWorkerJavaVersion() {
         return javaVersion;
     }
 
-    public void setJavaVersion(String javaVersion) {
+    public void setWorkerJavaVersion(String javaVersion) {
         this.javaVersion = javaVersion;
     }
 
-    public String getJavaHome() {
+    public String getWorkerJavaHome() {
         return javaHome;
     }
 
-    public void setJavaHome(String javaHome) {
+    public void setWorkerJavaHome(String javaHome) {
         this.javaHome = javaHome;
     }
 
-    public String getOperatingSystemName() {
+    public String getWorkerOperatingSystemName() {
         return operatingSystemName;
     }
 
-    public void setOperatingSystemName(String operatingSystemName) {
+    public void setWorkerOperatingSystemName(String operatingSystemName) {
         this.operatingSystemName = operatingSystemName;
     }
 
-    public String getOperatingSystemArch() {
+    public String getWorkerOperatingSystemArch() {
         return operatingSystemArch;
     }
 
-    public void setOperatingSystemArch(String operatingSystemArch) {
+    public void setWorkerOperatingSystemArch(String operatingSystemArch) {
         this.operatingSystemArch = operatingSystemArch;
     }
 
-    public String getOperatingSystemVersion() {
+    public String getWorkerOperatingSystemVersion() {
         return operatingSystemVersion;
     }
 
-    public void setOperatingSystemVersion(String operatingSystemVersion) {
+    public void setWorkerOperatingSystemVersion(String operatingSystemVersion) {
         this.operatingSystemVersion = operatingSystemVersion;
     }
 
-    public long getSystemCpuCount() {
+    public long getWorkerSystemCpuCount() {
         return systemCpuCount;
     }
 
-    public void setSystemCpuCount(long systemCpuCount) {
+    public void setWorkerSystemCpuCount(long systemCpuCount) {
         this.systemCpuCount = systemCpuCount;
     }
 
-    public long getSystemMemory() {
+    public long getWorkerSystemMemory() {
         return systemMemory;
     }
 
-    public void setSystemMemory(long systemMemory) {
+    public void setWorkerSystemMemory(long systemMemory) {
         this.systemMemory = systemMemory;
     }
 
-    public long getSystemSwap() {
+    public long getWorkerSystemSwap() {
         return systemSwap;
     }
 
-    public void setSystemSwap(long systemSwap) {
+    public void setWorkerSystemSwap(long systemSwap) {
         this.systemSwap = systemSwap;
     }
 
