@@ -20,15 +20,13 @@ public class SystemProperties extends CommonProperties {
 
     private String jvmName;
     private String jvmVersion;
-    private String jvmPackageVersion;
     private String javaVersion;
     private String javaHome;
     private String operatingSystemName;
     private String operatingSystemArch;
     private String operatingSystemVersion;
     private long systemCpuCount;
-    private long systemMemory;
-    private long systemSwap;
+    private long jvmMaxMemory;
 
     /**
      * Method for load system properties saved in the file.
@@ -38,8 +36,6 @@ public class SystemProperties extends CommonProperties {
     public void load(final File systemProperties) throws IOException {
         logger.trace("Reading properties from {}", systemProperties.getPath());
 
-        String loadedSwap;
-
         Properties prop = new Properties();
 
         try (FileInputStream in = new FileInputStream(systemProperties)) {
@@ -47,7 +43,6 @@ public class SystemProperties extends CommonProperties {
 
             jvmName = prop.getProperty("workerJvmName");
             jvmVersion = prop.getProperty("workerJvmVersion");
-            jvmPackageVersion = prop.getProperty("workerJvmPackageVersion");
             operatingSystemName = prop.getProperty("workerOperatingSystemName");
             operatingSystemArch = prop.getProperty("workerOperatingSystemArch");
             operatingSystemVersion = prop.getProperty("workerOperatingSystemVersion");
@@ -60,17 +55,13 @@ public class SystemProperties extends CommonProperties {
                 systemCpuCount = UNSET_INT;
             }
 
-            String systemMemoryStr = prop.getProperty("workerSystemMemory");
-            if (systemMemoryStr != null) {
-                systemMemory = Long.parseLong(systemMemoryStr);
+            String jvmMaxMemoryStr = prop.getProperty("workerJvmMaxMemory");
+            if (jvmMaxMemoryStr != null) {
+                jvmMaxMemory = Long.parseLong(jvmMaxMemoryStr);
             }
             else {
-                systemMemory = UNSET_INT;
+                jvmMaxMemory = UNSET_INT;
             }
-
-            loadedSwap = prop.getProperty("workerSystemSwap");
-            systemSwap = (loadedSwap != null) ? Long.parseLong(loadedSwap) : UNSET_INT;
-
             logger.debug("Read properties: {}", this.toString());
         }
     }
@@ -90,18 +81,11 @@ public class SystemProperties extends CommonProperties {
         prop.setProperty("workerJvmName", jvmName);
         prop.setProperty("workerJvmVersion", jvmVersion);
 
-        if (jvmPackageVersion != null) {
-            prop.setProperty("workerJvmPackageVersion", jvmPackageVersion);
-        }
-
         prop.setProperty("workerOperatingSystemName", operatingSystemName);
         prop.setProperty("workerOperatingSystemArch", operatingSystemArch);
         prop.setProperty("workerOperatingSystemVersion", operatingSystemVersion);
         prop.setProperty("workerSystemCpuCount", Long.toString(systemCpuCount));
-        prop.setProperty("workerSystemMemory", Long.toString(systemMemory));
-        if (systemSwap != UNSET_INT) {
-            prop.setProperty("workerSystemSwap", Long.toString(systemSwap));
-        }
+        prop.setProperty("workerJvmMaxMemory", Long.toString(jvmMaxMemory));
 
         try (FileOutputStream fos = new FileOutputStream(systemProperties)) {
             prop.store(fos, "worker-system-info");
@@ -126,14 +110,6 @@ public class SystemProperties extends CommonProperties {
 
     public void setWorkerJvmVersion(String jvmVersion) {
         this.jvmVersion = jvmVersion;
-    }
-
-    public String getWorkerJvmPackageVersion() {
-        return jvmPackageVersion;
-    }
-
-    public void setWorkerJvmPackageVersion(String jvmPackageVersion) {
-        this.jvmPackageVersion = jvmPackageVersion;
     }
 
     public String getWorkerJavaVersion() {
@@ -185,33 +161,25 @@ public class SystemProperties extends CommonProperties {
     }
 
     public long getWorkerSystemMemory() {
-        return systemMemory;
+        return jvmMaxMemory;
     }
 
-    public void setWorkerSystemMemory(long systemMemory) {
-        this.systemMemory = systemMemory;
-    }
-
-    public long getWorkerSystemSwap() {
-        return systemSwap;
-    }
-
-    public void setWorkerSystemSwap(long systemSwap) {
-        this.systemSwap = systemSwap;
+    public void setWorkerJVMMaxMemory(long systemMemory) {
+        this.jvmMaxMemory = systemMemory;
     }
 
     @Override
     public String toString() {
         return "SystemProperties{" +
-                "operatingSystemName='" + operatingSystemName + '\'' +
-                ", operatingSystemVersion='" + operatingSystemVersion + '\'' +
-                ", operatingSystemArch=" + operatingSystemArch +
-                ", systemCpuCount=" + systemCpuCount +
-                ", systemMemory=" + systemMemory +
-                ", javaVersion=" + javaVersion +
-                ", javaHome='" + javaHome + '\'' +
-                ", jvmName='" + jvmName + '\'' +
+                "jvmName='" + jvmName + '\'' +
                 ", jvmVersion='" + jvmVersion + '\'' +
+                ", javaVersion='" + javaVersion + '\'' +
+                ", javaHome='" + javaHome + '\'' +
+                ", operatingSystemName='" + operatingSystemName + '\'' +
+                ", operatingSystemArch='" + operatingSystemArch + '\'' +
+                ", operatingSystemVersion='" + operatingSystemVersion + '\'' +
+                ", systemCpuCount=" + systemCpuCount +
+                ", jvmMaxMemory=" + jvmMaxMemory +
                 "} " + super.toString();
     }
 }

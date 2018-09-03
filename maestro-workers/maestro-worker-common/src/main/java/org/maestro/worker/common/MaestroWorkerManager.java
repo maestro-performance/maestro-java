@@ -41,7 +41,6 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
-import java.util.Map;
 
 /**
  * A base worker class that implements the most basic worker functionality
@@ -244,8 +243,8 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         systemProperties.setWorkerSystemCpuCount(runtime.availableProcessors());
         logger.info("System CPU count: {}", systemProperties.getWorkerSystemCpuCount());
 
-        systemProperties.setWorkerSystemMemory(runtime.maxMemory());
-        logger.info("System Total Memory: {}", systemProperties.getWorkerSystemMemory());
+        systemProperties.setWorkerJVMMaxMemory(runtime.maxMemory());
+        logger.info("JVM Max Memory: {}", systemProperties.getWorkerSystemMemory());
 
         systemProperties.setWorkerOperatingSystemName(System.getProperty("os.name"));
         logger.info("System Name: {}", systemProperties.getWorkerOperatingSystemName());

@@ -397,7 +397,7 @@
                 </div>
 
                 <div class="row">
-                    <h2 id="#system-properties">System Properties: Load Generator</h2>
+                    <h2 id="#node-system-properties">System Properties: Load Generator</h2>
                     <div>
                         <table class="table table-striped table-bordered table-hover" id="system-properties-table">
                             <thead>
@@ -417,16 +417,16 @@
                                 <td>{{ workerSystemCpuCount }}</td>
                             </tr>
                             <tr>
-                                <td>Memory</td>
-                                <td>{{ workerSystemMemory }}</td>
-                            </tr>
-                            <tr>
                                 <td>Java Version</td>
                                 <td>{{ workerJavaVersion }}</td>
                             </tr>
                             <tr>
                                 <td>Java Home</td>
                                 <td>{{ workerJavaHome }}</td>
+                            </tr>
+                            <tr>
+                                <td>JVM Max Memory</td>
+                                <td>{{ (workerJvmMaxMemory / 1024 / 1024 ) }} megabytes </td>
                             </tr>
                             <tr>
                                 <td>JVM Information</td>
@@ -437,6 +437,52 @@
                         </table>
                     </div>
                 </div>
+
+
+                {% if sutSystemInfo == "true" %}
+                <div class="row">
+                    <h2 id="#sut-system-properties">System Properties: SUT System</h2>
+                    <div>
+                        <table class="table table-striped table-bordered table-hover" id="sut-system-properties-table">
+                            <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Value</th>
+                            </tr>
+                            </thead>
+
+                            <tbody>
+                            <tr>
+                                <td>Operating System</td>
+                                <td>{{ sutOperatingSystemName }} - {{ sutOperatingSystemVersion }}</td>
+                            </tr>
+                            <tr>
+                                <td>CPU Count</td>
+                                <td>{{ sutSystemCpuCount }}</td>
+                            </tr>
+                            <tr>
+                                <td>Java Version</td>
+                                <td>{{ sutJavaVersion }}</td>
+                            </tr>
+                            <tr>
+                                <td>Java Home</td>
+                                <td>{{ sutJavaHome }}</td>
+                            </tr>
+                            <tr>
+                                <td>JVM Max Memory</td>
+                                <td>{{ sutJvmMaxMemory / 1024 / 1024 }} megabytes</td>
+                            </tr>
+                            <tr>
+                                <td>JVM Information</td>
+                                <td>{{ sutJvmName }} {{ sutJvmVersion }} {{ sutJvmPackageVersion }}</td>
+                            </tr>
+
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+                {% endif %}
+
                 {% endif %}
 
                 {% if nodeType == "inspector" %}
