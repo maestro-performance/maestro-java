@@ -107,16 +107,10 @@ public abstract class AbstractRenderer {
             return;
         }
 
-        InputStream inputStream = null;
-        OutputStream outputStream = null;
-        try {
-            inputStream = new BufferedInputStream(this.getClass().getResourceAsStream(resource));
-            outputStream =  new BufferedOutputStream(new FileOutputStream(outputFile));
-
+        try (InputStream inputStream = new BufferedInputStream(this.getClass().getResourceAsStream(resource));
+            OutputStream outputStream = new BufferedOutputStream(new FileOutputStream(outputFile)))
+        {
             IOUtils.copy(inputStream, outputStream);
-        } finally {
-            IOUtils.closeQuietly(inputStream);
-            IOUtils.closeQuietly(outputStream);
         }
     }
 

@@ -35,6 +35,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+import static org.maestro.common.LangUtils.closeQuietly;
+
 /**
  * A router link information writer for AMQP Inspector.
  */
@@ -59,8 +61,8 @@ public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>,
      */
     @Override
     public void close() {
-        IOUtils.closeQuietly(csvPrinter);
-        IOUtils.closeQuietly(writer);
+        closeQuietly(csvPrinter);
+        closeQuietly(writer);
     }
 
     /**

@@ -18,7 +18,6 @@ package org.maestro.inspector.amqp.writers;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.io.IOUtils;
 import org.maestro.common.inspector.types.GeneralInfo;
 import org.maestro.common.test.InspectorProperties;
 import org.maestro.common.io.data.writers.InspectorDataWriter;
@@ -35,6 +34,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+
+import static org.maestro.common.LangUtils.closeQuietly;
 
 /**
  * A router link information writer for AMQP Inspector.
@@ -54,13 +55,15 @@ public class GeneralInfoWriter implements InspectorDataWriter<GeneralInfo>, Auto
                         "Addresses", "Connections"));
     }
 
+
+
     /**
      * Close csv printer
      */
     @Override
     public void close() {
-        IOUtils.closeQuietly(csvPrinter);
-        IOUtils.closeQuietly(writer);
+        closeQuietly(csvPrinter);
+        closeQuietly(writer);
     }
 
     /**
