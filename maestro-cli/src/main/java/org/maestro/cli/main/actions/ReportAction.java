@@ -20,6 +20,9 @@ import org.apache.commons.cli.*;
 import org.maestro.common.LogConfigurator;
 import org.maestro.reports.ReportGenerator;
 import org.maestro.reports.composed.ComposedIndexGenerator;
+import org.maestro.reports.context.NodeReportContext;
+import org.maestro.reports.context.ReportContext;
+import org.maestro.reports.context.common.NodePropertyContext;
 import org.maestro.reports.context.common.WithWarmUpContext;
 import org.maestro.reports.processors.DiskCleaner;
 
@@ -36,6 +39,7 @@ public class ReportAction extends Action {
     private final Map<String,String> indexProperties = new HashMap<>();
     private boolean composed;
     private boolean withWarmUp = false;
+    private String sutNodeProperties;
 
 
     public ReportAction(String[] args) {
@@ -71,6 +75,8 @@ public class ReportAction extends Action {
         options.addOption("", "with-properties", true, "pass optional properties (ie.: saved along with the index)");
         options.addOption("", "composed", false, "generate the composed index");
         options.addOption("", "with-warm-up", false, "consider the first test iteration as warm-up");
+        options.addOption("", "with-sut-node-properties-from", true,
+                "SUT node properties as provided in the properties file");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -98,6 +104,7 @@ public class ReportAction extends Action {
         parseProperties(cmdLine.getOptionValue("with-properties"));
         composed = cmdLine.hasOption("composed");
         withWarmUp = cmdLine.hasOption("with-warm-up");
+        sutNodeProperties = cmdLine.getOptionValue("with-sut-node-properties-from");
     }
 
     public int run() {
@@ -114,13 +121,18 @@ public class ReportAction extends Action {
 
                 reportGenerator.setIndexProperties(indexProperties);
 
+                ReportContext reportContext = null;
+
                 if (withWarmUp) {
-                    reportGenerator.generate(new WithWarmUpContext(), null);
-                }
-                else {
-                    reportGenerator.generate();
+                    reportContext = new WithWarmUpContext();
                 }
 
+                NodeReportContext nodeReportContext = null;
+                if (sutNodeProperties != null) {
+                    nodeReportContext = new NodePropertyContext(sutNodeProperties);
+                }
+
+                reportGenerator.generate(reportContext, nodeReportContext);
 
                 System.out.println("Report generated successfully");
             }

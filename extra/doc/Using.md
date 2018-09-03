@@ -270,4 +270,10 @@ Writing Tests
 
 Continue to the [Writing Tests Guide](extra/doc/WritingTests.md).
 
+Maestro Reports
+----
+
+Continue to the [Maestro Reports Guide](extra/doc/Reports.md) to learn about the reports and how to customize them.
+
+
 
