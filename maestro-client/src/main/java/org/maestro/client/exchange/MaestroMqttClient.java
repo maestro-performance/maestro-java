@@ -112,8 +112,7 @@ public class MaestroMqttClient implements MaestroClient {
 
             try {
                 if (!mqttClient.isConnected()) {
-                    logger.warn("The client is disconnected ... reconnecting");
-                    mqttClient.reconnect();
+                    logger.warn("The client is disconnected");
                 }
 
                 MqttTopic mqttTopic = mqttClient.getTopic(topic);
@@ -152,8 +151,7 @@ public class MaestroMqttClient implements MaestroClient {
 
             try {
                 if (!mqttClient.isConnected()) {
-                    logger.warn("The client is disconnected ... reconnecting");
-                    mqttClient.reconnect();
+                    logger.warn("The client is disconnected");
                 }
 
                 MqttTopic mqttTopic = mqttClient.getTopic(topic);
