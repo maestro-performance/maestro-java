@@ -42,6 +42,8 @@ public class RateWriterObserver implements WatchdogObserver {
     }
 
     private void shutdown() {
+        workerRateWriter.setRunning(false);
+
         if (this.rateWriterThread != null) {
             try {
                 this.rateWriterThread.join();
