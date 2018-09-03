@@ -74,7 +74,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
      * Starts the workers and add them to a container
      * @return true if started correctly or false otherwise
      */
-    private boolean doWorkerStart(final MaestroNote note, final Class<MaestroWorker> workerClass) {
+    private boolean doWorkerStart(final MaestroNote note, final Class<?> workerClass) {
         if (container.isTestInProgress()) {
             logger.warn("Trying to start a new test, but a test execution is already in progress");
             getClient().notifyFailure("Test already in progress");
@@ -353,7 +353,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
         String className = workersMap.get(workerName);
         try {
-            Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(className);
+            Class<?> clazz = (Class) Class.forName(className);
 
             if (!doWorkerStart(note, clazz)) {
                 logger.warn("::handle {} can't start worker", note);
