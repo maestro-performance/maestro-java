@@ -13,7 +13,7 @@ import java.util.Properties;
  * Worker's system properties written by every worker.
  */
 public class SystemProperties extends CommonProperties {
-    public static String FILENAME = "system-properties.ini";
+    public static String FILENAME = "system-properties.properties";
     public static int UNSET_INT = 0;
 
     private static final Logger logger = LoggerFactory.getLogger(InspectorProperties.class);
