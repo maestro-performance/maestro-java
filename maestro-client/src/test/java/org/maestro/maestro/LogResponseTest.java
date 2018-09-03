@@ -93,7 +93,7 @@ public class LogResponseTest {
         logResponse.setPeerInfo(peerInfo);
 
         logResponse.setFileName("test.properties");
-        logResponse.setFileSize(318);
+        logResponse.setFileSize(903);
         logResponse.setTotal(1);
         logResponse.setLocationType(LocationType.ANY);
         logResponse.setFileHash(logResponse.calculateHash());
@@ -105,7 +105,7 @@ public class LogResponseTest {
                 parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
         assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_LOG);
 
-        final String expectedHash = "ab5313aa600dceff855fdbd62917b62952b39179";
+        final String expectedHash = "06dbd6b9a75417b7ab5aef1ad58b03c30a43dd83";
 
         Sha1Digest digest = new Sha1Digest();
         final String logHash = digest.calculate(((LogResponse) parsed).getLogData());
