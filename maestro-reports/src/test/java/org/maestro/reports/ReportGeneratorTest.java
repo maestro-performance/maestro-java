@@ -20,6 +20,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.test.SystemProperties;
 import org.maestro.common.test.TestProperties;
 import org.maestro.plotter.common.exceptions.EmptyDataSet;
 
@@ -54,12 +55,12 @@ public class ReportGeneratorTest {
     private void validateReceiverReport(File baseDir, final List<String> ignoreList) {
         validateReportFile(baseDir, Arrays.asList("favicon.png", "index.html", "rate.properties",
                 "rate.png", "receiverd-latency_90.png", "receiverd-latency_99.png",
-                "receiverd-latency_all.png", TestProperties.FILENAME), ignoreList);
+                "receiverd-latency_all.png", TestProperties.FILENAME, SystemProperties.FILENAME), ignoreList);
     }
 
     private void validateSenderReport(File baseDir, final List<String> ignoreList) {
         validateReportFile(baseDir, Arrays.asList("favicon.png", "index.html", "rate.properties",
-                "rate.png", TestProperties.FILENAME), ignoreList);
+                "rate.png", TestProperties.FILENAME, SystemProperties.FILENAME), ignoreList);
     }
 
     private void validateInspectorReport(File baseDir, final List<String> ignoreList) {
