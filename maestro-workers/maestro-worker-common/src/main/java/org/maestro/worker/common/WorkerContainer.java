@@ -139,7 +139,7 @@ public final class WorkerContainer {
     /**
      * Stops the workers on the container
      */
-    public void stop() {
+    private void stop(long watchDogTimeout) {
         workers.forEach(w -> w.stop());
 
         startTime = null;
@@ -155,12 +155,19 @@ public final class WorkerContainer {
 
         if (watchdogExecutorService != null) {
             try {
-                watchdogExecutorService.awaitTermination(60, TimeUnit.SECONDS);
+                watchdogExecutorService.awaitTermination(watchDogTimeout, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 logger.warn("Interrupted ... forcing watchdog shutdown");
                 watchdogExecutorService.shutdownNow();
             }
         }
+    }
+
+    /**
+     * Stops the workers on the container
+     */
+    public void stop() {
+        stop(60);
     }
 
     /**
@@ -249,15 +256,7 @@ public final class WorkerContainer {
      * @return false if interrupted or true otherwise
      */
     public boolean waitForComplete(long timeout) {
-        try {
-            endSignal.await(timeout, TimeUnit.SECONDS);
-            stop();
-
-            return true;
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted while waiting for the watchdog to complete running");
-
-            return false;
-        }
+        stop(timeout);
+        return true;
     }
 }
