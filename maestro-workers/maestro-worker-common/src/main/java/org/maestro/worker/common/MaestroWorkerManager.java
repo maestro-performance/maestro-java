@@ -30,6 +30,7 @@ import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.test.TestProperties;
+import org.maestro.common.test.SystemProperties;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.contrib.utils.digest.Sha1Digest;
@@ -40,6 +41,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.net.URISyntaxException;
+import java.util.Map;
 
 /**
  * A base worker class that implements the most basic worker functionality
@@ -227,6 +229,50 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         testProperties.setApiVersion("1.1");
 
         testProperties.write(new File(testLogDir, TestProperties.FILENAME));
+    }
+
+    /***
+     * Method for write system properties into the file for the reporter.
+     * @param testLogDir test log directory
+     * @throws IOException Input/Output exception
+     */
+    protected void writeSystemProperties(final File testLogDir) throws  IOException {
+        // https://www.roseindia.net/java/beginners/OSInformation.shtml
+
+        SystemProperties systemProperties = new SystemProperties();
+
+        Runtime runtime = Runtime.getRuntime();
+
+        systemProperties.setSystemCpuCount(runtime.availableProcessors());
+        logger.info("System CPU count: {}", systemProperties.getSystemCpuCount());
+
+        systemProperties.setSystemMemory(runtime.maxMemory());
+        logger.info("System Total Memory: {}", systemProperties.getSystemMemory());
+
+        systemProperties.setOperatingSystemName(System.getProperty("os.name"));
+        logger.info("System Name: {}", systemProperties.getOperatingSystemName());
+
+        systemProperties.setOperatingSystemArch(System.getProperty("os.arch"));
+        logger.info("System Arch: {}", systemProperties.getOperatingSystemArch());
+
+        systemProperties.setOperatingSystemVersion(System.getProperty("os.version"));
+        logger.info("System Version: {}", systemProperties.getOperatingSystemVersion());
+
+        systemProperties.setJavaVersion(System.getProperty("java.version"));
+        logger.info("Java Version: {}", systemProperties.getJavaVersion());
+
+        systemProperties.setJavaHome(System.getProperty("java.home"));
+        logger.info("Java Home: {}", systemProperties.getJavaHome());
+
+        systemProperties.setJvmName(System.getProperty("java.vm.name"));
+        logger.info("JVM Name: {}", systemProperties.getJvmName());
+
+        systemProperties.setJvmVersion(System.getProperty("java.vm.version"));
+        logger.info("JVM Version: {}", systemProperties.getJvmVersion());
+
+        logger.info(testLogDir.toString());
+
+        systemProperties.write(new File(testLogDir, SystemProperties.FILENAME));
     }
 
     @Override

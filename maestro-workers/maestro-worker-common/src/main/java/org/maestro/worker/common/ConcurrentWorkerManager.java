@@ -88,6 +88,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             setupLatencyEvaluator();
 
             super.writeTestProperties(testLogDir);
+            super.writeSystemProperties(testLogDir);
 
             final TestWorkerInitializer testWorkerInitializer = new TestWorkerInitializer(workerClass, getWorkerOptions());
 
