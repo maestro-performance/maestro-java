@@ -16,7 +16,7 @@
 
 package org.maestro.inspector.amqp;
 
-import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.configuration2.AbstractConfiguration;
 import org.apache.qpid.jms.message.JmsMessage;
 import org.apache.qpid.proton.amqp.Binary;
 import org.maestro.common.ConfigurationWrapper;

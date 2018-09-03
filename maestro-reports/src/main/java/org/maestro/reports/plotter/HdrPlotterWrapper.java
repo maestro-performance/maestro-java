@@ -18,7 +18,7 @@ package org.maestro.reports.plotter;
 
 
 import org.HdrHistogram.Histogram;
-import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.configuration2.AbstractConfiguration;
 import org.apache.commons.io.FilenameUtils;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.exceptions.MaestroException;

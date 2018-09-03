@@ -16,7 +16,7 @@
 
 package org.maestro.common.duration;
 
-import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.configuration2.AbstractConfiguration;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.NonProgressingStaleChecker;
 import org.maestro.common.StaleChecker;

@@ -16,7 +16,7 @@
 
 package org.maestro.common;
 
-import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.configuration2.AbstractConfiguration;
 
 import java.net.InetAddress;
 import java.net.UnknownHostException;

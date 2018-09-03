@@ -16,7 +16,7 @@
 
 package org.maestro.tests.flex;
 
-import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.configuration2.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.client.notes.GetResponse;

@@ -16,10 +16,12 @@
 package org.maestro.common;
 
 
-import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.commons.configuration.CompositeConfiguration;
-import org.apache.commons.configuration.ConfigurationException;
-import org.apache.commons.configuration.PropertiesConfiguration;
+import org.apache.commons.configuration2.AbstractConfiguration;
+import org.apache.commons.configuration2.CompositeConfiguration;
+import org.apache.commons.configuration2.PropertiesConfiguration;
+import org.apache.commons.configuration2.builder.FileBasedConfigurationBuilder;
+import org.apache.commons.configuration2.builder.fluent.Parameters;
+import org.apache.commons.configuration2.ex.ConfigurationException;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -29,61 +31,68 @@ import java.io.FileNotFoundException;
  * Wraps the configuration object
  */
 public class ConfigurationWrapper {
-	private static final CompositeConfiguration config = new CompositeConfiguration();
-	
-	/**
-	 * Restricted constructor
-	 */
-	private ConfigurationWrapper() {}
+    private static final CompositeConfiguration config = new CompositeConfiguration();
 
-	/**
-	 * Initializes the configuration object
-	 * 
-	 * @param configDir
-	 * 			  The configuration directory containing the configuration file
-	 * @param fileName
-	 *            The name of the configuration file
-	 * @throws FileNotFoundException If the file does not exist
-	 * @throws ConfigurationException if the configuration file contains errors
-	 */
-	public static void initConfiguration(final String configDir,
-			final String fileName) throws FileNotFoundException,
-			ConfigurationException {
-		if (configDir == null) {
-			throw new FileNotFoundException(
-					"The configuration dir was not found");
-		}
-		
-    	// Appends an user config file, if exits ($HOME/.maestro/<configuration.properties>)
-		String userFilePath = RuntimeUtils.getAppDirectoryPath() + File.separator
-				+ fileName;
-		File userFile = new File(userFilePath);
-		
-		if (userFile.exists()) { 
-			PropertiesConfiguration userConfiguration = 
-					new PropertiesConfiguration(userFile);
-			
+    /**
+     * Restricted constructor
+     */
+    private ConfigurationWrapper() {
+    }
 
-			config.addConfiguration(userConfiguration);
-		}
-		else {
-			userFile.getParentFile().mkdirs();
-		}
+    /**
+     * Initializes the configuration object
+     *
+     * @param configDir The configuration directory containing the configuration file
+     * @param fileName  The name of the configuration file
+     * @throws FileNotFoundException  If the file does not exist
+     * @throws ConfigurationException if the configuration file contains errors
+     */
+    public static void initConfiguration(final String configDir,
+                                         final String fileName) throws FileNotFoundException,
+            ConfigurationException {
+        if (configDir == null) {
+            throw new FileNotFoundException(
+                    "The configuration dir was not found");
+        }
+
+        // Appends an user config file, if exits ($HOME/.maestro/<configuration.properties>)
+        String userFilePath = RuntimeUtils.getAppDirectoryPath() + File.separator
+                + fileName;
+        File userFile = new File(userFilePath);
+
+        if (userFile.exists()) {
+            FileBasedConfigurationBuilder<PropertiesConfiguration> builderUser =
+                    new FileBasedConfigurationBuilder<PropertiesConfiguration>(PropertiesConfiguration.class)
+                            .configure(new Parameters().properties()
+                                    .setFile(userFile)
+                                    .setThrowExceptionOnMissing(true)
+                                    .setIncludesAllowed(true));
 
 
-        PropertiesConfiguration systemConfig = new PropertiesConfiguration(configDir + File.separator
-                + fileName);
-        config.addConfiguration(systemConfig);
+            config.addConfiguration(builderUser.getConfiguration());
+        } else {
+            userFile.getParentFile().mkdirs();
+        }
+
+
+        FileBasedConfigurationBuilder<PropertiesConfiguration> builderDefault =
+                new FileBasedConfigurationBuilder<PropertiesConfiguration>(PropertiesConfiguration.class)
+                        .configure(new Parameters().properties()
+                                .setFileName(configDir + File.separator + fileName)
+                                .setThrowExceptionOnMissing(true)
+                                .setIncludesAllowed(true));
+
+        config.addConfiguration(builderDefault.getConfiguration());
 
     }
 
-	/**
-	 * Gets the configuration object
-	 * 
-	 * @return the instance of the configuration object
-	 */
-	public static AbstractConfiguration getConfig() {
-		return config;
-	}
+    /**
+     * Gets the configuration object
+     *
+     * @return the instance of the configuration object
+     */
+    public static AbstractConfiguration getConfig() {
+        return config;
+    }
 
 }

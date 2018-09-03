@@ -16,7 +16,7 @@
 
 package org.maestro.tests.incremental;
 
-import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.configuration2.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.common.ConfigurationWrapper;

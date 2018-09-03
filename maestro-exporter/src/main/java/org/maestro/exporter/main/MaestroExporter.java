@@ -19,7 +19,7 @@ package org.maestro.exporter.main;
 
 import io.prometheus.client.Counter;
 import io.prometheus.client.exporter.HTTPServer;
-import org.apache.commons.configuration.AbstractConfiguration;
+import org.apache.commons.configuration2.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
