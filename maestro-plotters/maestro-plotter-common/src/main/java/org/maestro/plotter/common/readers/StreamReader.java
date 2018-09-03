@@ -29,30 +29,16 @@ public abstract class StreamReader<T> implements ReportReader<T> {
     protected abstract T readReader(final Reader reader) throws IOException;
 
     protected T readStream(final InputStream stream) throws IOException {
-        Reader in = null;
-
-        try {
-            in = new BufferedReader(new InputStreamReader(stream));
-
+        try (Reader in = new BufferedReader(new InputStreamReader(stream))) {
             return readReader(in);
-        }
-        finally {
-            IOUtils.closeQuietly(in);
         }
     }
 
     public T read(final File filename) throws IOException {
-        InputStream fileStream = null;
-
         logger.debug("Reading file {}", filename);
 
-        try {
-            fileStream = new BufferedInputStream(new FileInputStream(filename));
-
+        try (InputStream fileStream = new BufferedInputStream(new FileInputStream(filename))) {
             return readStream(fileStream);
-        }
-        finally {
-            IOUtils.closeQuietly(fileStream);
         }
     }
 

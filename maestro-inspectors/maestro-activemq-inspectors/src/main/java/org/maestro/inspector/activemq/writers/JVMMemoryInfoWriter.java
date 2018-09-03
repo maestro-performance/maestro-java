@@ -18,7 +18,6 @@ package org.maestro.inspector.activemq.writers;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.io.IOUtils;
 import org.maestro.common.inspector.types.JVMMemoryInfo;
 import org.maestro.common.io.data.writers.InspectorDataWriter;
 import org.slf4j.Logger;
@@ -32,6 +31,8 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
+
+import static org.maestro.common.LangUtils.closeQuietly;
 
 public class JVMMemoryInfoWriter implements InspectorDataWriter<JVMMemoryInfo>, AutoCloseable {
     private static final Logger logger = LoggerFactory.getLogger(JVMMemoryInfoWriter.class);
@@ -50,8 +51,8 @@ public class JVMMemoryInfoWriter implements InspectorDataWriter<JVMMemoryInfo>, 
 
     @Override
     public void close() {
-        IOUtils.closeQuietly(csvPrinter);
-        IOUtils.closeQuietly(writer);
+        closeQuietly(csvPrinter);
+        closeQuietly(writer);
     }
 
     @Override

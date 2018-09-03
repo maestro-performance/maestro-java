@@ -35,6 +35,8 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
 
+import static org.maestro.common.LangUtils.closeQuietly;
+
 /**
  * A memory information writer for AMQP Inspector.
  */
@@ -58,8 +60,8 @@ public class QDMemoryInfoWriter implements InspectorDataWriter<QDMemoryInfo>, Au
      */
     @Override
     public void close() {
-        IOUtils.closeQuietly(csvPrinter);
-        IOUtils.closeQuietly(writer);
+        closeQuietly(csvPrinter);
+        closeQuietly(writer);
     }
 
     /**
