@@ -13,7 +13,7 @@ import java.util.Properties;
  * Worker's system properties written by every worker.
  */
 public class SystemProperties extends CommonProperties {
-    public static String FILENAME = "system.properties";
+    public static final String FILENAME = "system.properties";
     public static int UNSET_INT = 0;
 
     private static final Logger logger = LoggerFactory.getLogger(InspectorProperties.class);
@@ -106,15 +106,6 @@ public class SystemProperties extends CommonProperties {
         try (FileOutputStream fos = new FileOutputStream(systemProperties)) {
             prop.store(fos, "worker-system-info");
         }
-    }
-
-
-    public static String getFILENAME() {
-        return FILENAME;
-    }
-
-    public static void setFILENAME(String FILENAME) {
-        SystemProperties.FILENAME = FILENAME;
     }
 
     public static Logger getLogger() {
