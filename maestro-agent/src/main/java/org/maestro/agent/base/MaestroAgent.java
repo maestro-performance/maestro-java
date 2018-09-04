@@ -69,7 +69,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
         super(maestroURL, peerInfo, dataServer);
 
         AbstractConfiguration config = ConfigurationWrapper.getConfig();
-        String pathStr = config.getString("maestro.agent.ext.path.override", null);
+        String pathStr = config.getString("agent.ext.path.override", null);
 
         if (pathStr == null){
             pathStr = Constants.HOME_DIR + "ext" + File.separator + "requests";

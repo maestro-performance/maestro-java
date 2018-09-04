@@ -158,7 +158,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             return new WorkerLatencyWriter(testLogDir, workers);
         }
         else {
-            long reportingInterval = config.getLong("maestro.worker.reporting.interval", 10000);
+            long reportingInterval = config.getLong("worker.reporting.interval", 10000);
             return new WorkerLatencyWriter(testLogDir, workers, latencyEvaluator,
                     reportingInterval);
         }
@@ -172,12 +172,12 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             return;
         }
 
-        String policy = config.getString("maestro.worker.fcl.default.policy", "soft");
+        String policy = config.getString("worker.fcl.default.policy", "soft");
 
         // The latency comes as milliseconds from the front-end. Therefore, convert them ...
         long maxAcceptableLatency = TimeUnit.MILLISECONDS.toMicros(givenLatency);
         if (policy.equals("soft")) {
-            double defaultPercentile = config.getDouble("maestro.worker.fcl.soft.percentile", 90.0);
+            double defaultPercentile = config.getDouble("worker.fcl.soft.percentile", 90.0);
 
             logger.debug("Setting max latency to {} ms if at percentile {}", givenLatency, defaultPercentile);
 

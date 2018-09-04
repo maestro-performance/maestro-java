@@ -55,7 +55,7 @@ public final class WorkerContainer {
     private CountDownLatch endSignal;
 
     static {
-        TIMEOUT_STOP_WORKER_MILLIS = config.getLong("maestro.worker.stop.timeout", 1000);
+        TIMEOUT_STOP_WORKER_MILLIS = config.getLong("worker.stop.timeout", 1000);
     }
 
 
