@@ -147,14 +147,15 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     protected final void stopServices(final DistributionStrategy distributionStrategy) throws MaestroConnectionException {
         Set<PeerEndpoint> endpoints = distributionStrategy.endpoints();
 
-        for (PeerEndpoint endpoint : endpoints) {
-            String destination = endpoint.getDestination();
-
-            try {
-                exec(maestro::stopWorker, destination);
+        for (PeerEndpoint peerEndpoint : endpoints) {
+            if (peerEndpoint.getRole() == Role.SENDER) {
+                exec(maestro::stopWorker, peerEndpoint.getDestination());
             }
-            catch (NotEnoughRepliesException e) {
-                logger.warn("While stopping the {}: {}", endpoint.getRole(), e.getMessage());
+        }
+
+        for (PeerEndpoint peerEndpoint : endpoints) {
+            if (peerEndpoint.getRole() == Role.RECEIVER) {
+                exec(maestro::stopWorker, peerEndpoint.getDestination());
             }
         }
 
