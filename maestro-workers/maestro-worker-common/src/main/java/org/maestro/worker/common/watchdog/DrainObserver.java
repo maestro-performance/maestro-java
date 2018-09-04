@@ -50,16 +50,16 @@ public class DrainObserver implements WatchdogObserver {
 
     @Override
     public boolean onStop(List<MaestroWorker> workers) {
-        final int drainRetries = (config.getInt("worker.auto.drain.retries", 10) + 5);
+        long drainDeadline = config.getLong("worker.drain.deadline.secs", 60);
 
         int count = workerOptions.getParallelCountAsInt();
         try {
             workerContainer.create(workerInitializer, count);
 
-            logger.info("Starting to drain the queues after the test was executed");
+            logger.info("Drain the queues for up to {} seconds after the test was executed", drainDeadline);
             workerContainer.start();
 
-            workerContainer.waitForComplete(drainRetries);
+            workerContainer.waitForComplete(drainDeadline);
             logger.info("Drain completed successfully");
 
             client.notifyDrainComplete(true, "Drain completed successfully");
