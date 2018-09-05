@@ -41,9 +41,9 @@ class JMSClient implements Client {
     private static final Logger logger = LoggerFactory.getLogger(JMSClient.class);
 
     private String url = null;
-    Destination destination = null;
-    Connection connection = null;
-    JmsOptions opts;
+    private Destination destination = null;
+    protected Connection connection = null;
+    private JmsOptions opts;
 
     private int number = -1;
 
@@ -63,7 +63,6 @@ class JMSClient implements Client {
     public void start() throws Exception {
         logger.debug("Starting the JMS client");
 
-        Destination destination;
         Connection connection = null;
         try {
             opts = new JmsOptions(url);
@@ -78,7 +77,7 @@ class JMSClient implements Client {
             logger.debug("Requested destination name: {}", destinationName);
 
             destinationName = setupLimitDestinations(destinationName, opts.getConfiguredLimitDestinations(), getNumber());
-            destination = getDestination(protocol, destinationName);
+            this.destination = createDestination(protocol, destinationName);
 
             logger.debug("Creating the connection");
             connection = factory.createConnection();
@@ -89,13 +88,13 @@ class JMSClient implements Client {
             JMSResourceUtil.capturingClose(connection);
             throw t;
         }
-        this.destination = destination;
+
         this.connection = connection;
         this.connection.start();
     }
 
-    private Destination getDestination(final JMSProtocol protocol, final String destinationName) {
-        Destination destination;//doesn't need to use any enum yet
+    private Destination createDestination(final JMSProtocol protocol, final String destinationName) {
+        Destination destination;
         final String type = opts.getType();
 
         switch (type) {
@@ -110,6 +109,7 @@ class JMSClient implements Client {
             default:
                 throw new UnsupportedOperationException("not supported destination type: " + type);
         }
+
         return destination;
     }
 
@@ -152,5 +152,17 @@ class JMSClient implements Client {
     @Override
     public void setUrl(String url) {
         this.url = url;
+    }
+
+    protected String getUrl() {
+        return url;
+    }
+
+    protected Destination getDestination() {
+        return destination;
+    }
+
+    protected Connection getConnection() {
+        return connection;
     }
 }

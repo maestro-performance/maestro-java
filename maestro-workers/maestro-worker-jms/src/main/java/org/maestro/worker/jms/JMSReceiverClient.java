@@ -34,8 +34,8 @@ final class JMSReceiverClient extends JMSClient implements ReceiverClient {
     public void start() throws Exception {
         super.start();
         try {
-            session = connection.createSession(opts.getSessionMode() == Session.SESSION_TRANSACTED, opts.getSessionMode());
-            consumer = session.createConsumer(destination);
+            session = connection.createSession(getOpts().getSessionMode() == Session.SESSION_TRANSACTED, getOpts().getSessionMode());
+            consumer = session.createConsumer(getDestination());
             payloadBytes = ByteBuffer.allocate(PAYLOAD_SIZE).order(ContentStrategy.CONTENT_ENDIANNESS);
         } catch (Throwable t) {
             JMSResourceUtil.capturingClose(consumer);
