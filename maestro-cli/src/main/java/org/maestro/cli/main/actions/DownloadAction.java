@@ -105,10 +105,7 @@ public class DownloadAction extends Action {
             result = "success";
         }
 
-        String logLevel = cmdLine.getOptionValue('l');
-        if (logLevel != null) {
-            LogConfigurator.configureLogLevel(logLevel);
-        }
+        LogConfigurator.configureLogLevel(cmdLine.getOptionValue('l'));
     }
 
     public int run() {
