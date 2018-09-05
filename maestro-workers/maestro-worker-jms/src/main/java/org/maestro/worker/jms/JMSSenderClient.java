@@ -32,8 +32,8 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
     public void start() throws Exception {
         super.start();
         try {
-            this.session = connection.createSession(opts.getSessionMode() == Session.SESSION_TRANSACTED, opts.getSessionMode());
-            this.producer = session.createProducer(destination);
+            this.session = connection.createSession(getOpts().getSessionMode() == Session.SESSION_TRANSACTED, getOpts().getSessionMode());
+            this.producer = session.createProducer(getDestination());
 
             setupMessageDurability();
             setupPriority();
@@ -51,7 +51,7 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
     }
 
     private void setupMessageDurability() throws JMSException {
-        final boolean durable = opts.isDurable();
+        final boolean durable = getOpts().isDurable();
 
         if (durable) {
             producer.setDeliveryMode(DeliveryMode.PERSISTENT);
@@ -64,7 +64,7 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
         // Ref: https://docs.oracle.com/cd/E17802_01/products/products/jms/javadoc-102a/javax/jms/MessageProducer.html#setTimeToLive(long)
         final int defaultTTL = 0;
 
-        final long ttl = opts.getTtl();
+        final long ttl = getOpts().getTtl();
         if (ttl > defaultTTL) {
             producer.setTimeToLive(ttl);
         }
@@ -80,7 +80,7 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
         final int minPriority = 0;
         final int maxPriority = 9;
 
-        final int priority = opts.getPriority();
+        final int priority = getOpts().getPriority();
         if (priority > minPriority) {
             if (priority < maxPriority) {
                 producer.setPriority(priority);
