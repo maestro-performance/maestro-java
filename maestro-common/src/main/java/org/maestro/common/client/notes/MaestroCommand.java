@@ -23,11 +23,9 @@ public enum MaestroCommand {
     /** Receiver execution **/
     MAESTRO_NOTE_START_WORKER(0),
     MAESTRO_NOTE_STOP_WORKER(1),
-    /** Sender execution */
-    @Deprecated
-    MAESTRO_NOTE_START_SENDER(2),
-    @Deprecated
-    MAESTRO_NOTE_STOP_SENDER(3),
+    /** Test execution */
+    MAESTRO_NOTE_START_TEST(2),
+    MAESTRO_NOTE_STOP_TEST(3),
     /** Inspector execution **/
     MAESTRO_NOTE_START_INSPECTOR(4),
     MAESTRO_NOTE_STOP_INSPECTOR(5),
