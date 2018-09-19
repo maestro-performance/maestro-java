@@ -274,8 +274,8 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
     private boolean drainStart(final WorkerOptions drainOptions, final MaestroNote note, final Class<MaestroWorker> workerClass) {
         if (container.isTestInProgress()) {
-            logger.warn("Trying to start a new test, but a test execution is already in progress");
-            getClient().notifyFailure("Test already in progress");
+            logger.warn("Trying to start a new drain operation, but a test execution is in progress");
+            getClient().notifyFailure("Cannot drain while running a test");
 
             return false;
         }
