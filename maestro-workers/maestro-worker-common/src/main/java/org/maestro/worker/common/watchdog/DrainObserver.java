@@ -50,7 +50,7 @@ public class DrainObserver implements WatchdogObserver {
 
     @Override
     public boolean onStop(List<MaestroWorker> workers) {
-        long drainDeadline = config.getLong("worker.drain.deadline.secs", 60);
+        long drainDeadline = config.getLong("worker.drain.deadline.secs", 45);
 
         int count = workerOptions.getParallelCountAsInt();
         try {
