@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
@@ -146,19 +145,25 @@ public final class WorkerContainer {
 
         if (workerExecutorService != null) {
             try {
+                workerExecutorService.shutdown();
                 workerExecutorService.awaitTermination(getDeadLine(workers.size()), TimeUnit.MILLISECONDS);
             } catch (InterruptedException e) {
                 logger.warn("Interrupted ... forcing workers shutdown");
                 workerExecutorService.shutdownNow();
+            } finally {
+                workerExecutorService = null;
             }
         }
 
         if (watchdogExecutorService != null) {
             try {
+                watchdogExecutorService.shutdown();
                 watchdogExecutorService.awaitTermination(watchDogTimeout, TimeUnit.SECONDS);
             } catch (InterruptedException e) {
                 logger.warn("Interrupted ... forcing watchdog shutdown");
                 watchdogExecutorService.shutdownNow();
+            } finally {
+                watchdogExecutorService = null;
             }
         }
     }
