@@ -51,14 +51,14 @@ class WorkerWatchdog implements Runnable {
 
     @Override
     public void run() {
-        logger.info("Running the worker watchdog");
+        logger.info("Started the worker watchdog");
         try {
             for (WatchdogObserver observer : workerContainer.getObservers()) {
                 observer.onStart();
             }
 
+            logger.debug("Waiting for the workers to signal completion of their work units");
             endSignal.await();
-
             logger.debug("All workers have finished");
         } catch (InterruptedException e) {
             logger.debug("Watchdog was interrupted");
