@@ -111,7 +111,6 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
             logger.error("Error: {}", e.getMessage(), e);
         }
         finally {
-            distributionStrategy.reset();
             reset();
 
             testStop();
@@ -126,6 +125,9 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
                 else {
                     logger.warn(e.getMessage());
                 }
+            }
+            finally {
+                distributionStrategy.reset();
             }
         }
 
