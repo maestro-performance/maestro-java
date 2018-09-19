@@ -131,11 +131,15 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         final SenderClient client = this.clientFactory.get();
         final long id = Thread.currentThread().getId();
         try {
+            logger.debug("JMS sender worker {} is now running the client startup", id);
             doClientStartup(client);
 
+            logger.debug("JMS sender worker {} is signaling as started", id);
             startSignal.countDown();
 
+            logger.debug("JMS sender worker {} has started running the load loop", id);
             runLoadLoop(client);
+            logger.debug("JMS sender worker {} has completed running the load loop", id);
         } catch (InterruptedException e) {
             logger.error("JMS sender worker {} interrupted while sending messages: {}", id,
                     e.getMessage());
