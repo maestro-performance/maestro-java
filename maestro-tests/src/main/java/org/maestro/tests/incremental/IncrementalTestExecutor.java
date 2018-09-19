@@ -123,8 +123,6 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             logger.error("Error: {}", e.getMessage(), e);
         }
         finally {
-            distributionStrategy.reset();
-
             testStop();
 
             try {
@@ -137,6 +135,9 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                 else {
                     logger.warn(e.getMessage());
                 }
+            }
+            finally {
+                distributionStrategy.reset();
             }
         }
 
