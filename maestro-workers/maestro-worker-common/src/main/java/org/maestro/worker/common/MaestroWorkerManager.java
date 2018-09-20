@@ -458,4 +458,19 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     @Override
     abstract public void handle(final LogRequest note);
+
+    @Override
+    public void handle(final StartTestRequest note) {
+        // NO-OP
+    }
+
+    @Override
+    public void handle(final StartTestNotification note) {
+        // NO-OP
+    }
+
+    @Override
+    public void handle(final StopTestRequest note) {
+        // NO-OP
+    }
 }

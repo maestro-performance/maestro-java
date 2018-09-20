@@ -77,6 +77,8 @@ public enum MaestroCommand {
         switch ((int) value) {
             case 0: return MAESTRO_NOTE_START_WORKER;
             case 1: return MAESTRO_NOTE_STOP_WORKER;
+            case 2: return MAESTRO_NOTE_START_TEST;
+            case 3: return MAESTRO_NOTE_STOP_TEST;
             case 4: return MAESTRO_NOTE_START_INSPECTOR;
             case 5: return MAESTRO_NOTE_STOP_INSPECTOR;
             case 7: return MAESTRO_NOTE_SET;

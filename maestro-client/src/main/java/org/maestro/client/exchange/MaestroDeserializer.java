@@ -50,6 +50,9 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_NOTIFY_DRAIN_COMPLETE: {
                 return new DrainCompleteNotification(unpacker);
             }
+            case MAESTRO_NOTE_START_TEST: {
+                return new StartTestNotification(unpacker);
+            }
             default: {
                 throw new MalformedNoteException("Invalid notification command: " + tmpCommand);
            }
@@ -167,6 +170,12 @@ public class MaestroDeserializer {
             }
             case MAESTRO_NOTE_ROLE_UNASSIGN: {
                 return new RoleUnassign(unpacker);
+            }
+            case MAESTRO_NOTE_START_TEST: {
+                return new StartTestRequest(unpacker);
+            }
+            case MAESTRO_NOTE_STOP_TEST: {
+                return new StopTestRequest(unpacker);
             }
             default: {
                 throw new MalformedNoteException("Invalid request command: " + tmpCommand);
