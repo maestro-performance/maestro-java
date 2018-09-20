@@ -54,4 +54,10 @@ public interface MaestroEventListener {
     void handle(RoleAssign note);
 
     void handle(RoleUnassign note);
+
+    void handle(StartTestRequest note);
+
+    void handle(StartTestNotification note);
+
+    void handle(StopTestRequest note);
 }
