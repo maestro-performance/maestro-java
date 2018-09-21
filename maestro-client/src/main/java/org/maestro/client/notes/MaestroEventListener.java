@@ -57,7 +57,5 @@ public interface MaestroEventListener {
 
     void handle(StartTestRequest note);
 
-    void handle(StartTestNotification note);
-
     void handle(StopTestRequest note);
 }
