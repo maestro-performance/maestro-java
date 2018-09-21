@@ -53,20 +53,15 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
     /**
      * Constructor
      * @param maestro a Maestro client instance
-     * @param reportsDownloader the reports downloader in use for the test
      * @param testProfile the test profile in use for the test
      */
-    public IncrementalTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                   final IncrementalTestProfile testProfile,
+    public IncrementalTestExecutor(final Maestro maestro, final IncrementalTestProfile testProfile,
                                    final DistributionStrategy distributionStrategy)
     {
-        super(maestro, reportsDownloader);
+        super(maestro);
 
         this.testProfile = testProfile;
         this.distributionStrategy = distributionStrategy;
-
-        DownloadProcessor downloadProcessor = new DownloadProcessor(reportsDownloader);
-        getMaestro().getCollector().addCallback(new LogRequesterCallback(this, downloadProcessor));
     }
 
     private long getTimeout() {
@@ -87,7 +82,6 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             PeerSet peerSet = distributionStrategy.distribute(getMaestro().getPeers());
             long numPeers = peerSet.workers();
 
-            getReportsDownloader().getOrganizer().getTracker().setCurrentTest(test.getTestIteration());
             testProfile.apply(getMaestro(), distributionStrategy);
 
             try {

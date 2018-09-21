@@ -17,8 +17,6 @@ package singlepoint
 
 import org.maestro.client.Maestro
 import org.maestro.common.Role
-import org.maestro.reports.downloaders.DownloaderBuilder
-import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.incremental.IncrementalTestExecutor
 import org.maestro.tests.incremental.IncrementalTestProfile
 import org.maestro.common.LogConfigurator
@@ -118,8 +116,6 @@ maestro = new Maestro(maestroURL)
 
 distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
 
-ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
-
 IncrementalTestProfile testProfile = new IncrementalTestProfile()
 
 TestEndpointResolver endpointResolver = TestEndpointResolverFactory.createTestEndpointResolver(System.getenv("ENDPOINT_RESOLVER_NAME"))
@@ -141,7 +137,7 @@ testProfile.setCeilingParallelCount(Integer.parseInt(ceilingParallelCount))
 
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
 
-IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile, distributionStrategy)
+IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, testProfile, distributionStrategy)
 
 boolean ret = testExecutor.run()
 

@@ -42,26 +42,22 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
 
     private final Maestro maestro;
 
-    private final DownloadProcessor downloadProcessor;
     private final AbstractTestProfile testProfile;
     private final DistributionStrategy distributionStrategy;
 
     /**
      * Constructor
      * @param maestro a Maestro client instance
-     * @param reportsDownloader the reports downloader in use for the test
      * @param testProfile the test profile in use for the test
+     * @param distributionStrategy the distribution strategy to use
      */
-    public FlexibleTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                final AbstractTestProfile testProfile, final DistributionStrategy distributionStrategy)
+    public FlexibleTestExecutor(final Maestro maestro, final AbstractTestProfile testProfile, final DistributionStrategy distributionStrategy)
     {
-        super(maestro, reportsDownloader);
+        super(maestro);
 
         this.maestro = maestro;
         this.testProfile = testProfile;
         this.distributionStrategy = distributionStrategy;
-
-        downloadProcessor = new DownloadProcessor(reportsDownloader);
     }
 
 
@@ -98,13 +94,6 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
 
             PeerSet peerSet = distributionStrategy.distribute(getMaestro().getPeers());
             long numPeers = peerSet.workers();
-
-            List<? extends MaestroNote> dataServers = getMaestro().getDataServer().get();
-            dataServers.stream()
-                    .filter(note -> note instanceof GetResponse)
-                    .forEach(note -> downloadProcessor.addDataServer((GetResponse) note));
-
-            getReportsDownloader().getOrganizer().getTracker().setCurrentTest(number);
 
             logger.info("Applying the test profile");
             testProfile.apply(maestro, distributionStrategy);

@@ -225,6 +225,8 @@ public class MaestroDeserializer {
                     return deserializeResponse(unpacker);
                 case MAESTRO_TYPE_NOTIFICATION:
                     return deserializeNotification(unpacker);
+                case MAESTRO_TYPE_DATA:
+                    return deserializeData(unpacker);
                 default:
                     throw new MalformedNoteException("Invalid note type: " + tmpType);
             }

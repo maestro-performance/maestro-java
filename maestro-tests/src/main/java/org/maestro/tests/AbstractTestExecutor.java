@@ -51,24 +51,17 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
     private final Maestro maestro;
-    private final ReportsDownloader reportsDownloader;
 
     private volatile boolean running = false;
     private Instant startTime;
 
-    protected AbstractTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader) {
+    protected AbstractTestExecutor(final Maestro maestro) {
         this.maestro = maestro;
-        this.reportsDownloader = reportsDownloader;
-
         logger.trace("Creating an abstract test executor");
     }
 
     protected Maestro getMaestro() {
         return maestro;
-    }
-
-    protected ReportsDownloader getReportsDownloader() {
-        return reportsDownloader;
     }
 
     protected void testStart(final Test test) {

@@ -24,10 +24,7 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.exceptions.MaestroException;
-import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
-import org.maestro.tests.DownloadProcessor;
-import org.maestro.tests.callbacks.LogRequesterCallback;
 import org.maestro.tests.cluster.DistributionStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -48,14 +45,11 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
         coolDownPeriod = config.getLong("test.fixedrate.cooldown.period", 1) * 1000;
     }
 
-    AbstractFixedRateExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
+    AbstractFixedRateExecutor(final Maestro maestro,
                               final FixedRateTestProfile testProfile, final DistributionStrategy distributionStrategy) {
-        super(maestro, reportsDownloader);
+        super(maestro);
 
         this.testProfile = testProfile;
-
-        DownloadProcessor downloadProcessor = new DownloadProcessor(reportsDownloader);
-        getMaestro().getCollector().addCallback(new LogRequesterCallback(this, downloadProcessor));
 
         this.distributionStrategy = distributionStrategy;
     }
@@ -70,7 +64,6 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
             PeerSet peerSet = distributionStrategy.distribute(getMaestro().getPeers());
             long numPeers = peerSet.workers();
 
-            getReportsDownloader().getOrganizer().getTracker().setCurrentTest(test.getTestIteration());
             apply.accept(getMaestro(), distributionStrategy);
 
             try {

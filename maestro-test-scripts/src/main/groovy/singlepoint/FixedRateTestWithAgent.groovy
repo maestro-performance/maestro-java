@@ -20,8 +20,6 @@ import org.maestro.client.Maestro
 import org.maestro.common.LogConfigurator
 import org.maestro.common.Role
 import org.maestro.common.duration.TestDurationBuilder
-import org.maestro.reports.downloaders.DownloaderBuilder
-import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.cluster.DistributionStrategyFactory
 import org.maestro.tests.rate.FixedRateTestExecutor
 import org.maestro.tests.rate.FixedRateTestProfile
@@ -89,8 +87,6 @@ LogConfigurator.configureLogLevel(logLevel)
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
-
 FixedRateTestProfile testProfile = new FixedRateTestProfile()
 
 TestEndpointResolver endpointResolver = TestEndpointResolverFactory.createTestEndpointResolver(System.getenv("ENDPOINT_RESOLVER_NAME"))
@@ -116,7 +112,7 @@ testProfile.setExtPointCommand(extPointCommand)
 
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
 
-FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, reportsDownloader, testProfile, distributionStrategy)
+FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, testProfile, distributionStrategy)
 if (!testExecutor.run()) {
     maestro.stop()
 

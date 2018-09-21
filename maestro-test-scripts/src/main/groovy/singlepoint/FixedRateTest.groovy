@@ -18,8 +18,6 @@ package singlepoint
 
 import org.maestro.client.Maestro
 import org.maestro.common.Role
-import org.maestro.reports.downloaders.DownloaderBuilder
-import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.cluster.DistributionStrategyFactory
 import org.maestro.tests.rate.AbstractFixedRateExecutor
 import org.maestro.tests.rate.FixedRateTestExecutorFactory
@@ -88,8 +86,6 @@ maestro = new Maestro(maestroURL)
 
 distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
 
-ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
-
 FixedRateTestProfile testProfile = new FixedRateTestProfile()
 TestEndpointResolver endpointResolver = TestEndpointResolverFactory.createTestEndpointResolver(System.getenv("ENDPOINT_RESOLVER_NAME"))
 
@@ -109,12 +105,11 @@ testProfile.setParallelCount(Integer.parseInt(parallelCount))
 
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
 
-AbstractFixedRateExecutor testExecutor = FixedRateTestExecutorFactory.newTestExecutor(maestro, reportsDownloader,
-        testProfile, warmUp, distributionStrategy)
+AbstractFixedRateExecutor testExecutor = FixedRateTestExecutorFactory.newTestExecutor(maestro, testProfile, warmUp,
+        distributionStrategy)
 
 boolean ret = testExecutor.run()
 
-reportsDownloader.waitForComplete()
 maestro.stop()
 
 if (!ret) {
