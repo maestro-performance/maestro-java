@@ -33,7 +33,6 @@ import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.common.MaestroWorkerManager;
-import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,11 +61,10 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * Constructor
      * @param maestroURL maestro_broker URL
      * @param peerInfo maestro peer information
-     * @param dataServer data server object
      * @throws MaestroException if unable to create agent instance
      */
-    public MaestroAgent(final String maestroURL, final PeerInfo peerInfo, MaestroDataServer dataServer) throws MaestroException {
-        super(maestroURL, peerInfo, dataServer);
+    public MaestroAgent(final String maestroURL, final PeerInfo peerInfo) throws MaestroException {
+        super(maestroURL, peerInfo);
 
         AbstractConfiguration config = ConfigurationWrapper.getConfig();
         String pathStr = config.getString("agent.ext.path.override", null);

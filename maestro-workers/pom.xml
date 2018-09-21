@@ -30,7 +30,6 @@
     <modules>
         <module>maestro-worker-common</module>
         <module>maestro-worker-jms</module>
-        <module>maestro-data-server-http</module>
     </modules>
     
 </project>

@@ -70,7 +70,7 @@ public class MiniPeer {
 
         final PeerInfo peerInfo = new WorkerPeer("test", "localhost");
 
-        executor = new MaestroWorkerExecutor(maestroUrl, peerInfo, logDir, null);
+        executor = new MaestroWorkerExecutor(maestroUrl, peerInfo, logDir);
 
         if (role.equals("sender")) {
             String[] topics = {MaestroTopics.WORKERS_TOPIC, MaestroTopics.NOTIFICATION_TOPIC, SENDER_TOPIC};

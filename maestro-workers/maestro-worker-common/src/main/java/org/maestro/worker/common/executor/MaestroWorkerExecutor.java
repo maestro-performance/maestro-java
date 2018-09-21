@@ -23,7 +23,6 @@ import org.maestro.client.notes.MaestroEvent;
 import org.maestro.client.notes.MaestroEventListener;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.common.ConcurrentWorkerManager;
-import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,22 +32,11 @@ public class MaestroWorkerExecutor extends AbstractMaestroExecutor {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerExecutor.class);
 
 
-    public MaestroWorkerExecutor(final AbstractMaestroPeer<MaestroEvent<MaestroEventListener>> maestroPeer, final MaestroDataServer dataServer) {
+    public MaestroWorkerExecutor(final AbstractMaestroPeer<MaestroEvent<MaestroEventListener>> maestroPeer) {
         super(maestroPeer);
-
-        initDataServer(dataServer);
     }
 
-    public MaestroWorkerExecutor(final String url, final PeerInfo peerInfo, final File logDir, final MaestroDataServer dataServer) throws MaestroException {
-        super(new ConcurrentWorkerManager(url, peerInfo, logDir, dataServer));
-
-        initDataServer(dataServer);
-    }
-
-    private void initDataServer(MaestroDataServer dataServer) {
-        logger.info("Creating the data server");
-
-        Thread dataServerThread = new Thread(dataServer);
-        dataServerThread.start();
+    public MaestroWorkerExecutor(final String url, final PeerInfo peerInfo, final File logDir) throws MaestroException {
+        super(new ConcurrentWorkerManager(url, peerInfo, logDir));
     }
 }

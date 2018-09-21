@@ -23,8 +23,6 @@ import org.maestro.client.exchange.support.WorkerPeer;
 import org.maestro.common.*;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.common.ConcurrentWorkerManager;
-import org.maestro.data.server.http.HttpDataServer;
-import org.maestro.worker.common.ds.MaestroDataServer;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
 import java.io.File;
@@ -118,8 +116,6 @@ public class MaestroWorkerMain {
         LogConfigurator.defaultForDaemons();
 
         try {
-            MaestroDataServer dataServer = new HttpDataServer(logDir, host);
-
             MaestroWorkerExecutor executor;
 
             String name = System.getProperty("maestro.worker.name");
@@ -129,8 +125,8 @@ public class MaestroWorkerMain {
 
             final PeerInfo peerInfo = new WorkerPeer(name, host);
 
-            ConcurrentWorkerManager maestroPeer = new ConcurrentWorkerManager(maestroUrl, peerInfo, logDir, dataServer);
-            executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
+            ConcurrentWorkerManager maestroPeer = new ConcurrentWorkerManager(maestroUrl, peerInfo, logDir);
+            executor = new MaestroWorkerExecutor(maestroPeer);
 
             String[] topics = MaestroTopics.peerTopics(maestroPeer.getId());
 
