@@ -28,7 +28,6 @@ import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.client.notes.WorkerStartOptions;
 import org.maestro.common.exceptions.MaestroConnectionException;
-import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.cluster.DistributionStrategy;
 import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;

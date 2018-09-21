@@ -18,11 +18,11 @@ package org.maestro.cli.main.actions;
 
 import org.apache.commons.cli.*;
 import org.maestro.client.Maestro;
+import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.common.LogConfigurator;
-import org.maestro.reports.downloaders.BrokerDownloader;
-import org.maestro.reports.downloaders.ReportsDownloader;
+import org.maestro.common.client.notes.LocationType;
 
 import java.util.Arrays;
 import java.util.LinkedList;
@@ -112,14 +112,11 @@ public class DownloadAction extends Action {
         try {
 
             Maestro maestro = new Maestro(maestroUrl);
-            ReportsDownloader rd = new BrokerDownloader(maestro, directory);
 
             PeerSet peerSet = maestro.getPeers();
 
-            rd.getOrganizer().setResultType(result);
-
             for (String server : servers) {
-                peerSet.getPeers().forEach((k,v) -> download(rd, server, k, v));
+                peerSet.getPeers().forEach((k,v) -> download(maestro, server, k, v));
             }
 
             return 0;
@@ -131,7 +128,7 @@ public class DownloadAction extends Action {
         }
     }
 
-    private void download(final ReportsDownloader rd, final String host, final String id, final PeerInfo peerInfo) {
+    private void download(final Maestro maestro, final String host, final String id, final PeerInfo peerInfo) {
         if (!peerInfo.peerHost().equals(host)) {
             return;
         }
@@ -142,11 +139,7 @@ public class DownloadAction extends Action {
         do {
             String resourcePath = Integer.toString(i);
 
-            rd.getOrganizer().getTracker().setCurrentTest(i);
-
-            rd.downloadAny(id, resourcePath);
-
-            rd.waitForComplete();
+            maestro.logRequest(MaestroTopics.peerTopic(id), LocationType.ANY, resourcePath);
 
             i++;
         } while (i <= to);

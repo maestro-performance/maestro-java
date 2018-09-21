@@ -17,7 +17,6 @@
 package org.maestro.tests.rate;
 
 import org.maestro.client.Maestro;
-import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.cluster.DistributionStrategy;
 
 public class FixedRateTestExecutorFactory {
