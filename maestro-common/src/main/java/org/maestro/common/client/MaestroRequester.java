@@ -19,10 +19,7 @@ package org.maestro.common.client;
 import org.maestro.common.Role;
 import org.maestro.common.agent.Source;
 import org.maestro.common.agent.UserCommandData;
-import org.maestro.common.client.notes.DrainOptions;
-import org.maestro.common.client.notes.LocationType;
-import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.common.client.notes.WorkerStartOptions;
+import org.maestro.common.client.notes.*;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
 
@@ -293,6 +290,15 @@ public interface MaestroRequester {
      */
     CompletableFuture<List<? extends MaestroNote>> roleUnassign(final String topic) throws MaestroConnectionException;
 
+
+    /**
+     * Starts the test execution
+     * @param topic the topic to send the request to
+     * @param test the test information
+     * @throws MaestroException if unable to send the MQTT request
+     * @return A completable future
+     */
+    CompletableFuture<List<? extends MaestroNote>> startTest(final String topic, final Test test) throws MaestroConnectionException;
 
     /**
      * Waits for the drain notifications

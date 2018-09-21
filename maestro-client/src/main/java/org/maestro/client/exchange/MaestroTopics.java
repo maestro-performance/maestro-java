@@ -162,4 +162,15 @@ public class MaestroTopics {
         };
     }
 
+    public static String[] collectorTopics(final String id, final PeerInfo peerInfo) {
+        return new String[] {
+                PEER_TOPIC,
+                NOTIFICATION_TOPIC,
+                MaestroTopics.MAESTRO_LOGS_TOPIC,
+                MaestroTopics.peerTopic(Role.REPORTS_SERVER),
+                peerTopic(id),
+                peerTopic(peerInfo),
+        };
+    }
+
 }

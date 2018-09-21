@@ -22,6 +22,7 @@ import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
@@ -61,7 +62,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
 
     protected abstract void reset();
 
-    protected boolean runTest(int number, final BiConsumer<Maestro, DistributionStrategy> apply) {
+    protected boolean runTest(final Test test, final BiConsumer<Maestro, DistributionStrategy> apply) {
         try {
             // Clean up the topic
             getMaestro().clear();
@@ -69,13 +70,13 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
             PeerSet peerSet = distributionStrategy.distribute(getMaestro().getPeers());
             long numPeers = peerSet.workers();
 
-            getReportsDownloader().getOrganizer().getTracker().setCurrentTest(number);
+            getReportsDownloader().getOrganizer().getTracker().setCurrentTest(test.getTestIteration());
             apply.accept(getMaestro(), distributionStrategy);
 
             try {
                 startServices(testProfile, distributionStrategy);
 
-                testStart();
+                testStart(test);
 
                 ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 

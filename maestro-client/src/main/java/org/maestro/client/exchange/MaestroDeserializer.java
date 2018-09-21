@@ -59,6 +59,23 @@ public class MaestroDeserializer {
         }
     }
 
+    private static MaestroData deserializeData(MessageUnpacker unpacker) throws IOException, MalformedNoteException {
+        long tmpCommand = unpacker.unpackLong();
+        MaestroCommand command = MaestroCommand.from(tmpCommand);
+
+        switch (Objects.requireNonNull(command)) {
+            case MAESTRO_NOTE_LOG: {
+                LogResponseJoiner instance = LogResponseJoiner.getInstance();
+
+                return instance.join(new LogResponse(unpacker));
+            }
+            default: {
+                logger.error("Type unknown: {}", command.getClass());
+                throw new MalformedNoteException("Invalid response command: " + tmpCommand);
+            }
+        }
+    }
+
     private static MaestroResponse deserializeResponse(MessageUnpacker unpacker) throws IOException, MalformedNoteException {
         long tmpCommand = unpacker.unpackLong();
         MaestroCommand command = MaestroCommand.from(tmpCommand);
@@ -84,11 +101,6 @@ public class MaestroDeserializer {
             }
             case MAESTRO_NOTE_USER_COMMAND_1: {
                 return new UserCommand1Response(unpacker);
-            }
-            case MAESTRO_NOTE_LOG: {
-                LogResponseJoiner instance = LogResponseJoiner.getInstance();
-
-                return instance.join(new LogResponse(unpacker));
             }
             case MAESTRO_NOTE_START_WORKER:
             case MAESTRO_NOTE_STOP_WORKER:
@@ -193,6 +205,8 @@ public class MaestroDeserializer {
                     return deserializeRequest(unpacker);
                 case MAESTRO_TYPE_NOTIFICATION:
                     return deserializeNotification(unpacker);
+                case MAESTRO_TYPE_DATA:
+                    return deserializeData(unpacker);
                 default:
                     throw new MalformedNoteException("Invalid event type: " + tmpType);
             }

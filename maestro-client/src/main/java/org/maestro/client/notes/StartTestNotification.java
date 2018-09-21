@@ -1,22 +1,28 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.maestro.common.client.notes.Test;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
 public class StartTestNotification extends MaestroNotification {
-    private int localTestNumber;
+    private Test test;
 
-    public StartTestNotification(int localTestNumber) {
+    public StartTestNotification(final Test test) {
         super(MaestroCommand.MAESTRO_NOTE_START_TEST);
-        this.localTestNumber = localTestNumber;
+        this.test = test;
     }
 
     public StartTestNotification(final MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_START_TEST, unpacker);
-        this.localTestNumber = unpacker.unpackInt();
+
+        int testNumber = unpacker.unpackInt();
+        int testIteration = unpacker.unpackInt();
+        String testName = unpacker.unpackString();
+
+        this.test = new Test(testNumber, testIteration, testName);
     }
 
     @Override
@@ -28,7 +34,9 @@ public class StartTestNotification extends MaestroNotification {
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
-        packer.packInt(localTestNumber);
+        packer.packInt(test.getTestNumber());
+        packer.packInt(test.getTestIteration());
+        packer.packString(test.getTestName());
 
         return packer;
     }

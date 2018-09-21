@@ -19,7 +19,8 @@ package org.maestro.common.client.notes;
 public enum MaestroNoteType {
     MAESTRO_TYPE_REQUEST((short) 0),
     MAESTRO_TYPE_RESPONSE((short) 1),
-    MAESTRO_TYPE_NOTIFICATION((short) 2);
+    MAESTRO_TYPE_NOTIFICATION((short) 2),
+    MAESTRO_TYPE_DATA((short) 3);
 
     private final short value;
 
@@ -36,6 +37,7 @@ public enum MaestroNoteType {
             case 0: return MAESTRO_TYPE_REQUEST;
             case 1: return MAESTRO_TYPE_RESPONSE;
             case 2: return MAESTRO_TYPE_NOTIFICATION;
+            case 3: return MAESTRO_TYPE_DATA;
         }
 
         return null;

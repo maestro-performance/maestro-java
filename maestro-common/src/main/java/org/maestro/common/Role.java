@@ -50,7 +50,13 @@ public enum Role {
     /**
      * Exporter
      */
-    EXPORTER(5);
+    EXPORTER(5),
+
+    /**
+     * Reports server
+     */
+    REPORTS_SERVER(6);
+
 
     private final int code;
 
@@ -94,6 +100,12 @@ public enum Role {
             case 4: {
                 return AGENT;
             }
+            case 5: {
+                return EXPORTER;
+            }
+            case 6: {
+                return REPORTS_SERVER;
+            }
             default: {
                 return OTHER;
             }
@@ -114,6 +126,9 @@ public enum Role {
                 return HostTypes.AGENT_HOST_TYPE;
             case 5:
                 return HostTypes.EXPORTER_HOST_TYPE;
+            case 6:
+                return HostTypes.REPORTS_SERVER_HOST_TYPE;
+
         }
 
         return HostTypes.OTHER_HOST_TYPE;

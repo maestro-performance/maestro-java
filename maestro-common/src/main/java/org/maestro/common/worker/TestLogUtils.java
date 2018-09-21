@@ -65,6 +65,10 @@ public class TestLogUtils {
         return new File(logDir, name);
     }
 
+    public static int testLogDirNum(final File testLogDir) {
+        return Integer.parseInt(testLogDir.getName());
+    }
+
     public static File nextTestLogDir(final File logDir) {
         File testLogDir = new File(logDir, "0");
         int count = 0;

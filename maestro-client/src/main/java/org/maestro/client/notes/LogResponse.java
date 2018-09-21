@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
-public class LogResponse extends MaestroResponse {
+public class LogResponse extends MaestroData<MaestroLogCollectorListener> {
     private static final Logger logger = LoggerFactory.getLogger(LogResponse.class);
     // Limit payload to 255 Mb because MQTT cannot have a payload bigger than 256Mb
     // 268435456
@@ -263,6 +263,11 @@ public class LogResponse extends MaestroResponse {
 
     public boolean isLast() {
         return (index == (total - 1));
+    }
+
+    @Override
+    public void notify(MaestroLogCollectorListener visitor) {
+        visitor.handle(this);
     }
 
     @Override

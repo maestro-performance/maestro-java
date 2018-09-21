@@ -21,6 +21,7 @@ import org.maestro.client.Maestro;
 import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
@@ -76,8 +77,8 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
         return "run";
     }
 
-    private boolean runTest(int testNumber) {
-        logger.info("Starting test execution {}", testNumber);
+    private boolean runTest(final Test test) {
+        logger.info("Starting test execution {}", test.getTestIteration());
 
         try {
             // Clean up the topic
@@ -86,13 +87,13 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             PeerSet peerSet = distributionStrategy.distribute(getMaestro().getPeers());
             long numPeers = peerSet.workers();
 
-            getReportsDownloader().getOrganizer().getTracker().setCurrentTest(testNumber);
+            getReportsDownloader().getOrganizer().getTracker().setCurrentTest(test.getTestIteration());
             testProfile.apply(getMaestro(), distributionStrategy);
 
             try {
                 startServices(testProfile, distributionStrategy);
 
-                testStart();
+                testStart(test);
 
                 long timeout = getTimeout();
                 logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
@@ -146,11 +147,20 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
 
     public boolean run() {
-        int testNumber = 0;
+        int testIteration = 0;
         boolean successful;
 
         do {
-            successful = runTest(testNumber);
+            Test test;
+
+            if (testIteration == 0) {
+                test = new Test(Test.NEXT, testIteration, "incremental");
+            }
+            else {
+                test = new Test(Test.LAST, Test.NEXT, "incremental");
+            }
+
+            successful = runTest(test);
             if (!successful) {
                 break;
             }
@@ -160,7 +170,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                 break;
             }
             
-            testNumber++;
+            testIteration++;
         } while (true);
 
         if (!successful) {

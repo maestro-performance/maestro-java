@@ -43,7 +43,7 @@ public class BalancedStrategy extends AbstractStrategy {
     protected PeerEndpoint assign(final String id, final PeerInfo peerInfo) {
         String topic = MaestroTopics.peerTopic(id);
 
-        if (peerInfo.getRole() == Role.AGENT || peerInfo.getRole() == Role.INSPECTOR) {
+        if (peerInfo.getRole() == Role.AGENT || peerInfo.getRole() == Role.INSPECTOR || peerInfo.getRole() == Role.REPORTS_SERVER) {
             return new PeerEndpoint(peerInfo.getRole(), topic);
         }
 

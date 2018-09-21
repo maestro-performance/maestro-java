@@ -428,7 +428,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     public void handle(final RoleAssign note) {
         Role role = note.getRole();
 
-        if (getPeerInfo().getRole() != Role.OTHER) {
+        if (getPeerInfo().getRole() != Role.OTHER ) {
             getClient().replyInternalError(note, "The node is already assigned the %s role",
                     getPeerInfo().getRole().toString());
 
