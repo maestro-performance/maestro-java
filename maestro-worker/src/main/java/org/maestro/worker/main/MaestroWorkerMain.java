@@ -61,8 +61,7 @@ public class MaestroWorkerMain {
                 "maestro URL to connect to");
         options.addOption("H", "host", true,
                 "optional hostname (to override auto-detection)");
-        options.addOption("l", "log-dir", true,
-                "this' host hostname");
+        options.addOption("l", "log-dir", true, "log directory");
 
         try {
             cmdLine = parser.parse(options, args);
