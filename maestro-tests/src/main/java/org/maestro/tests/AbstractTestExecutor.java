@@ -25,6 +25,7 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Role;
 import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.client.notes.WorkerStartOptions;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.reports.downloaders.ReportsDownloader;
@@ -70,7 +71,11 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         return reportsDownloader;
     }
 
-    protected void testStart() {
+    protected void testStart(final Test test) {
+        String destination = MaestroTopics.peerTopic(Role.REPORTS_SERVER);
+
+        exec(maestro::startTest, destination, test);
+
         running = true;
         startTime = Instant.now();
     }

@@ -17,6 +17,7 @@
 package org.maestro.tests.rate;
 
 import org.maestro.client.Maestro;
+import org.maestro.common.client.notes.Test;
 import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.callbacks.StatsCallBack;
 import org.maestro.tests.cluster.DistributionStrategy;
@@ -66,13 +67,13 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
         logger.info("Starting the warm up execution");
 
         warmUp = true;
-        if (runTest(0, getTestProfile()::warmUp)) {
+        if (runTest(new Test(Test.NEXT, Test.NEXT, "fixed-rate"), getTestProfile()::warmUp)) {
             try {
                 Thread.sleep(getCoolDownPeriod());
                 logger.info("Starting the test");
 
                 warmUp = false;
-                return runTest(1, getTestProfile()::apply);
+                return runTest(new Test(Test.LAST, Test.NEXT, "fixed-rate"), getTestProfile()::apply);
             } catch (InterruptedException e) {
                 logger.warn("The test execution was interrupted");
             }

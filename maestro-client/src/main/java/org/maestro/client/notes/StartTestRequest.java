@@ -17,39 +17,42 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.maestro.common.client.notes.Test;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
 public class StartTestRequest extends MaestroRequest<MaestroEventListener> {
-    private int testNumber;
-    private int testIteration;
-    private String testName;
+    private Test test;
 
-    public StartTestRequest(int testNumber, int testIteration, final String testName) {
+    public StartTestRequest(final Test test) {
         super(MaestroCommand.MAESTRO_NOTE_START_TEST);
 
-        this.testNumber = testNumber;
-        this.testIteration = testIteration;
-        this.testName = testName;
+        this.test = test;
     }
 
     public StartTestRequest(final MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_START_TEST, unpacker);
 
-        this.testNumber = unpacker.unpackInt();
-        this.testIteration = unpacker.unpackInt();
-        this.testName = unpacker.unpackString();
+        int testNumber = unpacker.unpackInt();
+        int testIteration = unpacker.unpackInt();
+        String testName = unpacker.unpackString();
+
+        this.test = new Test(testNumber, testIteration, testName);
+    }
+
+    public Test getTest() {
+        return test;
     }
 
     @Override
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
-        packer.packInt(this.testNumber);
-        packer.packInt(this.testIteration);
-        packer.packString(this.testName);
+        packer.packInt(test.getTestNumber());
+        packer.packInt(test.getTestIteration());
+        packer.packString(test.getTestName());
 
         return packer;
     }

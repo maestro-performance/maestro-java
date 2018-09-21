@@ -37,4 +37,7 @@ public class HostTypes {
 
     /** Exporter */
     public static final String EXPORTER_HOST_TYPE = "exporter";
+
+    /** Reports server */
+    public static final String REPORTS_SERVER_HOST_TYPE = "reports-server";
 }

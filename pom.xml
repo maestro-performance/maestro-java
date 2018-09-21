@@ -83,10 +83,12 @@
         <module>maestro-workers</module>
         <module>maestro-worker</module>
         <module>maestro-test-scripts</module>
+        <module>maestro-reports-server</module>
         <module>maestro-agent</module>
         <module>maestro-inspector</module>
         <module>maestro-inspectors</module>
         <module>maestro-cli</module>
+
     </modules>
 
     <profiles>
