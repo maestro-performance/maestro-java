@@ -27,7 +27,6 @@ import org.maestro.common.evaluators.LatencyEvaluator;
 import org.maestro.common.evaluators.SoftLatencyEvaluator;
 import org.maestro.common.worker.*;
 import org.maestro.worker.common.container.initializers.TestWorkerInitializer;
-import org.maestro.worker.common.ds.MaestroDataServer;
 import org.maestro.worker.common.watchdog.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,11 +55,9 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
      * @param maestroURL Maestro URL
      * @param peerInfo Peer information
      * @param logDir test log directory
-     * @param dataServer the data server instance
      */
-    public ConcurrentWorkerManager(final String maestroURL, final PeerInfo peerInfo, final File logDir,
-                                   final MaestroDataServer dataServer) {
-        super(maestroURL, peerInfo, dataServer);
+    public ConcurrentWorkerManager(final String maestroURL, final PeerInfo peerInfo, final File logDir) {
+        super(maestroURL, peerInfo);
 
         this.container = new WorkerContainer();
         this.logDir = logDir;

@@ -25,8 +25,6 @@ import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.NetworkUtils;
 import org.maestro.common.exceptions.MaestroException;
-import org.maestro.data.server.http.HttpDataServer;
-import org.maestro.worker.common.ds.MaestroDataServer;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
 import java.io.File;
@@ -124,14 +122,12 @@ public class MaestroAgentMain {
         LogConfigurator.defaultForDaemons();
 
         try {
-            MaestroDataServer dataServer = new HttpDataServer(logDir, host);
-
             MaestroWorkerExecutor executor;
 
             final PeerInfo peerInfo = new AgentPeer(host);
-            MaestroAgent maestroPeer = new MaestroAgent(maestroUrl, peerInfo, dataServer);
+            MaestroAgent maestroPeer = new MaestroAgent(maestroUrl, peerInfo);
 
-            executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
+            executor = new MaestroWorkerExecutor(maestroPeer);
 
             String[] topics = MaestroTopics.agentTopics(maestroPeer.getId(), peerInfo);
 

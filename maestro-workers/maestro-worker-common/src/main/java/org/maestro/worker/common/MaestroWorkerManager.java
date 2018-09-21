@@ -26,7 +26,6 @@ import org.maestro.client.notes.*;
 import org.maestro.common.Role;
 import org.maestro.common.URLQuery;
 import org.maestro.common.client.exceptions.MalformedNoteException;
-import org.maestro.common.client.notes.GetOption;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.test.TestProperties;
@@ -34,7 +33,6 @@ import org.maestro.common.test.SystemProperties;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.contrib.utils.digest.Sha1Digest;
-import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -51,23 +49,20 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     private final MaestroReceiverClient client;
     private final WorkerOptions workerOptions;
     private boolean running = true;
-    private final MaestroDataServer dataServer;
     private GroupInfo groupInfo;
 
     /**
      * Constructor
      * @param maestroURL Maestro broker URL
      * @param peerInfo Information about this peer
-     * @param dataServer the data server instance
      */
-    public MaestroWorkerManager(final String maestroURL, final PeerInfo peerInfo, final MaestroDataServer dataServer) {
+    public MaestroWorkerManager(final String maestroURL, final PeerInfo peerInfo) {
         super(maestroURL, peerInfo, MaestroDeserializer::deserializeEvent);
 
         logger.debug("Creating the receiver client");
         client = new MaestroReceiverClient(maestroURL, peerInfo, getId());
 
         workerOptions = new WorkerOptions();
-        this.dataServer = dataServer;
     }
 
 
@@ -298,15 +293,8 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         logger.trace("A get request has arrived");
         switch (note.getOption()) {
             case MAESTRO_NOTE_OPT_GET_DS: {
-                String dataServerAddress = dataServer.getServerURL();
-
-                GetResponse response = new GetResponse();
-
-                response.setOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
-                response.setValue(dataServerAddress);
-                response.correlate(note);
-
-                client.getResponse(response);
+                client.replyInternalError(note, "Data server is deprecated");
+                break;
             }
         }
     }

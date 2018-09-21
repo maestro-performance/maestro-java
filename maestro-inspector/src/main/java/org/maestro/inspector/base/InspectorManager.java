@@ -21,7 +21,6 @@ import org.maestro.client.notes.*;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.worker.common.MaestroWorkerManager;
-import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -36,9 +35,9 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
     private final HashMap<String, String> inspectorMap = new HashMap<>();
     private String url;
 
-    public InspectorManager(final String maestroURL, final PeerInfo peerInfo, final MaestroDataServer dataServer, final File logDir) throws MaestroException
+    public InspectorManager(final String maestroURL, final PeerInfo peerInfo, final File logDir) throws MaestroException
     {
-        super(maestroURL, peerInfo, dataServer);
+        super(maestroURL, peerInfo);
 
         this.logDir = logDir;
 

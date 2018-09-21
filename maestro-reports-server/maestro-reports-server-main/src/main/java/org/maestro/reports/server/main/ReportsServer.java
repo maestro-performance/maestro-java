@@ -25,9 +25,7 @@ import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.NetworkUtils;
 import org.maestro.common.exceptions.MaestroException;
-import org.maestro.data.server.http.HttpDataServer;
 import org.maestro.reports.server.collector.DefaultReportsCollector;
-import org.maestro.worker.common.ds.MaestroDataServer;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
 import java.io.File;
@@ -120,13 +118,12 @@ public class ReportsServer {
         LogConfigurator.defaultForDaemons();
 
         try {
-            MaestroDataServer dataServer = new HttpDataServer(dataDir, host);
             MaestroWorkerExecutor executor;
 
             final PeerInfo peerInfo = new ReportsServerPeer(host);
 
-            DefaultReportsCollector maestroPeer = new DefaultReportsCollector(maestroUrl, peerInfo, dataDir, dataServer);
-            executor = new MaestroWorkerExecutor(maestroPeer, dataServer);
+            DefaultReportsCollector maestroPeer = new DefaultReportsCollector(maestroUrl, peerInfo, dataDir);
+            executor = new MaestroWorkerExecutor(maestroPeer);
 
             String[] topics = MaestroTopics.collectorTopics(maestroPeer.getId(), peerInfo);
 

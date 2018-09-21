@@ -24,7 +24,6 @@ import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.LocationType;
-import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.worker.TestLogUtils;
@@ -33,7 +32,6 @@ import org.maestro.reports.organizer.DefaultOrganizer;
 import org.maestro.reports.organizer.Organizer;
 import org.maestro.reports.organizer.ResultStrings;
 import org.maestro.worker.common.MaestroWorkerManager;
-import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -50,9 +48,8 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     private final File dataDir;
 
 
-    public DefaultReportsCollector(final String maestroURL, final PeerInfo peerInfo, final File dataDir,
-                                   final MaestroDataServer dataServer) {
-        super(maestroURL, peerInfo, dataServer);
+    public DefaultReportsCollector(final String maestroURL, final PeerInfo peerInfo, final File dataDir) {
+        super(maestroURL, peerInfo);
 
         this.dataDir = dataDir;
     }
