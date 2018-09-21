@@ -33,10 +33,9 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
 
     private volatile boolean warmUp = false;
 
-    public FixedRateTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                 final FixedRateTestProfile testProfile,
+    public FixedRateTestExecutor(final Maestro maestro, final FixedRateTestProfile testProfile,
                                  final DistributionStrategy distributionStrategy) {
-        super(maestro, reportsDownloader, testProfile, distributionStrategy);
+        super(maestro, testProfile, distributionStrategy);
 
         getMaestro().getCollector().addCallback(new StatsCallBack(this));
     }

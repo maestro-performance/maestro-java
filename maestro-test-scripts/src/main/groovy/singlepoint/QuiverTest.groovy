@@ -29,9 +29,7 @@ import org.maestro.client.Maestro
 import org.maestro.client.exchange.MaestroTopics
 import org.maestro.common.LogConfigurator
 import org.maestro.common.Role
-import org.maestro.reports.downloaders.BrokerDownloader
 
-import org.maestro.reports.downloaders.ReportsDownloader
 import org.maestro.tests.AbstractTestProfile
 
 import net.orpiske.qdp.main.QuiverReportWalker
@@ -46,8 +44,8 @@ import org.maestro.tests.flex.singlepoint.FlexibleTestProfile
 class QuiverExecutor extends FlexibleTestExecutor {
     private Maestro maestro
 
-    QuiverExecutor(Maestro maestro, ReportsDownloader reportsDownloader, AbstractTestProfile testProfile) {
-        super(maestro, reportsDownloader, testProfile, new NonAssigningStrategy(maestro))
+    QuiverExecutor(Maestro maestro, AbstractTestProfile testProfile) {
+        super(maestro, testProfile, new NonAssigningStrategy(maestro))
 
         this.maestro = maestro
     }
@@ -114,8 +112,6 @@ LogConfigurator.configureLogLevel(logLevel)
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = new BrokerDownloader(maestro, args[0])
-
 println "Creating the profile"
 FlexibleTestProfile testProfile = new FlexibleTestProfile()
 
@@ -123,7 +119,7 @@ testProfile.setSendReceiveURL(brokerURL)
 testProfile.setSourceURL(sourceURL)
 
 println "Creating the executor"
-QuiverExecutor executor = new QuiverExecutor(maestro, reportsDownloader, testProfile)
+QuiverExecutor executor = new QuiverExecutor(maestro, testProfile)
 
 int ret = 0
 

@@ -22,20 +22,20 @@ import org.maestro.tests.cluster.DistributionStrategy;
 
 public class FixedRateTestExecutorFactory {
 
-    public static AbstractFixedRateExecutor newTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
+    public static AbstractFixedRateExecutor newTestExecutor(final Maestro maestro,
                                                             final FixedRateTestProfile testProfile, boolean warmUp,
                                                             final DistributionStrategy distributionStrategy) {
         if (warmUp) {
-            return new FixedRateTestExecutor(maestro, reportsDownloader, testProfile, distributionStrategy);
+            return new FixedRateTestExecutor(maestro, testProfile, distributionStrategy);
         }
         else {
-            return new StraightFixedRateTestExecutor(maestro, reportsDownloader, testProfile, distributionStrategy);
+            return new StraightFixedRateTestExecutor(maestro, testProfile, distributionStrategy);
         }
     }
 
-    public static AbstractFixedRateExecutor newTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                                            final FixedRateTestProfile testProfile, String warmUp,
+    public static AbstractFixedRateExecutor newTestExecutor(final Maestro maestro,
+                                                            final FixedRateTestProfile testProfile, final String warmUp,
                                                             final DistributionStrategy distributionStrategy) {
-        return newTestExecutor(maestro, reportsDownloader, testProfile, Boolean.valueOf(warmUp), distributionStrategy);
+        return newTestExecutor(maestro, testProfile, Boolean.valueOf(warmUp), distributionStrategy);
     }
 }
