@@ -118,17 +118,7 @@ public class ReportsServer {
         LogConfigurator.defaultForDaemons();
 
         try {
-            MaestroWorkerExecutor executor;
-
-            final PeerInfo peerInfo = new ReportsServerPeer(host);
-
-            DefaultReportsCollector maestroPeer = new DefaultReportsCollector(maestroUrl, peerInfo, dataDir);
-            executor = new MaestroWorkerExecutor(maestroPeer);
-
-            String[] topics = MaestroTopics.collectorTopics(maestroPeer.getId(), peerInfo);
-
-            executor.start(topics, 10, 1000);
-            executor.run();
+            startCollector();
 
             System.out.println("Finished execution ...");
         } catch (MaestroException e) {
@@ -137,5 +127,16 @@ public class ReportsServer {
         }
 
         System.exit(0);
+    }
+
+    public static void startCollector() {
+        final PeerInfo peerInfo = new ReportsServerPeer(host);
+
+        DefaultReportsCollector maestroPeer = new DefaultReportsCollector(maestroUrl, peerInfo, dataDir);
+        String[] topics = MaestroTopics.collectorTopics(maestroPeer.getId(), peerInfo);
+
+        MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroPeer);
+        executor.start(topics, 10, 1000);
+        executor.run();
     }
 }

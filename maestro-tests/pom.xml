@@ -39,11 +39,5 @@
             <artifactId>maestro-contrib</artifactId>
             <version>${project.version}</version>
         </dependency>
-
-        <dependency>
-            <groupId>org.maestro</groupId>
-            <artifactId>maestro-reports</artifactId>
-            <version>${project.version}</version>
-        </dependency>
     </dependencies>
 </project>

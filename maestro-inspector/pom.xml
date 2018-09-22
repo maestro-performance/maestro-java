@@ -45,12 +45,6 @@
 
         <dependency>
             <groupId>org.maestro</groupId>
-            <artifactId>maestro-data-server-http</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.maestro</groupId>
             <artifactId>maestro-activemq-inspectors</artifactId>
             <version>${project.version}</version>
         </dependency>
