@@ -13,25 +13,34 @@
   ~ WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
   ~ See the License for the specific language governing permissions and
   ~ limitations under the License.
+  ~
   -->
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
-
-    <modelVersion>4.0.0</modelVersion>
-
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
     <parent>
+        <artifactId>maestro-reports</artifactId>
         <groupId>org.maestro</groupId>
-        <artifactId>maestro-java</artifactId>
         <version>1.5.0-SNAPSHOT</version>
     </parent>
+    <modelVersion>4.0.0</modelVersion>
 
-    <artifactId>maestro-reports</artifactId>
+    <artifactId>maestro-reports-common</artifactId>
 
-    <packaging>pom</packaging>
-    <modules>
-        <module>maestro-reports-common</module>
-        <module>maestro-reports-collector</module>
-        <module>maestro-reports-tool</module>
-    </modules>
+    <dependencies>
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+    </dependencies>
+
 
 </project>

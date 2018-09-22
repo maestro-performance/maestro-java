@@ -96,10 +96,6 @@ public class MaestroCliMain {
                 action = new ExecAction(newArgs);
                 break;
             }
-            case "aggregate": {
-                action = new AggregateAction(newArgs);
-                break;
-            }
             default: {
                 help(1);
                 return;

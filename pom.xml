@@ -77,13 +77,12 @@
         <module>maestro-contrib</module>
         <module>maestro-plotters</module>
         <module>maestro-client</module>
-        <module>maestro-reports</module>
         <module>maestro-tests</module>
         <module>maestro-exporter</module>
         <module>maestro-workers</module>
         <module>maestro-worker</module>
         <module>maestro-test-scripts</module>
-        <module>maestro-reports-server</module>
+        <module>maestro-reports</module>
         <module>maestro-agent</module>
         <module>maestro-inspector</module>
         <module>maestro-inspectors</module>
