@@ -1,0 +1,19 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Maestro: Reports Server" type="Application" factoryName="Application" singleton="true">
+    <log_file alias="reports-server" path="$PROJECT_DIR$/maestro-reports/maestro-reports-tool/target/classes/logs/reports-server.log" skipped="false" />
+    <option name="MAIN_CLASS_NAME" value="org.maestro.reports.server.main.ReportsTool" />
+    <module name="maestro-reports-tool" />
+    <option name="PROGRAM_PARAMETERS" value="-m mqtt://localhost:1884 -H localhost -d $MODULE_DIR$/target/classes/data/" />
+    <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.maestro.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
