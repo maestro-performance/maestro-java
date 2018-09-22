@@ -32,6 +32,7 @@
         <module>maestro-reports-common</module>
         <module>maestro-reports-collector</module>
         <module>maestro-reports-tool</module>
+        <module>maestro-reports-server</module>
     </modules>
 
 </project>
