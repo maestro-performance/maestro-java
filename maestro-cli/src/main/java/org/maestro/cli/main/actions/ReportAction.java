@@ -18,15 +18,7 @@ package org.maestro.cli.main.actions;
 
 import org.apache.commons.cli.*;
 import org.maestro.common.LogConfigurator;
-import org.maestro.reports.ReportGenerator;
-import org.maestro.reports.composed.ComposedIndexGenerator;
-import org.maestro.reports.context.NodeReportContext;
-import org.maestro.reports.context.ReportContext;
-import org.maestro.reports.context.common.NodePropertyContext;
-import org.maestro.reports.context.common.WithWarmUpContext;
-import org.maestro.reports.processors.DiskCleaner;
 
-import java.io.File;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Map;
@@ -69,7 +61,6 @@ public class ReportAction extends Action {
         Options options = new Options();
 
         options.addOption("h", "help", false, "prints the help");
-        options.addOption("d", "directory", true, "the directory to generate the report");
         options.addOption("l", "log-level", true, "the log level to use [trace, debug, info, warn]");
         options.addOption("C", "clean", false, "clean the report directory after processing");
         options.addOption("", "with-properties", true, "pass optional properties (ie.: saved along with the index)");
@@ -109,33 +100,6 @@ public class ReportAction extends Action {
 
     public int run() {
         try {
-            if (composed) {
-                ComposedIndexGenerator.generate(new File(directory));
-            }
-            else {
-                ReportGenerator reportGenerator = new ReportGenerator(directory);
-
-                if (clean) {
-                    reportGenerator.getPostProcessors().add(new DiskCleaner());
-                }
-
-                reportGenerator.setIndexProperties(indexProperties);
-
-                ReportContext reportContext = null;
-
-                if (withWarmUp) {
-                    reportContext = new WithWarmUpContext();
-                }
-
-                NodeReportContext nodeReportContext = null;
-                if (sutNodeProperties != null) {
-                    nodeReportContext = new NodePropertyContext(sutNodeProperties);
-                }
-
-                reportGenerator.generate(reportContext, nodeReportContext);
-
-                System.out.println("Report generated successfully");
-            }
             return 0;
         }
         catch (Exception e) {
