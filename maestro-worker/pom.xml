@@ -96,12 +96,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.maestro</groupId>
-            <artifactId>maestro-data-server-http</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>jms-test-util</artifactId>
             <version>${jms.test.util.version}</version>
