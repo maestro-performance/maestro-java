@@ -25,13 +25,21 @@ import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.NetworkUtils;
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.reports.server.DefaultReportsServer;
+import org.maestro.reports.server.ReportsServer;
 import org.maestro.reports.server.collector.DefaultReportsCollector;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
 import java.io.File;
 import java.net.UnknownHostException;
+import java.util.Arrays;
+import java.util.List;
+import java.util.concurrent.Callable;
+import java.util.concurrent.Executor;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
-public class ReportsServer {
+public class ReportsTool {
     private static CommandLine cmdLine;
 
     private static String maestroUrl;
@@ -118,15 +126,20 @@ public class ReportsServer {
         LogConfigurator.defaultForDaemons();
 
         try {
-            startCollector();
+            ExecutorService executors = Executors.newFixedThreadPool(2);
 
-            System.out.println("Finished execution ...");
+            System.out.println("Starting the collector");
+            executors.submit(() -> startCollector());
+
+            System.out.println("Starting the reports server");
+            executors.submit(() -> startServer());
+
         } catch (MaestroException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
         }
 
-        System.exit(0);
+//        System.exit(0);
     }
 
     public static void startCollector() {
@@ -138,5 +151,11 @@ public class ReportsServer {
         MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroPeer);
         executor.start(topics, 10, 1000);
         executor.run();
+    }
+
+    public static void startServer() {
+        ReportsServer reportsServer = new DefaultReportsServer();
+
+        reportsServer.start();
     }
 }
