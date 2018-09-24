@@ -33,6 +33,7 @@
         <module>maestro-reports-collector</module>
         <module>maestro-reports-tool</module>
         <module>maestro-reports-server</module>
+        <module>maestro-reports-dao</module>
     </modules>
 
 </project>

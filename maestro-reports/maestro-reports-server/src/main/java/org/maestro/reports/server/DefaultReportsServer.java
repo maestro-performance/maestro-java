@@ -19,8 +19,16 @@ package org.maestro.reports.server;
 import io.javalin.Javalin;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.reports.controllers.TestDataController;
+
+import java.io.File;
 
 public class DefaultReportsServer implements ReportsServer {
+    private final File dataDir;
+
+    public DefaultReportsServer(final File dataDir) {
+        this.dataDir = dataDir;
+    }
 
     public void start() {
         AbstractConfiguration config = ConfigurationWrapper.getConfig();
@@ -35,6 +43,7 @@ public class DefaultReportsServer implements ReportsServer {
                 .start();
 
         app.get("/api/live", ctx -> ctx.result("Hello World"));
+        app.get("/api/test/:test/:number/:role", new TestDataController(dataDir));
     }
 
 

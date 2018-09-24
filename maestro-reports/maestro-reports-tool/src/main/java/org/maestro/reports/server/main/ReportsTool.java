@@ -29,6 +29,8 @@ import org.maestro.reports.server.DefaultReportsServer;
 import org.maestro.reports.server.ReportsServer;
 import org.maestro.reports.server.collector.DefaultReportsCollector;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.UnknownHostException;
@@ -153,14 +155,19 @@ public class ReportsTool {
             MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroPeer);
             executor.start(topics, 10, 1000);
             executor.run();
-        } finally {
+        } catch (Throwable t) {
+            Logger logger = LoggerFactory.getLogger(ReportsTool.class);
+
+            logger.error("Unable to start the Maestro reports collector: {}", t.getMessage(), t);
+        }
+        finally {
             latch.countDown();
         }
 
     }
 
     public static void startServer() {
-        ReportsServer reportsServer = new DefaultReportsServer();
+        ReportsServer reportsServer = new DefaultReportsServer(dataDir);
 
         reportsServer.start();
     }
