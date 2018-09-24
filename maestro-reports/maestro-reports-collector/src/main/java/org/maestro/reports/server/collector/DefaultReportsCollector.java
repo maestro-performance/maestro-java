@@ -54,7 +54,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         this.dataDir = dataDir;
     }
 
-    protected void logRequest(final MaestroNotification note) {
+    protected void logRequest(final MaestroNotification note, LocationType locationType) {
         logger.trace("Sending the log request to {}", this.toString());
         LogRequest request = new LogRequest();
 
@@ -62,7 +62,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
         logger.debug("Sending log request to {}", topic);
 
-        request.setLocationType(LocationType.LAST_FAILED);
+        request.setLocationType(locationType);
 
         try {
             super.getClient().publish(topic, request);
@@ -75,14 +75,14 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     public void handle(TestFailedNotification note) {
         super.handle(note);
 
-        logRequest(note);
+        logRequest(note, LocationType.LAST_FAILED);
     }
 
     @Override
     public void handle(TestSuccessfulNotification note) {
         super.handle(note);
 
-        logRequest(note);
+        logRequest(note, LocationType.LAST_SUCCESS);
     }
 
     private void save(final LogResponse logResponse) {
