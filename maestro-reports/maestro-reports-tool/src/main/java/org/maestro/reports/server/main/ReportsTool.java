@@ -32,12 +32,7 @@ import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
 import java.io.File;
 import java.net.UnknownHostException;
-import java.util.Arrays;
-import java.util.List;
-import java.util.concurrent.Callable;
-import java.util.concurrent.Executor;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
+import java.util.concurrent.*;
 
 public class ReportsTool {
     private static CommandLine cmdLine;
@@ -126,31 +121,42 @@ public class ReportsTool {
         LogConfigurator.defaultForDaemons();
 
         try {
+            CountDownLatch latch = new CountDownLatch(1);
             ExecutorService executors = Executors.newFixedThreadPool(2);
 
             System.out.println("Starting the collector");
-            executors.submit(() -> startCollector());
+            executors.submit(() -> startCollector(latch));
 
             System.out.println("Starting the reports server");
             executors.submit(() -> startServer());
 
+            latch.await();
+            executors.shutdownNow();
         } catch (MaestroException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
+            System.exit(1);
+        } catch (InterruptedException e) {
+            System.out.println("Interrupted");
         }
 
-//        System.exit(0);
+        System.exit(0);
     }
 
-    public static void startCollector() {
-        final PeerInfo peerInfo = new ReportsServerPeer(host);
+    public static void startCollector(final CountDownLatch latch) {
+        try {
+            final PeerInfo peerInfo = new ReportsServerPeer(host);
 
-        DefaultReportsCollector maestroPeer = new DefaultReportsCollector(maestroUrl, peerInfo, dataDir);
-        String[] topics = MaestroTopics.collectorTopics(maestroPeer.getId(), peerInfo);
+            DefaultReportsCollector maestroPeer = new DefaultReportsCollector(maestroUrl, peerInfo, dataDir);
+            String[] topics = MaestroTopics.collectorTopics(maestroPeer.getId(), peerInfo);
 
-        MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroPeer);
-        executor.start(topics, 10, 1000);
-        executor.run();
+            MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroPeer);
+            executor.start(topics, 10, 1000);
+            executor.run();
+        } finally {
+            latch.countDown();
+        }
+
     }
 
     public static void startServer() {
