@@ -40,7 +40,12 @@
             <groupId>org.maestro</groupId>
             <artifactId>maestro-reports-common</artifactId>
             <version>${project.version}</version>
-            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-reports-dao</artifactId>
+            <version>${project.version}</version>
         </dependency>
     </dependencies>
 

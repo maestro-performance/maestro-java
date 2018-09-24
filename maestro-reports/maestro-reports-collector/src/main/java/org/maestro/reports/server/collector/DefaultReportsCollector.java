@@ -31,6 +31,8 @@ import org.maestro.contrib.utils.digest.Sha1Digest;
 import org.maestro.reports.common.organizer.DefaultOrganizer;
 import org.maestro.reports.common.organizer.Organizer;
 import org.maestro.reports.common.organizer.ResultStrings;
+import org.maestro.reports.dao.ReportDao;
+import org.maestro.reports.dto.Report;
 import org.maestro.worker.common.MaestroWorkerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,10 +44,13 @@ import java.io.IOException;
 
 public class DefaultReportsCollector extends MaestroWorkerManager implements MaestroLogCollectorListener {
     private static final Logger logger = LoggerFactory.getLogger(DefaultReportsCollector.class);
+    private ReportDao reportDao = new ReportDao();
 
     private final Sha1Digest digest = new Sha1Digest();
     private Organizer organizer;
+
     private final File dataDir;
+    private Report report;
 
 
     public DefaultReportsCollector(final String maestroURL, final PeerInfo peerInfo, final File dataDir) {
@@ -89,10 +94,12 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         switch (logResponse.getLocationType()) {
             case LAST_SUCCESS: {
                 organizer.setResultType(ResultStrings.SUCCESS);
+                report.setTestResult(ResultStrings.SUCCESS);
                 break;
             }
             default: {
                 organizer.setResultType(ResultStrings.FAILED);
+                report.setTestResult(ResultStrings.FAILED);
                 break;
             }
         }
@@ -118,6 +125,11 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         }
 
         verify(logResponse, outFile);
+
+        report.setTestHost(logResponse.getPeerInfo().peerHost());
+
+        logger.info("Adding test record to the DB");
+        reportDao.insert(report);
     }
 
     private void verify(LogResponse logResponse, File outFile) {
@@ -171,12 +183,17 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     public void handle(StartTestRequest note) {
         Test requestedTest = note.getTest();
 
+        report = new Report();
+
         if (requestedTest.getTestNumber() == Test.NEXT) {
             final File testDataDir = TestLogUtils.nextTestLogDir(dataDir);
             final File lastIterationDir = new File(testDataDir, "0");
 
             logger.info("Collecting log files on {}", lastIterationDir);
             organizer = new DefaultOrganizer(lastIterationDir.getPath());
+
+            report.setTestId(TestLogUtils.testLogDirNum(testDataDir));
+            report.setTestNumber(TestLogUtils.testLogDirNum(lastIterationDir));
         }
         else {
             final File lastTestDir = TestLogUtils.findLastLogDir(dataDir);
@@ -184,6 +201,9 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
             logger.info("Collecting log files on {}", lastIterationDir);
             organizer = new DefaultOrganizer(lastIterationDir.getPath());
+
+            report.setTestId(TestLogUtils.testLogDirNum(lastTestDir));
+            report.setTestNumber(TestLogUtils.testLogDirNum(lastIterationDir));
         }
 
         super.getClient().replyOk(note);
