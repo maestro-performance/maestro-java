@@ -103,6 +103,11 @@ public class MaestroWorkerMain {
      *      -l /storage/tmp/maestro-java/sender
      */
     public static void main(String[] args) {
+        final String workerName = System.getProperty("maestro.worker.name");
+        if (workerName == null) {
+            System.setProperty("maestro.worker.name", "worker");
+        }
+
         try {
             ConfigurationWrapper.initConfiguration(Constants.MAESTRO_CONFIG_DIR, "maestro-worker.properties");
         } catch (Exception e) {
