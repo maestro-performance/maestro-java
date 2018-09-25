@@ -19,12 +19,19 @@ package org.maestro.reports.dao;
 import org.maestro.reports.dto.Report;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
+import java.util.List;
+
 public class ReportDao extends AbstractDao {
 
     public int insert(final Report report) {
         return runInsert(
                 "insert into report(test_id, test_number, test_name, test_script, test_host, test_host_role, test_result, location) " +
                         "values(:testId, :testNumber, :testName, :testScript, :testHost, :testHostRole, :testResult, :location)", report);
+    }
+
+    public List<Report> fetch() {
+        return jdbcTemplate.query("select * from report",
+                new BeanPropertyRowMapper<>(Report.class));
     }
 
     public Report fetch(int reportId) {

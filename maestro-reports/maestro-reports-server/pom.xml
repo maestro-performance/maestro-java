@@ -87,6 +87,12 @@
             <artifactId>maestro-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-reports-dao</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 
