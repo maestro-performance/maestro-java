@@ -23,6 +23,7 @@ public class Report {
     private String testScript;
     private String testHost;
     private String testResult;
+    private String location;
 
 
     public int getReportId() {
@@ -71,5 +72,13 @@ public class Report {
 
     public void setTestResult(String testResult) {
         this.testResult = testResult;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

@@ -81,6 +81,8 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         super.handle(note);
 
         logRequest(note, LocationType.LAST_FAILED);
+
+        createNewReportRecord(ResultStrings.FAILED, note.getPeerInfo());
     }
 
     @Override
@@ -88,24 +90,35 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         super.handle(note);
 
         logRequest(note, LocationType.LAST_SUCCESS);
+
+        createNewReportRecord(ResultStrings.SUCCESS, note.getPeerInfo());
+    }
+
+    private void createNewReportRecord(final String testResultString, final PeerInfo peerInfo) {
+        report.setTestResult(testResultString);
+        report.setTestHost(peerInfo.peerHost());
+
+        String destinationDir = organizer.organize(peerInfo);
+        report.setLocation(destinationDir);
+
+        logger.info("Adding test record to the DB");
+        reportDao.insert(report);
     }
 
     private void save(final LogResponse logResponse) {
         switch (logResponse.getLocationType()) {
             case LAST_SUCCESS: {
                 organizer.setResultType(ResultStrings.SUCCESS);
-                report.setTestResult(ResultStrings.SUCCESS);
                 break;
             }
             default: {
                 organizer.setResultType(ResultStrings.FAILED);
-                report.setTestResult(ResultStrings.FAILED);
                 break;
             }
         }
 
-        String destDir = organizer.organize(logResponse.getPeerInfo());
-        File outFile = new File(destDir, logResponse.getFileName());
+        String destinationDir = organizer.organize(logResponse.getPeerInfo());
+        File outFile = new File(destinationDir, logResponse.getFileName());
 
         logger.info("Saving file {} to {}", logResponse.getFileName(), outFile);
         if (!outFile.exists()) {
@@ -125,11 +138,6 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         }
 
         verify(logResponse, outFile);
-
-        report.setTestHost(logResponse.getPeerInfo().peerHost());
-
-        logger.info("Adding test record to the DB");
-        reportDao.insert(report);
     }
 
     private void verify(LogResponse logResponse, File outFile) {
