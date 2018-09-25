@@ -38,8 +38,9 @@ public class StartTestRequest extends MaestroRequest<MaestroEventListener> {
         int testNumber = unpacker.unpackInt();
         int testIteration = unpacker.unpackInt();
         String testName = unpacker.unpackString();
+        String scriptName = unpacker.unpackString();
 
-        this.test = new Test(testNumber, testIteration, testName);
+        this.test = new Test(testNumber, testIteration, testName, scriptName);
     }
 
     public Test getTest() {
@@ -53,6 +54,7 @@ public class StartTestRequest extends MaestroRequest<MaestroEventListener> {
         packer.packInt(test.getTestNumber());
         packer.packInt(test.getTestIteration());
         packer.packString(test.getTestName());
+        packer.packString(test.getScriptName());
 
         return packer;
     }

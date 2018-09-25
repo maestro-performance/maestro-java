@@ -61,17 +61,17 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
     }
 
 
-    public boolean run() {
+    public boolean run(final String scriptName) {
         logger.info("Starting the warm up execution");
 
         warmUp = true;
-        if (runTest(new Test(Test.NEXT, Test.NEXT, "fixed-rate"), getTestProfile()::warmUp)) {
+        if (runTest(new Test(Test.NEXT, Test.NEXT, "fixed-rate", scriptName), getTestProfile()::warmUp)) {
             try {
                 Thread.sleep(getCoolDownPeriod());
                 logger.info("Starting the test");
 
                 warmUp = false;
-                return runTest(new Test(Test.LAST, Test.NEXT, "fixed-rate"), getTestProfile()::apply);
+                return runTest(new Test(Test.LAST, Test.NEXT, "fixed-rate", scriptName), getTestProfile()::apply);
             } catch (InterruptedException e) {
                 logger.warn("The test execution was interrupted");
             }

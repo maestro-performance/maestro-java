@@ -20,8 +20,10 @@ public class Report {
     private int reportId;
     private int testId;
     private int testNumber;
+    private String testName;
     private String testScript;
     private String testHost;
+    private String testHostRole;
     private String testResult;
     private String location;
 
@@ -50,6 +52,14 @@ public class Report {
         this.testNumber = testNumber;
     }
 
+    public String getTestName() {
+        return testName;
+    }
+
+    public void setTestName(String testName) {
+        this.testName = testName;
+    }
+
     public String getTestScript() {
         return testScript;
     }
@@ -64,6 +74,14 @@ public class Report {
 
     public void setTestHost(String testHost) {
         this.testHost = testHost;
+    }
+
+    public String getTestHostRole() {
+        return testHostRole;
+    }
+
+    public void setTestHostRole(String testHostRole) {
+        this.testHostRole = testHostRole;
     }
 
     public String getTestResult() {

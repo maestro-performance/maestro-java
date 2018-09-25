@@ -137,7 +137,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
     }
 
 
-    public boolean run() {
+    public boolean run(final String scriptName) {
         int testIteration = 0;
         boolean successful;
 
@@ -145,10 +145,10 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             Test test;
 
             if (testIteration == 0) {
-                test = new Test(Test.NEXT, testIteration, "incremental");
+                test = new Test(Test.NEXT, testIteration, "incremental", scriptName);
             }
             else {
-                test = new Test(Test.LAST, Test.NEXT, "incremental");
+                test = new Test(Test.LAST, Test.NEXT, "incremental", scriptName);
             }
 
             successful = runTest(test);
