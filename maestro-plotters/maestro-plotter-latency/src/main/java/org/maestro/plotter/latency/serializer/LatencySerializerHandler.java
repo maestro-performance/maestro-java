@@ -26,7 +26,7 @@ import java.io.File;
 import java.util.Properties;
 
 public class LatencySerializerHandler implements HistogramHandler {
-    private double unitRatio = 1000.0;
+    private double unitRatio = 1.0;
     private final Latency latency;
 
     public LatencySerializerHandler(Latency latency) {
