@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.Map;
 
 
+@Deprecated
 public abstract class AbstractInterconnectPlotter<T> extends DefaultScatterPlotter<T> {
 
     protected abstract String getDefaultName();

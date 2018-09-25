@@ -16,6 +16,7 @@
 
 package org.maestro.plotter.common.graph;
 
+@Deprecated
 public class ChartProperties {
     private String title = "";
     private String seriesName = "";

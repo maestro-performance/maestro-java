@@ -23,6 +23,7 @@ import org.maestro.plotter.common.ReportData;
  * A default histogram plotter
  * @param <T> ReportData type
  */
+@Deprecated
 public abstract class DefaultHistogramPlotter<T extends ReportData> extends AbstractPlotter<T> {
 
     protected XYChart createChart() {
