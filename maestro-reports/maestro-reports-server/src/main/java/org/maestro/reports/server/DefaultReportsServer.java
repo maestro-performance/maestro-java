@@ -20,6 +20,7 @@ import io.javalin.Javalin;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.reports.controllers.AllReportsController;
+import org.maestro.reports.controllers.ReportController;
 import org.maestro.reports.controllers.TestDataController;
 
 import java.io.File;
@@ -45,7 +46,9 @@ public class DefaultReportsServer implements ReportsServer {
 
         app.get("/api/live", ctx -> ctx.result("Hello World"));
         app.get("/api/report/", new AllReportsController());
-        app.get("/api/report/:test/:number/:role", new TestDataController(dataDir));
+        app.get("/api/report/report/:id", new ReportController());
+        app.get("/api/report/test/test/:test/:number/:role", new TestDataController(dataDir));
+
     }
 
 

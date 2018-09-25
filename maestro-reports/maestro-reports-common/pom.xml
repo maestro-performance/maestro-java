@@ -40,6 +40,24 @@
             <artifactId>maestro-client</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-plotter-common</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-plotter-rate</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-plotter-latency</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 
