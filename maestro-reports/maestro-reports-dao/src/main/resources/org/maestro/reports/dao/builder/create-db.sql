@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS `report` (
   `test_script` VARCHAR(128) NULL,
   `test_host` VARCHAR(128) NULL,
   `test_result` VARCHAR(45) NULL,
+  `location` VARCHAR(1024) NULL,
 PRIMARY KEY (`report_id`));
 
 
