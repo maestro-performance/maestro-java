@@ -18,28 +18,78 @@ package org.maestro.plotter.latency.serializer;
 
 import org.HdrHistogram.Histogram;
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.test.TestProperties;
+import org.maestro.common.worker.WorkerUtils;
 import org.maestro.plotter.common.serializer.MaestroSerializer;
 import org.maestro.plotter.latency.HdrLogProcessorWrapper;
 import org.maestro.plotter.latency.common.HdrData;
-import org.maestro.plotter.latency.graph.HdrPlotter;
-import org.maestro.plotter.latency.properties.HdrPropertyWriter;
+import org.maestro.plotter.latency.common.HdrDataCO;
 import org.maestro.plotter.utils.Util;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
 
-public class LatencySerializer implements MaestroSerializer<Latency> {
+public class LatencySerializer implements MaestroSerializer<LatencyDistribution> {
+    private static final Logger logger = LoggerFactory.getLogger(LatencySerializer.class);
     private static final String dataName = "latency";
+    private double unitRate = 1.0;
 
-    @Override
-    public Latency serialize(final File file) throws IOException {
-        // HDR Log Reader
-        HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper();
 
-        Histogram histogram = Util.getAccumulated(file);
+    private TestProperties loadProperties(final File baseDir) {
+        final File propertiesFile = new File(baseDir, "test.properties");
 
-        HdrData hdrData = processorWrapper.convertLog(histogram);
+        if (propertiesFile.exists()) {
+            logger.debug("Loading test.properties file to check for bounded/unbounded rate");
+            TestProperties testProperties = new TestProperties();
 
+            try {
+                testProperties.load(propertiesFile);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+
+            return testProperties;
+        }
+
+        return null;
+    }
+
+    private synchronized HdrData getHdrData(final Histogram histogram, final File file) {
+        HdrData hdrData;
+
+        TestProperties testProperties = loadProperties(file.getParentFile());
+        if (testProperties != null) {
+            final long intervalInNanos = WorkerUtils.getExchangeInterval(testProperties.getRate());
+
+            if (intervalInNanos == 0) {
+                hdrData = getHdrDataUnbounded(histogram);
+            } else {
+                hdrData = getHdrDataBounded(histogram, intervalInNanos);
+            }
+        } else {
+            hdrData = getHdrDataUnbounded(histogram);
+        }
+
+        return hdrData;
+    }
+
+    private HdrData getHdrDataUnbounded(final Histogram histogram) {
+        final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
+
+
+        return processorWrapper.convertLog(histogram);
+    }
+
+
+    private HdrData getHdrDataBounded(final Histogram histogram, final long interval) {
+        final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
+
+        return processorWrapper.convertLog(histogram, interval);
+    }
+
+    private Latency getLatencyInfo(final Histogram histogram, final HdrData hdrData, final File file) {
         Latency latency = new Latency();
 
         latency.setPercentiles(hdrData.getPercentile());
@@ -54,6 +104,31 @@ public class LatencySerializer implements MaestroSerializer<Latency> {
         }
 
         return latency;
+    }
+
+    @Override
+    public LatencyDistribution serialize(final File file) throws IOException {
+        // HDR Log Reader
+        HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper();
+
+        Histogram histogram = Util.getAccumulated(file);
+
+        HdrData hdrData = getHdrData(histogram, file);
+
+        LatencyDistribution latencyDistribution = new LatencyDistribution();
+
+        if (hdrData instanceof HdrDataCO) {
+            Latency corrected = getLatencyInfo(histogram, ((HdrDataCO) hdrData).getCorrected(), file);
+            latencyDistribution.getLatencyDistribution().put("responseTime", corrected);
+
+            Latency normal = getLatencyInfo(histogram, hdrData, file);
+            latencyDistribution.getLatencyDistribution().put("serviceTime", normal);
+        } else {
+            Latency normal = getLatencyInfo(histogram, hdrData, file);
+            latencyDistribution.getLatencyDistribution().put("serviceTime", normal);
+        }
+
+        return latencyDistribution;
     }
 
     @Override
