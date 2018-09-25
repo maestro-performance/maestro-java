@@ -46,9 +46,9 @@ public class StraightFixedRateTestExecutor extends AbstractFixedRateExecutor {
     }
 
 
-    public boolean run() {
+    public boolean run(final String scriptName) {
         logger.info("Starting the test execution");
 
-        return runTest(new Test(Test.NEXT, Test.NEXT, "fixed-rate-no-warmup"), getTestProfile()::apply);
+        return runTest(new Test(Test.NEXT, Test.NEXT, "fixed-rate-no-warmup", scriptName), getTestProfile()::apply);
     }
 }

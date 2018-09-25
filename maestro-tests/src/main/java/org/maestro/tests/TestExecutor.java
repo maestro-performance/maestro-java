@@ -25,7 +25,7 @@ public interface TestExecutor {
      * Runs the test
      * @return true if successful or false otherwise
      */
-    boolean run();
+    boolean run(final String scriptName);
 
     /**
      * Gets the amount of time (in milliseconds) to wait for the SUT to cool down

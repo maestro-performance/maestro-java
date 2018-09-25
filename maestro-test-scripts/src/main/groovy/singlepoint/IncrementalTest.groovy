@@ -139,7 +139,7 @@ ManagementInterface.setupInterface(managementInterface, inspectorName, testProfi
 
 IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, testProfile, distributionStrategy)
 
-boolean ret = testExecutor.run()
+boolean ret = testExecutor.run(this.class.getSimpleName())
 
 reportsDownloader.waitForComplete()
 maestro.stop()

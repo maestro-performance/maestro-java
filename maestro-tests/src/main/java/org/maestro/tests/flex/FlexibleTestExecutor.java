@@ -85,7 +85,7 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
      * Test execution logic
      * @return true if the test was successful or false otherwise
      */
-    public boolean run(int number) {
+    public boolean run(final String scriptName, int number) {
         try {
             // Clean up the topic
             getMaestro().clear();

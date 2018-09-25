@@ -24,11 +24,13 @@ public class Test {
     private final int testNumber;
     private final int testIteration;
     private final String testName;
+    private final String scriptName;
 
-    public Test(int testNumber, int testIteration, String testName) {
+    public Test(int testNumber, int testIteration, final String testName, final String scriptName) {
         this.testNumber = testNumber;
         this.testIteration = testIteration;
         this.testName = testName;
+        this.scriptName = scriptName;
     }
 
     public int getTestNumber() {
@@ -43,12 +45,17 @@ public class Test {
         return testName;
     }
 
+    public String getScriptName() {
+        return scriptName;
+    }
+
     @Override
     public String toString() {
         return "Test{" +
                 "testNumber=" + testNumber +
                 ", testIteration=" + testIteration +
                 ", testName='" + testName + '\'' +
+                ", scriptName='" + scriptName + '\'' +
                 '}';
     }
 }

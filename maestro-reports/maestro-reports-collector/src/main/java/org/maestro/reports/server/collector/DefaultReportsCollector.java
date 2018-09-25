@@ -97,6 +97,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     private void createNewReportRecord(final String testResultString, final PeerInfo peerInfo) {
         report.setTestResult(testResultString);
         report.setTestHost(peerInfo.peerHost());
+        report.setTestHostRole(peerInfo.getRole().toString());
 
         String destinationDir = organizer.organize(peerInfo);
         report.setLocation(destinationDir);
@@ -213,6 +214,9 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
             report.setTestId(TestLogUtils.testLogDirNum(lastTestDir));
             report.setTestNumber(TestLogUtils.testLogDirNum(lastIterationDir));
         }
+
+        report.setTestName(note.getTest().getTestName());
+        report.setTestScript(note.getTest().getScriptName());
 
         super.getClient().replyOk(note);
     }
