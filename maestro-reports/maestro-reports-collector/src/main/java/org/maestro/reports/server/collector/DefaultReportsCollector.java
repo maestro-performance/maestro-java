@@ -99,6 +99,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         report.setTestHost(peerInfo.peerHost());
         report.setTestHostRole(peerInfo.getRole().toString());
 
+        organizer.setResultType(testResultString);
         String destinationDir = organizer.organize(peerInfo);
         report.setLocation(destinationDir);
 
