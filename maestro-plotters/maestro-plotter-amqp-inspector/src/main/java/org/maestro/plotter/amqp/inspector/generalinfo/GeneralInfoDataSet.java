@@ -76,7 +76,7 @@ public class GeneralInfoDataSet {
             Instant instant = record.getTimestamp();
 
             Utilities.putStatisticsRecord(calcMap, record.getAddressCount(), ADDRESSCOUNT, instant);
-            Utilities.putStatisticsRecord(calcMap, record.getConnetionsCount(), CONNECTIONSCOUNT, instant);
+            Utilities.putStatisticsRecord(calcMap, record.getConnectionsCount(), CONNECTIONSCOUNT, instant);
             Utilities.putStatisticsRecord(calcMap, record.getLinkRoutersCount(), LINKROUTESSTATISTICS, instant);
             Utilities.putStatisticsRecord(calcMap, record.getAutoLinksCount(), AUTOLINKSTATISTICS, instant);
         }

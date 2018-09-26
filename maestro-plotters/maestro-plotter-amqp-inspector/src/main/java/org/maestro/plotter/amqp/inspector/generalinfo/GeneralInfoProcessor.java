@@ -56,7 +56,7 @@ public class GeneralInfoProcessor implements RecordProcessor {
         generalInfoRecord.setLinksCount(Long.parseLong(records[6]));
         generalInfoRecord.setNodesCount(Long.parseLong(records[7]));
         generalInfoRecord.setAddressCount(Long.parseLong(records[8]));
-        generalInfoRecord.setConnetionsCount(Long.parseLong(records[9]));
+        generalInfoRecord.setConnectionsCount(Long.parseLong(records[9]));
 
 
         generalInfoDataSet.add(generalInfoRecord);

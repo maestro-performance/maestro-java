@@ -14,16 +14,16 @@
  * limitations under the License.
  */
 
-package org.maestro.plotter.rate.serializer;
+package org.maestro.plotter.common.serializer;
 
 import org.maestro.plotter.common.statistics.Statistics;
 
 import java.util.Date;
 import java.util.List;
 
-public class Rate {
+public class SingleData<T> implements MaestroSerializable {
     private List<Date> periods;
-    private List<Long> values;
+    private List<T> values;
     private Statistics statistics;
 
     public List<Date> getPeriods() {
@@ -34,11 +34,11 @@ public class Rate {
         this.periods = periods;
     }
 
-    public List<Long> getValues() {
+    public List<T> getValues() {
         return values;
     }
 
-    public void setValues(List<Long> values) {
+    public void setValues(List<T> values) {
         this.values = values;
     }
 
