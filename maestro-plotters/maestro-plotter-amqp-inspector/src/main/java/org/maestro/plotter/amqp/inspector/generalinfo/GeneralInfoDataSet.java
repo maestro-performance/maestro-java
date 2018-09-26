@@ -19,6 +19,7 @@ package org.maestro.plotter.amqp.inspector.generalinfo;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.maestro.plotter.amqp.inspector.Utilities;
+import org.maestro.plotter.amqp.inspector.common.MultiDataSet;
 import org.maestro.plotter.common.properties.annotations.PropertyName;
 import org.maestro.plotter.common.properties.annotations.PropertyProvider;
 import org.maestro.plotter.common.statistics.Statistics;
@@ -32,7 +33,7 @@ import java.util.*;
  * A class represents router link data set
  */
 @PropertyName(name="routerLink-")
-public class GeneralInfoDataSet {
+public class GeneralInfoDataSet implements MultiDataSet  {
     private static final Logger logger = LoggerFactory.getLogger(GeneralInfoDataSet.class);
     private final Map<String, GeneralInfoData> map = new HashMap<>();
 
