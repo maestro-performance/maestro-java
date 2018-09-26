@@ -41,7 +41,7 @@ public class ReportDirectoryWalker extends DirectoryWalker<Object> {
 
     @Override
     protected void handleFile(File file, int depth, Collection<Object> results) throws IOException {
-        if (file.getName().equals("test.properties")) {
+        if (file.getName().equals("test.properties") || file.getName().equals("inspector.properties")) {
             File hostDir = file.getParentFile();
             String host = hostDir.getName();
 
