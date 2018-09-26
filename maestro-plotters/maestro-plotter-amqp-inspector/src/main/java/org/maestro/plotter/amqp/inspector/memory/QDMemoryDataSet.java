@@ -19,6 +19,7 @@ package org.maestro.plotter.amqp.inspector.memory;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
 import org.maestro.plotter.amqp.inspector.Utilities;
+import org.maestro.plotter.amqp.inspector.common.MultiDataSet;
 import org.maestro.plotter.common.properties.annotations.PropertyName;
 import org.maestro.plotter.common.properties.annotations.PropertyProvider;
 import org.maestro.plotter.common.statistics.Statistics;
@@ -32,7 +33,7 @@ import java.util.*;
  * A class represents router link data set
  */
 @PropertyName(name="qdmemory-")
-public class QDMemoryDataSet {
+public class QDMemoryDataSet implements MultiDataSet {
     private static final Logger logger = LoggerFactory.getLogger(QDMemoryDataSet.class);
     private final Map<String, QDMemoryData> map = new HashMap<>();
 

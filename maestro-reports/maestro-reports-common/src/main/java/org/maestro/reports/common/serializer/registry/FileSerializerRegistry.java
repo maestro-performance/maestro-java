@@ -16,6 +16,10 @@
 
 package org.maestro.reports.common.serializer.registry;
 
+import org.maestro.plotter.amqp.inspector.serializer.ConnectionsDataSerializer;
+import org.maestro.plotter.amqp.inspector.serializer.QDMemoryDataSetSerializer;
+import org.maestro.plotter.amqp.inspector.serializer.QDRuntimeInfoDataSetSerializer;
+import org.maestro.plotter.amqp.inspector.serializer.RouterLinkDataSetSerializer;
 import org.maestro.plotter.common.serializer.MaestroSerializer;
 import org.maestro.plotter.inspector.serializer.HeapMemoryDataSerializer;
 import org.maestro.plotter.inspector.serializer.MemoryAreasDataSerializer;
@@ -36,11 +40,10 @@ public class FileSerializerRegistry {
         registry.put("heap.csv", new HeapMemoryDataSerializer());
         registry.put("memory-areas.csv", new MemoryAreasDataSerializer());
         registry.put("queues.csv", new QueueDataSerializer());
-//        registry.put("general.csv", new CommonMemoryDataSerializer(new HeapReader()));
-//        registry.put("qdmemory.csv", new CommonMemoryDataSerializer(new HeapReader()));
-//        registry.put("routerLink.csv", new CommonMemoryDataSerializer(new HeapReader()));
-
-
+        registry.put("general.csv", new QDRuntimeInfoDataSetSerializer());
+        registry.put("qdmemory.csv", new QDMemoryDataSetSerializer());
+        registry.put("routerLink.csv", new RouterLinkDataSetSerializer());
+        registry.put("connections.csv", new ConnectionsDataSerializer());
     }
 
 
