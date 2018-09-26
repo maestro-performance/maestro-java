@@ -28,6 +28,7 @@ import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.server.DefaultReportsServer;
 import org.maestro.reports.server.ReportsServer;
 import org.maestro.reports.server.collector.DefaultReportsCollector;
+import org.maestro.reports.server.loader.ReportDirectoryWalker;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -42,6 +43,7 @@ public class ReportsTool {
     private static String maestroUrl;
     private static String host;
     private static File dataDir;
+    private static boolean load;
 
     /**
      * Prints the help for the action and exit
@@ -67,6 +69,7 @@ public class ReportsTool {
         options.addOption("H", "host", true,
                 "optional hostname (to override auto-detection)");
         options.addOption("d", "data-dir", true, "Data directory");
+        options.addOption("", "load-data", false, "Load the reports in the data directory into the DB");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -102,6 +105,7 @@ public class ReportsTool {
             help(options, -1);
         }
         dataDir = new File(dataDirVal);
+        load = cmdLine.hasOption("load-data");
     }
 
     /**
@@ -122,9 +126,35 @@ public class ReportsTool {
 
         LogConfigurator.defaultForDaemons();
 
+        int ret = 0;
+        if (load) {
+            ret = loadData();
+            if (ret != 0) {
+                System.exit(ret);
+            }
+        }
+
+        ret = launchServices();
+        System.exit(ret);
+    }
+
+    private static int loadData() {
+        ReportDirectoryWalker walker = new ReportDirectoryWalker();
+
+        try {
+            walker.load(dataDir);
+            return 0;
+        }
+        catch (Throwable t) {
+            return 1;
+        }
+    }
+
+    private static int launchServices() {
         try {
             CountDownLatch latch = new CountDownLatch(1);
             ExecutorService executors = Executors.newFixedThreadPool(2);
+
 
             System.out.println("Starting the collector");
             executors.submit(() -> startCollector(latch));
@@ -137,12 +167,12 @@ public class ReportsTool {
         } catch (MaestroException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
-            System.exit(1);
+            return 1;
         } catch (InterruptedException e) {
             System.out.println("Interrupted");
         }
 
-        System.exit(0);
+        return 0;
     }
 
     public static void startCollector(final CountDownLatch latch) {
