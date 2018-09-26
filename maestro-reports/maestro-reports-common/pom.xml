@@ -58,6 +58,12 @@
             <artifactId>maestro-plotter-latency</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-plotter-inspector</artifactId>
+            <version>${project.version}</version>
+        </dependency>
     </dependencies>
 
 

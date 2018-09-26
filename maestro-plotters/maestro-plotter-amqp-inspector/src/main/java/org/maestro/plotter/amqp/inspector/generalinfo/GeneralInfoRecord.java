@@ -34,7 +34,7 @@ public class GeneralInfoRecord implements Comparable<GeneralInfoRecord>, Instant
     private long linksCount;
     private long nodesCount;
     private long addressCount;
-    private long connetionsCount;
+    private long connectionsCount;
     private long presettledCount;
     private long droppedPresettledCount;
     private long acceptedCount;
@@ -120,12 +120,12 @@ public class GeneralInfoRecord implements Comparable<GeneralInfoRecord>, Instant
         this.addressCount = addressCount;
     }
 
-    public long getConnetionsCount() {
-        return connetionsCount;
+    public long getConnectionsCount() {
+        return connectionsCount;
     }
 
-    public void setConnetionsCount(long connetionsCount) {
-        this.connetionsCount = connetionsCount;
+    public void setConnectionsCount(long connectionsCount) {
+        this.connectionsCount = connectionsCount;
     }
 
     public long getPresettledCount() {
@@ -231,7 +231,7 @@ public class GeneralInfoRecord implements Comparable<GeneralInfoRecord>, Instant
                 linksCount == that.linksCount &&
                 nodesCount == that.nodesCount &&
                 addressCount == that.addressCount &&
-                connetionsCount == that.connetionsCount &&
+                connectionsCount == that.connectionsCount &&
                 presettledCount == that.presettledCount &&
                 droppedPresettledCount == that.droppedPresettledCount &&
                 acceptedCount == that.acceptedCount &&
@@ -252,7 +252,7 @@ public class GeneralInfoRecord implements Comparable<GeneralInfoRecord>, Instant
     @Override
     public int hashCode() {
         return Objects.hash(timestamp, name, version, mode, linkRoutersCount, autoLinksCount,
-                linksCount, nodesCount, addressCount, connetionsCount, presettledCount, droppedPresettledCount,
+                linksCount, nodesCount, addressCount, connectionsCount, presettledCount, droppedPresettledCount,
                 acceptedCount, rejectedCount, modifiedCount, ingressCount, engressCount, transitCount,
                 deliveryFromRouterCount, deliveryToRouterCount);
     }
@@ -269,7 +269,7 @@ public class GeneralInfoRecord implements Comparable<GeneralInfoRecord>, Instant
                 ", linksCount=" + linksCount +
                 ", nodesCount=" + nodesCount +
                 ", addressCount=" + addressCount +
-                ", connetionsCount=" + connetionsCount +
+                ", connectionsCount=" + connectionsCount +
                 ", presettledCount=" + presettledCount +
                 ", droppedPresettledCount=" + droppedPresettledCount +
                 ", acceptedCount=" + acceptedCount +

@@ -89,7 +89,7 @@ public class GeneralInfoData implements ReportData {
      */
     protected Statistics connectionsStatistics() {
         if (connectionsStatistics == null) {
-            connectionsStatistics = StatisticsBuilder.of(recordSet.stream().mapToDouble(GeneralInfoRecord::getConnetionsCount));
+            connectionsStatistics = StatisticsBuilder.of(recordSet.stream().mapToDouble(GeneralInfoRecord::getConnectionsCount));
         }
 
         return connectionsStatistics;

@@ -17,13 +17,14 @@
 package org.maestro.plotter.rate.serializer;
 
 import org.maestro.plotter.common.serializer.MaestroSerializer;
+import org.maestro.plotter.common.serializer.SingleData;
 import org.maestro.plotter.rate.RateData;
 import org.maestro.plotter.rate.RateDataReader;
 
 import java.io.File;
 import java.io.IOException;
 
-public class RateSerializer implements MaestroSerializer<Rate> {
+public class RateSerializer implements MaestroSerializer<SingleData<Long>> {
     private static final String dataName = "rate";
 
     private RateDataReader rateDataReader = new RateDataReader();
@@ -34,10 +35,10 @@ public class RateSerializer implements MaestroSerializer<Rate> {
     }
 
     @Override
-    public Rate serialize(final File file) throws IOException {
+    public SingleData<Long> serialize(final File file) throws IOException {
         RateData rateData = rateDataReader.read(file);
 
-        Rate rate = new Rate();
+        SingleData<Long> rate = new SingleData<>();
 
         rate.setPeriods(rateData.getPeriods());
         rate.setValues(rateData.getRateValues());

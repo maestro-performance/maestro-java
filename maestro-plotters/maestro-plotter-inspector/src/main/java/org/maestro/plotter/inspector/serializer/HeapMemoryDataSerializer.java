@@ -14,18 +14,25 @@
  * limitations under the License.
  */
 
-package org.maestro.plotter.inspector.graph;
+package org.maestro.plotter.inspector.serializer;
 
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.inspector.heap.HeapData;
+import org.maestro.plotter.inspector.heap.HeapReader;
 
-import java.io.File;
 
-public class HeapPlotter extends CommonMemoryPlotter<HeapData> {
-    public static final String DEFAULT_FILENAME = "heap.png";
+/**
+ * Serializer for heap memory information
+ */
+public class HeapMemoryDataSerializer extends CommonMemoryDataSerializer<HeapData, HeapReader> {
+    private static final String dataName = "heap";
+
+
+    public HeapMemoryDataSerializer() {
+        super(new HeapReader());
+    }
 
     @Override
-    public void plot(final HeapData reportData, final File outputFile) throws MaestroException {
-        super.plot(reportData, outputFile);
+    public String name() {
+        return dataName;
     }
 }

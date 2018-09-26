@@ -17,6 +17,9 @@
 package org.maestro.reports.common.serializer.registry;
 
 import org.maestro.plotter.common.serializer.MaestroSerializer;
+import org.maestro.plotter.inspector.serializer.HeapMemoryDataSerializer;
+import org.maestro.plotter.inspector.serializer.MemoryAreasDataSerializer;
+import org.maestro.plotter.inspector.serializer.QueueDataSerializer;
 import org.maestro.plotter.latency.serializer.LatencySerializer;
 import org.maestro.plotter.rate.serializer.RateSerializer;
 
@@ -30,6 +33,14 @@ public class FileSerializerRegistry {
     private FileSerializerRegistry() {
         registry.put("receiver.dat", new RateSerializer());
         registry.put("receiverd-latency.hdr", new LatencySerializer());
+        registry.put("heap.csv", new HeapMemoryDataSerializer());
+        registry.put("memory-areas.csv", new MemoryAreasDataSerializer());
+        registry.put("queues.csv", new QueueDataSerializer());
+//        registry.put("general.csv", new CommonMemoryDataSerializer(new HeapReader()));
+//        registry.put("qdmemory.csv", new CommonMemoryDataSerializer(new HeapReader()));
+//        registry.put("routerLink.csv", new CommonMemoryDataSerializer(new HeapReader()));
+
+
     }
 
 
