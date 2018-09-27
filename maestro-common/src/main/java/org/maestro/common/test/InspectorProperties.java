@@ -16,6 +16,7 @@
 
 package org.maestro.common.test;
 
+import org.maestro.common.test.properties.annotations.PropertyConsumer;
 import org.maestro.common.test.properties.annotations.PropertyName;
 import org.maestro.common.test.properties.annotations.PropertyProvider;
 import org.slf4j.Logger;
@@ -23,7 +24,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -99,6 +99,7 @@ public class InspectorProperties extends CommonProperties {
         return jvmName;
     }
 
+    @PropertyConsumer(name="jvmName", join = false)
     public void setJvmName(String jvmName) {
         this.jvmName = jvmName;
     }
@@ -109,6 +110,7 @@ public class InspectorProperties extends CommonProperties {
         return jvmVersion;
     }
 
+    @PropertyConsumer(name="jvmVersion", join = false)
     public void setJvmVersion(String jvmVersion) {
         this.jvmVersion = jvmVersion;
     }
@@ -118,6 +120,7 @@ public class InspectorProperties extends CommonProperties {
         return jvmPackageVersion;
     }
 
+    @PropertyConsumer(name="jvmPackageVersion", join = false)
     public void setJvmPackageVersion(String jvmPackageVersion) {
         this.jvmPackageVersion = jvmPackageVersion;
     }
@@ -127,6 +130,7 @@ public class InspectorProperties extends CommonProperties {
         return operatingSystemName;
     }
 
+    @PropertyConsumer(name="operatingSystemName", join = false)
     public void setOperatingSystemName(String operatingSystemName) {
         this.operatingSystemName = operatingSystemName;
     }
@@ -136,6 +140,7 @@ public class InspectorProperties extends CommonProperties {
         return operatingSystemArch;
     }
 
+    @PropertyConsumer(name="operatingSystemArch", join = false)
     public void setOperatingSystemArch(String operatingSystemArch) {
         this.operatingSystemArch = operatingSystemArch;
     }
@@ -145,6 +150,7 @@ public class InspectorProperties extends CommonProperties {
         return operatingSystemVersion;
     }
 
+    @PropertyConsumer(name="operatingSystemVersion", join = false)
     public void setOperatingSystemVersion(String operatingSystemVersion) {
         this.operatingSystemVersion = operatingSystemVersion;
     }
@@ -158,6 +164,11 @@ public class InspectorProperties extends CommonProperties {
         this.systemCpuCount = systemCpuCount;
     }
 
+    @PropertyConsumer(name="systemCpuCount", join = false)
+    public void setSystemCpuCount(String systemCpuCount) {
+        setSystemCpuCount(Long.parseLong(systemCpuCount));
+    }
+
     @PropertyProvider(name="systemMemory", join = false)
     public long getSystemMemory() {
         return systemMemory;
@@ -165,6 +176,11 @@ public class InspectorProperties extends CommonProperties {
 
     public void setSystemMemory(long systemMemory) {
         this.systemMemory = systemMemory;
+    }
+
+    @PropertyConsumer(name="systemMemory", join = false)
+    public void setSystemMemory(final String systemMemory) {
+        setSystemMemory(Long.parseLong(systemMemory));
     }
 
     @PropertyProvider(name="systemSwap", join = false)
@@ -176,11 +192,17 @@ public class InspectorProperties extends CommonProperties {
         this.systemSwap = systemSwap;
     }
 
+    @PropertyConsumer(name="systemSwap", join = false)
+    public void setSystemSwap(String systemSwap) {
+        setSystemSwap(Long.parseLong(systemSwap));
+    }
+
     @PropertyProvider(name="productName", join = false)
     public String getProductName() {
         return productName;
     }
 
+    @PropertyConsumer(name="productName", join = false)
     public void setProductName(String productName) {
         this.productName = productName;
     }
@@ -190,7 +212,10 @@ public class InspectorProperties extends CommonProperties {
         return productVersion;
     }
 
+    @PropertyConsumer(name="productVersion", join = false)
     public void setProductVersion(String productVersion) {
         this.productVersion = productVersion;
     }
+
+
 }

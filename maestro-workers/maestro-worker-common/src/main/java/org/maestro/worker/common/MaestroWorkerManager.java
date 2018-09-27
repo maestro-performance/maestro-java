@@ -187,7 +187,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
         final String duration = workerOptions.getDuration();
         logger.info("Test duration for test {}: {}", testNumber, duration);
-        testProperties.setDuration(duration);
+        testProperties.setDurationFromSpec(duration);
 
         final String parallelCount = workerOptions.getParallelCount();
         logger.info("Parallel count for test {}: {}", testNumber, parallelCount);

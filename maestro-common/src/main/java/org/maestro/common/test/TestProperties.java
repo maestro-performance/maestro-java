@@ -19,6 +19,7 @@ package org.maestro.common.test;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
+import org.maestro.common.test.properties.annotations.PropertyConsumer;
 import org.maestro.common.test.properties.annotations.PropertyName;
 import org.maestro.common.test.properties.annotations.PropertyProvider;
 import org.slf4j.Logger;
@@ -26,7 +27,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
@@ -95,6 +95,7 @@ public class TestProperties extends CommonProperties {
         return brokerUri;
     }
 
+    @PropertyConsumer(name="brokerUri", join = false)
     public void setBrokerUri(final String brokerUri) {
         this.brokerUri = brokerUri;
     }
@@ -104,6 +105,7 @@ public class TestProperties extends CommonProperties {
         return durationType;
     }
 
+    @PropertyConsumer(name="durationType", join = false)
     public void setDurationType(final String durationType) {
         this.durationType = durationType;
     }
@@ -112,7 +114,12 @@ public class TestProperties extends CommonProperties {
         this.duration = duration;
     }
 
-    public void setDuration(final String durationSpec) throws DurationParseException {
+    @PropertyConsumer(name="duration", join = false)
+    public void setDuration(final String duration) {
+        this.duration = Long.parseLong(duration);
+    }
+
+    public void setDurationFromSpec(final String durationSpec) throws DurationParseException {
         TestDuration td = TestDurationBuilder.build(durationSpec);
 
         this.duration = td.getNumericDuration();
@@ -128,22 +135,23 @@ public class TestProperties extends CommonProperties {
         return Long.toString(getDuration());
     }
 
-
     @PropertyProvider(name="apiName", join = false)
     public String getApiName() {
         return apiName;
     }
 
+    @PropertyConsumer(name="apiName", join = false)
     public void setApiName(final String apiName) {
         this.apiName = apiName;
     }
-
 
     @PropertyProvider(name="apiVersion", join = false)
     public String getApiVersion() {
         return apiVersion;
     }
 
+
+    @PropertyConsumer(name="apiVersion", join = false)
     public void setApiVersion(final String apiVersion) {
         this.apiVersion = apiVersion;
     }
@@ -154,12 +162,14 @@ public class TestProperties extends CommonProperties {
         return fcl;
     }
 
+
     public void setFcl(int fcl) {
         this.fcl = fcl;
     }
 
+    @PropertyConsumer(name="fcl", join = false)
     public void setFcl(final String fcl) {
-        this.fcl = Integer.parseInt(fcl);
+        setFcl(Integer.parseInt(fcl));
     }
 
     @PropertyProvider(name="protocol", join = false)
@@ -167,6 +177,7 @@ public class TestProperties extends CommonProperties {
         return protocol;
     }
 
+    @PropertyConsumer(name="protocol", join = false)
     public void setProtocol(final String protocol) {
         this.protocol = protocol;
     }
@@ -178,6 +189,12 @@ public class TestProperties extends CommonProperties {
 
     public void setLimitDestinations(int limitDestinations) {
         this.limitDestinations = limitDestinations;
+    }
+
+
+    @PropertyConsumer(name="limitDestinations", join = false)
+    public void setLimitDestinations(final String limitDestinationsStr) {
+        setLimitDestinations(Integer.parseInt(limitDestinationsStr));
     }
 
     @Override
