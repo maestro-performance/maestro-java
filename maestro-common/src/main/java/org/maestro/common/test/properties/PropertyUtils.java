@@ -41,6 +41,10 @@ public class PropertyUtils {
             return true;
         }
 
+        if (Boolean.class.isAssignableFrom(object.getClass())) {
+            return true;
+        }
+
         return object instanceof String;
     }
 }

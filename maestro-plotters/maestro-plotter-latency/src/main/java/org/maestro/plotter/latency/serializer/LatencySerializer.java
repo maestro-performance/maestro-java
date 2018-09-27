@@ -19,6 +19,7 @@ package org.maestro.plotter.latency.serializer;
 import org.HdrHistogram.Histogram;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.test.TestProperties;
+import org.maestro.common.test.properties.PropertyReader;
 import org.maestro.common.worker.WorkerUtils;
 import org.maestro.plotter.common.serializer.MaestroSerializer;
 import org.maestro.plotter.latency.HdrLogProcessorWrapper;
@@ -45,7 +46,9 @@ public class LatencySerializer implements MaestroSerializer<LatencyDistribution>
             TestProperties testProperties = new TestProperties();
 
             try {
-                testProperties.load(propertiesFile);
+                PropertyReader reader = new PropertyReader();
+
+                reader.read(propertiesFile, testProperties);
             } catch (IOException e) {
                 e.printStackTrace();
             }

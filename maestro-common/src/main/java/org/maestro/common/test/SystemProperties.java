@@ -16,7 +16,7 @@ import java.util.function.Consumer;
  * Worker's system properties written by every worker.
  */
 @PropertyName(name = "worker")
-public class SystemProperties extends CommonProperties {
+public class SystemProperties {
     public static final String FILENAME = "system.properties";
     public static int UNSET_INT = 0;
 
@@ -31,48 +31,6 @@ public class SystemProperties extends CommonProperties {
     private String operatingSystemVersion;
     private long systemCpuCount;
     private long jvmMaxMemory;
-
-    /**
-     * Method for load system properties saved in the file.
-     * @param systemProperties A file object pointing to the file to be loaded
-     * @throws IOException Exception when input file does not exists
-     */
-    public void load(final File systemProperties) throws IOException {
-        logger.trace("Reading properties from {}", systemProperties.getPath());
-
-        Properties prop = new Properties();
-
-        try (FileInputStream in = new FileInputStream(systemProperties)) {
-            prop.load(in);
-
-            jvmName = prop.getProperty("workerJvmName");
-            jvmVersion = prop.getProperty("workerJvmVersion");
-            operatingSystemName = prop.getProperty("workerOperatingSystemName");
-            operatingSystemArch = prop.getProperty("workerOperatingSystemArch");
-            operatingSystemVersion = prop.getProperty("workerOperatingSystemVersion");
-
-            String systemCpuCountStr = prop.getProperty("workerSystemCpuCount");
-            if (systemCpuCountStr != null) {
-                systemCpuCount = Integer.parseInt(systemCpuCountStr);
-            }
-            else {
-                systemCpuCount = UNSET_INT;
-            }
-
-            String jvmMaxMemoryStr = prop.getProperty("workerJvmMaxMemory");
-            if (jvmMaxMemoryStr != null) {
-                jvmMaxMemory = Long.parseLong(jvmMaxMemoryStr);
-            }
-            else {
-                jvmMaxMemory = UNSET_INT;
-            }
-            logger.debug("Read properties: {}", this.toString());
-        }
-    }
-
-    public static Logger getLogger() {
-        return logger;
-    }
 
     @PropertyProvider(name="jvmName")
     public String getWorkerJvmName() {

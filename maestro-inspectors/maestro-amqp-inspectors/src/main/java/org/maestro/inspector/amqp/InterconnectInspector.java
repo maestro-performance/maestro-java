@@ -222,7 +222,6 @@ public class InterconnectInspector implements MaestroInspector {
 
     private void writeInspectorProperties(File logDir, InspectorProperties inspectorProperties,
                                           GeneralInfoWriter generalInfoWriter) throws IOException, JMSException {
-        setCommonProperties(inspectorProperties, workerOptions);
 
         generalInfoWriter.write(inspectorProperties, interconnectReadData.collectGeneralInfo());
 
