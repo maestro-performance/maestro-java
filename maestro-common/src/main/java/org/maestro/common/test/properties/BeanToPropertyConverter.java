@@ -25,8 +25,8 @@ import java.util.Properties;
 /**
  * A simple converter for writing data types to properties
  */
-public class DefaultConverter implements PropertyConverter {
-    private static final Logger logger = LoggerFactory.getLogger(DefaultConverter.class);
+public class BeanToPropertyConverter implements PropertyConverter {
+    private static final Logger logger = LoggerFactory.getLogger(BeanToPropertyConverter.class);
 
     public void write(final Properties prop, final String propertyName, final Object object) {
         if (object == null) {

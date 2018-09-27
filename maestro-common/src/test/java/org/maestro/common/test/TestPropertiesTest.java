@@ -18,30 +18,81 @@
 package org.maestro.common.test;
 
 import org.junit.Test;
+import org.maestro.common.test.properties.PropertyReader;
 import org.maestro.common.test.properties.PropertyWriter;
 
 import java.io.File;
 
+import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
 public class TestPropertiesTest {
     @Test
     public void testWriteTestProperties() throws Exception {
-        runTest(fixtureTestProperties(), "test.properties");
+        runWriteTest(fixtureTestProperties(), "test.properties");
     }
 
     @Test
     public void testWriteInspectorProperties() throws Exception {
-        runTest(fixtureInspectorProperties(), "inspector.properties");
+        runWriteTest(fixtureInspectorProperties(), "inspector.properties");
     }
 
     @Test
     public void testWriteSystemProperties() throws Exception {
-        runTest(fixtureSystemProperties(), "system.properties");
+        runWriteTest(fixtureSystemProperties(), "system.properties");
     }
 
-    private <T> void runTest(final T properties, final String fileName) throws Exception {
-        String path = this.getClass().getResource(".").getPath();
+    @Test
+    public void testReadTestProperties() throws Exception {
+        TestProperties tp = new TestProperties();
+
+        runReadTest(tp, "test.properties");
+
+        assertEquals("stomp", tp.getProtocol());
+        assertEquals(10, tp.getFcl());
+        assertEquals("amqp://some/queue", tp.getBrokerUri());
+        assertEquals("testApi", tp.getApiName());
+        assertEquals("0.9", tp.getApiVersion());
+        assertEquals(30, tp.getLimitDestinations());
+        assertEquals(100, tp.getDuration());
+    }
+
+    @Test
+    public void testReadSystemProperties() throws Exception {
+        SystemProperties tp = new SystemProperties();
+
+        runReadTest(tp, "system.properties");
+
+        assertEquals("4.10", tp.getWorkerOperatingSystemVersion());
+        assertEquals(4, tp.getWorkerSystemCpuCount());
+        assertEquals("ppc64", tp.getWorkerOperatingSystemArch());
+        assertEquals("openjdk", tp.getWorkerJvmName());
+        assertEquals("Linux", tp.getWorkerOperatingSystemName());
+        assertEquals(1024, tp.getWorkerSystemMemory());
+        assertEquals("2.1", tp.getWorkerJvmVersion());
+    }
+
+    @Test
+    public void testReadInspectorProperties() throws Exception {
+        InspectorProperties tp = new InspectorProperties();
+
+        runReadTest(tp, "inspector.properties");
+
+        assertEquals(0, tp.getSystemSwap());
+        assertEquals(1024, tp.getSystemMemory());
+        assertEquals("2.1", tp.getJvmVersion());
+        assertEquals("2.0", tp.getJvmPackageVersion());
+        assertEquals("ppc64", tp.getOperatingSystemArch());
+        assertEquals(4, tp.getSystemCpuCount());
+        assertEquals("4.10", tp.getOperatingSystemVersion());
+        assertEquals("1", tp.getProductVersion());
+        assertEquals("openjdk", tp.getJvmName());
+        assertEquals("openjdk", tp.getProductName());
+        assertEquals("Linux", tp.getOperatingSystemName());
+    }
+
+    private <T> void runWriteTest(final T properties, final String fileName) throws Exception {
+        String path = this.getClass().getResource("/").getPath();
         PropertyWriter writer = new PropertyWriter();
 
         File outFile = new File(path, fileName);
@@ -49,6 +100,16 @@ public class TestPropertiesTest {
         writer.write(properties, outFile);
 
         assertTrue(outFile.exists());
+    }
+
+
+    public <T> void runReadTest(final T bean, final String fileName) throws Exception {
+        PropertyReader reader = new PropertyReader();
+
+        String path = this.getClass().getResource(fileName).getPath();
+
+        reader.read(new File(path), bean);
+
     }
 
     private TestProperties fixtureTestProperties() {

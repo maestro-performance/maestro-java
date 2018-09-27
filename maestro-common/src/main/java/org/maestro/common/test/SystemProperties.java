@@ -1,5 +1,6 @@
 package org.maestro.common.test;
 
+import org.maestro.common.test.properties.annotations.PropertyConsumer;
 import org.maestro.common.test.properties.annotations.PropertyName;
 import org.maestro.common.test.properties.annotations.PropertyProvider;
 import org.slf4j.Logger;
@@ -9,6 +10,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
+import java.util.function.Consumer;
 
 /**
  * Worker's system properties written by every worker.
@@ -77,7 +79,9 @@ public class SystemProperties extends CommonProperties {
         return jvmName;
     }
 
-    public void setWorkerJvmName(String jvmName) {
+
+    @PropertyConsumer(name="jvmName")
+    public void setWorkerJvmName(final String jvmName) {
         this.jvmName = jvmName;
     }
 
@@ -86,7 +90,9 @@ public class SystemProperties extends CommonProperties {
         return jvmVersion;
     }
 
-    public void setWorkerJvmVersion(String jvmVersion) {
+
+    @PropertyConsumer(name="jvmVersion")
+    public void setWorkerJvmVersion(final String jvmVersion) {
         this.jvmVersion = jvmVersion;
     }
 
@@ -96,7 +102,9 @@ public class SystemProperties extends CommonProperties {
         return javaVersion;
     }
 
-    public void setWorkerJavaVersion(String javaVersion) {
+
+    @PropertyConsumer(name="jvmJavaVersion")
+    public void setWorkerJavaVersion(final String javaVersion) {
         this.javaVersion = javaVersion;
     }
 
@@ -106,7 +114,8 @@ public class SystemProperties extends CommonProperties {
         return javaHome;
     }
 
-    public void setWorkerJavaHome(String javaHome) {
+    @PropertyConsumer(name="jvmJavaHome")
+    public void setWorkerJavaHome(final String javaHome) {
         this.javaHome = javaHome;
     }
 
@@ -115,7 +124,9 @@ public class SystemProperties extends CommonProperties {
         return operatingSystemName;
     }
 
-    public void setWorkerOperatingSystemName(String operatingSystemName) {
+
+    @PropertyConsumer(name="operatingSystemName")
+    public void setWorkerOperatingSystemName(final String operatingSystemName) {
         this.operatingSystemName = operatingSystemName;
     }
 
@@ -124,7 +135,8 @@ public class SystemProperties extends CommonProperties {
         return operatingSystemArch;
     }
 
-    public void setWorkerOperatingSystemArch(String operatingSystemArch) {
+    @PropertyConsumer(name="operatingSystemArch")
+    public void setWorkerOperatingSystemArch(final String operatingSystemArch) {
         this.operatingSystemArch = operatingSystemArch;
     }
 
@@ -133,7 +145,8 @@ public class SystemProperties extends CommonProperties {
         return operatingSystemVersion;
     }
 
-    public void setWorkerOperatingSystemVersion(String operatingSystemVersion) {
+    @PropertyConsumer(name="operatingSystemVersion")
+    public void setWorkerOperatingSystemVersion(final String operatingSystemVersion) {
         this.operatingSystemVersion = operatingSystemVersion;
     }
 
@@ -147,6 +160,11 @@ public class SystemProperties extends CommonProperties {
         this.systemCpuCount = systemCpuCount;
     }
 
+    @PropertyConsumer(name="operatingSystemCpuCount")
+    public void setWorkerSystemCpuCount(final String systemCpuCount) {
+        setWorkerSystemCpuCount(Long.parseLong(systemCpuCount));
+    }
+
     @PropertyProvider(name="operatingSystemMemory")
     public long getWorkerSystemMemory() {
         return jvmMaxMemory;
@@ -154,6 +172,11 @@ public class SystemProperties extends CommonProperties {
 
     public void setWorkerJVMMaxMemory(long systemMemory) {
         this.jvmMaxMemory = systemMemory;
+    }
+
+    @PropertyConsumer(name="operatingSystemMemory")
+    public void setWorkerJVMMaxMemory(final String systemMemory) {
+        setWorkerJVMMaxMemory(Long.parseLong(systemMemory));
     }
 
     @Override

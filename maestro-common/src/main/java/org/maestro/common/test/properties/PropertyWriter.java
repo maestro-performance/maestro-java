@@ -31,21 +31,15 @@ import java.lang.reflect.Method;
 import java.util.Map;
 import java.util.Properties;
 
+import static org.maestro.common.test.properties.PropertyUtils.getPropertyName;
+
 /**
  * Writes rate data properties to a file
  */
 public class PropertyWriter {
     private static final Logger logger = LoggerFactory.getLogger(PropertyWriter.class);
-    private final PropertyConverter converter = new DefaultConverter();
+    private final PropertyConverter converter = new BeanToPropertyConverter();
 
-
-    private boolean canHandle(Object object) {
-        if (Number.class.isAssignableFrom(object.getClass())) {
-            return true;
-        }
-
-        return object instanceof String;
-    }
 
     private void saveProperties(Object data, Properties prop, final String propertyName) {
         Method[] methods = data.getClass().getMethods();
@@ -64,16 +58,9 @@ public class PropertyWriter {
                     }
 
                     PropertyProvider methodProperty = method.getAnnotation(PropertyProvider.class);
+                    String newPropertyName = getPropertyName(propertyName, methodProperty.name(), methodProperty.join());
 
-                    String newPropertyName;
-                    if (methodProperty.join()) {
-                        newPropertyName = propertyName + StringUtils.capitalize(methodProperty.name());
-                    }
-                    else {
-                        newPropertyName = methodProperty.name();
-                    }
-
-                    if (canHandle(ret)) {
+                    if (PropertyUtils.canHandle(ret)) {
                         converter.write(prop, newPropertyName, ret);
                     }
                     else {
