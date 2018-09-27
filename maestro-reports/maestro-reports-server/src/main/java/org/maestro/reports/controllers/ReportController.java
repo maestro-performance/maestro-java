@@ -77,7 +77,7 @@ public class ReportController implements Handler {
                     logger.info("Processing report data for {}", file);
                     reportInfo.reportData.put(serializer.name(), serializer.serialize(file));
                 } catch (IOException e) {
-                    e.printStackTrace();
+                    logger.error("Unable to process data: {}", e.getMessage(), e);
                 }
             }
         }
