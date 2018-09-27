@@ -55,6 +55,9 @@ public class PropertyWriter {
             if (method.isAnnotationPresent(PropertyProvider.class)) {
                 try {
                     Object ret = method.invoke(data);
+                    if (ret == null) {
+                        continue;
+                    }
 
                     if (logger.isTraceEnabled()) {
                         logger.trace("Obtained: {} ", ret);
@@ -62,7 +65,13 @@ public class PropertyWriter {
 
                     PropertyProvider methodProperty = method.getAnnotation(PropertyProvider.class);
 
-                    String newPropertyName = propertyName + StringUtils.capitalize(methodProperty.name());
+                    String newPropertyName;
+                    if (methodProperty.join()) {
+                        newPropertyName = propertyName + StringUtils.capitalize(methodProperty.name());
+                    }
+                    else {
+                        newPropertyName = methodProperty.name();
+                    }
 
                     if (canHandle(ret)) {
                         converter.write(prop, newPropertyName, ret);

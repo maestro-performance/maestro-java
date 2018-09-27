@@ -17,9 +17,12 @@
 package org.maestro.common.test;
 
 import org.maestro.common.content.MessageSize;
+import org.maestro.common.test.properties.annotations.PropertyName;
+import org.maestro.common.test.properties.annotations.PropertyProvider;
 
 import java.util.Properties;
 
+@PropertyName(name = "")
 abstract class CommonProperties implements MaestroTestProperties {
     private int parallelCount;
     private long messageSize;
@@ -38,6 +41,7 @@ abstract class CommonProperties implements MaestroTestProperties {
         this.messageSize = MessageSize.toSizeFromSpec(messageSize);
     }
 
+    @PropertyProvider(name="messageSize", join = false)
     @Override
     public final long getMessageSize() {
         return messageSize;
@@ -51,6 +55,7 @@ abstract class CommonProperties implements MaestroTestProperties {
         setParallelCount(Integer.parseInt(parallelCount));
     }
 
+    @PropertyProvider(name="parallelCount", join = false)
     @Override
     public final int getParallelCount() {
         return parallelCount;
@@ -60,6 +65,7 @@ abstract class CommonProperties implements MaestroTestProperties {
         this.variableSize = variableSize;
     }
 
+    @PropertyProvider(name="variableSize", join = false)
     @Override
     public final boolean isVariableSize() {
         return variableSize;
@@ -73,11 +79,13 @@ abstract class CommonProperties implements MaestroTestProperties {
         this.rate = Integer.parseInt(rate);
     }
 
+    @PropertyProvider(name="rate", join = false)
     @Override
     public final int getRate() {
         return rate;
     }
 
+    @Deprecated
     protected void write(final Properties prop) {
         prop.setProperty("parallelCount", Integer.toString(getParallelCount()));
         prop.setProperty("messageSize", Long.toString(getMessageSize()));
