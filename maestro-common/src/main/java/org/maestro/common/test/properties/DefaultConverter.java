@@ -12,9 +12,10 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package org.maestro.plotter.common.properties;
+package org.maestro.common.test.properties;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

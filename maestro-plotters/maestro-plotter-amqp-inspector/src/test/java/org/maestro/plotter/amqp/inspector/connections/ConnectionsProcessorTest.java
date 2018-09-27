@@ -18,7 +18,7 @@ package org.maestro.plotter.amqp.inspector.connections;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.maestro.plotter.common.properties.PropertyWriter;
+import org.maestro.common.test.properties.PropertyWriter;
 
 import java.io.File;
 import java.io.IOException;

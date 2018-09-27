@@ -17,7 +17,7 @@
 package org.maestro.plotter.amqp.inspector.connections;
 
 import org.maestro.plotter.common.ReportData;
-import org.maestro.plotter.common.properties.annotations.PropertyName;
+import org.maestro.common.test.properties.annotations.PropertyName;
 
 import java.time.Instant;
 import java.util.*;

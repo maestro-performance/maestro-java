@@ -17,8 +17,8 @@
 package org.maestro.plotter.amqp.inspector.connections;
 
 
-import org.maestro.plotter.common.properties.annotations.PropertyName;
-import org.maestro.plotter.common.properties.annotations.PropertyProvider;
+import org.maestro.common.test.properties.annotations.PropertyName;
+import org.maestro.common.test.properties.annotations.PropertyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

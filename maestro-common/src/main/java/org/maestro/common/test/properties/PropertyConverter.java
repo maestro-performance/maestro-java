@@ -12,17 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package org.maestro.plotter.common.properties.annotations;
+package org.maestro.common.test.properties;
 
-import java.lang.annotation.ElementType;
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
-import java.lang.annotation.Target;
+import java.util.Properties;
 
-@Retention(RetentionPolicy.RUNTIME)
-@Target({ElementType.TYPE})
-public @interface PropertyName {
-    String name();
+/**
+ * A converter from data types to properties
+ */
+public interface PropertyConverter {
+
+    /**
+     * Writes the input object as a property using the property name
+     * @param prop the property object instance
+     * @param propertyName the property name
+     * @param object the object to write as a property
+     */
+    void write(final Properties prop, final String propertyName, final Object object);
 }

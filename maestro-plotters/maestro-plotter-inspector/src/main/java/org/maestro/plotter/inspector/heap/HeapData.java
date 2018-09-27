@@ -16,7 +16,7 @@
 
 package org.maestro.plotter.inspector.heap;
 
-import org.maestro.plotter.common.properties.annotations.PropertyName;
+import org.maestro.common.test.properties.annotations.PropertyName;
 import org.maestro.plotter.inspector.common.CommonMemoryData;
 
 /**
