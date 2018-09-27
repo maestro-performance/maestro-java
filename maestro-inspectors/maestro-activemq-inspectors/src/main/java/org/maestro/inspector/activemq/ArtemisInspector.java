@@ -29,6 +29,7 @@ import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.common.inspector.types.*;
 import org.maestro.common.test.InspectorProperties;
+import org.maestro.common.test.properties.PropertyWriter;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.inspector.activemq.writers.*;
@@ -212,7 +213,9 @@ public class ArtemisInspector implements MaestroInspector {
         productInfoWriter.write(null, productInfo);
 
         File propertiesFile = new File(logDir, InspectorProperties.FILENAME);
-        inspectorProperties.write(propertiesFile);
+
+        PropertyWriter writer = new PropertyWriter();
+        writer.write(inspectorProperties, propertiesFile);
     }
 
     public void stop() {

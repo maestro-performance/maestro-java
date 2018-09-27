@@ -85,14 +85,6 @@ abstract class CommonProperties implements MaestroTestProperties {
         return rate;
     }
 
-    @Deprecated
-    protected void write(final Properties prop) {
-        prop.setProperty("parallelCount", Integer.toString(getParallelCount()));
-        prop.setProperty("messageSize", Long.toString(getMessageSize()));
-        prop.setProperty("variableSize", isVariableSize() ? "1" : "0");
-        prop.setProperty("rate", Integer.toString(getRate()));
-    }
-
     protected void load(final Properties prop) {
         setParallelCount(prop.getProperty("parallelCount"));
         setMessageSize(prop.getProperty("messageSize"));

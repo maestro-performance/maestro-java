@@ -30,6 +30,7 @@ import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.test.TestProperties;
 import org.maestro.common.test.SystemProperties;
+import org.maestro.common.test.properties.PropertyWriter;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.contrib.utils.digest.Sha1Digest;
@@ -222,7 +223,8 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         testProperties.setApiName("JMS");
         testProperties.setApiVersion("1.1");
 
-        testProperties.write(new File(testLogDir, TestProperties.FILENAME));
+        PropertyWriter writer = new PropertyWriter();
+        writer.write(testProperties, new File(testLogDir, TestProperties.FILENAME));
     }
 
     /***
@@ -264,7 +266,8 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
         logger.info(testLogDir.toString());
 
-        systemProperties.write(new File(testLogDir, SystemProperties.FILENAME));
+        PropertyWriter writer = new PropertyWriter();
+        writer.write(systemProperties, new File(testLogDir, SystemProperties.FILENAME));
     }
 
     @Override
