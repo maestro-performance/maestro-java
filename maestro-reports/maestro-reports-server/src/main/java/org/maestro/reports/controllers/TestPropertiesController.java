@@ -18,18 +18,36 @@ package org.maestro.reports.controllers;
 
 import io.javalin.Context;
 import io.javalin.Handler;
+import org.maestro.common.test.TestProperties;
+import org.maestro.reports.dao.ReportDao;
+import org.maestro.reports.dto.Report;
 
 import java.io.File;
 
-public class TestDataController implements Handler {
-    private final File dataDir;
+public class TestPropertiesController implements Handler {
+    private final ReportDao reportDao = new ReportDao();
 
-    public TestDataController(File dataDir) {
-        this.dataDir = dataDir;
+    public TestPropertiesController() {
     }
 
     @Override
     public void handle(Context context) throws Exception {
+        try {
+            int id = Integer.parseInt(context.param("id"));
 
+            Report report = reportDao.fetch(id);
+            String location = report.getLocation();
+            File file = new File(location, "test.properties");
+
+            TestProperties tp = new TestProperties();
+
+            tp.load(file);
+
+//            context.json(reportInfo);
+        }
+        catch (Throwable t) {
+            context.status(500);
+            context.result(String.format("Internal server error: %s", t.getMessage()));
+        }
     }
 }
