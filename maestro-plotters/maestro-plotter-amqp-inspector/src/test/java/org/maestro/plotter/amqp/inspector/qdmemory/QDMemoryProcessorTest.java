@@ -22,7 +22,7 @@ import org.maestro.plotter.amqp.inspector.memory.QDMemoryData;
 import org.maestro.plotter.amqp.inspector.memory.QDMemoryDataSet;
 import org.maestro.plotter.amqp.inspector.memory.QDMemoryProcessor;
 import org.maestro.plotter.amqp.inspector.memory.QDMemoryReader;
-import org.maestro.plotter.common.properties.PropertyWriter;
+import org.maestro.common.test.properties.PropertyWriter;
 import org.maestro.plotter.common.statistics.Statistics;
 
 import java.io.File;

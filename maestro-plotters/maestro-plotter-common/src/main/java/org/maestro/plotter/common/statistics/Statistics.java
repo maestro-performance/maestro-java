@@ -17,8 +17,8 @@
 package org.maestro.plotter.common.statistics;
 
 import org.apache.commons.math3.stat.descriptive.SummaryStatistics;
-import org.maestro.plotter.common.properties.annotations.PropertyName;
-import org.maestro.plotter.common.properties.annotations.PropertyProvider;
+import org.maestro.common.test.properties.annotations.PropertyName;
+import org.maestro.common.test.properties.annotations.PropertyProvider;
 
 /**
  * A container for report statistics
