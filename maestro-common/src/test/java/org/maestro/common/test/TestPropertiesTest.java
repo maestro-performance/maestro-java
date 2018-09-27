@@ -55,6 +55,10 @@ public class TestPropertiesTest {
         assertEquals("0.9", tp.getApiVersion());
         assertEquals(30, tp.getLimitDestinations());
         assertEquals(100, tp.getDuration());
+
+        assertEquals(256, tp.getMessageSize());
+        assertEquals(3, tp.getParallelCount());
+        assertEquals(true, tp.isVariableSize());
     }
 
     @Test

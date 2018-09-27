@@ -61,6 +61,13 @@ public class BeanToPropertyConverter implements PropertyConverter {
 
             return;
         }
+
+        if (object instanceof Boolean) {
+            Boolean value = (Boolean) object;
+            prop.setProperty(propertyName, Boolean.toString(value));
+
+            return;
+        }
     }
 
 }

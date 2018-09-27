@@ -42,7 +42,7 @@ public class PropertyWriter {
 
 
     private void saveProperties(Object data, Properties prop, final String propertyName) {
-        Method[] methods = data.getClass().getMethods();
+        Method[] methods = data.getClass().getDeclaredMethods();
 
         for (Method method : methods) {
 

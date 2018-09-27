@@ -32,7 +32,7 @@ import java.util.Properties;
  */
 @SuppressWarnings("ALL")
 @PropertyName(name = "")
-public class InspectorProperties extends CommonProperties {
+public class InspectorProperties {
     public static String FILENAME = "inspector.properties";
     public static int UNSET_INT = 0;
 
@@ -49,50 +49,6 @@ public class InspectorProperties extends CommonProperties {
     private long systemSwap;
     private String productName;
     private String productVersion;
-
-    public void load(final File testProperties) throws IOException {
-        logger.trace("Reading properties from {}", testProperties.getPath());
-
-        String loadedSwap;
-
-        Properties prop = new Properties();
-
-        try (FileInputStream in = new FileInputStream(testProperties)) {
-            prop.load(in);
-
-            jvmName = prop.getProperty("jvmName");
-            jvmVersion = prop.getProperty("jvmVersion");
-            jvmPackageVersion = prop.getProperty("jvmPackageVersion");
-            operatingSystemName = prop.getProperty("operatingSystemName");
-            operatingSystemArch = prop.getProperty("operatingSystemArch");
-            operatingSystemVersion = prop.getProperty("operatingSystemVersion");
-
-            String systemCpuCountStr = prop.getProperty("systemCpuCount");
-            if (systemCpuCountStr != null) {
-                systemCpuCount = Integer.parseInt(systemCpuCountStr);
-            }
-            else {
-                systemCpuCount = UNSET_INT;
-            }
-
-            String systemMemoryStr = prop.getProperty("systemMemory");
-            if (systemMemoryStr != null) {
-                systemMemory = Long.parseLong(systemMemoryStr);
-            }
-            else {
-                systemMemory = UNSET_INT;
-            }
-
-            loadedSwap = prop.getProperty("systemSwap");
-            systemSwap = (loadedSwap != null) ? Long.parseLong(loadedSwap) : UNSET_INT;
-
-            productName = prop.getProperty("productName");
-            productVersion = prop.getProperty("productVersion");
-
-            super.load(prop);
-        }
-
-    }
 
     @PropertyProvider(name="jvmName", join = false)
     public String getJvmName() {

@@ -201,8 +201,6 @@ public class ArtemisInspector implements MaestroInspector {
     private void writeInspectorProperties(File logDir, InspectorProperties inspectorProperties,
                                           RuntimeInfoWriter runtimeInfoWriter, OSInfoWriter osInfoWriter,
                                           ProductInfoWriter productInfoWriter) throws MalformedObjectNameException, J4pException, IOException {
-        setCommonProperties(inspectorProperties, workerOptions);
-
         OSInfo osInfo = artemisDataReader.operatingSystem();
         osInfoWriter.write(null, osInfo);
 

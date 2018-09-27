@@ -16,6 +16,7 @@
 
 package org.maestro.common.test;
 
+import org.maestro.common.content.MessageSize;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
@@ -25,18 +26,12 @@ import org.maestro.common.test.properties.annotations.PropertyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.util.Properties;
-
-
 /**
  * Test properties used/saved by maestro testing peers
  */
 @SuppressWarnings("unused")
 @PropertyName(name = "")
-public class TestProperties extends CommonProperties {
+public class TestProperties {
     public static String FILENAME = "test.properties";
     
     private static final Logger logger = LoggerFactory.getLogger(TestProperties.class);
@@ -50,45 +45,13 @@ public class TestProperties extends CommonProperties {
     private String apiVersion;
     private String protocol;
 
+    private int parallelCount;
+    private long messageSize;
+    private boolean variableSize;
+    private int rate;
+
     // 1 = legacy behavior
     private int limitDestinations = 1;
-
-    public void load(final File testProperties) throws IOException {
-        logger.debug("Reading properties from {}", testProperties.getPath());
-
-        Properties prop = new Properties();
-
-        try (FileInputStream in = new FileInputStream(testProperties)) {
-            prop.load(in);
-
-            brokerUri = prop.getProperty("brokerUri");
-            durationType = prop.getProperty("durationType");
-            duration = Long.parseLong(prop.getProperty("duration"));
-
-            // Optional stuff
-            String fclStr = prop.getProperty("fcl");
-
-            if (fclStr != null) {
-                fcl = Integer.parseInt(fclStr);
-            }
-
-            apiName = prop.getProperty("apiName");
-            apiVersion = prop.getProperty("apiVersion");
-            protocol = prop.getProperty("protocol");
-
-            String limitDestinationsStr = prop.getProperty("limitDestinations");
-            if (limitDestinationsStr != null) {
-                limitDestinations = Integer.parseInt(limitDestinationsStr);
-            }
-
-            super.load(prop);
-        } catch (Throwable t) {
-            logger.error("Invalid data when processing file {}", testProperties.getPath(), t);
-            throw t;
-        }
-
-        logger.debug("Read properties: {}", this.toString());
-    }
 
     @PropertyProvider(name="brokerUri", join = false)
     public String getBrokerUri() {
@@ -191,10 +154,69 @@ public class TestProperties extends CommonProperties {
         this.limitDestinations = limitDestinations;
     }
 
-
     @PropertyConsumer(name="limitDestinations", join = false)
     public void setLimitDestinations(final String limitDestinationsStr) {
         setLimitDestinations(Integer.parseInt(limitDestinationsStr));
+    }
+
+    public final void setMessageSize(long messageSize) {
+        this.messageSize = messageSize;
+    }
+
+    @PropertyConsumer(name="messageSize", join = false)
+    public final void setMessageSize(final String messageSize) {
+        if (MessageSize.isVariable(messageSize)) {
+            setVariableSize(true);
+        }
+
+        this.messageSize = MessageSize.toSizeFromSpec(messageSize);
+    }
+
+    @PropertyProvider(name="messageSize", join = false)
+    public final long getMessageSize() {
+        return messageSize;
+    }
+
+    public final void setParallelCount(int parallelCount) {
+        this.parallelCount = parallelCount;
+    }
+
+    @PropertyConsumer(name="parallelCount", join = false)
+    public final void setParallelCount(String parallelCount) {
+        setParallelCount(Integer.parseInt(parallelCount));
+    }
+
+    @PropertyProvider(name="parallelCount", join = false)
+    public final int getParallelCount() {
+        return parallelCount;
+    }
+
+    public final void setVariableSize(boolean variableSize) {
+        this.variableSize = variableSize;
+    }
+
+    @PropertyConsumer(name="variableSize", join = false)
+    public final void setVariableSize(String variableSize) {
+        setVariableSize(Boolean.parseBoolean(variableSize));
+    }
+
+    @PropertyProvider(name="variableSize", join = false)
+    public final boolean isVariableSize() {
+        return variableSize;
+    }
+
+    public void setRate(int rate) {
+        this.rate = rate;
+    }
+
+    @PropertyConsumer(name="rate", join = false)
+    public void setRate(final String rate) {
+        this.rate = Integer.parseInt(rate);
+    }
+
+    @PropertyProvider(name="rate", join = false)
+    public final int getRate() {
+        return rate;
     }
 
     @Override
