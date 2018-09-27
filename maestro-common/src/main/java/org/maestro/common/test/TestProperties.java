@@ -19,6 +19,8 @@ package org.maestro.common.test;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
+import org.maestro.common.test.properties.annotations.PropertyName;
+import org.maestro.common.test.properties.annotations.PropertyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,6 +35,7 @@ import java.util.Properties;
  * Test properties used/saved by maestro testing peers
  */
 @SuppressWarnings("unused")
+@PropertyName(name = "")
 public class TestProperties extends CommonProperties {
     public static String FILENAME = "test.properties";
     
@@ -87,6 +90,7 @@ public class TestProperties extends CommonProperties {
         logger.debug("Read properties: {}", this.toString());
     }
 
+    @Deprecated
     public void write(final File testProperties) throws IOException {
         logger.debug("Writing properties to {}", testProperties.getPath());
         logger.debug("Wrote properties: {}", this.toString());
@@ -110,6 +114,7 @@ public class TestProperties extends CommonProperties {
         }
     }
 
+    @PropertyProvider(name="brokerUri", join = false)
     public String getBrokerUri() {
         return brokerUri;
     }
@@ -118,6 +123,7 @@ public class TestProperties extends CommonProperties {
         this.brokerUri = brokerUri;
     }
 
+    @PropertyProvider(name="durationType", join = false)
     public String getDurationType() {
         return durationType;
     }
@@ -137,6 +143,17 @@ public class TestProperties extends CommonProperties {
         this.durationType = td.durationTypeName();
     }
 
+    public long getDuration() {
+        return duration;
+    }
+
+    @PropertyProvider(name="duration", join = false)
+    public String getDurationAsString() {
+        return Long.toString(getDuration());
+    }
+
+
+    @PropertyProvider(name="apiName", join = false)
     public String getApiName() {
         return apiName;
     }
@@ -145,6 +162,8 @@ public class TestProperties extends CommonProperties {
         this.apiName = apiName;
     }
 
+
+    @PropertyProvider(name="apiVersion", join = false)
     public String getApiVersion() {
         return apiVersion;
     }
@@ -153,10 +172,8 @@ public class TestProperties extends CommonProperties {
         this.apiVersion = apiVersion;
     }
 
-    public long getDuration() {
-        return duration;
-    }
 
+    @PropertyProvider(name="fcl", join = false)
     public int getFcl() {
         return fcl;
     }
@@ -169,6 +186,7 @@ public class TestProperties extends CommonProperties {
         this.fcl = Integer.parseInt(fcl);
     }
 
+    @PropertyProvider(name="protocol", join = false)
     public String getProtocol() {
         return protocol;
     }
@@ -177,6 +195,7 @@ public class TestProperties extends CommonProperties {
         this.protocol = protocol;
     }
 
+    @PropertyProvider(name="limitDestinations", join = false)
     public int getLimitDestinations() {
         return limitDestinations;
     }

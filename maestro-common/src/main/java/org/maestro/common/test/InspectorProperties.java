@@ -16,6 +16,8 @@
 
 package org.maestro.common.test;
 
+import org.maestro.common.test.properties.annotations.PropertyName;
+import org.maestro.common.test.properties.annotations.PropertyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,6 +31,7 @@ import java.util.Properties;
  * Test properties used/saved by inspectors
  */
 @SuppressWarnings("ALL")
+@PropertyName(name = "")
 public class InspectorProperties extends CommonProperties {
     public static String FILENAME = "inspector.properties";
     public static int UNSET_INT = 0;
@@ -91,6 +94,7 @@ public class InspectorProperties extends CommonProperties {
 
     }
 
+    @Deprecated
     public void write(final File testProperties) throws IOException {
         logger.trace("Writing properties to {}", testProperties.getPath());
 
@@ -127,6 +131,7 @@ public class InspectorProperties extends CommonProperties {
         }
     }
 
+    @PropertyProvider(name="jvmName", join = false)
     public String getJvmName() {
         return jvmName;
     }
@@ -135,6 +140,8 @@ public class InspectorProperties extends CommonProperties {
         this.jvmName = jvmName;
     }
 
+
+    @PropertyProvider(name="jvmVersion", join = false)
     public String getJvmVersion() {
         return jvmVersion;
     }
@@ -143,6 +150,7 @@ public class InspectorProperties extends CommonProperties {
         this.jvmVersion = jvmVersion;
     }
 
+    @PropertyProvider(name="jvmPackageVersion", join = false)
     public String getJvmPackageVersion() {
         return jvmPackageVersion;
     }
@@ -151,6 +159,7 @@ public class InspectorProperties extends CommonProperties {
         this.jvmPackageVersion = jvmPackageVersion;
     }
 
+    @PropertyProvider(name="operatingSystemName", join = false)
     public String getOperatingSystemName() {
         return operatingSystemName;
     }
@@ -159,6 +168,7 @@ public class InspectorProperties extends CommonProperties {
         this.operatingSystemName = operatingSystemName;
     }
 
+    @PropertyProvider(name="operatingSystemArch", join = false)
     public String getOperatingSystemArch() {
         return operatingSystemArch;
     }
@@ -167,6 +177,7 @@ public class InspectorProperties extends CommonProperties {
         this.operatingSystemArch = operatingSystemArch;
     }
 
+    @PropertyProvider(name="operatingSystemVersion", join = false)
     public String getOperatingSystemVersion() {
         return operatingSystemVersion;
     }
@@ -175,6 +186,7 @@ public class InspectorProperties extends CommonProperties {
         this.operatingSystemVersion = operatingSystemVersion;
     }
 
+    @PropertyProvider(name="systemCpuCount", join = false)
     public long getSystemCpuCount() {
         return systemCpuCount;
     }
@@ -183,6 +195,7 @@ public class InspectorProperties extends CommonProperties {
         this.systemCpuCount = systemCpuCount;
     }
 
+    @PropertyProvider(name="systemMemory", join = false)
     public long getSystemMemory() {
         return systemMemory;
     }
@@ -191,6 +204,7 @@ public class InspectorProperties extends CommonProperties {
         this.systemMemory = systemMemory;
     }
 
+    @PropertyProvider(name="systemSwap", join = false)
     public long getSystemSwap() {
         return systemSwap;
     }
@@ -199,6 +213,7 @@ public class InspectorProperties extends CommonProperties {
         this.systemSwap = systemSwap;
     }
 
+    @PropertyProvider(name="productName", join = false)
     public String getProductName() {
         return productName;
     }
@@ -207,6 +222,7 @@ public class InspectorProperties extends CommonProperties {
         this.productName = productName;
     }
 
+    @PropertyProvider(name="productVersion", join = false)
     public String getProductVersion() {
         return productVersion;
     }

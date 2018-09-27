@@ -26,4 +26,5 @@ import java.lang.annotation.Target;
 @Target({ElementType.METHOD})
 public @interface PropertyProvider {
     String name();
+    boolean join() default true;
 }
