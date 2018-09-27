@@ -17,14 +17,13 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
-import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
 public class StopTestRequest extends MaestroRequest<MaestroEventListener> {
 
-    public StopTestRequest(int testNumber, int testIteration, final String testName) {
+    public StopTestRequest() {
         super(MaestroCommand.MAESTRO_NOTE_START_TEST);
     }
 
