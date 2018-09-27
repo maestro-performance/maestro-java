@@ -47,7 +47,7 @@ public class DefaultReportsServer implements ReportsServer {
         app.get("/api/live", ctx -> ctx.result("Hello World"));
         app.get("/api/report/", new AllReportsController());
         app.get("/api/report/report/:id", new ReportController());
-        app.get("/api/report/test/:test/:number/properties", new TestPropertiesController());
+        app.get("/api/report/test/:test/:number/:role/properties", new TestPropertiesController());
 
     }
 
