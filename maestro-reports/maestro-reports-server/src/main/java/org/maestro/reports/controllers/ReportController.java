@@ -80,32 +80,6 @@ public class ReportController implements Handler {
                     e.printStackTrace();
                 }
             }
-
-//            String ext = FilenameUtils.getExtension(file.getName());
-//
-//            if (Constants.FILE_EXTENSION_HDR_HISTOGRAM.equals(ext)) {
-////                processHistogramReport(file, results);
-//
-//                return;
-//            }
-//
-//            if (Constants.FILE_EXTENSION_MAESTRO.equals(ext)) {
-//                if (!report.getTestHostRole().contains(Constants.FILE_HINT_INSPECTOR)) {
-//                    // processMaestroReport(file, results);
-//
-//                    return;
-//                }
-//            }
-//
-//
-//            if (Constants.FILE_EXTENSION_INSPECTOR_REPORT.equals(ext)) {
-//                if (file.getPath().contains(Constants.FILE_HINT_INSPECTOR)) {
-////                    processInspectorFile(file, results);
-//
-//                    return;
-//                }
-//            }
-
         }
 
     }
