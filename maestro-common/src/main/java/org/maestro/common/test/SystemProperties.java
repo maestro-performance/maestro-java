@@ -7,14 +7,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Properties;
 
 /**
  * Worker's system properties written by every worker.
  */
-@PropertyName(name = "")
+@PropertyName(name = "worker")
 public class SystemProperties extends CommonProperties {
     public static final String FILENAME = "system.properties";
     public static int UNSET_INT = 0;
@@ -66,33 +65,6 @@ public class SystemProperties extends CommonProperties {
                 jvmMaxMemory = UNSET_INT;
             }
             logger.debug("Read properties: {}", this.toString());
-        }
-    }
-
-    /**
-     * Method for write system properties into the file.
-     * @param systemProperties A file object pointing to the file to be loaded
-     * @throws IOException Exception when input file does not exists
-     */
-    @Deprecated
-    public void write(final File systemProperties) throws IOException {
-        logger.trace("Writing properties to {}", systemProperties.getPath());
-
-        Properties prop = new Properties();
-
-        prop.setProperty("workerJavaVersion", javaVersion);
-        prop.setProperty("workerJavaHome", javaHome);
-        prop.setProperty("workerJvmName", jvmName);
-        prop.setProperty("workerJvmVersion", jvmVersion);
-
-        prop.setProperty("workerOperatingSystemName", operatingSystemName);
-        prop.setProperty("workerOperatingSystemArch", operatingSystemArch);
-        prop.setProperty("workerOperatingSystemVersion", operatingSystemVersion);
-        prop.setProperty("workerSystemCpuCount", Long.toString(systemCpuCount));
-        prop.setProperty("workerJvmMaxMemory", Long.toString(jvmMaxMemory));
-
-        try (FileOutputStream fos = new FileOutputStream(systemProperties)) {
-            prop.store(fos, "worker-system-info");
         }
     }
 

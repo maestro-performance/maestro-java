@@ -90,30 +90,6 @@ public class TestProperties extends CommonProperties {
         logger.debug("Read properties: {}", this.toString());
     }
 
-    @Deprecated
-    public void write(final File testProperties) throws IOException {
-        logger.debug("Writing properties to {}", testProperties.getPath());
-        logger.debug("Wrote properties: {}", this.toString());
-
-        Properties prop = new Properties();
-
-        prop.setProperty("brokerUri", brokerUri);
-        prop.setProperty("durationType", durationType);
-        prop.setProperty("duration", Long.toString(duration));
-
-        prop.setProperty("fcl", Integer.toString(fcl));
-        prop.setProperty("apiName", apiName);
-        prop.setProperty("apiVersion", apiVersion);
-        prop.setProperty("protocol", protocol);
-        prop.setProperty("limitDestinations", Integer.toString(limitDestinations));
-
-        super.write(prop);
-
-        try (FileOutputStream fos = new FileOutputStream(testProperties)) {
-            prop.store(fos, "mpt");
-        }
-    }
-
     @PropertyProvider(name="brokerUri", join = false)
     public String getBrokerUri() {
         return brokerUri;

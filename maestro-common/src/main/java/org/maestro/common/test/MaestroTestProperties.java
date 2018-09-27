@@ -32,13 +32,6 @@ public interface MaestroTestProperties {
      */
     void load(File testProperties) throws IOException;
 
-    /**
-     * Write to a properties file
-     * @param testProperties A file object pointing to the file to be written
-     * @throws IOException If the file cannot be written
-     */
-    void write(File testProperties) throws IOException;
-
     void setMessageSize(long messageSize);
 
     void setMessageSize(final String messageSize);

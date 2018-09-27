@@ -94,43 +94,6 @@ public class InspectorProperties extends CommonProperties {
 
     }
 
-    @Deprecated
-    public void write(final File testProperties) throws IOException {
-        logger.trace("Writing properties to {}", testProperties.getPath());
-
-        Properties prop = new Properties();
-
-        prop.setProperty("jvmName", jvmName);
-        prop.setProperty("jvmVersion", jvmVersion);
-
-        if (jvmPackageVersion != null) {
-            prop.setProperty("jvmPackageVersion", jvmPackageVersion);
-        }
-
-        prop.setProperty("operatingSystemName", operatingSystemName);
-        prop.setProperty("operatingSystemArch", operatingSystemArch);
-        prop.setProperty("operatingSystemVersion", operatingSystemVersion);
-        prop.setProperty("systemCpuCount", Long.toString(systemCpuCount));
-        prop.setProperty("systemMemory", Long.toString(systemMemory));
-        if (systemSwap != UNSET_INT) {
-            prop.setProperty("systemSwap", Long.toString(systemSwap));
-        }
-
-        if (productName != null) {
-            prop.setProperty("productName", productName);
-        }
-
-        if (productVersion != null) {
-            prop.setProperty("productVersion", productVersion);
-        }
-
-        super.write(prop);
-
-        try (FileOutputStream fos = new FileOutputStream(testProperties)) {
-            prop.store(fos, "maestro");
-        }
-    }
-
     @PropertyProvider(name="jvmName", join = false)
     public String getJvmName() {
         return jvmName;

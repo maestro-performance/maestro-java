@@ -23,6 +23,7 @@ import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.common.test.InspectorProperties;
+import org.maestro.common.test.properties.PropertyWriter;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.inspector.amqp.writers.ConnectionsInfoWriter;
@@ -226,7 +227,9 @@ public class InterconnectInspector implements MaestroInspector {
         generalInfoWriter.write(inspectorProperties, interconnectReadData.collectGeneralInfo());
 
         File propertiesFile = new File(logDir, InspectorProperties.FILENAME);
-        inspectorProperties.write(propertiesFile);
+
+        PropertyWriter writer = new PropertyWriter();
+        writer.write(inspectorProperties, propertiesFile);
     }
 
     @Override
