@@ -35,3 +35,7 @@ function renderRounded(data, type, full, meta) {
 function renderRoundedRate(data, type, full, meta) {
     return '<span> ' + renderRounded(data, type, full, meta) + ' msg/sec</span>'
 }
+
+function renderTestFull(data, type, full, meta) {
+    return '<a href=\"view-report.html?test-id=' + data + '&test-number=' + full.testNumber +'\">' + data + '</a>';
+}
