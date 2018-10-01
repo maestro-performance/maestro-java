@@ -30,3 +30,9 @@ always be set to true if you want this information included on the reports.
 To include this information on the reports, pass the following option to Maestro CLI when generating the reports: 
 
 `--with-sut-node-properties-from /path/to/sut-node.properties` 
+
+
+Converting the Reports
+----
+
+It is possible to convert old rate records used by maestro with the option ```convert``` of the CLI tool.

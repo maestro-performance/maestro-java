@@ -43,6 +43,7 @@ public class MaestroCliMain {
         System.out.println("   maestro");
         System.out.println("   exec");
         System.out.println("   aggregate");
+        System.out.println("   convert");
         System.out.println("----------");
         System.out.println("   help");
         System.out.println("   --version");
@@ -94,6 +95,10 @@ public class MaestroCliMain {
             }
             case "exec": {
                 action = new ExecAction(newArgs);
+                break;
+            }
+            case "convert": {
+                action = new ConvertAction(newArgs);
                 break;
             }
             default: {

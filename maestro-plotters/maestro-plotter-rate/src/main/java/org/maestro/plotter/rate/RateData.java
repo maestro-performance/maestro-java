@@ -41,7 +41,7 @@ public class RateData implements ReportData {
         recordSet = new TreeSet<>();
     }
 
-    RateData(final Set<RateRecord> other) {
+    public RateData(final Set<RateRecord> other) {
         this.recordSet = other;
     }
 
