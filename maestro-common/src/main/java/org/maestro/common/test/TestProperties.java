@@ -229,7 +229,11 @@ public class TestProperties {
                 ", apiName='" + apiName + '\'' +
                 ", apiVersion='" + apiVersion + '\'' +
                 ", protocol='" + protocol + '\'' +
+                ", parallelCount=" + parallelCount +
+                ", messageSize=" + messageSize +
+                ", variableSize=" + variableSize +
+                ", rate=" + rate +
                 ", limitDestinations=" + limitDestinations +
-                "} " + super.toString();
+                '}';
     }
 }
