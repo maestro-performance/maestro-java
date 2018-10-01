@@ -23,7 +23,7 @@ import java.time.Instant;
 /**
  * Rate information for a given timestamp of time
  */
-class RateRecord implements Comparable<RateRecord>, InstantRecord {
+public class RateRecord implements Comparable<RateRecord>, InstantRecord {
     private final Instant timestamp;
     private long count;
 
@@ -36,7 +36,7 @@ class RateRecord implements Comparable<RateRecord>, InstantRecord {
         return timestamp;
     }
 
-    void setCount(long count) {
+    public void setCount(long count) {
         this.count = count;
     }
 
