@@ -35,6 +35,7 @@ public class FileSerializerRegistry {
     private static FileSerializerRegistry instance;
 
     private FileSerializerRegistry() {
+        registry.put("sender.dat", new RateSerializer());
         registry.put("receiver.dat", new RateSerializer());
         registry.put("receiverd-latency.hdr", new LatencySerializer());
         registry.put("heap.csv", new HeapMemoryDataSerializer());
