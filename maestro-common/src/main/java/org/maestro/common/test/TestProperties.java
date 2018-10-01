@@ -50,6 +50,24 @@ public class TestProperties {
     private boolean variableSize;
     private int rate;
 
+    public TestProperties() {
+    }
+
+    protected TestProperties(String brokerUri, String durationType, long duration, int fcl, String apiName, String apiVersion, String protocol, int parallelCount, long messageSize, boolean variableSize, int rate, int limitDestinations) {
+        this.brokerUri = brokerUri;
+        this.durationType = durationType;
+        this.duration = duration;
+        this.fcl = fcl;
+        this.apiName = apiName;
+        this.apiVersion = apiVersion;
+        this.protocol = protocol;
+        this.parallelCount = parallelCount;
+        this.messageSize = messageSize;
+        this.variableSize = variableSize;
+        this.rate = rate;
+        this.limitDestinations = limitDestinations;
+    }
+
     // 1 = legacy behavior
     private int limitDestinations = 1;
 

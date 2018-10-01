@@ -18,6 +18,7 @@ package org.maestro.reports.controllers;
 
 import io.javalin.Context;
 import io.javalin.Handler;
+import org.maestro.common.HostTypes;
 import org.maestro.common.test.TestProperties;
 import org.maestro.common.test.properties.PropertyReader;
 import org.maestro.reports.dao.ReportDao;
@@ -26,8 +27,28 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.LinkedList;
+import java.util.List;
 
 public class TestPropertiesController implements Handler {
+    public class ExtendedTestProperties extends TestProperties {
+        private String role;
+
+        public ExtendedTestProperties(final TestProperties tp) {
+            super(tp.getBrokerUri(), tp.getDurationType(), tp.getDuration(), tp.getFcl(), tp.getApiName(),
+                    tp.getApiVersion(), tp.getProtocol(), tp.getParallelCount(), tp.getMessageSize(),
+                    tp.isVariableSize(), tp.getRate(), tp.getLimitDestinations());
+        }
+
+        public String getRole() {
+            return role;
+        }
+
+        public void setRole(String role) {
+            this.role = role;
+        }
+    }
+
     private static final Logger logger = LoggerFactory.getLogger(TestPropertiesController.class);
     private final ReportDao reportDao = new ReportDao();
 
@@ -39,19 +60,29 @@ public class TestPropertiesController implements Handler {
         try {
             int id = Integer.parseInt(context.param("test"));
             int number = Integer.parseInt(context.param("number"));
-            String role = context.param("role");
 
-            Report report = reportDao.fetch(id, number, role);
-            String location = report.getLocation();
-            File file = new File(location, "test.properties");
+            List<Report> reports = reportDao.fetch(id, number);
+            List<ExtendedTestProperties> testPropertiesList = new LinkedList<>();
 
-            TestProperties tp = new TestProperties();
+            for (Report report : reports) {
+                String location = report.getLocation();
+                File file = new File(location, "test.properties");
 
-            PropertyReader reader = new PropertyReader();
+                TestProperties tp = new TestProperties();
 
-            reader.read(file, tp);
+                if (HostTypes.isWorker(report.getTestHostRole())) {
+                    PropertyReader reader = new PropertyReader();
 
-            context.json(tp);
+                    reader.read(file, tp);
+
+                    ExtendedTestProperties etp = new ExtendedTestProperties(tp);
+
+                    etp.setRole(report.getTestHostRole());
+                    testPropertiesList.add(etp);
+                }
+            }
+
+            context.json(testPropertiesList);
         }
         catch (Throwable t) {
             logger.error(t.getMessage(), t);

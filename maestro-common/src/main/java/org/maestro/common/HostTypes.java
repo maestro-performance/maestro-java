@@ -40,4 +40,22 @@ public class HostTypes {
 
     /** Reports server */
     public static final String REPORTS_SERVER_HOST_TYPE = "reports-server";
+
+
+    /**
+     * Checks if the given host type string is a worker
+     * @param str the string to check
+     * @return true if it is a worker or false otherwise
+     */
+    public static boolean isWorker(final String str) {
+        if (str == null) {
+            return false;
+        }
+
+        if (str.equals("sender") || str.equals("receiver")) {
+            return true;
+        }
+
+        return false;
+    }
 }
