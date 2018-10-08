@@ -22,7 +22,6 @@ import org.maestro.common.test.TestProperties;
 import org.maestro.common.test.properties.PropertyReader;
 import org.maestro.common.worker.WorkerUtils;
 import org.maestro.plotter.common.serializer.MaestroSerializer;
-import org.maestro.plotter.latency.HdrLogProcessorWrapper;
 import org.maestro.plotter.latency.common.HdrData;
 import org.maestro.plotter.latency.common.HdrDataCO;
 import org.maestro.plotter.utils.Util;
@@ -32,10 +31,9 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 
-public class LatencySerializer implements MaestroSerializer<LatencyDistribution> {
+abstract public class LatencySerializer implements MaestroSerializer<LatencyDistribution> {
     private static final Logger logger = LoggerFactory.getLogger(LatencySerializer.class);
     private static final String dataName = "latency";
-    private double unitRate = 1.0;
 
 
     private TestProperties loadProperties(final File baseDir) {
@@ -78,19 +76,9 @@ public class LatencySerializer implements MaestroSerializer<LatencyDistribution>
         return hdrData;
     }
 
-    private HdrData getHdrDataUnbounded(final Histogram histogram) {
-        final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
+    protected abstract HdrData getHdrDataUnbounded(final Histogram histogram);
 
-
-        return processorWrapper.convertLog(histogram);
-    }
-
-
-    private HdrData getHdrDataBounded(final Histogram histogram, final long interval) {
-        final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
-
-        return processorWrapper.convertLog(histogram, interval);
-    }
+    protected abstract HdrData getHdrDataBounded(final Histogram histogram, final long interval);
 
     private Latency getLatencyInfo(final Histogram histogram, final HdrData hdrData, final File file) {
         Latency latency = new Latency();
@@ -111,9 +99,6 @@ public class LatencySerializer implements MaestroSerializer<LatencyDistribution>
 
     @Override
     public LatencyDistribution serialize(final File file) throws IOException {
-        // HDR Log Reader
-        HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper();
-
         Histogram histogram = Util.getAccumulated(file);
 
         HdrData hdrData = getHdrData(histogram, file);
