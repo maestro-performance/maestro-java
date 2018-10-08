@@ -25,7 +25,7 @@ function simpleDateRender(data, type, full, meta) {
 
 
 function renderTestId(data, type, full, meta) {
-    return '<a href=\"view-single-test-results.html?test-id=' + data + '\">' + data + '</a>';
+    return '<a href=\"view-single-test-results.html?test-id=' + full.testId + '\">' + data + '</a>';
 }
 
 function renderRounded(data, type, full, meta) {
@@ -37,5 +37,5 @@ function renderRoundedRate(data, type, full, meta) {
 }
 
 function renderTestFull(data, type, full, meta) {
-    return '<a href=\"view-report.html?test-id=' + data + '&test-number=' + full.testNumber +'\">' + data + '</a>';
+    return '<a href=\"view-report.html?test-id=' + full.testId + '&test-number=' + full.testNumber +'\">' + data + '</a>';
 }

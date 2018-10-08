@@ -28,11 +28,6 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.time.Instant;
 import java.util.Objects;
-import java.util.concurrent.ExecutorService;
-import java.util.concurrent.Executors;
-import java.util.concurrent.Future;
-import java.util.function.BiConsumer;
-
 
 public class Util {
     private static final Logger logger = LoggerFactory.getLogger(Util.class);
@@ -83,17 +78,4 @@ public class Util {
 
         return accumulatedHistogram;
     }
-
-
-    public static <T> Future<?> asyncPlot(BiConsumer<T, File> plotConsumer, final T data, final File outputDir) {
-        ExecutorService plotterService = Executors.newCachedThreadPool();
-
-        return plotterService.submit(() -> plotConsumer.accept(data, outputDir) );
-    }
-
-//    public static <T> Future<?> asyncPlot(Consumer<T> plotConsumer, final T data) {
-//        ExecutorService plotterService = Executors.newCachedThreadPool();
-//
-//        return plotterService.submit(() -> plotConsumer.accept(data) );
-//    }
 }
