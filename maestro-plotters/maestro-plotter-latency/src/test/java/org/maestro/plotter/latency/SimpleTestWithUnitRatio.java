@@ -38,7 +38,7 @@ public class SimpleTestWithUnitRatio {
         String fileName = this.getClass().getResource("file-01.hdr").getPath();
 
         // HDR Log Reader
-        HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(10.0);
+        HdrLogProcessorWrapper processorWrapper = new DefaultHdrLogProcessorWrapper(10.0);
 
         File sourceFile = new File(fileName);
         Histogram histogram = Util.getAccumulated(sourceFile);

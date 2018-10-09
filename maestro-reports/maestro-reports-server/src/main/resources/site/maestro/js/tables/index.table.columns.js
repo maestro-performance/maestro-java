@@ -1,7 +1,7 @@
 var dbColumns = [
     {
         data: "reportId",
-        render: renderTestFull
+        render: renderReportIdFull
     },
     {
         data: "testId",

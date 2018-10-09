@@ -45,4 +45,10 @@ public class ReportDao extends AbstractDao {
                 new Object[]{ testId, testNumber },
                 new BeanPropertyRowMapper<>(Report.class));
     }
+
+    public List<Report> fetchByTest(int testId, String role) {
+        return jdbcTemplate.query("select * from report where test_id = ? and test_host_role = ?",
+                new Object[]{ testId, role },
+                new BeanPropertyRowMapper<>(Report.class));
+    }
 }

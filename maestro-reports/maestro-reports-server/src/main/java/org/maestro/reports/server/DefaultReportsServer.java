@@ -20,6 +20,7 @@ import io.javalin.Javalin;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.reports.controllers.AllReportsController;
+import org.maestro.reports.controllers.LatencyReportController;
 import org.maestro.reports.controllers.ReportController;
 import org.maestro.reports.controllers.TestPropertiesController;
 
@@ -48,6 +49,7 @@ public class DefaultReportsServer implements ReportsServer {
         app.get("/api/report/", new AllReportsController());
         app.get("/api/report/report/:id", new ReportController());
         app.get("/api/report/test/:test/number/:number/properties", new TestPropertiesController());
+        app.get("/api/report/latency/report/:id", new LatencyReportController());
 
     }
 
