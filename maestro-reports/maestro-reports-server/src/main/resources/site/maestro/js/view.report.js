@@ -7,3 +7,67 @@ $(document).ready(function () {
     console.log("Loading data from " + url)
     maestroDataTable('[data-datatables]', url)
 })
+
+
+function groupedBarGraphServiceTime(url, element, groups, yLabel) {
+    axios.get(url).then(function (response) {
+        var chartData = response.data
+
+        var c3ChartDefaults = $().c3ChartDefaults();
+        var lineChartConfig = c3ChartDefaults.getDefaultLineConfig();
+        lineChartConfig.bindto = element;
+
+//        console.log("Data " + chartData)
+
+        lineChartConfig.data = {
+
+            x: 'Percentiles',
+            json: chartData ,
+
+        };
+
+        lineChartConfig.legend = {
+            position: 'right'
+        }
+//        ,
+//
+//        lineChartConfig.axis = {
+//            x: {
+//                label: {
+//                    text: 'Rate',
+//                },
+//            },
+//            y: {
+//                label: {
+//                    text: 'lalala',
+//                }
+//            }
+//        }
+
+        var lineChart = c3.generate(lineChartConfig);
+
+      })
+      .catch(function (error) {
+        console.log(error);
+      });
+    }
+
+$(document).ready(function () {
+    var reportId = getUrlVars()["report-id"];
+    var testId = getUrlVars()["test-id"];
+    var testNumber = getUrlVars()["test-number"];
+
+    var url = $('[graphs]').attr('graph-api') + reportId;
+
+    var element = '#bar-chart-3';
+    // var values = ['90th percentile', '95th percentile', '99th percentile'];
+
+    var groups = [];
+    var yLabel = 'Milliseconds';
+
+    console.log("Loading data from " + url)
+    groupedBarGraphServiceTime(url, element, groups, yLabel)
+
+
+//    groupedBarGraphServiceTime('[data-datatables]', url)
+})

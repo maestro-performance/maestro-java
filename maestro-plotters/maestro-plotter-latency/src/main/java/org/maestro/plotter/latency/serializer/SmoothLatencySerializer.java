@@ -17,23 +17,22 @@
 package org.maestro.plotter.latency.serializer;
 
 import org.HdrHistogram.Histogram;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.latency.HdrLogProcessorWrapper;
+import org.maestro.plotter.latency.SmoothHdrLogProcessorWrapper;
 import org.maestro.plotter.latency.common.HdrData;
 
-import java.io.File;
 
-public class RoundedLatencySerializer extends LatencySerializer {
+public class SmoothLatencySerializer extends LatencySerializer {
     private double unitRate = 1.0;
 
     protected HdrData getHdrDataUnbounded(final Histogram histogram) {
-        final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
+        final HdrLogProcessorWrapper processorWrapper = new SmoothHdrLogProcessorWrapper(unitRate);
 
         return processorWrapper.convertLog(histogram);
     }
 
     protected HdrData getHdrDataBounded(final Histogram histogram, final long interval) {
-        final HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper(unitRate);
+        final HdrLogProcessorWrapper processorWrapper = new SmoothHdrLogProcessorWrapper(unitRate);
 
         return processorWrapper.convertLog(histogram, interval);
     }

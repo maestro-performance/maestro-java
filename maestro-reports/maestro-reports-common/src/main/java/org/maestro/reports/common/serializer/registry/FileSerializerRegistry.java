@@ -25,7 +25,6 @@ import org.maestro.plotter.inspector.serializer.HeapMemoryDataSerializer;
 import org.maestro.plotter.inspector.serializer.MemoryAreasDataSerializer;
 import org.maestro.plotter.inspector.serializer.QueueDataSerializer;
 import org.maestro.plotter.latency.serializer.DefaultLatencySerializer;
-import org.maestro.plotter.latency.serializer.LatencySerializer;
 import org.maestro.plotter.rate.serializer.RateSerializer;
 
 import java.util.HashMap;

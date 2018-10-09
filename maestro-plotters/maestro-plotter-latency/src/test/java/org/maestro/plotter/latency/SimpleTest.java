@@ -36,7 +36,7 @@ public class SimpleTest {
         String fileName = this.getClass().getResource("file-01.hdr").getPath();
 
         // HDR Log Reader
-        HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper();
+        HdrLogProcessorWrapper processorWrapper = new DefaultHdrLogProcessorWrapper();
 
         File sourceFile = new File(fileName);
         Histogram histogram = Util.getAccumulated(sourceFile);

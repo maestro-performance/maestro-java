@@ -19,46 +19,10 @@ package org.maestro.plotter.latency;
 import org.HdrHistogram.Histogram;
 import org.maestro.plotter.latency.common.HdrData;
 import org.maestro.plotter.latency.common.HdrDataCO;
-import org.maestro.plotter.latency.common.HdrRecord;
 
 
-public class HdrLogProcessorWrapper {
-    private final double unitRatio;
+public interface HdrLogProcessorWrapper {
+    HdrData convertLog(final Histogram histogram);
 
-    public HdrLogProcessorWrapper() {
-        this(1.0);
-    }
-
-
-    public HdrLogProcessorWrapper(double unitRatio) {
-        this.unitRatio = unitRatio;
-    }
-
-    private void addHdr(HdrData hdrData, double percentile, double value) {
-        hdrData.add(new HdrRecord(percentile, value));
-    }
-
-
-    public HdrData convertLog(final Histogram histogram) {
-        HdrData ret = new HdrData();
-
-        histogram.recordedValues().forEach(value -> addHdr(ret, value.getPercentile(),
-                value.getDoubleValueIteratedTo() / unitRatio));
-
-        return ret;
-    }
-
-    public HdrDataCO convertLog(final Histogram histogram, long knownCO) {
-        HdrDataCO ret = new HdrDataCO();
-
-        histogram.recordedValues().forEach(value -> addHdr(ret, value.getPercentile(),
-                value.getDoubleValueIteratedTo()));
-
-        Histogram corrected = histogram.copyCorrectedForCoordinatedOmission(knownCO);
-        HdrData correctedData = convertLog(corrected);
-
-        ret.setCorrected(correctedData);
-
-        return ret;
-    }
+    HdrDataCO convertLog(final Histogram histogram, long knownCO);
 }

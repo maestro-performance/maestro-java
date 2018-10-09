@@ -37,7 +37,7 @@ public class TestWithCorrection {
         String fileName = this.getClass().getResource("file-02.hdr").getPath();
 
         // HDR Converter
-        HdrLogProcessorWrapper processorWrapper = new HdrLogProcessorWrapper();
+        HdrLogProcessorWrapper processorWrapper = new DefaultHdrLogProcessorWrapper();
 
         File sourceFile = new File(fileName);
         Histogram histogram = Util.getAccumulated(sourceFile);
