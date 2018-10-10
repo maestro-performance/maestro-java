@@ -16,7 +16,7 @@
 
 package org.maestro.plotter.latency.common;
 
-public class HdrRecord {
+public class HdrRecord implements Comparable<HdrRecord> {
     private final double percentile;
     private final double value;
 
@@ -31,5 +31,20 @@ public class HdrRecord {
 
     public double getValue() {
         return value;
+    }
+
+    @Override
+    public int compareTo(HdrRecord hdrRecord) {
+
+        if (this.percentile < hdrRecord.percentile) {
+            return -1;
+        }
+        else {
+            if (this.percentile > hdrRecord.percentile) {
+                return 1;
+            }
+        }
+
+        return 0;
     }
 }
