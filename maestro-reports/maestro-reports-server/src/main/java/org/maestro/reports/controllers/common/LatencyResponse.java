@@ -22,13 +22,13 @@ import java.util.*;
 
 public class LatencyResponse<T> implements Response {
     @JsonProperty("Percentiles")
-    Set<String> categories = new TreeSet<>();
+    Set<String> categories = new LinkedHashSet<>();
 
     @JsonProperty("ServiceTime")
-    private List<Double> serviceTime = new ArrayList<>();
+    private List<Double> serviceTime = new LinkedList<>();
 
     @JsonProperty("ResponseTime")
-    private List<Double> responseTime = new ArrayList<>();
+    private List<Double> responseTime = new LinkedList<>();
 
     public Set<String> getCategories() {
         return categories;

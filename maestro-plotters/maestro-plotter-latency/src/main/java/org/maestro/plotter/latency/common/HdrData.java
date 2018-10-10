@@ -16,8 +16,9 @@
 
 package org.maestro.plotter.latency.common;
 
-import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
+import java.util.TreeSet;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -27,7 +28,7 @@ import java.util.stream.Collectors;
  * data.
  */
 public class HdrData {
-    private final List<HdrRecord> records = new LinkedList<>();
+    private final Set<HdrRecord> records = new TreeSet<>();
     private final TimeUnit timeUnit;
 
     public HdrData() {
