@@ -24,10 +24,10 @@ public class LatencyResponse<T> implements Response {
     @JsonProperty("Percentiles")
     Set<String> categories = new LinkedHashSet<>();
 
-    @JsonProperty("ServiceTime")
+    @JsonProperty("Service Time")
     private List<Double> serviceTime = new LinkedList<>();
 
-    @JsonProperty("ResponseTime")
+    @JsonProperty("Response Time")
     private List<Double> responseTime = new LinkedList<>();
 
     public Set<String> getCategories() {
