@@ -9,7 +9,7 @@ $(document).ready(function () {
     maestroDataTable('[data-datatables]', url)
 })
 
-function groupedBarGraphServiceTime(response, element, groups, yLabel) {
+function graphLatencyDistribution(response, element, groups, yLabel) {
     var chartData = response.data
 
     var c3ChartDefaults = $().c3ChartDefaults();
@@ -79,7 +79,7 @@ function fillPercentileInformation() {
         var groups = [];
         var yLabel = 'Milliseconds';
 
-        groupedBarGraphServiceTime(response, element, groups, yLabel)
+        graphLatencyDistribution(response, element, groups, yLabel)
 
     })
     .catch(function (error) {
