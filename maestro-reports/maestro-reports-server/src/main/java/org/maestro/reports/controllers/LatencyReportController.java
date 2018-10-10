@@ -18,12 +18,10 @@ package org.maestro.reports.controllers;
 
 import io.javalin.Context;
 import io.javalin.Handler;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.common.serializer.MaestroSerializer;
 import org.maestro.plotter.latency.serializer.Latency;
 import org.maestro.plotter.latency.serializer.LatencyDistribution;
 import org.maestro.plotter.latency.serializer.SmoothLatencySerializer;
-import org.maestro.reports.common.serializer.registry.FileSerializerRegistry;
 import org.maestro.reports.controllers.common.LatencyResponse;
 import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dto.Report;
@@ -36,24 +34,13 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class LatencyReportController implements Handler {
+public class LatencyReportController extends AbstractReportFileController{
     private static final Logger logger = LoggerFactory.getLogger(LatencyReportController.class);
 
     private final ReportDao reportDao = new ReportDao();
 
     private void processReports(final Report report, final LatencyResponse<List<Double>> latencyDistribution) {
-        final File reportDir = new File(report.getLocation());
-
-        File file = new File(reportDir, "receiverd-latency.hdr");
-        if (!file.exists()) {
-            logger.error("There are no HDR latency files on the report directory: file {} does not exist", file);
-            throw new MaestroException("There are no HDR latency files on the report directory");
-        }
-
-        if (!file.isFile()) {
-            logger.error("There are no HDR latency files on the report directory: object {} is not a file", file);
-            throw new MaestroException("There are no HDR latency files on the report directory");
-        }
+        File file = getReportFile(report, "receiverd-latency.hdr");
 
         MaestroSerializer<?> serializer = new SmoothLatencySerializer();
         try {
@@ -86,7 +73,7 @@ public class LatencyReportController implements Handler {
 
 
     @Override
-    public void handle(Context context) throws Exception {
+    public void handle(Context context) {
         try {
             int id = Integer.parseInt(context.param("id"));
 
@@ -102,7 +89,5 @@ public class LatencyReportController implements Handler {
             context.status(500);
             context.result(String.format("Internal server error: %s", t.getMessage()));
         }
-
-
     }
 }

@@ -100,3 +100,62 @@ function fillPercentileInformation() {
 $(document).ready(function () {
     fillPercentileInformation()
 })
+
+function rateDistributionGraph(response, element) {
+    var chartData = response.data
+
+    var c3ChartDefaults = $().c3ChartDefaults();
+    var lineChartConfig = c3ChartDefaults.getDefaultLineConfig();
+    lineChartConfig.bindto =  element;
+
+    // Latency distributions per test
+    lineChartConfig.data = {
+        x: 'Periods',
+        json: chartData,
+        type: 'spline'
+    };
+
+    lineChartConfig.axis = {
+        x: {
+            type: 'timeseries',
+            tick: {
+                culling: { max: 100},
+                count: 20,
+                fit: true,
+                rotate: 90,
+                format: "%Y-%m-%d %H:%M:%S"
+            }
+        }
+    };
+
+    lineChartConfig.point = {
+        show: false
+    };
+
+    lineChartConfig.zoom = {
+        enabled: true,
+        type: 'drag',
+    };
+
+    var lineChart = c3.generate(lineChartConfig);
+}
+
+
+$(document).ready(function () {
+    var reportId = getUrlVars()["report-id"];
+
+    // Draw latency distribution graph
+    var rateDistributionUrl = $('[rate-graph]').attr('graph-api') + reportId;
+    axios.get(rateDistributionUrl).then(function (response) {
+        var element = '#line-chart-4';
+//        var groups = [];
+//        var yLabel = 'Milliseconds';
+
+        rateDistributionGraph(response, element)
+
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
+//    fillPercentileInformation()
+})
