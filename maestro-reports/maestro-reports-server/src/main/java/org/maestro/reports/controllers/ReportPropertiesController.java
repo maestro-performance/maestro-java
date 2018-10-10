@@ -31,41 +31,42 @@ import java.io.File;
 import java.util.LinkedList;
 import java.util.List;
 
-public class TestPropertiesController implements Handler {
-    private static final Logger logger = LoggerFactory.getLogger(TestPropertiesController.class);
+public class ReportPropertiesController implements Handler {
+
+    private static final Logger logger = LoggerFactory.getLogger(ReportPropertiesController.class);
     private final ReportDao reportDao = new ReportDao();
 
-    public TestPropertiesController() {
+    public ReportPropertiesController() {
     }
 
     @Override
-    public void handle(Context context) throws Exception {
+    public void handle(Context context) {
         try {
-            int id = Integer.parseInt(context.param("test"));
-            int number = Integer.parseInt(context.param("number"));
+            int id = Integer.parseInt(context.param("id"));
 
-            List<Report> reports = reportDao.fetch(id, number);
+            Report report = reportDao.fetch(id);
+
+            String location = report.getLocation();
+            File file = new File(location, "test.properties");
+
+            TestProperties tp = new TestProperties();
+
             List<ExtendedTestProperties> testPropertiesList = new LinkedList<>();
 
-            for (Report report : reports) {
-                String location = report.getLocation();
-                File file = new File(location, "test.properties");
+            if (HostTypes.isWorker(report.getTestHostRole())) {
+                PropertyReader reader = new PropertyReader();
 
-                TestProperties tp = new TestProperties();
+                reader.read(file, tp);
 
-                if (HostTypes.isWorker(report.getTestHostRole())) {
-                    PropertyReader reader = new PropertyReader();
-
-                    reader.read(file, tp);
-
-                    ExtendedTestProperties etp = new ExtendedTestProperties(tp);
-
-                    etp.setRole(report.getTestHostRole());
-                    testPropertiesList.add(etp);
-                }
+                ExtendedTestProperties etp = new ExtendedTestProperties(tp);
+                etp.setRole(report.getTestHostRole());
+                testPropertiesList.add(etp);
+                context.json(testPropertiesList);
             }
-
-            context.json(testPropertiesList);
+            else {
+                context.status(500);
+                context.result(String.format("Unhandled node type for the report: %s", report.getTestHostRole()));
+            }
         }
         catch (Throwable t) {
             logger.error(t.getMessage(), t);
