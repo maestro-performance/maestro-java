@@ -17,9 +17,7 @@
 package org.maestro.plotter.latency.serializer;
 
 import org.HdrHistogram.Histogram;
-import org.maestro.plotter.latency.properties.DefaultHistogramHandler;
 import org.maestro.plotter.latency.properties.HdrPostProcessor;
-import org.maestro.plotter.latency.properties.HistogramHandler;
 
 import java.io.File;
 
