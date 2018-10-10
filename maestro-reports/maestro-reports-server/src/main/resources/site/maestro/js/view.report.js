@@ -9,68 +9,93 @@ $(document).ready(function () {
     maestroDataTable('[data-datatables]', url)
 })
 
+function groupedBarGraphServiceTime(response, element, groups, yLabel) {
+    var chartData = response.data
 
-function groupedBarGraphServiceTime(url, element, groups, yLabel) {
-    axios.get(url).then(function (response) {
-        var chartData = response.data
+    var c3ChartDefaults = $().c3ChartDefaults();
+    var lineChartConfig = c3ChartDefaults.getDefaultLineConfig();
+    lineChartConfig.bindto = element;
 
-        var c3ChartDefaults = $().c3ChartDefaults();
-        var lineChartConfig = c3ChartDefaults.getDefaultLineConfig();
-        lineChartConfig.bindto = element;
+    lineChartConfig.data = {
+        x: 'Percentiles',
+        json: chartData,
+    };
 
-        lineChartConfig.data = {
-            x: 'Percentiles',
-            json: chartData,
-        };
+    lineChartConfig.zoom = {
+        enabled: true,
+        type: 'drag',
+    };
 
-        lineChartConfig.zoom = {
-            enabled: true,
-            type: 'drag',
-        };
+    lineChartConfig.legend = {
+        position: 'right'
+    };
 
-        lineChartConfig.legend = {
-            position: 'right'
-        };
-
-        lineChartConfig.axis = {
-            x: {
-                label: {
-                    text: 'Percentiles',
-                },
-                tick: {
-                    rotate: 90,
-                    multiline: false,
-                    // Uses https://github.com/d3/d3-format
-                    format: d3.format(".4f")
-                }
+    lineChartConfig.axis = {
+        x: {
+            label: {
+                text: 'Percentiles',
             },
-            y: {
-                label: {
-                    text: 'Milliseconds',
-                }
+            tick: {
+                rotate: 90,
+                multiline: false,
+                // Uses https://github.com/d3/d3-format
+                format: d3.format(".4f")
             }
-        };
-        lineChartConfig.point = {
-            show: false
+        },
+        y: {
+            label: {
+                text: 'Milliseconds',
+            }
         }
-
-        var lineChart = c3.generate(lineChartConfig);
-
-      })
-      .catch(function (error) {
-        console.log(error);
-      });
+    };
+    lineChartConfig.point = {
+        show: false
     }
 
-$(document).ready(function () {
+    var lineChart = c3.generate(lineChartConfig);
+}
+
+function setPercentileTable(statistics, type) {
+    if (statistics != null) {
+        $("#perTotalCount" + type).text(statistics.latencyTotalCount);
+        $("#maxLatency" + type).text(statistics.latencyMaxValue);
+        $("#99999percentile" + type).text(statistics.latency99999th);
+        $("#9999percentile" + type).text(statistics.latency9999th);
+        $("#999percentile" + type).text(statistics.latency999th);
+        $("#99percentile" + type).text(statistics.latency99th);
+        $("#95percentile" + type).text(statistics.latency95th);
+        $("#90percentile" + type).text(statistics.latency90th);
+        $("#50percentile" + type).text(statistics.latency50th);
+    }
+}
+
+function fillPercentileInformation() {
     var reportId = getUrlVars()["report-id"];
 
-    var url = $('[graphs]').attr('graph-api') + reportId;
+    var latDistributionUrl = $('[graphs]').attr('graph-api') + reportId;
+    axios.get(latDistributionUrl).then(function (response) {
+        var element = '#bar-chart-3';
+        var groups = [];
+        var yLabel = 'Milliseconds';
 
-    var element = '#bar-chart-3';
+        groupedBarGraphServiceTime(response, element, groups, yLabel)
 
-    var groups = [];
-    var yLabel = 'Milliseconds';
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
 
-    groupedBarGraphServiceTime(url, element, groups, yLabel)
+//
+    var latPropertiesUrl = $('[lat-properties]').attr('lat-prop-api') + reportId;
+    axios.get(latPropertiesUrl).then(function (response) {
+        setPercentileTable(response.data.ServiceTimeStatistics[0], "Service")
+        setPercentileTable(response.data.ResponseTimeStatistics[0], "Response")
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
+}
+
+$(document).ready(function () {
+    fillPercentileInformation()
 })
