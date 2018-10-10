@@ -72,6 +72,7 @@ function setPercentileTable(statistics, type) {
 function fillPercentileInformation() {
     var reportId = getUrlVars()["report-id"];
 
+    // Draw latency distribution graph
     var latDistributionUrl = $('[graphs]').attr('graph-api') + reportId;
     axios.get(latDistributionUrl).then(function (response) {
         var element = '#bar-chart-3';
@@ -85,7 +86,7 @@ function fillPercentileInformation() {
         console.log(error);
     });
 
-//
+    // Fill latency properties
     var latPropertiesUrl = $('[lat-properties]').attr('lat-prop-api') + reportId;
     axios.get(latPropertiesUrl).then(function (response) {
         setPercentileTable(response.data.ServiceTimeStatistics[0], "Service")
