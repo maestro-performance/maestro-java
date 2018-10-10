@@ -18,85 +18,25 @@ package org.maestro.reports.controllers;
 
 import io.javalin.Context;
 import io.javalin.Handler;
-import org.maestro.common.exceptions.MaestroException;
-import org.maestro.plotter.common.serializer.MaestroSerializer;
-import org.maestro.reports.common.serializer.registry.FileSerializerRegistry;
 import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dto.Report;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
 
 public class ReportController implements Handler {
-    public class ReportInfo {
-        String role;
-        Map<String, Object> reportData = new LinkedHashMap<>();
-
-        public Map<String, Object> getReportData() {
-            return reportData;
-        }
-
-        public void add(final String name, List<Object> reportData) {
-            this.reportData.put(name, reportData);
-        }
-
-        public String getRole() {
-            return role;
-        }
-
-        public void setRole(String role) {
-            this.role = role;
-        }
-    }
-
-    private static final Logger logger = LoggerFactory.getLogger(ReportController.class);
-    private static final FileSerializerRegistry registry = FileSerializerRegistry.getInstance();
-
     private final ReportDao reportDao = new ReportDao();
 
-    private void processReports(final Report report, final ReportInfo reportInfo) {
-        final File reportDir = new File(report.getLocation());
-
-        File[] files = reportDir.listFiles();
-        if (files == null) {
-            logger.error("The report directory {} does not contain report files", reportDir);
-
-            throw new MaestroException("The report directory does not contain report files");
-        }
-
-        for (File file : files) {
-            MaestroSerializer<?> serializer = registry.getSerializer(file.getName());
-
-            if (serializer != null) {
-                try {
-                    logger.info("Processing report data for {}", file);
-                    reportInfo.reportData.put(serializer.name(), serializer.serialize(file));
-                } catch (IOException e) {
-                    logger.error("Unable to process data: {}", e.getMessage(), e);
-                }
-            }
-        }
-
-    }
-
-
     @Override
-    public void handle(Context context) throws Exception {
+    public void handle(Context context) {
         try {
             int id = Integer.parseInt(context.param("id"));
 
             Report report = reportDao.fetch(id);
 
-            ReportInfo reportInfo = new ReportInfo();
-
-            reportInfo.setRole(report.getTestHostRole());
-            processReports(report, reportInfo);
-            context.json(reportInfo);
+            if (report != null) {
+                context.json(report);
+            }
+            else {
+                context.status(404);
+            }
         }
         catch (Throwable t) {
             context.status(500);
