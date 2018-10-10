@@ -26,10 +26,6 @@ function graphLatencyDistribution(response, element, groups, yLabel) {
         type: 'drag',
     };
 
-    lineChartConfig.legend = {
-        position: 'right'
-    };
-
     lineChartConfig.axis = {
         x: {
             label: {
@@ -48,6 +44,7 @@ function graphLatencyDistribution(response, element, groups, yLabel) {
             }
         }
     };
+
     lineChartConfig.point = {
         show: false
     }
