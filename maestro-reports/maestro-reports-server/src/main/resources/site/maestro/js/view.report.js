@@ -21,7 +21,7 @@ function groupedBarGraphServiceTime(url, element, groups, yLabel) {
 
         lineChartConfig.data = {
             x: 'Percentiles',
-            json: chartData ,
+            json: chartData,
         };
 
         lineChartConfig.legend = {
@@ -46,6 +46,9 @@ function groupedBarGraphServiceTime(url, element, groups, yLabel) {
                     text: 'Milliseconds',
                 }
             }
+        };
+        lineChartConfig.point = {
+            show: false
         }
 
         var lineChart = c3.generate(lineChartConfig);
