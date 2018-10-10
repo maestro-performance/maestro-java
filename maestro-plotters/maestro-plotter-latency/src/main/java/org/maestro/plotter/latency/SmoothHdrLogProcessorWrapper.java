@@ -41,7 +41,7 @@ public class SmoothHdrLogProcessorWrapper implements HdrLogProcessorWrapper {
     public HdrData convertLog(final Histogram histogram) {
         HdrData ret = new HdrData();
 
-        for (double i = 0.0d; i <= 100.0d;) {
+        for (double i = 0.0d; i <= 99.999d;) {
             if (i <= 75.0) {
                 i = i + 1.0d;
             }
