@@ -42,7 +42,7 @@ public class LatencyReportController implements Handler {
 
     private final ReportDao reportDao = new ReportDao();
 
-    private void processReports(final Report report, final LatencyResponse<List<Double>> categorizedResponse) {
+    private void processReports(final Report report, final LatencyResponse<List<Double>> latencyDistribution) {
         final File reportDir = new File(report.getLocation());
 
         File file = new File(reportDir, "receiverd-latency.hdr");
@@ -67,18 +67,18 @@ public class LatencyReportController implements Handler {
             Latency serviceTimeLatency = values.get("serviceTime");
 
             if (serviceTimeLatency != null) {
-                if (categorizedResponse.getCategories().isEmpty()) {
+                if (latencyDistribution.getCategories().isEmpty()) {
                     List<String> categories = serviceTimeLatency.getPercentiles()
                             .stream().map(String::valueOf).collect(Collectors.toList());
-                    categorizedResponse.getCategories().addAll(categories);
+                    latencyDistribution.getCategories().addAll(categories);
                 }
 
-                categorizedResponse.setServiceTime(serviceTimeLatency.getValues());
+                latencyDistribution.setServiceTime(serviceTimeLatency.getValues());
             }
 
             Latency responseTimeLatency = values.get("responseTime");
             if (responseTimeLatency != null) {
-                categorizedResponse.setResponseTime(responseTimeLatency.getValues());
+                latencyDistribution.setResponseTime(responseTimeLatency.getValues());
             }
         } catch (IOException e) {
             logger.error("Unable to process data: {}", e.getMessage(), e);
