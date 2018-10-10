@@ -17,17 +17,19 @@ function groupedBarGraphServiceTime(url, element, groups, yLabel) {
         var lineChartConfig = c3ChartDefaults.getDefaultLineConfig();
         lineChartConfig.bindto = element;
 
-//        console.log("Data " + chartData)
-
         lineChartConfig.data = {
             x: 'Percentiles',
             json: chartData,
         };
 
+        lineChartConfig.zoom = {
+            enabled: true,
+            type: 'drag',
+        };
+
         lineChartConfig.legend = {
             position: 'right'
         };
-
 
         lineChartConfig.axis = {
             x: {
