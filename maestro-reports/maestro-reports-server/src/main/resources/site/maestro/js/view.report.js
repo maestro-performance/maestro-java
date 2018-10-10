@@ -58,20 +58,14 @@ function groupedBarGraphServiceTime(url, element, groups, yLabel) {
 
 $(document).ready(function () {
     var reportId = getUrlVars()["report-id"];
-    var testId = getUrlVars()["test-id"];
-    var testNumber = getUrlVars()["test-number"];
 
     var url = $('[graphs]').attr('graph-api') + reportId;
 
     var element = '#bar-chart-3';
-    // var values = ['90th percentile', '95th percentile', '99th percentile'];
 
     var groups = [];
     var yLabel = 'Milliseconds';
 
     console.log("Loading data from " + url)
     groupedBarGraphServiceTime(url, element, groups, yLabel)
-
-
-//    groupedBarGraphServiceTime('[data-datatables]', url)
 })
