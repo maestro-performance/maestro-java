@@ -39,7 +39,7 @@ public class LatencyReportController extends AbstractReportFileController{
 
     private final ReportDao reportDao = new ReportDao();
 
-    private void processReports(final Report report, final LatencyResponse<List<Double>> latencyDistribution) {
+    private void processReports(final Report report, final LatencyResponse latencyDistribution) {
         File file = getReportFile(report, "receiverd-latency.hdr");
 
         MaestroSerializer<?> serializer = new SmoothLatencySerializer();
@@ -79,7 +79,7 @@ public class LatencyReportController extends AbstractReportFileController{
 
             Report report = reportDao.fetch(id);
 
-            LatencyResponse<List<Double>> response = new LatencyResponse<>();
+            LatencyResponse response = new LatencyResponse();
 
             processReports(report, response);
 
