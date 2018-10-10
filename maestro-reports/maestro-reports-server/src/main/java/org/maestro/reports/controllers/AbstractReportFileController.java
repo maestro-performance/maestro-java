@@ -16,7 +16,6 @@
 
 package org.maestro.reports.controllers;
 
-import io.javalin.Context;
 import io.javalin.Handler;
 import org.jetbrains.annotations.NotNull;
 import org.maestro.common.exceptions.MaestroException;

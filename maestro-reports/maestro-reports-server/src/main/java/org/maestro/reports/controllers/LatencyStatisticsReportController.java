@@ -33,24 +33,13 @@ import java.io.File;
 import java.io.IOException;
 import java.util.*;
 
-public class LatencyStatisticsReportController implements Handler {
+public class LatencyStatisticsReportController extends AbstractReportFileController {
     private static final Logger logger = LoggerFactory.getLogger(LatencyStatisticsReportController.class);
 
     private final ReportDao reportDao = new ReportDao();
 
     private void processReports(final Report report, final LatencyStatisticsResponse latencyStatisticsResponse) {
-        final File reportDir = new File(report.getLocation());
-
-        File file = new File(reportDir, "receiverd-latency.hdr");
-        if (!file.exists()) {
-            logger.error("There are no HDR latency files on the report directory: file {} does not exist", file);
-            throw new MaestroException("There are no HDR latency files on the report directory");
-        }
-
-        if (!file.isFile()) {
-            logger.error("There are no HDR latency files on the report directory: object {} is not a file", file);
-            throw new MaestroException("There are no HDR latency files on the report directory");
-        }
+        final File file = getReportFile(report, "receiverd-latency.hdr");
 
         MaestroSerializer<?> serializer = new SmoothLatencySerializer();
         try {
