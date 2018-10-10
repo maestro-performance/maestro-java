@@ -20,7 +20,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 import java.util.*;
 
-public class LatencyResponse<T> implements Response {
+public class LatencyResponse implements Response {
     @JsonProperty("Percentiles")
     Set<String> categories = new LinkedHashSet<>();
 
