@@ -32,7 +32,7 @@ function groupedBarGraphServiceTime(url, element, groups, yLabel) {
         lineChartConfig.axis = {
             x: {
                 label: {
-                    text: 'Rate',
+                    text: 'Percentiles',
                 },
                 tick: {
                     rotate: 90,
