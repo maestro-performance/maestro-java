@@ -1,8 +1,9 @@
 $(document).ready(function () {
+    var reportId = getUrlVars()["report-id"];
     var testId = getUrlVars()["test-id"];
     var testNumber = getUrlVars()["test-number"];
 
-    var url = $('[data-datatables]').attr('data-api') + '/test/' + testId + '/number/' + testNumber + '/properties';
+    var url = $('[data-datatables]').attr('data-api') + '/report/' + reportId + '/properties';
 
     console.log("Loading data from " + url)
     maestroDataTable('[data-datatables]', url)
@@ -71,6 +72,5 @@ $(document).ready(function () {
     var groups = [];
     var yLabel = 'Milliseconds';
 
-    console.log("Loading data from " + url)
     groupedBarGraphServiceTime(url, element, groups, yLabel)
 })
