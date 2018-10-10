@@ -38,7 +38,6 @@ import java.util.stream.Collectors;
 
 public class LatencyReportController implements Handler {
     private static final Logger logger = LoggerFactory.getLogger(LatencyReportController.class);
-    private static final FileSerializerRegistry registry = FileSerializerRegistry.getInstance();
 
     private final ReportDao reportDao = new ReportDao();
 
