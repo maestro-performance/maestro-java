@@ -20,29 +20,33 @@ function groupedBarGraphServiceTime(url, element, groups, yLabel) {
 //        console.log("Data " + chartData)
 
         lineChartConfig.data = {
-
             x: 'Percentiles',
             json: chartData ,
-
         };
 
         lineChartConfig.legend = {
             position: 'right'
+        };
+
+
+        lineChartConfig.axis = {
+            x: {
+                label: {
+                    text: 'Rate',
+                },
+                tick: {
+                    rotate: 90,
+                    multiline: false,
+                    // Uses https://github.com/d3/d3-format
+                    format: d3.format(".4f")
+                }
+            },
+            y: {
+                label: {
+                    text: 'Milliseconds',
+                }
+            }
         }
-//        ,
-//
-//        lineChartConfig.axis = {
-//            x: {
-//                label: {
-//                    text: 'Rate',
-//                },
-//            },
-//            y: {
-//                label: {
-//                    text: 'lalala',
-//                }
-//            }
-//        }
 
         var lineChart = c3.generate(lineChartConfig);
 
