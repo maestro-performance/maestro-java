@@ -98,6 +98,19 @@ $(document).ready(function () {
     fillPercentileInformation()
 })
 
+function setRateStatisticsTable(statistics) {
+    if (statistics != null) {
+        $("#maxRate").text(statistics.max);
+        $("#minRate").text(statistics.min);
+        $("#mean").text(statistics.mean);
+//        $("#rateSample" + type).text(statistics.);
+        $("#geometricMean").text(statistics.geometricMean);
+        $("#stdDeviation").text(statistics.standardDeviation);
+
+        $("#skipCount").text(statistics.latency99th);
+    }
+}
+
 function rateDistributionGraph(response, element) {
     var chartData = response.data
 
@@ -145,8 +158,6 @@ $(document).ready(function () {
     var rateDistributionUrl = $('[rate-graph]').attr('graph-api') + reportId;
     axios.get(rateDistributionUrl).then(function (response) {
         var element = '#line-chart-4';
-//        var groups = [];
-//        var yLabel = 'Milliseconds';
 
         rateDistributionGraph(response, element)
 
@@ -154,5 +165,14 @@ $(document).ready(function () {
     .catch(function (error) {
         console.log(error);
     });
-//    fillPercentileInformation()
+
+    // Collect rate properties
+    var rateDistributionUrl = $('[rate-properties]').attr('rate-prop-api') + reportId;
+    axios.get(rateDistributionUrl).then(function (response) {
+        setRateStatisticsTable(response.data.Statistics[0])
+
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
 })
