@@ -35,13 +35,13 @@ public abstract class AbstractReportFileController implements Handler {
 
         File file = new File(reportDir, name);
         if (!file.exists()) {
-            logger.error("Report file %s was not found on the report directory", file);
+            logger.error("Report file {} was not found on the report directory", file);
             throw new ReportFileNotFound("Report file %s was not found on the report directory", name);
         }
 
         if (!file.isFile()) {
             logger.error("Invalid report file: object {} is not a file", file);
-            throw new MaestroException("Invalid report file: object {} is not a file", name);
+            throw new MaestroException("Invalid report file: object %s is not a file", name);
         }
 
         return file;
