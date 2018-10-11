@@ -171,34 +171,52 @@
                         </tr>
                         <tr>
                             <td>Max Latency</td>
-                            <td><span id="maxLatencyResponse">N/A</span></td>
+                            <td><span id="maxLatencyResponse">N/A</span> μs</td>
                         </tr>
                         <tr>
                             <td>99.99ᵗʰ Percentile</td>
-                            <td><span id="9999percentileResponse">N/A</span></td>
+                            <td><span id="9999percentileResponse">N/A</span> μs</td>
                         </tr>
                         <tr>
                             <td>99.9ᵗʰ Percentile</td>
-                            <td><span id="999percentileResponse">N/A</span></td>
+                            <td><span id="999percentileResponse">N/A</span> μs</td>
                         </tr>
                         <tr>
                             <td>99ᵗʰ Percentile</td>
-                            <td><span id="99percentileResponse">N/A</span></td>
+                            <td><span id="99percentileResponse">N/A</span> μs</td>
                         </tr>
                         <tr>
                             <td>95ᵗʰ Percentile</td>
-                            <td><span id="95percentileResponse">N/A</span></td>
+                            <td><span id="95percentileResponse">N/A</span> μs</td>
                         </tr>
                         <tr>
                             <td>90ᵗʰ Percentile</td>
-                            <td><span id="90percentileResponse">N/A</span></td>
+                            <td><span id="90percentileResponse">N/A</span> μs</td>
                         </tr>
                         <tr>
                             <td>50ᵗʰ Percentile</td>
-                            <td><span id="50percentileResponse">N/A</span></td>
+                            <td><span id="50percentileResponse">N/A</span> μs</td>
                         </tr>
                         </tbody>
                     </table>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="alert alert-info">
+                    <span class="pficon pficon-info"></span>
+                    The latencies displayed in the table above are show in <strong>microseconds</strong> whereas the
+                    chart displays them in <strong>milliseconds</strong>.
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="alert alert-info">
+                    <span class="pficon pficon-info"></span>
+                    Tests without a fixed rate <strong>will not</strong> display <strong>response time</strong> metrics.
+                    That is expected when running all-out tests because the backend is unable to estimate the response
+                    time based on the rate. Ideally, Maestro performance tests should use <strong>fixed rates</strong>
+                    and evaluate the pass/fail condition based on the (service time) latency at the 90th percentile.
                 </div>
             </div>
 
@@ -207,6 +225,14 @@
                 <h3>Rate Distribution Over Time</h3>
                 <div id="line-chart-4" class="line-chart-pf" rate-graph graph-api="/api/report/rate/report/">
                 </div>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="alert alert-info">
+                    <span class="pficon pficon-info"></span>
+                    The rate geometric mean represents the <strong>actual average rate</strong> obtained during the test. If zero, it means that
+                    at some point during the test, the rate was zero.
                 </div>
             </div>
 
