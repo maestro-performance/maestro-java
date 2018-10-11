@@ -112,6 +112,8 @@ $(document).ready(function () {
             $("#lat-percentiles").hide();
             $("#lstats-menu").hide();
             $("#ldist-menu").hide();
+            $("#resp-time-info").hide();
+            $("#lat-unit-info").hide();
         }
     })
     .catch(function (error) {
