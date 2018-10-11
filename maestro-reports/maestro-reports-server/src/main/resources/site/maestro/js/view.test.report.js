@@ -5,7 +5,7 @@ $(document).ready(function () {
     var url = $('[data-datatables]').attr('data-api') + '/test/' + testId + '/number/' + testNumber + '/properties';
 
     console.log("Loading data from " + url)
-    // maestroDataTable('[data-datatables]', url)
+    maestroDataTable('[data-datatables]', url)
 })
 
 //
@@ -72,4 +72,4 @@ $(document).ready(function () {
 //    var yLabel = 'Milliseconds';
 //
 //    groupedBarGraphServiceTime(url, element, groups, yLabel)
-})
+//})
