@@ -43,12 +43,12 @@ public class DefaultReportsServer implements ReportsServer {
                 .start();
 
         app.get("/api/live", ctx -> ctx.result("Hello World"));
+
+        // Common usage
         app.get("/api/report/", new AllReportsController());
 
-        // TODO: for later
-        app.get("/api/report/report/:id", new ReportController());
-
         // For the report/node specific view
+        app.get("/api/report/report/:id", new ReportController());
         app.get("/api/report/report/:id/properties", new ReportPropertiesController());
         app.get("/api/report/latency/all/report/:id", new LatencyReportController());
         app.get("/api/report/latency/statistics/report/:id", new LatencyStatisticsReportController());
