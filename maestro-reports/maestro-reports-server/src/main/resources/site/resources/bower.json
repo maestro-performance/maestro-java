@@ -1,0 +1,21 @@
+{
+  "name": "maestro",
+  "homepage": "https://github.com/maestro-performance/maestro-java",
+  "authors": [
+    "Otavio Rodolfo Piske <opiske@redhat.com>"
+  ],
+  "description": "maestro reports server",
+  "main": "",
+  "license": "Apache 2.0",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "axios": "^0.18.0",
+    "patternfly": "^3.54.8"
+  }
+}
