@@ -95,7 +95,30 @@ function fillPercentileInformation() {
 }
 
 $(document).ready(function () {
-    fillPercentileInformation()
+    var reportId = getUrlVars()["report-id"];
+
+    // Draw latency distribution graph
+    var reportType = '/api/report/report/' + reportId;
+    axios.get(reportType).then(function (response) {
+        if (response.data.testHostRole == "receiver") {
+            console.log("Filling percentile information for " + response.data.testHostRole)
+            fillPercentileInformation()
+
+        }
+        else {
+            console.log("Hiding element for node type " + response.data.testHostRole)
+
+            $("#lstats").hide();
+            $("#lat-percentiles").hide();
+            $("#lstats-menu").hide();
+            $("#ldist-menu").hide();
+        }
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
+
+
 })
 
 function setRateStatisticsTable(statistics) {
