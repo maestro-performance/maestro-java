@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package org.maestro.reports.controllers;
@@ -21,17 +22,19 @@ import org.maestro.plotter.common.serializer.SingleData;
 import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dto.Report;
 
-public class RateReportController extends CommonRateReportController {
+public class AggregatedRateReportController extends CommonRateReportController {
     private final ReportDao reportDao = new ReportDao();
 
     @Override
     public void handle(Context context) throws Exception {
         try {
-            int id = Integer.parseInt(context.param("id"));
+            int testId = Integer.parseInt(context.param("id"));
+            int testNumber = Integer.parseInt(context.param("number"));
+            String hostRole = context.param("role");
 
-            Report report = reportDao.fetch(id);
+            Report report = reportDao.fetchAggregated(testId, testNumber);
 
-            SingleData<Long> rateData = processReport(report, report.getTestHostRole());
+            SingleData<Long> rateData = processReport(report, hostRole);
 
             RateResponse rateResponse = new RateResponse();
             rateResponse.setPeriods(rateData.getPeriods());

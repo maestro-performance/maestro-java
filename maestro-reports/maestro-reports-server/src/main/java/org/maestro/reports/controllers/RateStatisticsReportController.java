@@ -33,29 +33,8 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 
-public class RateStatisticsReportController extends AbstractReportFileController {
+public class RateStatisticsReportController extends CommonRateReportController {
     private final ReportDao reportDao = new ReportDao();
-
-    private SingleData<Long> processReport(final Report report) throws IOException {
-        RateSerializer rateSerializer = new RateSerializer();
-
-        File reportFile;
-
-        if (report.getTestHostRole().equals(HostTypes.RECEIVER_HOST_TYPE)) {
-            reportFile = getReportFile(report, "receiver.dat");
-        }
-        else {
-            if (report.getTestHostRole().equals(HostTypes.SENDER_HOST_TYPE)) {
-                reportFile = getReportFile(report, "sender.dat");
-            }
-            else {
-                throw new MaestroException("This host type does not support rate information");
-            }
-        }
-
-        return rateSerializer.serialize(reportFile);
-
-    }
 
     @Override
     public void handle(Context context) throws Exception {
@@ -64,7 +43,7 @@ public class RateStatisticsReportController extends AbstractReportFileController
 
             Report report = reportDao.fetch(id);
 
-            SingleData<Long> rateData = processReport(report);
+            SingleData<Long> rateData = processReport(report, report.getTestHostRole());
 
             RateStatisticsResponse rateResponse = new RateStatisticsResponse();
             rateResponse.addStatistics(rateData.getStatistics());
