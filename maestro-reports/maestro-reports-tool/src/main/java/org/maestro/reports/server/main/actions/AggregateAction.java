@@ -20,19 +20,22 @@ package org.maestro.reports.server.main.actions;
 import org.apache.commons.cli.*;
 import org.maestro.common.LogConfigurator;
 import org.maestro.reports.common.organizer.AggregatorOrganizer;
-import org.maestro.reports.common.organizer.Organizer;
 import org.maestro.reports.common.utils.ReportAggregator;
 import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dto.Report;
+import org.maestro.reports.dto.ReportAggregationInfo;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class AggregateAction extends Action {
+    private ReportDao reportDao = new ReportDao();
+
     private CommandLine cmdLine;
     private String directory;
     private int testId;
     private int testNumber;
+    private boolean all;
 
     public AggregateAction(String[] args) {
         processCommand(args);
@@ -47,7 +50,7 @@ public class AggregateAction extends Action {
         options.addOption("d", "directory", true, "the directory to generate the report");
         options.addOption("t", "test-id", true, "the test id to aggregate");
         options.addOption("n", "test-number", true, "the test number to aggregate");
-
+        options.addOption("", "all", false, "aggregate all records that haven't been aggregated yet");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -71,54 +74,77 @@ public class AggregateAction extends Action {
             LogConfigurator.configureLogLevel(logLevel);
         }
 
-        String testIdStr = cmdLine.getOptionValue('t');
-        if (testIdStr == null) {
-            System.err.println("The test ID is a required option");
-            help(options, 1);
-        }
+        all = cmdLine.hasOption("all");
 
-        try {
-            testId = Integer.parseInt(testIdStr);
-        }
-        catch (Exception e) {
-            System.err.println("The test ID must be a number");
-            help(options, 1);
-        }
+        if (!all) {
+            String testIdStr = cmdLine.getOptionValue('t');
+            if (testIdStr == null) {
+                System.err.println("The test ID is a required option");
+                help(options, 1);
+            }
 
-        String testNumStr = cmdLine.getOptionValue('n');
-        if (testNumStr == null) {
-            System.err.println("The test number is a required option");
-            help(options, 1);
-        }
+            try {
+                testId = Integer.parseInt(testIdStr);
+            }
+            catch (Exception e) {
+                System.err.println("The test ID must be a number");
+                help(options, 1);
+            }
 
-        try {
-            testNumber = Integer.parseInt(testNumStr);
-        }
-        catch (Exception e) {
-            System.err.println("The test number must be a number");
-            help(options, 1);
+            String testNumStr = cmdLine.getOptionValue('n');
+            if (testNumStr == null) {
+                System.err.println("The test number is a required option");
+                help(options, 1);
+            }
+
+            try {
+                testNumber = Integer.parseInt(testNumStr);
+            } catch (Exception e) {
+                System.err.println("The test number must be a number");
+                help(options, 1);
+            }
         }
     }
 
-    public int run() {
+    private void aggregate(int iTestId, int iTestNumber) {
         AggregatorOrganizer organizer = new AggregatorOrganizer(directory);
 
-        organizer.setTestId(testId);
-        organizer.setTestNumber(testNumber);
+        organizer.setTestId(iTestId);
+        organizer.setTestNumber(iTestNumber);
+
+        String aggregatedReportDir = organizer.organize(null);
+
+
+        List<Report> reports = reportDao.fetch(iTestId, iTestNumber);
+
+        List<String> reportDirs = reports.stream().map(Report::getLocation)
+                .collect(Collectors.toList());
+
+        new ReportAggregator(aggregatedReportDir).aggregate(reportDirs);
+        Report aggregated = Report.aggregate(reports, aggregatedReportDir);
+
+        reportDao.insert(aggregated);
+    }
+
+    public int run() {
 
         try {
-            String aggregatedReportDir = organizer.organize(null);
+            if (all) {
+                List<ReportAggregationInfo> aggregationInfos = reportDao.aggregationInfo();
 
-            ReportDao reportDao = new ReportDao();
-            List<Report> reports = reportDao.fetch(testId, testNumber);
+                for (ReportAggregationInfo aggregationInfo : aggregationInfos) {
+                    if (aggregationInfo.getAggregations() == 0) {
+                        System.out.println("Aggregating " + aggregationInfo.getTestId() + "/" +
+                                aggregationInfo.getTestNumber());
 
-            List<String> reportDirs = reports.stream().map(Report::getLocation)
-                    .collect(Collectors.toList());
+                        aggregate(aggregationInfo.getTestId(), aggregationInfo.getTestNumber());
+                    }
+                }
+            }
+            else {
+                aggregate(testId, testNumber);
+            }
 
-            new ReportAggregator(aggregatedReportDir).aggregate(reportDirs);
-            Report aggregated = Report.aggregate(reports, aggregatedReportDir);
-
-            reportDao.insert(aggregated);
 
             return 0;
         } catch (Exception e) {
