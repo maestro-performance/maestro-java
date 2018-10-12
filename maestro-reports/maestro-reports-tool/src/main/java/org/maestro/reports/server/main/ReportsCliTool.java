@@ -51,7 +51,7 @@ public class ReportsCliTool {
 
     public static void main(String[] args) {
         try {
-            ConfigurationWrapper.initConfiguration(Constants.MAESTRO_CONFIG_DIR, "maestro-reports-server.properties");
+            ConfigurationWrapper.initConfiguration(Constants.MAESTRO_CONFIG_DIR, "maestro-reports-tool.properties");
         } catch (Exception e) {
             System.err.println("Unable to initialize configuration file: " + e.getMessage());
             e.printStackTrace();

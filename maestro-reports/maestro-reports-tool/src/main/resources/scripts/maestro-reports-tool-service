@@ -1,0 +1,104 @@
+#!/usr/bin/env bash
+#   Copyright 2017 Otavio Rodolfo Piske
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+RETVAL=0
+
+localDir="$(dirname $0)"
+installDir="$(dirname "${localDir}")"
+
+if [[ ${installDir} == "." ]] ; then
+	installDir=".."
+fi
+
+source "${installDir}/config/maestro-worker-service.conf"
+
+RED="\e[0;31m"
+GREEN="\e[0;32m"
+RESET="\e[0m"
+
+function esuccess() {
+    echo -e "${GREEN} OK${RESET}"
+}
+
+function eerror() {
+    echo -e "${RED} failed${RESET} ($@)"
+}
+
+function start() {
+    if [[ -z "${MAESTRO_LOCAL_HOSTNAME}" ]] ; then
+        MAESTRO_LOCAL_HOSTNAME=$(hostname -f)
+    fi
+
+    echo -en "Starting the worker daemon: "
+    nohup "${installDir}/bin/maestro-worker" -m "${MAESTRO_BROKER}" -l "${MAESTRO_LOG_DIR}" -H "${MAESTRO_LOCAL_HOSTNAME}" "$@" >/dev/null 2>/dev/null &
+    if [[ $? != 0 ]] ; then
+        eerror "failed to daemonize the Maestro worker"
+        exit 1
+    fi
+
+    sleep 1s
+    processCount=0
+    for pid in $(pgrep -f ".*java.*bin/maestro-worker.*") ; do
+        if (( processCount == 0 )) ; then
+            esuccess
+        fi
+        echo -e "Maestro worker started:${GREEN} ${pid} ${RESET}"
+        ((processCount++))
+    done
+
+    if (( processCount == 0 )) ; then
+        eerror "Maestro agent did not start successfully"
+    fi
+}
+
+function stop() {
+    for pid in $(pgrep -f ".*java.*bin/maestro-worker.*") ; do
+        echo "Killing maestro-worker ${pid}"
+        kill -TERM ${pid}
+    done
+}
+
+function restart() {
+    stop
+    start
+}
+
+function printHelp() {
+    echo "Usage: ${0} [start|stop|restart]"
+}
+
+
+if [[ -z ${1} ]] ; then
+    printHelp
+    exit 2
+fi
+
+
+case "${1}" in
+	start)
+		start "${2}" "${3}"
+		;;
+	stop)
+		stop
+		;;
+	restart)
+		restart
+		;;
+	*)
+		printHelp
+		RETVAL=2
+esac
+
+exit ${RETVAL}

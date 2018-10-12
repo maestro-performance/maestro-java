@@ -1,0 +1,61 @@
+#!/usr/bin/env bash
+#   Copyright 2017 Otavio Rodolfo Piske
+#
+#   Licensed under the Apache License, Version 2.0 (the "License");
+#   you may not use this file except in compliance with the License.
+#   You may obtain a copy of the License at
+#
+#       http://www.apache.org/licenses/LICENSE-2.0
+#
+#   Unless required by applicable law or agreed to in writing, software
+#   distributed under the License is distributed on an "AS IS" BASIS,
+#   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+#   See the License for the specific language governing permissions and
+#   limitations under the License.
+
+
+cygwin=false
+darwin=false
+mingw=false
+
+# OS specific support.  $var _must_ be set to either true or false.
+case "$(uname)" in
+    CYGWIN*) cygwin=true ;;
+    MINGW*) mingw=true ;;
+    Darwin*) darwin=true ;;
+esac
+
+# For Cygwin, ensure paths are in UNIX format before anything is touched
+if ${cygwin}; then
+    : ${JAVA_HOME:=$(cygpath --unix "${JAVA_HOME}")}
+    : ${CLASSPATH:=$(cygpath --path --unix "${CLASSPATH}")}
+fi
+
+if ${darwin}; then
+    : ${JAVA_VERSION:="CurrentJDK"}
+    : ${JAVA_HOME:="/System/Library/Frameworks/JavaVM.framework/Versions/${JAVA_VERSION}/Home"}
+fi
+
+# Installation paths
+localDir="$(dirname $0)"
+installDir="$(dirname "${localDir}")"
+
+if [[ ${installDir} == "." ]] ; then
+	installDir=".."
+fi
+
+source "${installDir}/config/maestro-reports-tool.jvm.conf"
+
+export MAESTRO_JVM_FLAGS="${MAESTRO_JVM_OTHER_OPTS} ${MAESTRO_JVM_MEM_OPTS}"
+
+if [[  ${MAESTRO_DEBUG} == "y" ]] ; then
+    MAESTRO_JVM_FLAGS="${MAESTRO_JVM_FLAGS} ${MAESTRO_WORKER_DEBUG_ARGS}"
+fi
+
+mainClass="org.maestro.reports.server.main.ReportsTool"
+
+classpath="$(echo "${installDir}"/bin/*maestro-reports-tool-*.jar)"
+classpath="${classpath// /:}"
+
+java ${MAESTRO_JVM_FLAGS} -classpath "${classpath}" -Dorg.maestro.home="${installDir}" \
+    ${MAESTRO_JAVA_OPTS} "${mainClass}" "$@"
