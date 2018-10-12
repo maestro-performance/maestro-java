@@ -30,7 +30,6 @@ import java.util.*;
 
 public class ReportAggregator {
     private static final Logger logger = LoggerFactory.getLogger(ReportAggregator.class);
-    private static final String AGGREGATED_REPORT_DIRNAME = "aggregated";
     private final Map<String, List<File>> aggregatables = new HashMap<>();
 
     private final File baseDir;
@@ -75,6 +74,8 @@ public class ReportAggregator {
 
             return;
         }
+
+        final String AGGREGATED_REPORT_DIRNAME = "aggregated";
 
         if (reportDir.getPath().contains(AGGREGATED_REPORT_DIRNAME)) {
             logger.error("Location {} is already aggregated and will be ignored for aggregation",
@@ -123,8 +124,6 @@ public class ReportAggregator {
                 logger.error("Unable to aggregate receiver latency files: {}", e.getMessage(), e);
             }
         }
-
-
     }
 
     /**
@@ -142,23 +141,20 @@ public class ReportAggregator {
 
 
     private void aggregateRate(List<File> currentReports, Role role) throws IOException {
-        File aggregatedReportRoot = new File(baseDir, AGGREGATED_REPORT_DIRNAME);
 
-        try (BinaryRateUpdater binaryRateUpdater = BinaryRateUpdater.get(role, aggregatedReportRoot)) {
+        try (BinaryRateUpdater binaryRateUpdater = BinaryRateUpdater.get(role, baseDir)) {
             for (File currentReport : currentReports) {
                 logger.info("Producing aggregated report for: {}", currentReport);
 
                 BinaryRateUpdater.joinFile(binaryRateUpdater, currentReport);
             }
         }
-
     }
 
     private void aggregateLatencies(List<File> currentReports) throws IOException {
-        File aggregatedReportDir = new File(baseDir, AGGREGATED_REPORT_DIRNAME);
         Histogram aggregatedHistogram = new Histogram(3);
 
-        File destFile = new File(aggregatedReportDir, "receiverd-latency.hdr");
+        File destFile = new File(baseDir, "receiverd-latency.hdr");
 
         try (LatencyWriter latencyWriter = new LatencyWriter(destFile)) {
 

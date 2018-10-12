@@ -17,7 +17,6 @@
 package org.maestro.reports.controllers;
 
 import io.javalin.Context;
-import org.maestro.common.HostTypes;
 import org.maestro.plotter.common.serializer.MaestroSerializer;
 import org.maestro.plotter.latency.serializer.Latency;
 import org.maestro.plotter.latency.serializer.LatencyDistribution;
@@ -34,8 +33,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-public class CombinedLatencyReportController extends AbstractReportFileController{
-    private static final Logger logger = LoggerFactory.getLogger(CombinedLatencyReportController.class);
+public class AggregatedLatencyReportController extends AbstractReportFileController{
+    private static final Logger logger = LoggerFactory.getLogger(AggregatedLatencyReportController.class);
 
     private final ReportDao reportDao = new ReportDao();
 
@@ -75,13 +74,14 @@ public class CombinedLatencyReportController extends AbstractReportFileControlle
     @Override
     public void handle(Context context) {
         try {
-            int id = Integer.parseInt(context.param("id"));
+            int testId = Integer.parseInt(context.param("id"));
+            int testNumber = Integer.parseInt(context.param("number"));
 
-            List<Report> reports = reportDao.fetchByTest(id, HostTypes.RECEIVER_HOST_TYPE);
+            Report report = reportDao.fetchAggregated(testId, testNumber);
 
             LatencyResponse response = new LatencyResponse();
 
-            reports.forEach(r -> processReports(r, response));
+            processReports(report, response);
 
             context.json(response);
         }
