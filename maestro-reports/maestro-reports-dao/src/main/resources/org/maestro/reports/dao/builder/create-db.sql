@@ -8,4 +8,5 @@ CREATE TABLE IF NOT EXISTS `report` (
   `test_host_role` VARCHAR(64) NULL,
   `test_result` VARCHAR(45) NULL,
   `location` VARCHAR(1024) NULL,
+  `aggregated` BOOLEAN,
 PRIMARY KEY (`report_id`));

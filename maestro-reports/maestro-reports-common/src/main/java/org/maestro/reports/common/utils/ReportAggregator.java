@@ -35,6 +35,10 @@ public class ReportAggregator {
 
     private final File baseDir;
 
+    public ReportAggregator(final String baseDir) {
+        this(new File(baseDir));
+    }
+
     public ReportAggregator(final File baseDir) {
         this.baseDir = baseDir;
     }
@@ -142,43 +146,24 @@ public class ReportAggregator {
 
         try (BinaryRateUpdater binaryRateUpdater = BinaryRateUpdater.get(role, aggregatedReportRoot)) {
             for (File currentReport : currentReports) {
-                logger.info("Producing aggregated report for directory : {}", currentReport);
-
-                logger.debug("Processing {}", currentReport);
+                logger.info("Producing aggregated report for: {}", currentReport);
 
                 BinaryRateUpdater.joinFile(binaryRateUpdater, currentReport);
-
-
-//                if (props == null) {
-//                    File testProps = new File(currentReport.getReportDir(), TestProperties.FILENAME);
-//                    if (testProps.isFile()) {
-//                        props = new Properties();
-//                        try (InputStream is = new FileInputStream(testProps)) {
-//                            props.load(is);
-//                        }
-//                    }
-//                }
             }
-
-        } finally {
-
         }
-
-//        if (props != null) {
-//            File f = new File(aggregatedReportRoot, TestProperties.FILENAME);
-//            try (OutputStream os = new FileOutputStream(f)) {
-//                props.store(os, "");
-//            }
-//        }
 
     }
 
     private void aggregateLatencies(List<File> currentReports) throws IOException {
+        File aggregatedReportDir = new File(baseDir, AGGREGATED_REPORT_DIRNAME);
         Histogram aggregatedHistogram = new Histogram(3);
 
-        try (LatencyWriter latencyWriter = new LatencyWriter(new File(baseDir, "receiverd-latency.hdr"))) {
+        File destFile = new File(aggregatedReportDir, "receiverd-latency.hdr");
+
+        try (LatencyWriter latencyWriter = new LatencyWriter(destFile)) {
 
             for (File currentReport : currentReports) {
+                logger.info("Producing aggregated report for : {}", currentReport);
                 joinHistograms(aggregatedHistogram, currentReport);
             }
 
@@ -186,8 +171,8 @@ public class ReportAggregator {
         }
     }
 
-    private void joinHistograms(Histogram dest, File sourceDir) throws FileNotFoundException {
-        HistogramLogReader logReader = new HistogramLogReader(new File(sourceDir, "receiverd-latency.hdr"));
+    private void joinHistograms(Histogram dest, File sourceFile) throws FileNotFoundException {
+        HistogramLogReader logReader = new HistogramLogReader(sourceFile);
 
         while (logReader.hasNext()) {
             EncodableHistogram eh = logReader.nextIntervalHistogram();

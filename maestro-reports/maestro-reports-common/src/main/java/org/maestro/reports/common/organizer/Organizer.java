@@ -21,32 +21,12 @@ import org.maestro.client.exchange.support.PeerInfo;
 /**
  * Provides an interface to organize the files in a report directory
  */
-public interface Organizer {
-
-    /**
-     * Gets the result type string (ie.: success, failed, etc)
-     * @return the result type string
-     */
-    String getResultType();
-
-    /**
-     * Set the result type string
-     * @param resultType the result type string
-     */
-    void setResultType(String resultType);
-
+public interface Organizer<T> {
 
     /**
      * Organize the report directory
-     * @param peerInfo the peer info from the peer that provided the report
+     * @param meta An object containing sufficient information for organizing the directory layout
      * @return The organized directory layout to use
      */
-    String organize(final PeerInfo peerInfo);
-
-
-    /**
-     * Gets the test tracker used to keep track of the current test
-     * @return the active test tracker
-     */
-    TestTracker getTracker();
+    String organize(final T meta);
 }

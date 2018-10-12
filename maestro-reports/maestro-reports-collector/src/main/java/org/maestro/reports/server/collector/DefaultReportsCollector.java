@@ -30,7 +30,7 @@ import org.maestro.common.worker.TestLogUtils;
 import org.maestro.contrib.utils.digest.Sha1Digest;
 import org.maestro.reports.common.organizer.DefaultOrganizer;
 import org.maestro.reports.common.organizer.Organizer;
-import org.maestro.reports.common.organizer.ResultStrings;
+import org.maestro.common.ResultStrings;
 import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dto.Report;
 import org.maestro.worker.common.MaestroWorkerManager;
@@ -99,7 +99,6 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         report.setTestHost(peerInfo.peerHost());
         report.setTestHostRole(peerInfo.getRole().toString());
 
-        organizer.setResultType(testResultString);
         String destinationDir = organizer.organize(peerInfo);
         report.setLocation(destinationDir);
 
@@ -108,17 +107,6 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     }
 
     private void save(final LogResponse logResponse) {
-        switch (logResponse.getLocationType()) {
-            case LAST_SUCCESS: {
-                organizer.setResultType(ResultStrings.SUCCESS);
-                break;
-            }
-            default: {
-                organizer.setResultType(ResultStrings.FAILED);
-                break;
-            }
-        }
-
         String destinationDir = organizer.organize(logResponse.getPeerInfo());
         File outFile = new File(destinationDir, logResponse.getFileName());
 
