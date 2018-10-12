@@ -16,6 +16,7 @@
 
 package org.maestro.common.io.data.writers;
 
+import org.apache.commons.io.FileUtils;
 import org.maestro.common.Constants;
 import org.maestro.common.Role;
 import org.maestro.common.io.data.common.FileHeader;
@@ -295,5 +296,26 @@ public class BinaryRateUpdater implements AutoCloseable {
                 index++;
             }
         }
+    }
+
+    /**
+     * Gets a BinaryRateUpdater instance suitable for updating files of a given role type. Parent
+     * directores are created
+     * @param role the role for the files to be updated
+     * @param path the location for the file
+     * @return A new updater instance
+     * @throws IOException if unable to create the parent directories
+     */
+    public static BinaryRateUpdater get(Role role, File path) throws IOException {
+        File output;
+
+        if (role == Role.RECEIVER) {
+            output = new File(path, "receiver.dat");
+        } else {
+            output = new File(path, "sender.dat");
+        }
+
+        FileUtils.forceMkdirParent(output);
+        return new BinaryRateUpdater(output, false);
     }
 }
