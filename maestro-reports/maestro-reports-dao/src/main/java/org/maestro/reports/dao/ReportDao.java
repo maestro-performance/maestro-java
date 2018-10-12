@@ -47,15 +47,10 @@ public class ReportDao extends AbstractDao {
                 new BeanPropertyRowMapper<>(Report.class));
     }
 
-    public List<Report> fetchByTest(int testId) {
-        return jdbcTemplate.query("select * from report where aggregated = false and test_id = ?",
-                new Object[]{ testId },
-                new BeanPropertyRowMapper<>(Report.class));
-    }
-
-    public List<Report> fetchByTest(int testId, String role) {
-        return jdbcTemplate.query("select * from report where aggregated = false and test_id = ? and test_host_role = ?",
-                new Object[]{ testId, role },
+    public Report fetchAggregated(int testId, int testNumber) {
+        return jdbcTemplate.queryForObject(
+                "select * from report where aggregated = true and test_id = ? and test_number = ?",
+                new Object[]{ testId, testNumber },
                 new BeanPropertyRowMapper<>(Report.class));
     }
 }
