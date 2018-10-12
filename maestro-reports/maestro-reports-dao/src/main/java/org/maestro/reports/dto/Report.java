@@ -16,6 +16,11 @@
 
 package org.maestro.reports.dto;
 
+import org.maestro.common.ResultStrings;
+import org.maestro.common.exceptions.MaestroException;
+
+import java.util.List;
+
 public class Report {
     private int reportId;
     private int testId;
@@ -26,7 +31,7 @@ public class Report {
     private String testHostRole;
     private String testResult;
     private String location;
-
+    private boolean aggregated;
 
     public int getReportId() {
         return reportId;
@@ -98,5 +103,46 @@ public class Report {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public boolean isAggregated() {
+        return aggregated;
+    }
+
+    public void setAggregated(boolean aggregated) {
+        this.aggregated = aggregated;
+    }
+
+    /**
+     * Aggregates a set of reports with the given location
+     * @param reports the list of reports to aggregate
+     * @param location the location of the aggregated reports
+     * @return A new Report object instance with the aggregated details
+     */
+    public static Report aggregate(final List<Report> reports, final String location) {
+        Report report = new Report();
+
+        if (reports == null || reports.isEmpty()) {
+            throw new MaestroException("Cannot aggregate an empty list of reports");
+        }
+
+        Report firstReport = reports.get(0);
+        report.setTestId(firstReport.testId);
+        report.setTestNumber(firstReport.testNumber);
+        report.setTestName(firstReport.testName);
+        report.setTestScript(firstReport.testScript);
+        report.setTestHost(null);
+        report.setAggregated(true);
+
+        long failures = reports.stream().filter(Report::isAggregated).count();
+        if (failures > 0) {
+            report.setTestResult(ResultStrings.FAILED);
+        }
+        else {
+            report.setTestResult(ResultStrings.SUCCESS);
+        }
+
+        report.setLocation(location);
+        return report;
     }
 }

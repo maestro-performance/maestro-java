@@ -25,8 +25,9 @@ public class ReportDao extends AbstractDao {
 
     public int insert(final Report report) {
         return runInsert(
-                "insert into report(test_id, test_number, test_name, test_script, test_host, test_host_role, test_result, location) " +
-                        "values(:testId, :testNumber, :testName, :testScript, :testHost, :testHostRole, :testResult, :location)", report);
+                "insert into report(test_id, test_number, test_name, test_script, test_host, test_host_role, " +
+                        "test_result, location, aggregated) values(:testId, :testNumber, :testName, :testScript, " +
+                        ":testHost, :testHostRole, :testResult, :location, :aggregated)", report);
     }
 
     public List<Report> fetch() {
@@ -35,19 +36,25 @@ public class ReportDao extends AbstractDao {
     }
 
     public Report fetch(int reportId) {
-        return jdbcTemplate.queryForObject("select * from report where report_id = ?",
+        return jdbcTemplate.queryForObject("select * from report where aggregated = false and report_id = ?",
                 new Object[]{ reportId },
                 new BeanPropertyRowMapper<>(Report.class));
     }
 
     public List<Report> fetch(int testId, int testNumber) {
-        return jdbcTemplate.query("select * from report where test_id = ? and test_number = ? ",
+        return jdbcTemplate.query("select * from report where aggregated = false and test_id = ? and test_number = ? ",
                 new Object[]{ testId, testNumber },
                 new BeanPropertyRowMapper<>(Report.class));
     }
 
+    public List<Report> fetchByTest(int testId) {
+        return jdbcTemplate.query("select * from report where aggregated = false and test_id = ?",
+                new Object[]{ testId },
+                new BeanPropertyRowMapper<>(Report.class));
+    }
+
     public List<Report> fetchByTest(int testId, String role) {
-        return jdbcTemplate.query("select * from report where test_id = ? and test_host_role = ?",
+        return jdbcTemplate.query("select * from report where aggregated = false and test_id = ? and test_host_role = ?",
                 new Object[]{ testId, role },
                 new BeanPropertyRowMapper<>(Report.class));
     }

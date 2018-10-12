@@ -21,6 +21,7 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.reports.server.main.actions.Action;
+import org.maestro.reports.server.main.actions.AggregateAction;
 import org.maestro.reports.server.main.actions.LoadAction;
 
 import static java.util.Arrays.copyOfRange;
@@ -40,6 +41,7 @@ public class ReportsCliTool {
 
         System.out.println("Actions:");
         System.out.println("   load");
+        System.out.println("   aggregate");
         System.out.println("----------");
         System.out.println("   help");
         System.out.println("   --version");
@@ -77,6 +79,10 @@ public class ReportsCliTool {
         switch (first) {
             case "load": {
                 action = new LoadAction(newArgs);
+                break;
+            }
+            case "aggregate": {
+                action = new AggregateAction(newArgs);
                 break;
             }
 
