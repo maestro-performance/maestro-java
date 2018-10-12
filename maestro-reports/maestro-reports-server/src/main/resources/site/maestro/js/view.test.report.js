@@ -83,15 +83,15 @@ function fillPercentileInformation() {
         console.log(error);
     });
 
-//    // Fill latency properties
-//    var latPropertiesUrl = $('[lat-properties]').attr('lat-prop-api') + reportId;
-//    axios.get(latPropertiesUrl).then(function (response) {
-//        setPercentileTable(response.data.ServiceTimeStatistics[0], "Service")
-//        setPercentileTable(response.data.ResponseTimeStatistics[0], "Response")
-//    })
-//    .catch(function (error) {
-//        console.log(error);
-//    });
+    // Fill latency properties
+    var latPropertiesUrl = $('[lat-properties]').attr('lat-prop-api') + testId + "/number/" + testNumber ;
+    axios.get(latPropertiesUrl).then(function (response) {
+        setPercentileTable(response.data.ServiceTimeStatistics[0], "Service")
+        setPercentileTable(response.data.ResponseTimeStatistics[0], "Response")
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
 }
 
 $(document).ready(function () {

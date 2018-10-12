@@ -73,7 +73,7 @@
 
 <main>
     <header>
-        <h1>Performance Test Results</h1>
+        <h1>Aggregated Performance Test Results</h1>
     </header>
 
     <div class="col-sm-12">
@@ -108,99 +108,99 @@
                     <div id="bar-chart-3" class="line-chart-pf" graphs graph-api="/api/report/latency/aggregated/test/"></div>
                 </div>
             </div>
-            <!--<div class="row" id="lstats" lat-properties lat-prop-api="/api/report/latency/statistics/report/">-->
-                <!--<div class="col-lg-6 col-md-6">-->
-                    <!--<h3>Service Time Statistics</h3>-->
-                    <!--<table class="table table-striped table-bordered" id="perPropTableService" >-->
-                        <!--<thead>-->
-                        <!--<tr>-->
-                            <!--<th>Metric</th>-->
-                            <!--<th>Value</th>-->
-                        <!--</tr>-->
-                        <!--</thead>-->
-                        <!--<tbody>-->
-                        <!--<tr>-->
-                            <!--<td>Total Count</td>-->
-                            <!--<td><span id="perTotalCountService">N/A</span></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>Max Latency</td>-->
-                            <!--<td><span id="maxLatencyService">N/A</span> μs</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>99.99ᵗʰ Percentile</td>-->
-                            <!--<td><span id="9999percentileService">N/A</span> μs</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>99.9ᵗʰ Percentile</td>-->
-                            <!--<td><span id="999percentileService">N/A</span> μs</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>99ᵗʰ Percentile</td>-->
-                            <!--<td><span id="99percentileService">N/A</span> μs</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>95ᵗʰ Percentile</td>-->
-                            <!--<td><span id="95percentileService">N/A</span> μs</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>90ᵗʰ Percentile</td>-->
-                            <!--<td><span id="90percentileService">N/A</span> μs</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>50ᵗʰ Percentile</td>-->
-                            <!--<td><span id="50percentileService">N/A</span> μs</td>-->
-                        <!--</tr>-->
-                        <!--</tbody>-->
-                    <!--</table>-->
-                <!--</div>-->
+            <div class="row" id="lstats" lat-properties lat-prop-api="/api/report/latency/aggregated/statistics/test/">
+                <div class="col-lg-6 col-md-6">
+                    <h3>Service Time Statistics</h3>
+                    <table class="table table-striped table-bordered" id="perPropTableService" >
+                        <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Total Count</td>
+                            <td><span id="perTotalCountService">N/A</span></td>
+                        </tr>
+                        <tr>
+                            <td>Max Latency</td>
+                            <td><span id="maxLatencyService">N/A</span> μs</td>
+                        </tr>
+                        <tr>
+                            <td>99.99ᵗʰ Percentile</td>
+                            <td><span id="9999percentileService">N/A</span> μs</td>
+                        </tr>
+                        <tr>
+                            <td>99.9ᵗʰ Percentile</td>
+                            <td><span id="999percentileService">N/A</span> μs</td>
+                        </tr>
+                        <tr>
+                            <td>99ᵗʰ Percentile</td>
+                            <td><span id="99percentileService">N/A</span> μs</td>
+                        </tr>
+                        <tr>
+                            <td>95ᵗʰ Percentile</td>
+                            <td><span id="95percentileService">N/A</span> μs</td>
+                        </tr>
+                        <tr>
+                            <td>90ᵗʰ Percentile</td>
+                            <td><span id="90percentileService">N/A</span> μs</td>
+                        </tr>
+                        <tr>
+                            <td>50ᵗʰ Percentile</td>
+                            <td><span id="50percentileService">N/A</span> μs</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
 
-                <!--<div class="col-lg-6 col-md-6">-->
-                    <!--<h3>Response Time Statistics</h3>-->
-                    <!--<table class="table table-striped table-bordered" id="perPropTableResponse" >-->
-                        <!--<thead>-->
-                        <!--<tr>-->
-                            <!--<th>Metric</th>-->
-                            <!--<th>Value</th>-->
-                        <!--</tr>-->
-                        <!--</thead>-->
-                        <!--<tbody>-->
-                        <!--<tr>-->
-                            <!--<td>Total Count</td>-->
-                            <!--<td><span id="perTotalCountResponse">N/A</span></td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>Max Latency</td>-->
-                            <!--<td><span id="maxLatencyResponse">N/A</span> μs</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>99.99ᵗʰ Percentile</td>-->
-                            <!--<td><span id="9999percentileResponse">N/A</span> μs</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>99.9ᵗʰ Percentile</td>-->
-                            <!--<td><span id="999percentileResponse">N/A</span> μs</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>99ᵗʰ Percentile</td>-->
-                            <!--<td><span id="99percentileResponse">N/A</span> μs</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>95ᵗʰ Percentile</td>-->
-                            <!--<td><span id="95percentileResponse">N/A</span> μs</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>90ᵗʰ Percentile</td>-->
-                            <!--<td><span id="90percentileResponse">N/A</span> μs</td>-->
-                        <!--</tr>-->
-                        <!--<tr>-->
-                            <!--<td>50ᵗʰ Percentile</td>-->
-                            <!--<td><span id="50percentileResponse">N/A</span> μs</td>-->
-                        <!--</tr>-->
-                        <!--</tbody>-->
-                    <!--</table>-->
-                <!--</div>-->
-            <!--</div>-->
+                <div class="col-lg-6 col-md-6">
+                    <h3>Response Time Statistics</h3>
+                    <table class="table table-striped table-bordered" id="perPropTableResponse" >
+                        <thead>
+                        <tr>
+                            <th>Metric</th>
+                            <th>Value</th>
+                        </tr>
+                        </thead>
+                        <tbody>
+                        <tr>
+                            <td>Total Count</td>
+                            <td><span id="perTotalCountResponse">N/A</span></td>
+                        </tr>
+                        <tr>
+                            <td>Max Latency</td>
+                            <td><span id="maxLatencyResponse">N/A</span> μs</td>
+                        </tr>
+                        <tr>
+                            <td>99.99ᵗʰ Percentile</td>
+                            <td><span id="9999percentileResponse">N/A</span> μs</td>
+                        </tr>
+                        <tr>
+                            <td>99.9ᵗʰ Percentile</td>
+                            <td><span id="999percentileResponse">N/A</span> μs</td>
+                        </tr>
+                        <tr>
+                            <td>99ᵗʰ Percentile</td>
+                            <td><span id="99percentileResponse">N/A</span> μs</td>
+                        </tr>
+                        <tr>
+                            <td>95ᵗʰ Percentile</td>
+                            <td><span id="95percentileResponse">N/A</span> μs</td>
+                        </tr>
+                        <tr>
+                            <td>90ᵗʰ Percentile</td>
+                            <td><span id="90percentileResponse">N/A</span> μs</td>
+                        </tr>
+                        <tr>
+                            <td>50ᵗʰ Percentile</td>
+                            <td><span id="50percentileResponse">N/A</span> μs</td>
+                        </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
 
             <!--<div class="row" id="lat-unit-info">-->
                 <!--<div class="alert alert-info">-->
