@@ -58,9 +58,9 @@ public class DefaultReportsServer implements ReportsServer {
         // For all tests ... context needs to be adjusted
         app.get("/api/report/test/:test/number/:number/properties", new TestPropertiesController());
 
-        //
+        // Aggregated
         app.get("/api/report/latency/aggregated/test/:id/number/:number", new AggregatedLatencyReportController());
-
+        app.get("/api/report/latency/aggregated/statistics/test/:id/number/:number", new AggregatedLatencyStatisticsReportController());
     }
 
 

@@ -12,6 +12,7 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
 package org.maestro.reports.controllers;
@@ -23,17 +24,18 @@ import org.maestro.reports.dto.Report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class LatencyStatisticsReportController extends CommonLatencyStatisticsReportController {
-    private static final Logger logger = LoggerFactory.getLogger(LatencyStatisticsReportController.class);
+public class AggregatedLatencyStatisticsReportController extends CommonLatencyStatisticsReportController {
+    private static final Logger logger = LoggerFactory.getLogger(AggregatedLatencyStatisticsReportController.class);
 
     private final ReportDao reportDao = new ReportDao();
 
     @Override
     public void handle(Context context) throws Exception {
         try {
-            int id = Integer.parseInt(context.param("id"));
+            int testId = Integer.parseInt(context.param("id"));
+            int testNumber = Integer.parseInt(context.param("number"));
 
-            Report report = reportDao.fetch(id);
+            Report report = reportDao.fetchAggregated(testId, testNumber);
 
             LatencyStatisticsResponse response = new LatencyStatisticsResponse();
 
