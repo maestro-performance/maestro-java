@@ -16,8 +16,6 @@
 
 package org.maestro.reports.common.organizer;
 
-import org.maestro.client.exchange.support.PeerInfo;
-
 /**
  * Provides an interface to organize the files in a report directory
  */
