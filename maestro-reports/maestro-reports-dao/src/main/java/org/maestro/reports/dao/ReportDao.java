@@ -17,6 +17,7 @@
 package org.maestro.reports.dao;
 
 import org.maestro.reports.dto.Report;
+import org.maestro.reports.dto.ReportAggregationInfo;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
 import java.util.List;
@@ -52,5 +53,10 @@ public class ReportDao extends AbstractDao {
                 "select * from report where aggregated = true and test_id = ? and test_number = ?",
                 new Object[]{ testId, testNumber },
                 new BeanPropertyRowMapper<>(Report.class));
+    }
+
+    public List<ReportAggregationInfo> aggregationInfo() {
+        return jdbcTemplate.query("SELECT test_id,test_number,sum(aggregated) AS aggregations FROM report GROUP BY test_id,test_number ORDER BY test_id desc;",
+                new BeanPropertyRowMapper<>(ReportAggregationInfo.class));
     }
 }
