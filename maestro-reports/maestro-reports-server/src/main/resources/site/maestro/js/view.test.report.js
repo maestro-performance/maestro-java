@@ -70,7 +70,7 @@ function fillPercentileInformation() {
     var testNumber = getUrlVars()["test-number"];
 
     // Draw latency distribution graph
-    var latDistributionUrl = $('[graphs]').attr('graph-api') + testId + "/number/" + testNumber ;
+    var latDistributionUrl = $('[graphs]').attr('graph-api') + testId + "/number/" + testNumber;
     axios.get(latDistributionUrl).then(function (response) {
         var element = '#bar-chart-3';
         var groups = [];
@@ -84,7 +84,7 @@ function fillPercentileInformation() {
     });
 
     // Fill latency properties
-    var latPropertiesUrl = $('[lat-properties]').attr('lat-prop-api') + testId + "/number/" + testNumber ;
+    var latPropertiesUrl = $('[lat-properties]').attr('lat-prop-api') + testId + "/number/" + testNumber;
     axios.get(latPropertiesUrl).then(function (response) {
         setPercentileTable(response.data.ServiceTimeStatistics[0], "Service")
         setPercentileTable(response.data.ResponseTimeStatistics[0], "Response")
@@ -97,5 +97,104 @@ function fillPercentileInformation() {
 $(document).ready(function () {
     console.log("Filling aggregated percentile information")
     fillPercentileInformation()
+})
 
+
+function setRateStatisticsTable(role, statistics) {
+    if (statistics != null) {
+        $("#" + role + "MaxRate").text(statistics.max);
+        $("#" + role + "MinRate").text(statistics.min);
+        $("#" + role + "Mean").text(statistics.mean);
+        $("#" + role + "GeometricMean").text(statistics.geometricMean);
+        $("#" + role + "StdDeviation").text(statistics.standardDeviation);
+
+        $("#" + role + "SkipCount").text(statistics.latency99th);
+    }
+}
+
+function rateDistributionGraph(response, element) {
+    var chartData = response.data
+
+    var c3ChartDefaults = $().c3ChartDefaults();
+    var lineChartConfig = c3ChartDefaults.getDefaultLineConfig();
+    lineChartConfig.bindto =  element;
+
+    // Latency distributions per test
+    lineChartConfig.data = {
+        x: 'Periods',
+        json: chartData,
+        type: 'spline'
+    };
+
+    lineChartConfig.axis = {
+        x: {
+            type: 'timeseries',
+            tick: {
+                culling: { max: 100},
+                count: 20,
+                fit: true,
+                rotate: 90,
+                format: "%Y-%m-%d %H:%M:%S"
+            }
+        }
+    };
+
+    lineChartConfig.point = {
+        show: false
+    };
+
+    lineChartConfig.zoom = {
+        enabled: true,
+        type: 'drag',
+    };
+
+    var lineChart = c3.generate(lineChartConfig);
+}
+
+
+$(document).ready(function () {
+    var testId = getUrlVars()["test-id"];
+    var testNumber = getUrlVars()["test-number"];
+
+    // Draw sender rate distribution graph
+    var senderRateDistributionUrl = $('[sender-rate-graph]').attr('graph-api')  + testId + "/number/" + testNumber;
+    axios.get(senderRateDistributionUrl).then(function (response) {
+        var element = '#sender-chart-1';
+
+        rateDistributionGraph(response, element)
+
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
+
+    // Draw receiver rate distribution graph
+    var receiverRateDistributionUrl = $('[receiver-rate-graph]').attr('graph-api') + testId + "/number/" + testNumber;
+    axios.get(receiverRateDistributionUrl).then(function (response) {
+        var element = '#receiver-chart-1';
+
+        rateDistributionGraph(response, element)
+
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
+
+    // Collect sender rate properties
+    var senderRateStatisticsUrl = $('[sender-rate-properties]').attr('rate-prop-api') + testId + "/number/" + testNumber;
+    axios.get(senderRateStatisticsUrl).then(function (response) {
+        setRateStatisticsTable("sender", response.data.Statistics[0])
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
+
+    // Collect sender rate properties
+    var receiverRateStatisticsUrl = $('[receiver-rate-properties]').attr('rate-prop-api') + testId + "/number/" + testNumber;
+    axios.get(receiverRateStatisticsUrl).then(function (response) {
+        setRateStatisticsTable("receiver", response.data.Statistics[0])
+    })
+    .catch(function (error) {
+        console.log(error);
+    });
 })
