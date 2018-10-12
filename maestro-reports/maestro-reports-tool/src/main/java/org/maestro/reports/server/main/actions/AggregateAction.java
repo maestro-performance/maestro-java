@@ -65,7 +65,7 @@ public class AggregateAction extends Action {
 
         directory = cmdLine.getOptionValue('d');
         if (directory == null) {
-            System.err.println("The input directory is a required option");
+            System.err.println("The output directory is a required option");
             help(options, 1);
         }
 
