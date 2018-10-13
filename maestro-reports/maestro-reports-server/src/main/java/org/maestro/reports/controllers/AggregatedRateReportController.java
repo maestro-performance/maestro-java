@@ -20,6 +20,7 @@ package org.maestro.reports.controllers;
 import io.javalin.Context;
 import org.maestro.plotter.common.serializer.SingleData;
 import org.maestro.reports.dao.ReportDao;
+import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.maestro.reports.dto.Report;
 
 public class AggregatedRateReportController extends CommonRateReportController {
@@ -41,6 +42,10 @@ public class AggregatedRateReportController extends CommonRateReportController {
             rateResponse.setRate(rateData.getValues());
 
             context.json(rateResponse);
+        }
+        catch (DataNotFoundException e) {
+            context.status(404);
+            context.result(String.format("Not found: %s", e.getMessage()));
         }
         catch (Throwable t) {
             context.status(500);

@@ -23,6 +23,7 @@ import org.maestro.common.test.TestProperties;
 import org.maestro.common.test.properties.PropertyReader;
 import org.maestro.reports.controllers.common.ExtendedTestProperties;
 import org.maestro.reports.dao.ReportDao;
+import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.maestro.reports.dto.Report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -67,6 +68,10 @@ public class ReportPropertiesController implements Handler {
                 context.status(500);
                 context.result(String.format("Unhandled node type for the report: %s", report.getTestHostRole()));
             }
+        }
+        catch (DataNotFoundException e) {
+            context.status(404);
+            context.result(String.format("Not found: %s", e.getMessage()));
         }
         catch (Throwable t) {
             logger.error(t.getMessage(), t);

@@ -19,6 +19,7 @@ package org.maestro.reports.controllers;
 import io.javalin.Context;
 import org.maestro.reports.controllers.common.LatencyResponse;
 import org.maestro.reports.dao.ReportDao;
+import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.maestro.reports.dto.Report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -39,6 +40,10 @@ public class LatencyReportController extends CommonLatencyReportController{
             processReports(report, response);
 
             context.json(response);
+        }
+        catch (DataNotFoundException e) {
+            context.status(404);
+            context.result(String.format("Not found: %s", e.getMessage()));
         }
         catch (Throwable t) {
             context.status(500);
