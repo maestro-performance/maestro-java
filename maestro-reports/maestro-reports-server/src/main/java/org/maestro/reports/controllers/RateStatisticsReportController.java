@@ -25,6 +25,7 @@ import org.maestro.plotter.rate.serializer.RateSerializer;
 import org.maestro.reports.controllers.common.RateStatisticsResponse;
 import org.maestro.reports.controllers.common.Response;
 import org.maestro.reports.dao.ReportDao;
+import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.maestro.reports.dto.Report;
 
 import java.io.File;
@@ -49,6 +50,10 @@ public class RateStatisticsReportController extends CommonRateReportController {
             rateResponse.addStatistics(rateData.getStatistics());
 
             context.json(rateResponse);
+        }
+        catch (DataNotFoundException e) {
+            context.status(404);
+            context.result(String.format("Not found: %s", e.getMessage()));
         }
         catch (Throwable t) {
             context.status(500);

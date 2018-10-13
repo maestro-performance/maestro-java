@@ -19,6 +19,7 @@ package org.maestro.reports.controllers;
 import io.javalin.Context;
 import io.javalin.Handler;
 import org.maestro.reports.dao.ReportDao;
+import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.maestro.reports.dto.Report;
 
 public class ReportController implements Handler {
@@ -37,6 +38,10 @@ public class ReportController implements Handler {
             else {
                 context.status(404);
             }
+        }
+        catch (DataNotFoundException e) {
+            context.status(404);
+            context.result(String.format("Not found: %s", e.getMessage()));
         }
         catch (Throwable t) {
             context.status(500);
