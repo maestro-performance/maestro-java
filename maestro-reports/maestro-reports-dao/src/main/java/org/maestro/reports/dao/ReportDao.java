@@ -16,6 +16,7 @@
 
 package org.maestro.reports.dao;
 
+import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.maestro.reports.dto.Report;
 import org.maestro.reports.dto.ReportAggregationInfo;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
@@ -36,10 +37,10 @@ public class ReportDao extends AbstractDao {
                 new BeanPropertyRowMapper<>(Report.class));
     }
 
-    public Report fetch(int reportId) {
-        return jdbcTemplate.queryForObject("select * from report where aggregated = false and report_id = ?",
-                new Object[]{ reportId },
-                new BeanPropertyRowMapper<>(Report.class));
+    public Report fetch(int reportId) throws DataNotFoundException {
+        return runQuery("select * from report where aggregated = false and report_id = ?",
+                new BeanPropertyRowMapper<>(Report.class),
+                reportId);
     }
 
     public List<Report> fetch(int testId, int testNumber) {
@@ -48,11 +49,10 @@ public class ReportDao extends AbstractDao {
                 new BeanPropertyRowMapper<>(Report.class));
     }
 
-    public Report fetchAggregated(int testId, int testNumber) {
-        return jdbcTemplate.queryForObject(
+    public Report fetchAggregated(int testId, int testNumber) throws DataNotFoundException {
+        return runQuery(
                 "select * from report where aggregated = true and test_id = ? and test_number = ?",
-                new Object[]{ testId, testNumber },
-                new BeanPropertyRowMapper<>(Report.class));
+                new BeanPropertyRowMapper<>(Report.class), testId, testNumber);
     }
 
     public List<ReportAggregationInfo> aggregationInfo() {
