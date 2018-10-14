@@ -19,6 +19,7 @@ package org.maestro.reports.dao.builder;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.dao.TemplateBuilder;
 import org.springframework.core.io.InputStreamResource;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -54,7 +55,7 @@ public class InternalDatabaseBuilder implements TemplateBuilder {
 
                         ScriptUtils.executeSqlScript(ds.getConnection(), resource);
                     } catch (SQLException e) {
-                        e.printStackTrace();
+                        throw new MaestroException("Unable to create the Maestro reports table");
                     }
 
 
