@@ -49,7 +49,7 @@ public abstract class AbstractDao extends NamedParameterJdbcDaoSupport {
         super.setJdbcTemplate(jdbcTemplate);
     }
 
-    protected <T, Y> T runQuery(String query, RowMapper<T> rowMapper, Y id) throws DataNotFoundException {
+    protected <T> T runQuery(String query, RowMapper<T> rowMapper, Object id) throws DataNotFoundException {
         try {
             return jdbcTemplate.queryForObject(query, rowMapper, id);
         }
@@ -58,7 +58,7 @@ public abstract class AbstractDao extends NamedParameterJdbcDaoSupport {
         }
     }
 
-    protected <T, Y> T runQuery(String query, RowMapper<T> rowMapper, Object...args) throws DataNotFoundException {
+    protected <T> T runQuery(String query, RowMapper<T> rowMapper, Object...args) throws DataNotFoundException {
         try {
             return jdbcTemplate.queryForObject(query, rowMapper, args);
         }
