@@ -46,13 +46,14 @@ public class ReportDao extends AbstractDao {
     public List<Report> fetch(int testId, int testNumber) throws DataNotFoundException {
         return runQueryMany("select * from report where aggregated = false and test_id = ? and test_number = ? ",
                 new BeanPropertyRowMapper<>(Report.class),
-                new Object[]{ testId, testNumber });
+                testId, testNumber);
     }
 
     public Report fetchAggregated(int testId, int testNumber) throws DataNotFoundException {
         return runQuery(
                 "select * from report where aggregated = true and test_id = ? and test_number = ?",
-                new BeanPropertyRowMapper<>(Report.class), testId, testNumber);
+                new BeanPropertyRowMapper<>(Report.class),
+                testId, testNumber);
     }
 
     public List<ReportAggregationInfo> aggregationInfo() throws DataNotFoundException {
