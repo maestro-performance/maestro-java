@@ -38,10 +38,16 @@ public abstract class AbstractDao extends NamedParameterJdbcDaoSupport {
      * Constructor
      */
     protected AbstractDao() {
-        super();
+        this(TemplateBuilderManager.getTemplateBuilder());
+    }
 
-        logger.trace("Creating the template builder");
-        TemplateBuilder tp = TemplateBuilderManager.getTemplateBuilder();
+
+    /**
+     * Constructor with custom JDBC template builder
+     * @param tp JDBC template builder
+     */
+    protected AbstractDao(final TemplateBuilder tp) {
+        super();
 
         logger.trace("Building the JDBC template");
         jdbcTemplate = tp.build();

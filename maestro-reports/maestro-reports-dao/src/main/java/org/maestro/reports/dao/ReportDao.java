@@ -23,7 +23,16 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
 import java.util.List;
 
+/**
+ * DAO for the reports table
+ */
 public class ReportDao extends AbstractDao {
+
+    public ReportDao() {}
+
+    public ReportDao(TemplateBuilder tp) {
+        super(tp);
+    }
 
     public int insert(final Report report) {
         return runInsert(
