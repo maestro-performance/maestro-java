@@ -75,6 +75,14 @@
             <artifactId>maestro-common</artifactId>
             <version>${project.version}</version>
         </dependency>
+
+        <!-- Junit (for tests only) -->
+        <dependency>
+            <groupId>junit</groupId>
+            <artifactId>junit</artifactId>
+            <version>4.12</version>
+            <scope>test</scope>
+        </dependency>
     </dependencies>
 
 
