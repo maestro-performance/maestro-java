@@ -22,6 +22,7 @@ import org.maestro.common.LogConfigurator;
 import org.maestro.reports.common.organizer.AggregatorOrganizer;
 import org.maestro.reports.common.utils.ReportAggregator;
 import org.maestro.reports.dao.ReportDao;
+import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.maestro.reports.dto.Report;
 import org.maestro.reports.dto.ReportAggregationInfo;
 
@@ -106,7 +107,7 @@ public class AggregateAction extends Action {
         }
     }
 
-    private void aggregate(int iTestId, int iTestNumber) {
+    private void aggregate(int iTestId, int iTestNumber) throws DataNotFoundException {
         AggregatorOrganizer organizer = new AggregatorOrganizer(directory);
 
         organizer.setTestId(iTestId);
@@ -147,8 +148,19 @@ public class AggregateAction extends Action {
 
 
             return 0;
-        } catch (Exception e) {
-            System.err.println("Unable to aggregate the performance test reports");
+        } catch (DataNotFoundException e) {
+            if (all) {
+                System.err.println("Unable to aggregate the records: empty database");
+            }
+            else {
+                System.err.println("Unable to aggregate the records: no records matching the given ID");
+            }
+
+            return 1;
+        }
+
+        catch (Exception e) {
+            System.err.println("Unable to aggregate the reports: " + e.getMessage());
             e.printStackTrace();
             return 1;
         }

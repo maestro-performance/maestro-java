@@ -32,9 +32,8 @@ public class ReportDao extends AbstractDao {
                         ":testHost, :testHostRole, :testResult, :location, :aggregated)", report);
     }
 
-    public List<Report> fetch() {
-        return jdbcTemplate.query("select * from report",
-                new BeanPropertyRowMapper<>(Report.class));
+    public List<Report> fetch() throws DataNotFoundException {
+        return runQueryMany("select * from report", new BeanPropertyRowMapper<>(Report.class));
     }
 
     public Report fetch(int reportId) throws DataNotFoundException {
@@ -43,10 +42,10 @@ public class ReportDao extends AbstractDao {
                 reportId);
     }
 
-    public List<Report> fetch(int testId, int testNumber) {
-        return jdbcTemplate.query("select * from report where aggregated = false and test_id = ? and test_number = ? ",
-                new Object[]{ testId, testNumber },
-                new BeanPropertyRowMapper<>(Report.class));
+    public List<Report> fetch(int testId, int testNumber) throws DataNotFoundException {
+        return runQueryMany("select * from report where aggregated = false and test_id = ? and test_number = ? ",
+                new BeanPropertyRowMapper<>(Report.class),
+                new Object[]{ testId, testNumber });
     }
 
     public Report fetchAggregated(int testId, int testNumber) throws DataNotFoundException {
@@ -55,8 +54,9 @@ public class ReportDao extends AbstractDao {
                 new BeanPropertyRowMapper<>(Report.class), testId, testNumber);
     }
 
-    public List<ReportAggregationInfo> aggregationInfo() {
-        return jdbcTemplate.query("SELECT test_id,test_number,sum(aggregated) AS aggregations FROM report GROUP BY test_id,test_number ORDER BY test_id desc;",
+    public List<ReportAggregationInfo> aggregationInfo() throws DataNotFoundException {
+        return runQueryMany("SELECT test_id,test_number,sum(aggregated) AS aggregations FROM report " +
+                "GROUP BY test_id,test_number ORDER BY test_id desc",
                 new BeanPropertyRowMapper<>(ReportAggregationInfo.class));
     }
 }
