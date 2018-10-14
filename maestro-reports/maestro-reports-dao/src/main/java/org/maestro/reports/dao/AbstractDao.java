@@ -19,91 +19,134 @@ package org.maestro.reports.dao;
 import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
-import org.springframework.jdbc.core.namedparam.BeanPropertySqlParameterSource;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcDaoSupport;
-import org.springframework.jdbc.core.namedparam.SqlParameterSource;
-import org.springframework.jdbc.support.GeneratedKeyHolder;
-import org.springframework.jdbc.support.KeyHolder;
 
 import java.util.List;
 
 
+/**
+ * Base database access object for the reports code
+ */
 public abstract class AbstractDao extends NamedParameterJdbcDaoSupport {
     private static final Logger logger = LoggerFactory.getLogger(AbstractDao.class);
 
-    private JdbcTemplate jdbcTemplate = null;
+    private JdbcTemplate jdbcTemplate;
 
+    /**
+     * Constructor
+     */
     protected AbstractDao() {
         super();
 
+        logger.trace("Creating the template builder");
         TemplateBuilder tp = TemplateBuilderManager.getTemplateBuilder();
 
+        logger.trace("Building the JDBC template");
         jdbcTemplate = tp.build();
         super.setJdbcTemplate(jdbcTemplate);
     }
 
-    protected <T> T runQuery(String query, RowMapper<T> rowMapper, Object id) throws DataNotFoundException {
-        try {
-            return jdbcTemplate.queryForObject(query, rowMapper, id);
-        }
-        catch (EmptyResultDataAccessException e) {
-            throw new DataNotFoundException("A record with ID " + id + " was not found in the DB", e);
-        }
-    }
 
-    protected <T> T runQuery(String query, RowMapper<T> rowMapper, Object...args) throws DataNotFoundException {
-        try {
-            return jdbcTemplate.queryForObject(query, rowMapper, args);
-        }
-        catch (EmptyResultDataAccessException e) {
-            throw new DataNotFoundException("No matching record for the query was not found in the DB", e);
-        }
-    }
-
-    protected <T> List<T> runQueryMany(String query, RowMapper<T> rowMapper) throws DataNotFoundException {
-        try {
-            return jdbcTemplate.query(query, rowMapper);
-        }
-        catch (EmptyResultDataAccessException e) {
-            throw new DataNotFoundException("No matching record for the query was not found in the DB", e);
-        }
-    }
-
-    protected <T> List<T> runQueryMany(String query, RowMapper<T> rowMapper, Object...args) throws DataNotFoundException {
-        try {
-            return jdbcTemplate.query(query, rowMapper, args);
-        }
-        catch (EmptyResultDataAccessException e) {
-            throw new DataNotFoundException("No matching record for the query was not found in the DB", e);
-        }
-    }
-
-    protected void runUpdate(final String query, Object o) {
-        SqlParameterSource beanParameters = new BeanPropertySqlParameterSource(o);
-
-        getNamedParameterJdbcTemplate().update(query, beanParameters);
-    }
-
-    protected int runUpdate(final String query, Object...args) {
-        return jdbcTemplate.update(query, args);
-    }
-
-    protected void runEmptyInsert(final String query, Object o) {
-        SqlParameterSource beanParameters = new BeanPropertySqlParameterSource(o);
-
-        getNamedParameterJdbcTemplate().update(query, beanParameters);
+    /**
+     * Runs a DB query returning a single object
+     * @param query the query to run
+     * @param rowMapper the Spring JDBC row mapper
+     * @param id the ID
+     * @param <T> the type of the bean being returned
+     * @return A record for the query matching the specified type of bean
+     * @throws DataNotFoundException if the records are not found
+     */
+    protected <T> T runQuery(final String query, final RowMapper<T> rowMapper, final Object id) throws DataNotFoundException
+    {
+        return EasyRunner.runQuery(jdbcTemplate, query, rowMapper, id);
     }
 
 
-    protected int runInsert(final String query, Object o) {
-        SqlParameterSource beanParameters = new BeanPropertySqlParameterSource(o);
-        KeyHolder keyHolder = new GeneratedKeyHolder();
+    /**
+     * Runs a DB query returning a single object
+     * @param query the query to run
+     * @param rowMapper the Spring JDBC row mapper
+     * @param args the arguments for the query
+     * @param <T> the type of the bean being returned
+     * @return A record for the query matching the specified type of bean
+     * @throws DataNotFoundException if the records are not found
+     */
+    protected <T> T runQuery(final String query, final RowMapper<T> rowMapper, final Object...args)
+            throws DataNotFoundException
+    {
+        return EasyRunner.runQuery(jdbcTemplate, query, rowMapper, args);
+    }
 
-        getNamedParameterJdbcTemplate().update(query, beanParameters, keyHolder);
-        return keyHolder.getKey().intValue();
+
+    /**
+     * Runs a DB query returning multiple records
+     * @param query the query to run
+     * @param rowMapper the Spring JDBC row mapper
+     * @param <T> the type of the bean being returned
+     * @return A record for the query matching the specified type of bean
+     * @throws DataNotFoundException if the records are not found
+     */
+    protected <T> List<T> runQueryMany(final String query, final RowMapper<T> rowMapper) throws DataNotFoundException {
+        return EasyRunner.runQueryMany(jdbcTemplate, query, rowMapper);
+    }
+
+
+    /**
+     * Runs a DB query returning multiple records
+     * @param query the query to run
+     * @param rowMapper the Spring JDBC row mapper
+     * @param args query arguments
+     * @param <T> the type of the bean being returned
+     * @return A record for the query matching the specified type of bean
+     * @throws DataNotFoundException if the records are not found
+     */
+    protected <T> List<T> runQueryMany(final String query, final RowMapper<T> rowMapper, final Object...args)
+            throws DataNotFoundException {
+        return EasyRunner.runQueryMany(jdbcTemplate, query, rowMapper, args);
+    }
+
+
+    /**
+     * Update records in the DB
+     * @param query the query to run
+     * @param bean the bean with the data to update
+     */
+    protected void runUpdate(final String query, final Object bean) {
+        EasyRunner.runUpdate(jdbcTemplate, query, bean);
+    }
+
+
+    /**
+     * Update records in the DB
+     * @param query the query to run
+     * @param args update arguments
+     * @return the ID of the record updated
+     */
+    protected int runUpdate(final String query, final Object...args) {
+        return EasyRunner.runUpdate(jdbcTemplate, query, args);
+    }
+
+
+    /**
+     * Inserts a record in the DB
+     * @param query the query to run
+     * @param bean the bean with the data to insert
+     */
+    protected void runEmptyInsert(final String query, final Object bean) {
+        EasyRunner.runEmptyInsert(getNamedParameterJdbcTemplate(), query, bean);
+    }
+
+
+    /**
+     * Inserts a record in the DB
+     * @param query the query to run
+     * @param bean the bean with the data to insert
+     * @return the ID of the record updated
+     */
+    protected int runInsert(final String query, final Object bean) {
+        return EasyRunner.runInsert(getNamedParameterJdbcTemplate(), query, bean);
     }
 
 }
