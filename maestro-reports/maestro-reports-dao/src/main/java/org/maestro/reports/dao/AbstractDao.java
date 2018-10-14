@@ -58,9 +58,9 @@ public abstract class AbstractDao extends NamedParameterJdbcDaoSupport {
         }
     }
 
-    protected <T, Y> T runQuery(String query, RowMapper<T> rowMapper, Object...id) throws DataNotFoundException {
+    protected <T, Y> T runQuery(String query, RowMapper<T> rowMapper, Object...args) throws DataNotFoundException {
         try {
-            return jdbcTemplate.queryForObject(query, rowMapper, id);
+            return jdbcTemplate.queryForObject(query, rowMapper, args);
         }
         catch (EmptyResultDataAccessException e) {
             throw new DataNotFoundException("No matching record for the query was not found in the DB", e);
