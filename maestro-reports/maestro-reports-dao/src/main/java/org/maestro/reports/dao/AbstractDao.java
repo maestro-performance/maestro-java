@@ -16,10 +16,6 @@
 
 package org.maestro.reports.dao;
 
-import org.apache.commons.configuration.AbstractConfiguration;
-import org.apache.commons.dbcp2.BasicDataSource;
-import org.maestro.common.ConfigurationWrapper;
-import org.maestro.reports.dao.builder.ExternalDatabaseBuilder;
 import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,13 +28,13 @@ import org.springframework.jdbc.core.namedparam.SqlParameterSource;
 import org.springframework.jdbc.support.GeneratedKeyHolder;
 import org.springframework.jdbc.support.KeyHolder;
 
-import javax.sql.DataSource;
+import java.util.List;
 
 
 public abstract class AbstractDao extends NamedParameterJdbcDaoSupport {
     private static final Logger logger = LoggerFactory.getLogger(AbstractDao.class);
 
-    protected JdbcTemplate jdbcTemplate = null;
+    private JdbcTemplate jdbcTemplate = null;
 
     protected AbstractDao() {
         super();
@@ -64,6 +60,24 @@ public abstract class AbstractDao extends NamedParameterJdbcDaoSupport {
         }
         catch (EmptyResultDataAccessException e) {
             throw new DataNotFoundException("No matching record for the query was not found in the DB", e);
+        }
+    }
+
+    protected <T> List<T> runQueryMany(String query, RowMapper<T> rowMapper) throws DataNotFoundException {
+        try {
+            return jdbcTemplate.query(query, rowMapper);
+        }
+        catch (EmptyResultDataAccessException e) {
+            throw new DataNotFoundException("No matching record for the query was not found in the DB", e);
+        }
+    }
+
+    protected <T> List<T> runQueryMany(String query, RowMapper<T> rowMapper, Object id) throws DataNotFoundException {
+        try {
+            return jdbcTemplate.query(query, rowMapper, id);
+        }
+        catch (EmptyResultDataAccessException e) {
+            throw new DataNotFoundException("A record with ID " + id + " was not found in the DB", e);
         }
     }
 
