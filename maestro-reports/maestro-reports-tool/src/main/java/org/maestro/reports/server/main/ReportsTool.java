@@ -42,6 +42,9 @@ public class ReportsTool {
     private static String maestroUrl;
     private static String host;
     private static File dataDir;
+    private static boolean offline;
+
+    private static ReportsServer reportsServer;
 
     /**
      * Prints the help for the action and exit
@@ -67,6 +70,7 @@ public class ReportsTool {
         options.addOption("H", "host", true,
                 "optional hostname (to override auto-detection)");
         options.addOption("d", "data-dir", true, "Data directory");
+        options.addOption("", "offline", false, "Run without connecting to a Maestro broker");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -78,10 +82,14 @@ public class ReportsTool {
             help(options, 0);
         }
 
-        maestroUrl = cmdLine.getOptionValue('m');
-        if (maestroUrl == null) {
-            System.err.println("Maestro URL is missing (option -m)");
-            help(options, -1);
+        offline = cmdLine.hasOption("offline");
+
+        if (!offline) {
+            maestroUrl = cmdLine.getOptionValue('m');
+            if (maestroUrl == null) {
+                System.err.println("Maestro URL is missing (option -m)");
+                help(options, -1);
+            }
         }
 
 
@@ -102,6 +110,7 @@ public class ReportsTool {
             help(options, -1);
         }
         dataDir = new File(dataDirVal);
+
     }
 
     /**
@@ -127,26 +136,42 @@ public class ReportsTool {
     }
 
     private static int launchServices() {
+        final CountDownLatch latch = new CountDownLatch(1);
+        ExecutorService executors;
+
         try {
-            CountDownLatch latch = new CountDownLatch(1);
-            ExecutorService executors = Executors.newFixedThreadPool(2);
+            if (!offline) {
+                executors = Executors.newFixedThreadPool(2);
 
+                System.out.println("Starting the collector");
+                executors.submit(() -> startCollector(latch));
 
-            System.out.println("Starting the collector");
-            executors.submit(() -> startCollector(latch));
+                System.out.println("Starting the reports server");
+                executors.submit(() -> startServer(latch));
+            }
+            else {
+                executors = Executors.newSingleThreadScheduledExecutor();
 
-            System.out.println("Starting the reports server");
-            executors.submit(() -> startServer());
+                System.out.println("Starting the reports server (offline)");
+                executors.submit(() -> startServer(latch));
+            }
 
-            latch.await();
-            executors.shutdownNow();
+            try {
+                latch.await();
+                executors.shutdownNow();
+            }
+            catch (InterruptedException e) {
+                System.out.println("Interrupted");
+            }
         } catch (MaestroException e) {
             System.err.println(e.getMessage());
             e.printStackTrace();
             return 1;
-        } catch (InterruptedException e) {
-            System.out.println("Interrupted");
         }
+        finally {
+            reportsServer.stop();
+        }
+
 
         return 0;
     }
@@ -165,16 +190,21 @@ public class ReportsTool {
             Logger logger = LoggerFactory.getLogger(ReportsTool.class);
 
             logger.error("Unable to start the Maestro reports collector: {}", t.getMessage(), t);
-        }
-        finally {
             latch.countDown();
         }
-
     }
 
-    public static void startServer() {
-        ReportsServer reportsServer = new DefaultReportsServer(dataDir);
+    public static void startServer(final CountDownLatch latch) {
+        try {
+            reportsServer = new DefaultReportsServer(dataDir);
 
-        reportsServer.start();
+            reportsServer.start();
+            latch.await();
+        } catch (Throwable t) {
+            Logger logger = LoggerFactory.getLogger(ReportsTool.class);
+
+            logger.error("Unable to start the Maestro reports server: {}", t.getMessage(), t);
+            latch.countDown();
+        }
     }
 }
