@@ -17,8 +17,11 @@
 package org.maestro.reports.server.main.actions;
 
 import org.apache.commons.cli.*;
+import org.maestro.common.exceptions.MaestroException;
+import org.maestro.reports.dao.TestSutNodeLinkDao;
 import org.maestro.reports.dao.SutNodeInfoDao;
 import org.maestro.reports.dao.exceptions.DataNotFoundException;
+import org.maestro.reports.dto.TestSutNodeLinkRecord;
 import org.maestro.reports.dto.SutNodeInfo;
 
 import java.util.List;
@@ -38,12 +41,13 @@ public class SutNodeAction extends Action {
         options = new Options();
 
         options.addOption("h", "help", false, "prints the help");
-        options.addOption("a", "action", true, "action (one of: insert, view)");
-        options.addOption("i", "id", true, "sut resource id");
-        options.addOption(null, "resource-name", true, "sut resource name");
-        options.addOption(null, "os-name", true, "sut resource os name");
-        options.addOption(null, "os-arch", true, "sut resource os arch");
-        options.addOption(null, "os-version", true, "sut resource os version");
+        options.addOption("a", "action", true, "action (one of: insert, view, link)");
+        options.addOption("s", "sut-node-id", true, "sut node id");
+        options.addOption("t", "test-id", true, "test id");
+        options.addOption(null, "node-name", true, "sut node name");
+        options.addOption(null, "os-name", true, "sut node os name");
+        options.addOption(null, "os-arch", true, "sut node os arch");
+        options.addOption(null, "os-version", true, "sut node os version");
         options.addOption(null, "os-other", true, "other os version");
         options.addOption(null, "hw-name", true, "sut hardware name");
         options.addOption(null, "hw-model", true, "sut hardware model");
@@ -68,7 +72,7 @@ public class SutNodeAction extends Action {
         SutNodeInfoDao dao = new SutNodeInfoDao();
         SutNodeInfo dto = new SutNodeInfo();
 
-        dto.setSutNodeName(cmdLine.getOptionValue("resource-name"));
+        dto.setSutNodeName(cmdLine.getOptionValue("node-name"));
         dto.setSutNodeOsName(cmdLine.getOptionValue("os-name"));
         dto.setSutNodeOsArch(cmdLine.getOptionValue("os-arch"));
         dto.setSutNodeOsVersion(cmdLine.getOptionValue("os-version"));
@@ -97,6 +101,43 @@ public class SutNodeAction extends Action {
         return 0;
     }
 
+    private int link() {
+        int testId;
+        final String testIdStr = cmdLine.getOptionValue("test-id");
+        if (testIdStr == null) {
+            throw new MaestroException("Test ID is required");
+        }
+
+        try {
+            testId = Integer.parseInt(testIdStr);
+        } catch (Exception e) {
+            throw new MaestroException("Invalid test test ID value %s", testIdStr);
+        }
+
+
+        int sutNodeId;
+        final String sutNodeIdStr = cmdLine.getOptionValue("sut-node-id");
+        if (sutNodeIdStr == null) {
+            throw new MaestroException("Test ID is required");
+        }
+
+        try {
+            sutNodeId = Integer.parseInt(sutNodeIdStr);
+        } catch (Exception e) {
+            throw new MaestroException("Invalid test test ID value %s", sutNodeIdStr);
+        }
+
+        TestSutNodeLinkRecord record = new TestSutNodeLinkRecord();
+
+        record.setTestId(testId);
+        record.setSutNodeId(sutNodeId);
+
+        TestSutNodeLinkDao dao = new TestSutNodeLinkDao();
+        dao.insert(record);
+
+        return 0;
+    }
+
     @Override
     public int run() {
         if (!cmdLine.hasOption("action")) {
@@ -114,6 +155,13 @@ public class SutNodeAction extends Action {
             }
             case "view": {
                 return view();
+            }
+            case "link": {
+                return link();
+            }
+            default: {
+                System.err.println("Invalid action: " + action);
+                break;
             }
         }
 
