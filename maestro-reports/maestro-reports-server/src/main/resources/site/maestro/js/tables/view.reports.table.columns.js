@@ -1,4 +1,4 @@
-var dbColumns = [
+var reportTableColumns = [
     {
        data: "role"
     },

@@ -6,7 +6,7 @@ $(document).ready(function () {
     var url = $('[data-datatables]').attr('data-api') + '/report/' + reportId + '/properties';
 
     console.log("Loading data from " + url)
-    maestroDataTable('[data-datatables]', url)
+    maestroDataTable('[data-datatables]', url, reportTableColumns)
 })
 
 function graphLatencyDistribution(response, element, groups, yLabel) {
@@ -200,4 +200,8 @@ $(document).ready(function () {
     .catch(function (error) {
         console.log(error);
     });
+
+    var testId = getUrlVars()["test-id"];
+    var sutNodeInfoUrl = $('[sut-node-info-datatables]').attr('data-api') + testId + "/sut/node";
+    maestroDataTable('[sut-node-info-datatables]', sutNodeInfoUrl, sutNodeInfoColumns)
 })
