@@ -31,13 +31,14 @@ import java.util.List;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
-@Ignore
 public class ReportDaoTest {
     private ReportDao dao;
 
     @Before
     public void setUp() throws Exception {
-        dao = new ReportDao(new TestDatabaseBuilder("testInsert"));
+        if (dao == null) {
+            dao = new ReportDao(new TestDatabaseBuilder("testInsert"));
+        }
     }
 
     @Test
@@ -72,7 +73,7 @@ public class ReportDaoTest {
     public void testFetchById() throws DataNotFoundException {
         List<Report> reports = dao.fetch(2, 1);
 
-        assertTrue("There should be at least 3 records for the given ID", reports.size() > 3);
+        assertTrue("There should be at least 3 records for the given ID", reports.size() >= 3);
 
         long aggregatedCount = reports.stream().filter(r -> r.isAggregated()).count();
         long expectedAggCount = 0;
