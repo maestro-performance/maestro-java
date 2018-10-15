@@ -1,14 +1,3 @@
-$(document).ready(function () {
-    var reportId = getUrlVars()["report-id"];
-    var testId = getUrlVars()["test-id"];
-    var testNumber = getUrlVars()["test-number"];
-
-    var url = $('[data-datatables]').attr('data-api') + '/report/' + reportId + '/properties';
-
-    console.log("Loading data from " + url)
-    maestroDataTable('[data-datatables]', url, reportTableColumns)
-})
-
 function graphLatencyDistribution(response, element, groups, yLabel) {
     var chartData = response.data
 
@@ -94,41 +83,12 @@ function fillPercentileInformation() {
     });
 }
 
-$(document).ready(function () {
-    var reportId = getUrlVars()["report-id"];
-
-    // Draw latency distribution graph
-    var reportType = '/api/report/report/' + reportId;
-    axios.get(reportType).then(function (response) {
-        if (response.data.testHostRole == "receiver") {
-            console.log("Filling percentile information for " + response.data.testHostRole)
-            fillPercentileInformation()
-
-        }
-        else {
-            console.log("Hiding element for node type " + response.data.testHostRole)
-
-            $("#lstats").hide();
-            $("#lat-percentiles").hide();
-            $("#lstats-menu").hide();
-            $("#ldist-menu").hide();
-            $("#resp-time-info").hide();
-            $("#lat-unit-info").hide();
-        }
-    })
-    .catch(function (error) {
-        console.log(error);
-    });
-
-
-})
 
 function setRateStatisticsTable(statistics) {
     if (statistics != null) {
         $("#maxRate").text(statistics.max);
         $("#minRate").text(statistics.min);
         $("#mean").text(statistics.mean);
-//        $("#rateSample" + type).text(statistics.);
         $("#geometricMean").text(statistics.geometricMean);
         $("#stdDeviation").text(statistics.standardDeviation);
 
@@ -175,33 +135,72 @@ function rateDistributionGraph(response, element) {
     var lineChart = c3.generate(lineChartConfig);
 }
 
-
 $(document).ready(function () {
-    var reportId = getUrlVars()["report-id"];
+    var urlVars = getUrlVars()
+
+    var reportId = urlVars["report-id"];
+    var testId = urlVars["test-id"];
+    var testNumber = urlVars["test-number"];
 
     // Draw latency distribution graph
-    var rateDistributionUrl = $('[rate-graph]').attr('graph-api') + reportId;
-    axios.get(rateDistributionUrl).then(function (response) {
-        var element = '#line-chart-4';
+    var reportType = '/api/report/report/' + reportId;
+    axios.get(reportType).then(function (response) {
+        if (response.data.testHostRole == "receiver") {
+            console.log("Filling percentile information for " + response.data.testHostRole)
+            fillPercentileInformation()
 
-        rateDistributionGraph(response, element)
+        }
+        else {
+            console.log("Hiding element for node type " + response.data.testHostRole)
+
+            $("#lstats").hide();
+            $("#lat-percentiles").hide();
+            $("#lstats-menu").hide();
+            $("#ldist-menu").hide();
+            $("#resp-time-info").hide();
+            $("#lat-unit-info").hide();
+        }
+
+        if (response.data.testHostRole == "receiver" || response.data.testHostRole == "sender") {
+            var reportPropUrl = $('[data-datatables]').attr('data-api') + '/report/' + reportId + '/properties';
+
+            console.log("Loading data from " + reportPropUrl)
+            maestroDataTable('[data-datatables]', reportPropUrl, reportTableColumns)
+
+            // Draw rate distribution graph
+            var rateDistributionUrl = $('[rate-graph]').attr('graph-api') + reportId;
+            axios.get(rateDistributionUrl).then(function (response) {
+                var element = '#line-chart-4';
+
+                rateDistributionGraph(response, element)
+
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+
+            // Collect rate properties
+            var rateDistributionUrl = $('[rate-properties]').attr('rate-prop-api') + reportId;
+            axios.get(rateDistributionUrl).then(function (response) {
+                setRateStatisticsTable(response.data.Statistics[0])
+
+            })
+            .catch(function (error) {
+                console.log(error);
+            });
+
+            var sutNodeInfoUrl = $('[sut-node-info-datatables]').attr('data-api') + testId + "/sut/node";
+            maestroDataTable('[sut-node-info-datatables]', sutNodeInfoUrl, sutNodeInfoColumns)
+        }
+        else {
+            $('#propTable').hide()
+            $('#ratestatsdiv').hide()
+        }
 
     })
     .catch(function (error) {
         console.log(error);
     });
 
-    // Collect rate properties
-    var rateDistributionUrl = $('[rate-properties]').attr('rate-prop-api') + reportId;
-    axios.get(rateDistributionUrl).then(function (response) {
-        setRateStatisticsTable(response.data.Statistics[0])
 
-    })
-    .catch(function (error) {
-        console.log(error);
-    });
-
-    var testId = getUrlVars()["test-id"];
-    var sutNodeInfoUrl = $('[sut-node-info-datatables]').attr('data-api') + testId + "/sut/node";
-    maestroDataTable('[sut-node-info-datatables]', sutNodeInfoUrl, sutNodeInfoColumns)
 })
