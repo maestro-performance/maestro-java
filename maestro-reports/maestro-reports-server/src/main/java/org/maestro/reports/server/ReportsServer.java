@@ -19,4 +19,5 @@ package org.maestro.reports.server;
 public interface ReportsServer {
 
     void start();
+    void stop();
 }

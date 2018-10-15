@@ -19,23 +19,32 @@ package org.maestro.reports.server;
 import io.javalin.Javalin;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.controllers.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.File;
 
 public class DefaultReportsServer implements ReportsServer {
+    private static final Logger logger = LoggerFactory.getLogger(DefaultReportsServer.class);
     private final File dataDir;
+    private Javalin app;
 
     public DefaultReportsServer(final File dataDir) {
         this.dataDir = dataDir;
     }
 
     public void start() {
+        if (app != null) {
+            throw new MaestroException("Reports server is already started");
+        }
+
         AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
         final int port = config.getInteger("maestro.reports.server", 6500);
 
-        Javalin app = Javalin.create()
+         app = Javalin.create()
                 .port(port)
                 .enableStaticFiles("/site")
                 .enableCorsForAllOrigins()
@@ -63,6 +72,19 @@ public class DefaultReportsServer implements ReportsServer {
         app.get("/api/report/latency/aggregated/statistics/test/:id/number/:number", new AggregatedLatencyStatisticsReportController());
         app.get("/api/report/rate/:role/aggregated/test/:id/number/:number", new AggregatedRateReportController());
         app.get("/api/report/rate/:role/aggregated/statistics/test/:id/number/:number", new AggregatedRateStatisticsReportController());
+    }
+
+
+    public void stop() {
+        try {
+            logger.info("Stopping the reports server");
+            if (app != null) {
+                app.stop();
+            }
+        }
+        finally {
+            app = null;
+        }
     }
 
 
