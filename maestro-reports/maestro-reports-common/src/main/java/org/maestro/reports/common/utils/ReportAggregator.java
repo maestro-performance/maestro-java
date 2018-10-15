@@ -104,7 +104,7 @@ public class ReportAggregator {
         if (name.equals("receiver.dat")) {
             try {
                 aggregateRate(files, Role.RECEIVER);
-            } catch (IOException e) {
+            } catch (MaestroException | IOException e) {
                 logger.error("Unable to aggregate receiver rate files: {}", e.getMessage(), e);
             }
         }
@@ -112,7 +112,7 @@ public class ReportAggregator {
         if (name.equals("sender.dat")) {
             try {
                 aggregateRate(files, Role.SENDER);
-            } catch (IOException e) {
+            } catch (MaestroException | IOException e) {
                 logger.error("Unable to aggregate sender rate files: {}", e.getMessage(), e);
             }
         }
@@ -120,7 +120,7 @@ public class ReportAggregator {
         if (name.equals("receiverd-latency.hdr")) {
             try {
                 aggregateLatencies(files);
-            } catch (IOException e) {
+            } catch (MaestroException | IOException e) {
                 logger.error("Unable to aggregate receiver latency files: {}", e.getMessage(), e);
             }
         }
