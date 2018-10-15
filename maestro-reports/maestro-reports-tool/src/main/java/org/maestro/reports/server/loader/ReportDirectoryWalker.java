@@ -80,7 +80,12 @@ public class ReportDirectoryWalker extends DirectoryWalker<Object> {
                 report.setTestResult(testResultString);
                 report.setTestScript("undefined");
 
-                reportDao.insert(report);
+                try {
+                    reportDao.insert(report);
+                }
+                catch (Exception e) {
+                    logger.error("Unable to insert record: {}", e.getMessage(), e);
+                }
             }
         }
     }

@@ -1,7 +1,7 @@
 CREATE TABLE IF NOT EXISTS `report` (
   `report_id` INT NOT NULL AUTO_INCREMENT,
-  `test_id` INT NULL,
-  `test_number` INT NULL,
+  `test_id` INT NOT NULL,
+  `test_number` INT NOT NULL,
   `test_name` VARCHAR(45) NULL,
   `test_script` VARCHAR(128) NULL,
   `test_host` VARCHAR(128) NULL,
@@ -29,14 +29,10 @@ CREATE TABLE IF NOT EXISTS `sut_node_info` (
   PRIMARY KEY (`sut_node_id`));
 
 
-CREATE TABLE IF NOT EXISTS `report_sut_node_link` (
-  `report_id` INT NOT NULL,
-  `sut_node_id` VARCHAR(45) NOT NULL,
-  PRIMARY KEY (`report_id`, `sut_node_id`),
-  FOREIGN KEY (`report_id`)
-    REFERENCES `report` (`report_id`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+CREATE TABLE IF NOT EXISTS `test_sut_node_link` (
+  `test_id` INT NOT NULL,
+  `sut_node_id` INT NOT NULL,
+  PRIMARY KEY (`test_id`, `sut_node_id`),
   FOREIGN KEY (`sut_node_id`)
     REFERENCES `sut_node_info` (`sut_node_id`)
     ON DELETE NO ACTION
