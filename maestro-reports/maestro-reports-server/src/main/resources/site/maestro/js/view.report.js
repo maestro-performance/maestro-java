@@ -142,6 +142,9 @@ $(document).ready(function () {
     var testId = urlVars["test-id"];
     var testNumber = urlVars["test-number"];
 
+    var viewArchives = $('[archives-datatables]').attr('data-api') + reportId + "/files";
+    maestroDataTable('[archives-datatables]', viewArchives, archivesColumns)
+
     // Draw latency distribution graph
     var reportType = '/api/report/report/' + reportId;
     axios.get(reportType).then(function (response) {
@@ -191,11 +194,15 @@ $(document).ready(function () {
 
             var sutNodeInfoUrl = $('[sut-node-info-datatables]').attr('data-api') + testId + "/sut/node";
             maestroDataTable('[sut-node-info-datatables]', sutNodeInfoUrl, sutNodeInfoColumns)
+
+
         }
         else {
             $('#propTable').hide()
             $('#ratestatsdiv').hide()
         }
+
+
 
     })
     .catch(function (error) {
