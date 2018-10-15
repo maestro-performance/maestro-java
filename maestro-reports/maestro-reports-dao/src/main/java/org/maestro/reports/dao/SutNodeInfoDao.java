@@ -51,4 +51,11 @@ public class SutNodeInfoDao extends AbstractDao {
                 new BeanPropertyRowMapper<>(SutNodeInfo.class),
                 sutNodeId);
     }
+
+    public List<SutNodeInfo> fetchByTest(int testId) throws DataNotFoundException {
+        return runQueryMany("SELECT * FROM sut_node_info sn,test_sut_node_link tsnl " +
+                        "WHERE sn.sut_node_id = tsnl.sut_node_id AND tsnl.test_id = ?",
+                new BeanPropertyRowMapper<>(SutNodeInfo.class),
+                testId);
+    }
 }

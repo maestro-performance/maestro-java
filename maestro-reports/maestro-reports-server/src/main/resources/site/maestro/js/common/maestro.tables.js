@@ -1,4 +1,4 @@
-function maestroDataTable(element, url) {
+function maestroDataTable(element, url, dbColumns) {
     $(element).DataTable({
         columns: dbColumns,
         ajax: {

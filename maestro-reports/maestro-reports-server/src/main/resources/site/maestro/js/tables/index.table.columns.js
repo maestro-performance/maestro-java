@@ -1,4 +1,4 @@
-var dbColumns = [
+var indexDbColumns = [
     {
         data: "reportId",
         render: renderReportIdFull
