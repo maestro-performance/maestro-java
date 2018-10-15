@@ -73,6 +73,9 @@ public class DefaultReportsServer implements ReportsServer {
         app.get("/api/report/latency/aggregated/statistics/test/:id/number/:number", new AggregatedLatencyStatisticsReportController());
         app.get("/api/report/rate/:role/aggregated/test/:id/number/:number", new AggregatedRateReportController());
         app.get("/api/report/rate/:role/aggregated/statistics/test/:id/number/:number", new AggregatedRateStatisticsReportController());
+
+        app.get("/api/report/:id/files", new FileListController());
+        app.get("/raw/report/:id/files/:name", new RawFileController());
     }
 
 

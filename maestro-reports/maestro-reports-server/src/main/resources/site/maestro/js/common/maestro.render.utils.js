@@ -43,3 +43,6 @@ function renderTestFull(data, type, full, meta) {
 function renderReportIdFull(data, type, full, meta) {
     return '<a href=\"view-report.html?report-id=' + full.reportId + '&test-id=' + full.testId + '&test-number=' + full.testNumber +'\">' + data + '</a>';
 }
+function renderLink(data, type, full, meta) {
+    return '<a href=\"' + full.link + '\"><span class=\"pficon pficon-save\"></span> Download</a>';
+}
