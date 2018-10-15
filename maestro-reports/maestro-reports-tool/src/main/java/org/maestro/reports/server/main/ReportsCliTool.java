@@ -23,6 +23,7 @@ import org.maestro.common.LogConfigurator;
 import org.maestro.reports.server.main.actions.Action;
 import org.maestro.reports.server.main.actions.AggregateAction;
 import org.maestro.reports.server.main.actions.LoadAction;
+import org.maestro.reports.server.main.actions.SutNodeAction;
 
 import static java.util.Arrays.copyOfRange;
 
@@ -83,6 +84,10 @@ public class ReportsCliTool {
             }
             case "aggregate": {
                 action = new AggregateAction(newArgs);
+                break;
+            }
+            case "sut-node": {
+                action = new SutNodeAction(newArgs);
                 break;
             }
 
