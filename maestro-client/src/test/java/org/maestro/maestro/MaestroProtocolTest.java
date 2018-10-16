@@ -74,6 +74,9 @@ public class MaestroProtocolTest {
 
         tsn.setId("asfas45");
         tsn.setPeerInfo(peerInfo);
+
+        org.maestro.common.client.notes.Test test = new org.maestro.common.client.notes.Test(1, 1, "unit", "none");
+        tsn.setTest(test);
         tsn.setMessage("Test completed successfully");
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(tsn));
@@ -90,6 +93,9 @@ public class MaestroProtocolTest {
 
         tsn.setId("asfas45");
         tsn.setPeerInfo(peerInfo);
+
+        org.maestro.common.client.notes.Test test = new org.maestro.common.client.notes.Test(1, 1, "unit", "none");
+        tsn.setTest(test);
         tsn.setMessage("Test failed");
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(tsn));

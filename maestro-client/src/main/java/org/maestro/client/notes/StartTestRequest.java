@@ -35,12 +35,7 @@ public class StartTestRequest extends MaestroRequest<MaestroEventListener> {
     public StartTestRequest(final MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_START_TEST, unpacker);
 
-        int testNumber = unpacker.unpackInt();
-        int testIteration = unpacker.unpackInt();
-        String testName = unpacker.unpackString();
-        String scriptName = unpacker.unpackString();
-
-        this.test = new Test(testNumber, testIteration, testName, scriptName);
+        this.test = SerializationUtils.unpackTest(unpacker);
     }
 
     public Test getTest() {
@@ -51,10 +46,7 @@ public class StartTestRequest extends MaestroRequest<MaestroEventListener> {
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
-        packer.packInt(test.getTestNumber());
-        packer.packInt(test.getTestIteration());
-        packer.packString(test.getTestName());
-        packer.packString(test.getScriptName());
+        SerializationUtils.packTest(packer, test);
 
         return packer;
     }

@@ -17,6 +17,7 @@
 package org.maestro.common.client;
 
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.Test;
 
 /**
  * Provides an interface that can be used by peers, workers, etc to publish
@@ -52,13 +53,13 @@ public interface MaestroReceiver {
      * Publishes a test success notification message in the broker
      * @param message payload message
      */
-    void notifySuccess(final String message);
+    void notifySuccess(final Test test, final String message);
 
     /**
      * Publishes a test failure notification message in the broker
      * @param message payload message
      */
-    void notifyFailure(final String message);
+    void notifyFailure(final Test test, final String message);
 
     /**
      * Publishes an abnormal disconnect notification message in the broker

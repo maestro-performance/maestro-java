@@ -26,6 +26,7 @@ import org.maestro.client.notes.*;
 import org.maestro.common.Role;
 import org.maestro.common.URLQuery;
 import org.maestro.common.client.exceptions.MalformedNoteException;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.test.TestProperties;
@@ -51,6 +52,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     private final WorkerOptions workerOptions;
     private boolean running = true;
     private GroupInfo groupInfo;
+    private Test currentTest;
 
     /**
      * Constructor
@@ -452,11 +454,15 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     @Override
     public void handle(final StartTestRequest note) {
-        // NO-OP
+        currentTest = note.getTest();
     }
 
     @Override
     public void handle(final StopTestRequest note) {
-        // NO-OP
+        currentTest = null;
+    }
+
+    protected Test getCurrentTest() {
+        return currentTest;
     }
 }

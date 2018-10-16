@@ -18,6 +18,7 @@ package org.maestro.inspector.amqp;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.MaestroReceiver;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
@@ -62,6 +63,7 @@ public class InterconnectInspector implements MaestroInspector {
 
     private WorkerOptions workerOptions;
     private InterconnectReadData interconnectReadData;
+    private Test test;
 
     private final int interval;
 
@@ -72,17 +74,17 @@ public class InterconnectInspector implements MaestroInspector {
     }
 
     @Override
-    public void setUrl(String url) {
+    public void setUrl(final String url) {
         this.url = url;
     }
 
     @Override
-    public void setUser(String user) {
+    public void setUser(final String user) {
         this.user = user;
     }
 
     @Override
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 
@@ -94,13 +96,18 @@ public class InterconnectInspector implements MaestroInspector {
     }
 
     @Override
-    public void setBaseLogDir(File baseLogDir) {
+    public void setBaseLogDir(final File baseLogDir) {
         this.baseLogDir = baseLogDir;
     }
 
     @Override
-    public void setEndpoint(MaestroReceiver endpoint) {
+    public void setEndpoint(final MaestroReceiver endpoint) {
         this.endpoint = endpoint;
+    }
+
+    @Override
+    public void setTest(final Test test) {
+        this.test = test;
     }
 
     public boolean isRunning() {
@@ -202,17 +209,17 @@ public class InterconnectInspector implements MaestroInspector {
             }
 
             TestLogUtils.createSymlinks(this.baseLogDir, false);
-            endpoint.notifySuccess("Inspector finished successfully");
+            endpoint.notifySuccess(test, "Inspector finished successfully");
             logger.debug("The test has finished and the Artemis inspector is terminating");
 
             return 0;
         } catch (InterruptedException eie) {
             TestLogUtils.createSymlinks(this.baseLogDir, false);
-            endpoint.notifySuccess("Inspector finished successfully");
+            endpoint.notifySuccess(test, "Inspector finished successfully");
             return 0;
         } catch (Exception e) {
             TestLogUtils.createSymlinks(this.baseLogDir, true);
-            endpoint.notifyFailure("Inspector failed");
+            endpoint.notifyFailure(test, "Inspector failed");
             throw e;
         } finally {
             startedEpochMillis = Long.MIN_VALUE;

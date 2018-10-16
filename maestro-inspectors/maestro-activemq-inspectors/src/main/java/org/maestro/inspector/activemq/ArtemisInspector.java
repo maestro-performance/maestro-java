@@ -22,6 +22,7 @@ import org.jolokia.client.J4pClient;
 import org.jolokia.client.exception.J4pException;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.MaestroReceiver;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
@@ -61,6 +62,8 @@ public class ArtemisInspector implements MaestroInspector {
 
     private ArtemisDataReader artemisDataReader;
 
+    private Test test;
+
     private final int interval;
 
     public ArtemisInspector() {
@@ -68,6 +71,7 @@ public class ArtemisInspector implements MaestroInspector {
         interval = config.getInteger("inspector.sleep.interval", 5000);
     }
 
+    @Override
     public void setUrl(final String value) {
         try {
             URL url = new URL(value);
@@ -93,14 +97,17 @@ public class ArtemisInspector implements MaestroInspector {
         }
     }
 
+    @Override
     public void setUser(final String user) {
         this.user = user;
     }
 
+    @Override
     public void setPassword(final String password) {
         this.password = password;
     }
 
+    @Override
     public void setWorkerOptions(final WorkerOptions workerOptions) throws DurationParseException {
         this.duration = TestDurationBuilder.build(workerOptions.getDuration());
 
@@ -115,6 +122,11 @@ public class ArtemisInspector implements MaestroInspector {
     @Override
     public void setEndpoint(MaestroReceiver endpoint) {
         this.endpoint = endpoint;
+    }
+
+    @Override
+    public void setTest(final Test test) {
+        this.test = test;
     }
 
     public boolean isRunning() {
@@ -179,18 +191,18 @@ public class ArtemisInspector implements MaestroInspector {
             }
 
             TestLogUtils.createSymlinks(this.baseLogDir, false);
-            endpoint.notifySuccess("Inspector finished successfully");
+            endpoint.notifySuccess(test, "Inspector finished successfully");
             logger.debug("The test has finished and the Artemis inspector is terminating");
 
             return 0;
         } catch (InterruptedException eie) {
             TestLogUtils.createSymlinks(this.baseLogDir, false);
-            endpoint.notifySuccess("Inspector finished successfully");
+            endpoint.notifySuccess(test, "Inspector finished successfully");
             return 0;
         }
         catch (Exception e) {
             TestLogUtils.createSymlinks(this.baseLogDir, true);
-            endpoint.notifyFailure("Inspector failed");
+            endpoint.notifyFailure(test, "Inspector failed");
             throw e;
         }
         finally {
