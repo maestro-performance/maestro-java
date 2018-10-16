@@ -373,7 +373,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
                 hash = "";
             }
 
-            getClient().logResponse(file, note.getLocationType(), hash);
+            getClient().logResponse(file, note, hash);
         }
     }
 
