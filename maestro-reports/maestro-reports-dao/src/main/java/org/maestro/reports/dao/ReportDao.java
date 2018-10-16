@@ -34,8 +34,8 @@ public class ReportDao extends AbstractDao {
         super(tp);
     }
 
-    public int insert(final Report report) {
-        return runInsert(
+    public void insert(final Report report) {
+        runEmptyInsert(
                 "insert into report(test_id, test_number, test_name, test_script, test_host, test_host_role, " +
                         "test_result, location, aggregated) values(:testId, :testNumber, :testName, :testScript, " +
                         ":testHost, :testHostRole, :testResult, :location, :aggregated)", report);

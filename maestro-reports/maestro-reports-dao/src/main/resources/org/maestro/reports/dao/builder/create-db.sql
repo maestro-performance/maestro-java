@@ -9,6 +9,7 @@ CREATE TABLE IF NOT EXISTS `report` (
   `test_result` VARCHAR(45) NULL,
   `location` VARCHAR(1024) NULL,
   `aggregated` BOOLEAN,
+  `test_date` TIMESTAMP NOT NULL DEFAULT NOW(),
 PRIMARY KEY (`report_id`));
 
 

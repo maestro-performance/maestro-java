@@ -17,6 +17,7 @@
 package org.maestro.reports.server.loader;
 
 import org.apache.commons.io.DirectoryWalker;
+import org.apache.commons.io.FileUtils;
 import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dto.Report;
 import org.slf4j.Logger;
@@ -24,6 +25,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
 import java.util.LinkedList;
 

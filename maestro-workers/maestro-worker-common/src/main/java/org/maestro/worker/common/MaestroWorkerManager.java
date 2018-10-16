@@ -454,11 +454,15 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     @Override
     public void handle(final StartTestRequest note) {
+        logger.info("Starting a new test: {}", note.getTest());
         currentTest = note.getTest();
+
+        getClient().replyOk(note);
     }
 
     @Override
     public void handle(final StopTestRequest note) {
+        logger.info("Stopping a test: {}", currentTest);
         currentTest = null;
     }
 

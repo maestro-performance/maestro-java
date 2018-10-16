@@ -41,6 +41,10 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.time.Duration;
+import java.time.Instant;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class DefaultReportsCollector extends MaestroWorkerManager implements MaestroLogCollectorListener {
     private static final Logger logger = LoggerFactory.getLogger(DefaultReportsCollector.class);
@@ -51,12 +55,26 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
     private final File dataDir;
     private Report report;
-
+    private Instant lastDownload = Instant.now();
+    private AggregationService aggregationService;
 
     public DefaultReportsCollector(final String maestroURL, final PeerInfo peerInfo, final File dataDir) {
         super(maestroURL, peerInfo);
 
         this.dataDir = dataDir;
+        aggregationService = new AggregationService(dataDir.getPath());
+
+        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::runAggregation, 0, 60,
+                TimeUnit.SECONDS);
+    }
+
+    private void runAggregation() {
+        long elapsed = Duration.between(lastDownload, Instant.now()).getSeconds();
+
+        logger.info("Running the aggregation service: {}", elapsed);
+        if (elapsed >= 60) {
+            aggregationService.aggregate();
+        }
     }
 
     protected void logRequest(final MaestroNotification note, LocationType locationType) {
@@ -68,7 +86,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         logger.debug("Sending log request to {}", topic);
 
         request.setLocationType(locationType);
-
+        request.correlate(note);
 
         try {
             super.getClient().publish(topic, request);
@@ -93,6 +111,8 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         logRequest(note, LocationType.LAST_SUCCESS);
 
         createNewReportRecord(ResultStrings.SUCCESS, note.getPeerInfo());
+
+        //
     }
 
     private void createNewReportRecord(final String testResultString, final PeerInfo peerInfo) {
@@ -152,6 +172,8 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     @Override
     public void handle(LogResponse note) {
         save(note);
+
+        lastDownload = Instant.now();
     }
 
     @Override
