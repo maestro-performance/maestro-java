@@ -69,6 +69,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
         request.setLocationType(locationType);
 
+
         try {
             super.getClient().publish(topic, request);
         } catch (Exception e) {
@@ -77,7 +78,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     }
 
     @Override
-    public void handle(TestFailedNotification note) {
+    public void handle(final TestFailedNotification note) {
         super.handle(note);
 
         logRequest(note, LocationType.LAST_FAILED);
@@ -86,7 +87,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     }
 
     @Override
-    public void handle(TestSuccessfulNotification note) {
+    public void handle(final TestSuccessfulNotification note) {
         super.handle(note);
 
         logRequest(note, LocationType.LAST_SUCCESS);
