@@ -67,9 +67,9 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
             apply.accept(getMaestro(), distributionStrategy);
 
             try {
-                startServices(testProfile, distributionStrategy);
-
                 testStart(test);
+
+                startServices(testProfile, distributionStrategy);
 
                 ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
 

@@ -82,9 +82,9 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             testProfile.apply(getMaestro(), distributionStrategy);
 
             try {
-                startServices(testProfile, distributionStrategy);
-
                 testStart(test);
+
+                startServices(testProfile, distributionStrategy);
 
                 long timeout = getTimeout();
                 logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);

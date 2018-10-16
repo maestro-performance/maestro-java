@@ -74,6 +74,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
             createInspector(note, inspectorMap.get(note.getPayload()));
 
             inspector.setWorkerOptions(getWorkerOptions());
+            inspector.setTest(getCurrentTest());
 
             InspectorContainer inspectorContainer = new InspectorContainer(inspector);
 
@@ -139,7 +140,6 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
             stopInspectorThread();
         }
     }
-
 
 
     @Override

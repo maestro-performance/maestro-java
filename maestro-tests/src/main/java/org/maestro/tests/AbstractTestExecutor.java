@@ -64,9 +64,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     }
 
     protected void testStart(final Test test) {
-        String destination = MaestroTopics.peerTopic(Role.REPORTS_SERVER);
-
-        exec(maestro::startTest, destination, test);
+        exec(maestro::startTest, MaestroTopics.PEER_TOPIC, test);
 
         running = true;
         startTime = Instant.now();
