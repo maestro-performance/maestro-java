@@ -28,6 +28,7 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.client.notes.LocationType;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
 import org.slf4j.Logger;
@@ -128,13 +129,14 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
 
 
     @Override
-    public void notifySuccess(String message) {
+    public void notifySuccess(final Test test, final String message) {
         logger.trace("Sending the test success notification from {}", this.toString());
         TestSuccessfulNotification notification = new TestSuccessfulNotification();
 
         notification.setPeerInfo(peerInfo);
         notification.setId(id);
 
+        notification.setTest(test);
         notification.setMessage(message);
 
         try {
@@ -145,7 +147,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     }
 
     @Override
-    public void notifyFailure(String message) {
+    public void notifyFailure(final Test test, final String message) {
         logger.trace("Sending the test success notification from {}", this.toString());
         TestFailedNotification notification = new TestFailedNotification();
 

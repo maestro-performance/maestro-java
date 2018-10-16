@@ -17,12 +17,14 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.maestro.common.client.notes.Test;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
 public class TestSuccessfulNotification extends MaestroNotification {
+    private Test test;
     private String message;
 
     public TestSuccessfulNotification() {
@@ -32,7 +34,16 @@ public class TestSuccessfulNotification extends MaestroNotification {
     public TestSuccessfulNotification(MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_NOTIFY_SUCCESS, unpacker);
 
+        this.test = SerializationUtils.unpackTest(unpacker);
         message = unpacker.unpackString();
+    }
+
+    public Test getTest() {
+        return test;
+    }
+
+    public void setTest(Test test) {
+        this.test = test;
     }
 
     public String getMessage() {
@@ -52,6 +63,7 @@ public class TestSuccessfulNotification extends MaestroNotification {
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
+        SerializationUtils.packTest(packer, test);
         packer.packString(message);
 
         return packer;

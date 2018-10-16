@@ -17,6 +17,7 @@
 package org.maestro.worker.common.watchdog;
 
 import org.maestro.client.MaestroReceiverClient;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerStateInfo;
@@ -39,24 +40,26 @@ public class WorkerShutdownObserver implements WatchdogObserver {
 
     private final File logDir;
     private final MaestroReceiverClient client;
+    private final Test test;
 
-    public WorkerShutdownObserver(final File logDir, final MaestroReceiverClient client) {
+    public WorkerShutdownObserver(final File logDir, final MaestroReceiverClient client, final Test test) {
         this.logDir = logDir;
         this.client = client;
+        this.test = test;
     }
 
     private void sendTestNotification(boolean failed, String exceptionMessage) {
 
         if (failed) {
             if (exceptionMessage != null) {
-                client.notifyFailure(exceptionMessage);
+                client.notifyFailure(test, exceptionMessage);
             }
             else {
-                client.notifyFailure("Unhandled worker error");
+                client.notifyFailure(test,"Unhandled worker error");
             }
         }
         else {
-            client.notifySuccess("Test completed successfully");
+            client.notifySuccess(test, "Test completed successfully");
         }
     }
 

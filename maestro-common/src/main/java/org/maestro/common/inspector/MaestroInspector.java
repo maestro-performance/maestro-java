@@ -17,6 +17,7 @@
 package org.maestro.common.inspector;
 
 import org.maestro.common.client.MaestroReceiver;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.worker.WorkerOptions;
@@ -34,6 +35,8 @@ public interface MaestroInspector extends TestDuration.TestProgress {
     void setWorkerOptions(WorkerOptions workerOptions) throws DurationParseException;
 
     void setBaseLogDir(File logDir);
+
+    void setTest(Test test);
 
     void setEndpoint(MaestroReceiver endpoint);
 

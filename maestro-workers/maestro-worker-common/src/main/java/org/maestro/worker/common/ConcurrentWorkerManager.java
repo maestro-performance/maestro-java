@@ -74,7 +74,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     private boolean doWorkerStart(final MaestroNote note, final Class<?> workerClass) {
         if (container.isTestInProgress()) {
             logger.warn("Trying to start a new test, but a test execution is already in progress");
-            getClient().notifyFailure("Test already in progress");
+            getClient().notifyFailure(getCurrentTest(), "Test already in progress");
 
             return false;
         }
@@ -124,7 +124,8 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
             // Note: it uses the base log dir because of the symlinks
             logger.debug("Setting up the observer: worker shutdown observer");
-            WorkerShutdownObserver workerShutdownObserver = new WorkerShutdownObserver(logDir, getClient());
+            WorkerShutdownObserver workerShutdownObserver = new WorkerShutdownObserver(logDir, getClient(),
+                    getCurrentTest());
             container.getObservers().add(workerShutdownObserver);
 
             if (MaestroReceiverWorker.class.isAssignableFrom(workerClass)) {
@@ -272,7 +273,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     private boolean drainStart(final WorkerOptions drainOptions, final MaestroNote note, final Class<MaestroWorker> workerClass) {
         if (container.isTestInProgress()) {
             logger.warn("Trying to start a new drain operation, but a test execution is in progress");
-            getClient().notifyFailure("Cannot drain while running a test");
+            getClient().notifyFailure(getCurrentTest(), "Cannot drain while running a test");
 
             return false;
         }
@@ -293,10 +294,11 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             logger.debug("Removing previous observers");
             container.getObservers().clear();
 
-            // Note: it uses the base log dir because of the symlinks
-            logger.debug("Setting up the observer: worker shutdown observer");
-            WorkerShutdownObserver workerShutdownObserver = new WorkerShutdownObserver(logDir, getClient());
-            container.getObservers().add(workerShutdownObserver);
+            // TODO: wrong. drain should not sent test notifications
+//            logger.debug("Setting up the observer: worker shutdown observer");
+//            WorkerShutdownObserver workerShutdownObserver = new WorkerShutdownObserver(logDir, getClient(),
+//                    getCurrentTest());
+//            container.getObservers().add(workerShutdownObserver);
 
             logger.debug("Setting up the observer: worker cleanup observer");
             container.getObservers().add(new CleanupObserver());
