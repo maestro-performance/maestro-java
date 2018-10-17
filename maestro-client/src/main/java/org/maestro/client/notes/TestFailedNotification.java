@@ -63,7 +63,7 @@ public class TestFailedNotification extends MaestroNotification {
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
-        SerializationUtils.packTest(packer, test);
+        SerializationUtils.pack(packer, test);
         packer.packString(message);
 
         return packer;

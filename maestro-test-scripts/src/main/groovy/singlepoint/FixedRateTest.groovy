@@ -108,7 +108,10 @@ ManagementInterface.setupInterface(managementInterface, inspectorName, testProfi
 AbstractFixedRateExecutor testExecutor = FixedRateTestExecutorFactory.newTestExecutor(maestro, testProfile, warmUp,
         distributionStrategy)
 
-boolean ret = testExecutor.run(this.class.getSimpleName())
+description = System.getenv("TEST_DESCRIPTION")
+comments = System.getenv("TEST_COMMENTS")
+
+boolean ret = testExecutor.run(this.class.getSimpleName(), description, comments)
 
 maestro.stop()
 

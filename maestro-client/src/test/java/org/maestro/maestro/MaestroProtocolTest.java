@@ -75,7 +75,8 @@ public class MaestroProtocolTest {
         tsn.setId("asfas45");
         tsn.setPeerInfo(peerInfo);
 
-        org.maestro.common.client.notes.Test test = new org.maestro.common.client.notes.Test(1, 1, "unit", "none");
+        org.maestro.common.client.notes.Test test = new org.maestro.common.client.notes.Test(1, 1,
+                "unit", "none", new TestDetails());
         tsn.setTest(test);
         tsn.setMessage("Test completed successfully");
 
@@ -94,7 +95,8 @@ public class MaestroProtocolTest {
         tsn.setId("asfas45");
         tsn.setPeerInfo(peerInfo);
 
-        org.maestro.common.client.notes.Test test = new org.maestro.common.client.notes.Test(1, 1, "unit", "none");
+        org.maestro.common.client.notes.Test test = new org.maestro.common.client.notes.Test(1, 1,
+                "unit", "none", new TestDetails());
         tsn.setTest(test);
         tsn.setMessage("Test failed");
 

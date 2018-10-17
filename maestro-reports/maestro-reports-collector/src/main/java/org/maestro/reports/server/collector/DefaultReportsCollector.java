@@ -23,8 +23,11 @@ import org.maestro.client.notes.*;
 import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.LocationType;
 import org.maestro.common.client.notes.Test;
+import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroConnectionException;
+import org.maestro.common.test.TestProperties;
 import org.maestro.common.worker.TestLogUtils;
+import org.maestro.common.worker.WorkerOptions;
 import org.maestro.reports.common.organizer.DefaultOrganizer;
 import org.maestro.common.ResultStrings;
 import org.maestro.reports.dao.ReportDao;
@@ -174,9 +177,10 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(final StartTestRequest note) {
-        Test requestedTest = note.getTest();
+        final Test requestedTest = note.getTest();
 
         report = new Report();
+
 
         if (requestedTest.getTestNumber() == Test.NEXT) {
             final File testDataDir = TestLogUtils.nextTestLogDir(dataDir);
@@ -199,8 +203,10 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
             report.setTestNumber(TestLogUtils.testLogDirNum(lastIterationDir));
         }
 
-        report.setTestName(note.getTest().getTestName());
-        report.setTestScript(note.getTest().getScriptName());
+        report.setTestName(requestedTest.getTestName());
+        report.setTestScript(requestedTest.getScriptName());
+        report.setTestDescription(requestedTest.getTestDetails().getTestDescription());
+        report.setTestComments(requestedTest.getTestDetails().getTestComments());
 
         super.getClient().replyOk(note);
     }

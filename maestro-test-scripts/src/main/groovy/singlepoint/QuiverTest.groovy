@@ -57,7 +57,7 @@ class QuiverExecutor extends FlexibleTestExecutor {
     }
 
     @Override
-    boolean run(final String scriptName) {
+    boolean run(final String scriptName, final String description, final String comments) {
         return run(this.class.getSimpleName(), 0)
     }
 }

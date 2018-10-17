@@ -18,6 +18,7 @@ package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.client.notes.Test;
+import org.maestro.common.client.notes.TestDetails;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
@@ -46,7 +47,7 @@ public class StartTestRequest extends MaestroRequest<MaestroEventListener> {
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
-        SerializationUtils.packTest(packer, test);
+        SerializationUtils.pack(packer, test);
 
         return packer;
     }

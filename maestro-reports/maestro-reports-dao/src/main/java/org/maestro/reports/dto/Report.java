@@ -34,6 +34,8 @@ public class Report {
     private String location;
     private boolean aggregated;
     private Date testDate;
+    private String testDescription;
+    private String testComments;
 
     public int getReportId() {
         return reportId;
@@ -123,6 +125,22 @@ public class Report {
         this.testDate = testDate;
     }
 
+    public String getTestDescription() {
+        return testDescription;
+    }
+
+    public void setTestDescription(String testDescription) {
+        this.testDescription = testDescription;
+    }
+
+    public String getTestComments() {
+        return testComments;
+    }
+
+    public void setTestComments(String testComments) {
+        this.testComments = testComments;
+    }
+
     /**
      * Aggregates a set of reports with the given location
      * @param reports the list of reports to aggregate
@@ -153,7 +171,9 @@ public class Report {
         }
 
         report.setLocation(location);
-        report.setTestDate(report.testDate);
+        report.setTestDate(firstReport.testDate);
+        report.setTestDescription(firstReport.testDescription);
+        report.setTestComments(firstReport.testComments);
 
         return report;
     }
