@@ -26,6 +26,7 @@ import org.maestro.client.notes.*;
 import org.maestro.common.Role;
 import org.maestro.common.URLQuery;
 import org.maestro.common.client.exceptions.MalformedNoteException;
+import org.maestro.common.client.notes.LocationTypeInfo;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroConnectionException;
@@ -349,7 +350,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
             return;
         }
 
-        File[] files = logSubDir.listFiles();
+        final File[] files = logSubDir.listFiles();
         if (files == null) {
             logger.error("The client request log files, but the location does not contain any");
 
@@ -358,6 +359,11 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
             return;
         }
+
+        int index = 0;
+        final LocationTypeInfo locationTypeInfo = new LocationTypeInfo();
+
+        locationTypeInfo.setFileCount(files.length);
 
         for (File file : files) {
             logger.debug("Sending log file {} with location type {}", file.getName(),
@@ -373,7 +379,9 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
                 hash = "";
             }
 
-            getClient().logResponse(file, note, hash);
+            locationTypeInfo.setIndex(index);
+            getClient().logResponse(file, note, hash, locationTypeInfo);
+            index++;
         }
     }
 

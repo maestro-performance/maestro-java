@@ -18,6 +18,7 @@ package org.maestro.client.notes;
 
 import org.apache.commons.io.FileUtils;
 import org.maestro.common.client.notes.LocationType;
+import org.maestro.common.client.notes.LocationTypeInfo;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.exceptions.MaestroException;
 import org.msgpack.core.MessageBufferPacker;
@@ -37,6 +38,7 @@ public class LogResponse extends MaestroData<MaestroLogCollectorListener> {
     protected static final int LOG_RESPONSE_MAX_PAYLOAD_SIZE = 10000000;
 
     private LocationType locationType;
+    private LocationTypeInfo locationTypeInfo;
     private String fileName;
     private int index = 0;
     private int total;
@@ -59,6 +61,7 @@ public class LogResponse extends MaestroData<MaestroLogCollectorListener> {
         super(MaestroCommand.MAESTRO_NOTE_LOG, unpacker);
 
         this.locationType = LocationType.byCode(unpacker.unpackInt());
+        this.locationTypeInfo = SerializationUtils.unpackLocationTypeInfo(unpacker);
         setFileName(unpacker.unpackString());
         setIndex(unpacker.unpackInt());
         setTotal(unpacker.unpackInt());
@@ -75,8 +78,16 @@ public class LogResponse extends MaestroData<MaestroLogCollectorListener> {
         return locationType;
     }
 
-    public void setLocationType(LocationType locationType) {
+    public void setLocationType(final LocationType locationType) {
         this.locationType = locationType;
+    }
+
+    public LocationTypeInfo getLocationTypeInfo() {
+        return locationTypeInfo;
+    }
+
+    public void setLocationTypeInfo(final LocationTypeInfo locationTypeInfo) {
+        this.locationTypeInfo = locationTypeInfo;
     }
 
     public String getFileName() {
@@ -160,6 +171,7 @@ public class LogResponse extends MaestroData<MaestroLogCollectorListener> {
 
         try {
             packer.packInt(locationType.getCode());
+            SerializationUtils.pack(packer, this.locationTypeInfo);
             packer.packString(fileName);
             packer.packInt(index);
             packer.packInt(total);

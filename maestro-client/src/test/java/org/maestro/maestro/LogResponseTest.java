@@ -21,12 +21,9 @@ import org.maestro.client.exchange.MaestroDeserializer;
 import org.maestro.client.exchange.support.DefaultGroupInfo;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.exchange.support.WorkerPeer;
-import org.maestro.common.client.notes.LocationType;
+import org.maestro.common.client.notes.*;
 import org.maestro.client.notes.LogResponse;
 import org.maestro.common.Role;
-import org.maestro.common.client.notes.MaestroCommand;
-import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.common.client.notes.MaestroNoteType;
 import org.maestro.contrib.utils.digest.Sha1Digest;
 
 import java.io.IOException;
@@ -96,6 +93,11 @@ public class LogResponseTest {
         logResponse.setFileSize(903);
         logResponse.setTotal(1);
         logResponse.setLocationType(LocationType.ANY);
+
+        LocationTypeInfo locationTypeInfo = new LocationTypeInfo();
+        locationTypeInfo.setFileCount(1);
+        locationTypeInfo.setIndex(0);
+        logResponse.setLocationTypeInfo(locationTypeInfo);
         logResponse.setFileHash(logResponse.calculateHash());
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(logResponse));
@@ -125,6 +127,10 @@ public class LogResponseTest {
         logResponse.setTotal(2);
         logResponse.setTestChunkSize(10);
         logResponse.setLocationType(LocationType.ANY);
+        LocationTypeInfo locationTypeInfo = new LocationTypeInfo();
+        locationTypeInfo.setFileCount(1);
+        locationTypeInfo.setIndex(0);
+        logResponse.setLocationTypeInfo(locationTypeInfo);
         logResponse.setFileHash(logResponse.calculateHash());
 
 

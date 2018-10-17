@@ -27,6 +27,7 @@ import org.maestro.client.notes.InternalError;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.MaestroReceiver;
 import org.maestro.common.client.notes.LocationType;
+import org.maestro.common.client.notes.LocationTypeInfo;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.duration.EpochClocks;
@@ -205,13 +206,14 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
      * @param note the requesting note
      * @param hash the hash for the file being sent
      */
-    public void logResponse(final File logFile, final LogRequest note, final String hash) {
+    public void logResponse(final File logFile, final LogRequest note, final String hash, final LocationTypeInfo locationTypeInfo) {
         LogResponse logResponse = new LogResponse();
 
         logResponse.setPeerInfo(peerInfo);
         logResponse.setId(id);
 
         logResponse.setLocationType(note.getLocationType());
+        logResponse.setLocationTypeInfo(locationTypeInfo);
         logResponse.setFile(logFile);
         logResponse.setFileHash(hash);
         logResponse.correlate(note);

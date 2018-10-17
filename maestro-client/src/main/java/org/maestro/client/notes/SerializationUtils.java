@@ -16,6 +16,8 @@
 
 package org.maestro.client.notes;
 
+import org.maestro.common.client.notes.LocationType;
+import org.maestro.common.client.notes.LocationTypeInfo;
 import org.maestro.common.client.notes.Test;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
@@ -38,5 +40,21 @@ class SerializationUtils {
         packer.packInt(test.getTestIteration());
         packer.packString(test.getTestName());
         packer.packString(test.getScriptName());
+    }
+
+    public static LocationTypeInfo unpackLocationTypeInfo(final MessageUnpacker unpacker) throws IOException {
+
+        LocationTypeInfo ret = new LocationTypeInfo();
+
+        ret.setIndex(unpacker.unpackInt());
+        ret.setFileCount(unpacker.unpackInt());
+
+        return ret;
+    }
+
+    public static void pack(final MessageBufferPacker packer, final LocationTypeInfo locationTypeInfo) throws IOException {
+        packer.packInt(locationTypeInfo.getIndex());
+        packer.packInt(locationTypeInfo.getFileCount());
+
     }
 }
