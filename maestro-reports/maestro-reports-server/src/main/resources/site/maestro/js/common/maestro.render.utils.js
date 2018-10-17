@@ -37,11 +37,13 @@ function renderRoundedRate(data, type, full, meta) {
 }
 
 function renderTestFull(data, type, full, meta) {
-    return '<a href=\"view-test-report.html?test-id=' + full.testId + '&test-number=' + full.testNumber +'\">' + data + '</a>';
+    return '<a href=\"view-test-report.html?test-id=' + full.testId + '&test-number=' + full.testNumber +
+    '\"><span class=\"pficon pficon-cluster\"></span> View Test ' + data +'</a>';
 }
 
 function renderReportIdFull(data, type, full, meta) {
-    return '<a href=\"view-report.html?report-id=' + full.reportId + '&test-id=' + full.testId + '&test-number=' + full.testNumber +'\">' + data + '</a>';
+    return '<a href=\"view-report.html?report-id=' + full.reportId + '&test-id=' + full.testId + '&test-number='
+    + full.testNumber +'\"><span class=\"pficon pficon-container-node\"></span> View Node Report ' + data +'</a>';
 }
 function renderLink(data, type, full, meta) {
     return '<a href=\"' + full.link + '\"><span class=\"pficon pficon-save\"></span> Download</a>';

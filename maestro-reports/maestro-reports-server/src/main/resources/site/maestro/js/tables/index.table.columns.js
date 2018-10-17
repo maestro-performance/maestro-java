@@ -1,11 +1,15 @@
 var indexDbColumns = [
     {
-        data: "reportId",
-        render: renderReportIdFull
+        data: "testDate",
+        render: simpleDateRender
     },
     {
         data: "testId",
         render: renderTestFull
+    },
+    {
+        data: "reportId",
+        render: renderReportIdFull
     },
     { data: "testNumber" },
     { data: "testName" },
@@ -17,4 +21,5 @@ var indexDbColumns = [
         render: resultRender
     },
     { data: "location" },
+
 ];
