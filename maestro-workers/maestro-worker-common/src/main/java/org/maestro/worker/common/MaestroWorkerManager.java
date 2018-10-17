@@ -179,10 +179,8 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     }
 
 
-    void writeTestProperties(final File testLogDir) throws IOException, DurationParseException {
+    protected TestProperties getTestProperties(final String testNumber) throws DurationParseException {
         TestProperties testProperties = new TestProperties();
-
-        final String testNumber = testLogDir.getName();
 
         final String brokerURL = workerOptions.getBrokerURL();
         logger.info("Broker URL for test {}: {}", testNumber, brokerURL);
@@ -226,16 +224,22 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         testProperties.setApiName("JMS");
         testProperties.setApiVersion("1.1");
 
-        PropertyWriter writer = new PropertyWriter();
+        return testProperties;
+    }
+
+
+    protected void writeTestProperties(final File testLogDir) throws IOException, DurationParseException {
+        final String testNumber = testLogDir.getName();
+        final TestProperties testProperties = getTestProperties(testNumber);
+
+        logger.info("Test properties for test {}: {}", testNumber, testProperties.toString());
+
+        final PropertyWriter writer = new PropertyWriter();
         writer.write(testProperties, new File(testLogDir, TestProperties.FILENAME));
     }
 
-    /***
-     * Method for write system properties into the file for the reporter.
-     * @param testLogDir test log directory
-     * @throws IOException Input/Output exception
-     */
-    protected void writeSystemProperties(final File testLogDir) throws  IOException {
+
+    protected SystemProperties getSystemProperties() {
         SystemProperties systemProperties = new SystemProperties();
 
         Runtime runtime = Runtime.getRuntime();
@@ -267,9 +271,19 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         systemProperties.setWorkerJvmVersion(System.getProperty("java.vm.version"));
         logger.info("JVM Version: {}", systemProperties.getWorkerJvmVersion());
 
-        logger.info(testLogDir.toString());
+        return systemProperties;
+    }
 
-        PropertyWriter writer = new PropertyWriter();
+
+    /***
+     * Method for write system properties into the file for the reporter.
+     * @param testLogDir test log directory
+     * @throws IOException Input/Output exception
+     */
+    protected void writeSystemProperties(final File testLogDir) throws  IOException {
+        final SystemProperties systemProperties = getSystemProperties();
+
+        final PropertyWriter writer = new PropertyWriter();
         writer.write(systemProperties, new File(testLogDir, SystemProperties.FILENAME));
     }
 
