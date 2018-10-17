@@ -17,8 +17,6 @@
 
 package org.maestro.reports.server.collector;
 
-import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
@@ -27,9 +25,7 @@ import org.maestro.common.client.notes.LocationType;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.worker.TestLogUtils;
-import org.maestro.contrib.utils.digest.Sha1Digest;
 import org.maestro.reports.common.organizer.DefaultOrganizer;
-import org.maestro.reports.common.organizer.Organizer;
 import org.maestro.common.ResultStrings;
 import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dto.Report;
@@ -38,20 +34,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
+import static org.maestro.reports.server.collector.LogResponseUtils.save;
+
 public class DefaultReportsCollector extends MaestroWorkerManager implements MaestroLogCollectorListener {
     private static final Logger logger = LoggerFactory.getLogger(DefaultReportsCollector.class);
     private ReportDao reportDao = new ReportDao();
 
-    private final Sha1Digest digest = new Sha1Digest();
-    private Organizer organizer;
+    private DefaultOrganizer organizer;
 
     private final File dataDir;
     private Report report;
@@ -111,8 +105,6 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         logRequest(note, LocationType.LAST_SUCCESS);
 
         createNewReportRecord(ResultStrings.SUCCESS, note.getPeerInfo());
-
-        //
     }
 
     private void createNewReportRecord(final String testResultString, final PeerInfo peerInfo) {
@@ -127,51 +119,11 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         reportDao.insert(report);
     }
 
-    private void save(final LogResponse logResponse) {
-        String destinationDir = organizer.organize(logResponse.getPeerInfo());
-        File outFile = new File(destinationDir, logResponse.getFileName());
 
-        logger.info("Saving file {} to {}", logResponse.getFileName(), outFile);
-        if (!outFile.exists()) {
-            try {
-                FileUtils.forceMkdirParent(outFile);
-            } catch (IOException e) {
-                logger.error("Unable to create parent directories: {}", e.getMessage(), e);
-            }
-        }
-
-        try (FileOutputStream fo = new FileOutputStream(outFile)) {
-            IOUtils.copy(logResponse.getLogData(), fo);
-        } catch (FileNotFoundException e) {
-            logger.error("Unable to save the file: {}", e.getMessage(), e);
-        } catch (IOException e) {
-            logger.error("Unable to save the file due to I/O error: {}", e.getMessage(), e);
-        }
-
-        verify(logResponse, outFile);
-    }
-
-    private void verify(LogResponse logResponse, File outFile) {
-        if (logResponse.getFileHash() != null && !logResponse.getFileHash().isEmpty()) {
-            try {
-                logger.info("Verifying SHA-1 hash for file {}", outFile);
-                if (!digest.verify(outFile.getPath(), logResponse.getFileHash())) {
-                    logger.error("The SHA-1 hash for file {} does not match the expected one {}",
-                            outFile.getPath(), logResponse.getFileHash());
-                }
-            } catch (IOException e) {
-                logger.error("Unable to verify the hash for file {}: {}", outFile.getName(),
-                        e.getMessage());
-            }
-        }
-        else {
-            logger.warn("The peer did not set up a hash for file {}", logResponse.getFileName());
-        }
-    }
 
     @Override
     public void handle(LogResponse note) {
-        save(note);
+        save(note, organizer);
 
         lastDownload = Instant.now();
     }
