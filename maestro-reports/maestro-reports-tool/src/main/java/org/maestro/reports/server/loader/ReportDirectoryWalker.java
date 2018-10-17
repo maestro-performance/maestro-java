@@ -83,6 +83,8 @@ public class ReportDirectoryWalker extends DirectoryWalker<Object> {
                 report.setTestScript("undefined");
                 report.setTestDescription("Auto-loaded");
                 report.setTestComments("Legacy test");
+                report.setValid(true);
+                report.setRetired(false);
 
                 try {
                     reportDao.insert(report);
