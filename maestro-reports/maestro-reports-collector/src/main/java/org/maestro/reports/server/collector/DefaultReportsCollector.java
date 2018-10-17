@@ -34,8 +34,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
-import java.time.Duration;
-import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -49,7 +47,6 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
     private final File dataDir;
     private Report report;
-    private Instant lastDownload = Instant.now();
     private AggregationService aggregationService;
 
     private Map<PeerInfo, DownloadProgress> progressMap = new ConcurrentHashMap<>();
@@ -60,14 +57,9 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
         this.dataDir = dataDir;
         aggregationService = new AggregationService(dataDir.getPath());
-
-//        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::runAggregation, 0, 60,
-//                TimeUnit.SECONDS);
     }
 
     private void runAggregation() {
-//        long elapsed = Duration.between(lastDownload, Instant.now()).getSeconds();
-
         aggregationService.aggregate();
     }
 
@@ -137,8 +129,6 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         progressMap.put(peerInfo, downloadProgress);
         save(note, organizer);
 
-        lastDownload = Instant.now();
-
         if (progressMap.size() == 0) {
             return;
         }
@@ -153,7 +143,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
                 progressMap.clear();
                 knownPeers.clear();
 
-                // report = null
+                report = null;
             }
         }
     }
