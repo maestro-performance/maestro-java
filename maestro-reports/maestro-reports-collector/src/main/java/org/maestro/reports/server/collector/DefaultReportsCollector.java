@@ -207,6 +207,8 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         report.setTestScript(requestedTest.getScriptName());
         report.setTestDescription(requestedTest.getTestDetails().getTestDescription());
         report.setTestComments(requestedTest.getTestDetails().getTestComments());
+        report.setValid(true);
+        report.setRetired(false);
 
         super.getClient().replyOk(note);
     }

@@ -36,6 +36,9 @@ public class Report {
     private Date testDate;
     private String testDescription;
     private String testComments;
+    private boolean valid;
+    private boolean retired;
+    private Date retiredDate;
 
     public int getReportId() {
         return reportId;
@@ -141,6 +144,30 @@ public class Report {
         this.testComments = testComments;
     }
 
+    public boolean isValid() {
+        return valid;
+    }
+
+    public void setValid(boolean valid) {
+        this.valid = valid;
+    }
+
+    public boolean isRetired() {
+        return retired;
+    }
+
+    public void setRetired(boolean retired) {
+        this.retired = retired;
+    }
+
+    public Date getRetiredDate() {
+        return retiredDate;
+    }
+
+    public void setRetiredDate(Date retiredDate) {
+        this.retiredDate = retiredDate;
+    }
+
     /**
      * Aggregates a set of reports with the given location
      * @param reports the list of reports to aggregate
@@ -174,6 +201,9 @@ public class Report {
         report.setTestDate(firstReport.testDate);
         report.setTestDescription(firstReport.testDescription);
         report.setTestComments(firstReport.testComments);
+        report.setValid(firstReport.valid);
+        report.setRetired(firstReport.retired);
+        report.setRetiredDate(firstReport.retiredDate);
 
         return report;
     }

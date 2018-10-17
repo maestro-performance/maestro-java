@@ -12,6 +12,9 @@ CREATE TABLE IF NOT EXISTS `report` (
   `test_date` TIMESTAMP NOT NULL DEFAULT NOW(),
   `test_description` VARCHAR(2048) NULL,
   `test_comments` VARCHAR(2048) NULL,
+  `valid` BOOLEAN DEFAULT TRUE,
+  `retired` BOOLEAN DEFAULT FALSE,
+  `retired_date` TIMESTAMP NULL,
 PRIMARY KEY (`report_id`));
 
 
