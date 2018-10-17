@@ -20,6 +20,8 @@ var indexDbColumns = [
         data: "testResult",
         render: resultRender
     },
+    { data: "testDescription" },
+    { data: "testComments" },
     { data: "location" },
 
 ];

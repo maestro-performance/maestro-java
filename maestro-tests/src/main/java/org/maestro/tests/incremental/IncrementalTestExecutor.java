@@ -22,6 +22,7 @@ import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;
+import org.maestro.common.client.notes.TestDetails;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.cluster.DistributionStrategy;
@@ -137,18 +138,20 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
     }
 
 
-    public boolean run(final String scriptName) {
+    public boolean run(final String scriptName, final String description, final String comments) {
         int testIteration = 0;
         boolean successful;
+
+        final TestDetails testDetails = new TestDetails(description, comments);
 
         do {
             Test test;
 
             if (testIteration == 0) {
-                test = new Test(Test.NEXT, testIteration, "incremental", scriptName);
+                test = new Test(Test.NEXT, testIteration, "incremental", scriptName, testDetails);
             }
             else {
-                test = new Test(Test.LAST, Test.NEXT, "incremental", scriptName);
+                test = new Test(Test.LAST, Test.NEXT, "incremental", scriptName, testDetails);
             }
 
             successful = runTest(test);

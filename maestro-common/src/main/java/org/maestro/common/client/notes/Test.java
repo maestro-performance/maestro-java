@@ -26,11 +26,16 @@ public class Test {
     private final String testName;
     private final String scriptName;
 
-    public Test(int testNumber, int testIteration, final String testName, final String scriptName) {
+    private final TestDetails testDetails;
+
+    public Test(int testNumber, int testIteration, final String testName, final String scriptName,
+                final TestDetails testDetails)
+    {
         this.testNumber = testNumber;
         this.testIteration = testIteration;
         this.testName = testName;
         this.scriptName = scriptName;
+        this.testDetails = testDetails;
     }
 
     public int getTestNumber() {
@@ -49,6 +54,10 @@ public class Test {
         return scriptName;
     }
 
+    public TestDetails getTestDetails() {
+        return testDetails;
+    }
+
     @Override
     public String toString() {
         return "Test{" +
@@ -56,6 +65,7 @@ public class Test {
                 ", testIteration=" + testIteration +
                 ", testName='" + testName + '\'' +
                 ", scriptName='" + scriptName + '\'' +
+                ", testDetails=" + testDetails +
                 '}';
     }
 }

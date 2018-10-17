@@ -113,7 +113,10 @@ ManagementInterface.setupInterface(managementInterface, inspectorName, testProfi
 
 FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, testProfile, distributionStrategy)
 
-if (!testExecutor.run(this.class.getSimpleName())) {
+description = System.getenv("TEST_DESCRIPTION")
+comments = System.getenv("TEST_COMMENTS")
+
+if (!testExecutor.run(this.class.getSimpleName(), description, comments)) {
     maestro.stop()
 
     System.exit(1)

@@ -81,6 +81,8 @@ public class ReportDirectoryWalker extends DirectoryWalker<Object> {
                 report.setLocation(hostDir.getPath());
                 report.setTestResult(testResultString);
                 report.setTestScript("undefined");
+                report.setTestDescription("Auto-loaded");
+                report.setTestComments("Legacy test");
 
                 try {
                     reportDao.insert(report);

@@ -18,6 +18,7 @@ package org.maestro.tests.rate;
 
 import org.maestro.client.Maestro;
 import org.maestro.common.client.notes.Test;
+import org.maestro.common.client.notes.TestDetails;
 import org.maestro.tests.cluster.DistributionStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -46,9 +47,12 @@ public class StraightFixedRateTestExecutor extends AbstractFixedRateExecutor {
     }
 
 
-    public boolean run(final String scriptName) {
+    public boolean run(final String scriptName, final String description, final String comments) {
         logger.info("Starting the test execution");
 
-        return runTest(new Test(Test.NEXT, Test.NEXT, "fixed-rate-no-warmup", scriptName), getTestProfile()::apply);
+        final TestDetails testDetails = new TestDetails(description, comments);
+
+        return runTest(new Test(Test.NEXT, Test.NEXT, "fixed-rate-no-warmup", scriptName, testDetails),
+                getTestProfile()::apply);
     }
 }
