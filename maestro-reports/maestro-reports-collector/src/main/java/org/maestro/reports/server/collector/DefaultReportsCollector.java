@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.time.Duration;
 import java.time.Instant;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.*;
+import java.util.concurrent.*;
 
 import static org.maestro.reports.server.collector.LogResponseUtils.save;
 
@@ -52,23 +52,23 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     private Instant lastDownload = Instant.now();
     private AggregationService aggregationService;
 
+    private Map<PeerInfo, DownloadProgress> progressMap = new ConcurrentHashMap<>();
+    private Set<PeerInfo> knownPeers = ConcurrentHashMap.newKeySet();
+
     public DefaultReportsCollector(final String maestroURL, final PeerInfo peerInfo, final File dataDir) {
         super(maestroURL, peerInfo);
 
         this.dataDir = dataDir;
         aggregationService = new AggregationService(dataDir.getPath());
 
-        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::runAggregation, 0, 60,
-                TimeUnit.SECONDS);
+//        Executors.newSingleThreadScheduledExecutor().scheduleAtFixedRate(this::runAggregation, 0, 60,
+//                TimeUnit.SECONDS);
     }
 
     private void runAggregation() {
-        long elapsed = Duration.between(lastDownload, Instant.now()).getSeconds();
+//        long elapsed = Duration.between(lastDownload, Instant.now()).getSeconds();
 
-        logger.info("Running the aggregation service: {}", elapsed);
-        if (elapsed >= 60) {
-            aggregationService.aggregate();
-        }
+        aggregationService.aggregate();
     }
 
     protected void logRequest(final MaestroNotification note, LocationType locationType) {
@@ -93,6 +93,8 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     public void handle(final TestFailedNotification note) {
         super.handle(note);
 
+        knownPeers.add(note.getPeerInfo());
+
         logRequest(note, LocationType.LAST_FAILED);
 
         createNewReportRecord(ResultStrings.FAILED, note.getPeerInfo());
@@ -101,6 +103,8 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     @Override
     public void handle(final TestSuccessfulNotification note) {
         super.handle(note);
+
+        knownPeers.add(note.getPeerInfo());
 
         logRequest(note, LocationType.LAST_SUCCESS);
 
@@ -120,40 +124,66 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     }
 
 
-
     @Override
-    public void handle(LogResponse note) {
+    public void handle(final LogResponse note) {
+        final PeerInfo peerInfo = note.getPeerInfo();
+
+        DownloadProgress downloadProgress = progressMap.get(peerInfo);
+        if (downloadProgress == null) {
+            downloadProgress = new DownloadProgress(note.getLocationTypeInfo().getFileCount());
+        }
+
+        downloadProgress.increment();
+        progressMap.put(peerInfo, downloadProgress);
         save(note, organizer);
 
         lastDownload = Instant.now();
+
+        if (progressMap.size() == 0) {
+            return;
+        }
+
+        logger.debug("Checking completion status before aggregation");
+        if (progressMap.keySet().size() == knownPeers.size()) {
+            long inProgress = progressMap.values().stream().filter(DownloadProgress::inProgress).count();
+            if (inProgress == 0) {
+                logger.info("All downloads currently in progress have finished. Aggregating the data now");
+                Executors.newSingleThreadExecutor().submit(this::runAggregation);
+
+                progressMap.clear();
+                knownPeers.clear();
+
+                // report = null
+            }
+        }
     }
 
     @Override
-    public void handle(LogRequest note) {
+    public void handle(final LogRequest note) {
         // no-op
     }
 
     @Override
-    public void handle(PingRequest note) throws MaestroConnectionException, MalformedNoteException {
+    public void handle(final PingRequest note) throws MaestroConnectionException, MalformedNoteException {
 
     }
 
     @Override
-    public void handle(StartWorker note) {
+    public void handle(final StartWorker note) {
 
     }
 
     @Override
-    public void handle(StopWorker note) {
+    public void handle(final StopWorker note) {
 
     }
 
     @Override
-    public void handle(RoleAssign note) {
+    public void handle(final RoleAssign note) {
     }
 
     @Override
-    public void handle(StartTestRequest note) {
+    public void handle(final StartTestRequest note) {
         Test requestedTest = note.getTest();
 
         report = new Report();
