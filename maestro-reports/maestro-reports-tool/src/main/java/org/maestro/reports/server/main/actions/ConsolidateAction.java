@@ -45,7 +45,7 @@ public class ConsolidateAction extends Action {
         Options options = new Options();
 
         options.addOption("h", "help", false, "prints the help");
-        options.addOption("d", "directory", true, "the directory to generate the report");
+        options.addOption("d", "directory", true, "the directory to put the consolidated reports");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -94,13 +94,11 @@ public class ConsolidateAction extends Action {
 
             return 0;
         } catch (DataNotFoundException e) {
-
-
             return 1;
         }
 
         catch (Exception e) {
-            System.err.println("Unable to aggregate the reports: " + e.getMessage());
+            System.err.println("Unable to consolidate the reports: " + e.getMessage());
             e.printStackTrace();
             return 1;
         }
