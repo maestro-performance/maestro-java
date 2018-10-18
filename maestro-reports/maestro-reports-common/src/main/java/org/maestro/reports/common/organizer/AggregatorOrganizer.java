@@ -20,38 +20,13 @@ package org.maestro.reports.common.organizer;
 
 import java.io.File;
 
-public class AggregatorOrganizer implements Organizer<String> {
-    protected final String baseDir;
-    protected int testId;
-    protected int testNumber;
-
+public class AggregatorOrganizer extends OfflineOrganizer {
     public AggregatorOrganizer(final String baseDir) {
-        this.baseDir = baseDir;
-    }
-
-    public int getTestId() {
-        return testId;
-    }
-
-    public void setTestId(int testId) {
-        this.testId = testId;
-    }
-
-    public int getTestNumber() {
-        return testNumber;
-    }
-
-    public void setTestNumber(int testNumber) {
-        this.testNumber = testNumber;
-    }
-
-    protected String combine() {
-        return baseDir + File.separator + "id" + File.separator + testId + File.separator + "number" + File.separator +
-                testNumber + File.separator + "aggregated";
+        super(baseDir);
     }
 
     @Override
     public String organize(final String meta) {
-        return combine();
+        return combine() + File.separator + "aggregated";
     }
 }
