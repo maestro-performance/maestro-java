@@ -17,6 +17,9 @@
 package org.maestro.reports.server.loader;
 
 import org.apache.commons.io.DirectoryWalker;
+import org.maestro.common.Role;
+import org.maestro.common.io.data.common.RateEntry;
+import org.maestro.common.io.data.readers.BinaryRateReader;
 import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dto.Report;
 import org.slf4j.Logger;
@@ -24,9 +27,12 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
+import java.sql.Date;
+import java.time.Instant;
 import java.util.Collection;
 import java.util.Set;
 import java.util.TreeSet;
+import java.util.concurrent.TimeUnit;
 
 public class ReportDirectoryWalker extends DirectoryWalker<Report> {
     private static final Logger logger = LoggerFactory.getLogger(ReportDirectoryWalker.class);
@@ -94,8 +100,47 @@ public class ReportDirectoryWalker extends DirectoryWalker<Report> {
                 report.setValid(true);
                 report.setRetired(false);
 
+                loadTestDate(file, resourceRole, report);
+
                 results.add(report);
             }
+        }
+    }
+
+    private void loadTestDate(File file, String resourceRole, Report report) throws IOException {
+
+        File rateData;
+        if (Role.hostTypeByName(resourceRole) == Role.RECEIVER) {
+             rateData = new File(file.getParent(), "receiver.dat");
+        }
+        else {
+            if (Role.hostTypeByName(resourceRole) == Role.SENDER) {
+                rateData = new File(file.getParent(), "sender.dat");
+            }
+            else {
+                report.setTestDate(Date.from(Instant.now()));
+                return;
+            }
+        }
+
+        if (rateData.exists()) {
+            logger.trace("Loading test date ...");
+            try (BinaryRateReader reader = new BinaryRateReader(rateData)) {
+                RateEntry re = reader.readRecord();
+
+                if (re != null) {
+                    Instant testInstant = Instant.ofEpochMilli(TimeUnit.MICROSECONDS.toMillis(re.getTimestamp()));
+
+                    report.setTestDate(Date.from(testInstant));
+                }
+                else {
+                    logger.debug("Ignoring null record and defaulting to the load date as the test date");
+                    report.setTestDate(Date.from(Instant.now()));
+                }
+            }
+        }
+        else {
+            report.setTestDate(Date.from(Instant.now()));
         }
     }
 
