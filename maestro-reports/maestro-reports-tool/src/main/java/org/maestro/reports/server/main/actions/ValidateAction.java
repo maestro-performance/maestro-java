@@ -45,13 +45,13 @@ public class ValidateAction extends ManageAction {
 
             return 0;
         } catch (DataNotFoundException e) {
-            System.err.println("Unable to invalidate the records: no records matching the given ID");
+            System.err.println("Unable to validate the records: no records matching the given ID");
 
             return 1;
         }
 
         catch (Exception e) {
-            System.err.println("Unable to aggregate the reports: " + e.getMessage());
+            System.err.println("Unable to validate the reports: " + e.getMessage());
             e.printStackTrace();
             return 1;
         }

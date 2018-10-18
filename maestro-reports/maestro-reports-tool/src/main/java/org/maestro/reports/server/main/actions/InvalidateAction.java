@@ -52,7 +52,7 @@ public class InvalidateAction extends ManageAction {
         }
 
         catch (Exception e) {
-            System.err.println("Unable to aggregate the reports: " + e.getMessage());
+            System.err.println("Unable to invalidate the reports: " + e.getMessage());
             e.printStackTrace();
             return 1;
         }
