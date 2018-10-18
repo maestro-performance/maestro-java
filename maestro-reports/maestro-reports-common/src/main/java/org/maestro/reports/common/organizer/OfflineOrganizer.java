@@ -16,9 +16,11 @@
 
 package org.maestro.reports.common.organizer;
 
-
 import java.io.File;
 
+/**
+ * A report directory organizer for offline usage (ie.: not dependent on peer info)
+ */
 public abstract class OfflineOrganizer implements Organizer<String> {
     protected final String baseDir;
     protected int testId;
