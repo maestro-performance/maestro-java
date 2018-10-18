@@ -12,24 +12,23 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.maestro.reports.common.organizer;
+package org.maestro.reports.server.main.actions;
 
+import org.maestro.reports.common.organizer.Organizer;
+import org.maestro.reports.common.organizer.PathBuilder;
+import org.maestro.reports.dto.Report;
 
-import java.io.File;
+public class ReportOrganizer implements Organizer<Report> {
+    private final String baseDir;
 
-/**
- * A report directory organizer for aggregated reports
- */
-public class AggregatorOrganizer extends OfflineOrganizer {
-    public AggregatorOrganizer(final String baseDir) {
-        super(baseDir);
+    public ReportOrganizer(String baseDir) {
+        this.baseDir = baseDir;
     }
 
     @Override
-    public String organize(final String meta) {
-        return PathBuilder.build(baseDir, testId, testNumber, "aggregated");
+    public String organize(final Report report) {
+        return PathBuilder.build(baseDir, report.getTestId(), report.getTestNumber(), report.getTestHost());
     }
 }

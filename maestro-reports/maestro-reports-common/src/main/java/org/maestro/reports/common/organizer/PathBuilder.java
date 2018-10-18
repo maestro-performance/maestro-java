@@ -35,4 +35,17 @@ public class PathBuilder {
         return baseDir + File.separator + "id" + File.separator + testId + File.separator + "number" + File.separator +
                 testNumber + File.separator;
     }
+
+    /**
+     * Builds a report path
+     * @param baseDir
+     * @param testId
+     * @param testNumber
+     * @param reportDir
+     * @return
+     */
+    public static final String build(final String baseDir, int testId, int testNumber, final String reportDir) {
+        return baseDir + File.separator + "id" + File.separator + testId + File.separator + "number" + File.separator +
+                testNumber + File.separator + reportDir + File.separator;
+    }
 }

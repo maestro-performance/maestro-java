@@ -45,8 +45,4 @@ public abstract class OfflineOrganizer implements Organizer<String> {
     public void setTestNumber(int testNumber) {
         this.testNumber = testNumber;
     }
-
-    protected String combine() {
-        return PathBuilder.build(baseDir ,testId, testNumber);
-    }
 }

@@ -44,9 +44,33 @@ public class ReportDao extends AbstractDao {
                 report);
     }
 
+    public int update(final Report report) {
+        return runUpdate("update report set test_id = ?, test_number = ?, test_name = ?, test_script = ?, test_host = ?, " +
+                "test_host_role = ?, test_result = ?, location = ?, aggregated = ?, test_description = ?, " +
+                "test_comments = ?, valid = ?, retired = ?, retired_date = ?, test_date = ? where report_id = ?",
+                report.getTestId(), report.getTestNumber(), report.getTestName(), report.getTestScript(),
+                report.getTestHost(), report.getTestHostRole(), report.getTestResult(), report.getLocation(),
+                report.isAggregated(), report.getTestDescription(), report.getTestComments(), report.isValid(),
+                report.isRetired(), report.getRetiredDate(), report.getTestDate(), report.getReportId());
+    }
+
+    /**
+     * Fetch all non-aggregated records
+     * @return A list of records
+     * @throws DataNotFoundException
+     */
     public List<Report> fetch() throws DataNotFoundException {
         return runQueryMany("select * from report where aggregated = false",
                 new BeanPropertyRowMapper<>(Report.class));
+    }
+
+    /**
+     * Fetch all records regardless of any status
+     * @return A list of records
+     * @throws DataNotFoundException
+     */
+    public List<Report> fetchAll() throws DataNotFoundException {
+        return runQueryMany("select * from report", new BeanPropertyRowMapper<>(Report.class));
     }
 
     public Report fetch(int reportId) throws DataNotFoundException {
