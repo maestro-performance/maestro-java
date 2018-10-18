@@ -73,16 +73,40 @@ public class ReportDao extends AbstractDao {
         return runQueryMany("select * from report", new BeanPropertyRowMapper<>(Report.class));
     }
 
+    /**
+     * Fetch by report ID
+     * @param reportId
+     * @return
+     * @throws DataNotFoundException
+     */
     public Report fetch(int reportId) throws DataNotFoundException {
         return runQuery("select * from report where aggregated = false and report_id = ?",
                 new BeanPropertyRowMapper<>(Report.class),
                 reportId);
     }
 
+    /**
+     * Fetch by test ID and test number
+     * @param testId
+     * @param testNumber
+     * @return
+     * @throws DataNotFoundException
+     */
     public List<Report> fetch(int testId, int testNumber) throws DataNotFoundException {
         return runQueryMany("select * from report where aggregated = false and test_id = ? and test_number = ? ",
                 new BeanPropertyRowMapper<>(Report.class),
                 testId, testNumber);
+    }
+
+    /**
+     * Fetch by test ID
+     * @param testId
+     * @return
+     * @throws DataNotFoundException
+     */
+    public List<Report> fetchByTestId(int testId) throws DataNotFoundException {
+        return runQueryMany("select * from report where test_id = ?", new BeanPropertyRowMapper<>(Report.class),
+                testId);
     }
 
     public Report fetchAggregated(int testId, int testNumber) throws DataNotFoundException {

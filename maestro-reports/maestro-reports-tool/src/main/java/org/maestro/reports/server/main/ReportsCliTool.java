@@ -93,6 +93,14 @@ public class ReportsCliTool {
                 action = new ConsolidateAction(newArgs);
                 break;
             }
+            case "validate": {
+                action = new ValidateAction(newArgs);
+                break;
+            }
+            case "invalidate": {
+                action = new InvalidateAction(newArgs);
+                break;
+            }
             default: {
                 help(1);
                 return;
