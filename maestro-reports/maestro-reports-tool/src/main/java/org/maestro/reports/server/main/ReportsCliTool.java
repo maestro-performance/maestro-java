@@ -101,6 +101,10 @@ public class ReportsCliTool {
                 action = new InvalidateAction(newArgs);
                 break;
             }
+            case "comment": {
+                action = new CommentAction(newArgs);
+                break;
+            }
             default: {
                 help(1);
                 return;
