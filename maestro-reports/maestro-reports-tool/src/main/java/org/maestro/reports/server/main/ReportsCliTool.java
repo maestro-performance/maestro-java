@@ -43,6 +43,7 @@ public class ReportsCliTool {
         System.out.println("Actions:");
         System.out.println("   load");
         System.out.println("   aggregate");
+        System.out.println("   sut-node");
         System.out.println("----------");
         System.out.println("   help");
         System.out.println("   --version");
