@@ -17,7 +17,6 @@
 package org.maestro.reports.server.loader;
 
 import org.apache.commons.io.DirectoryWalker;
-import org.apache.commons.io.FileUtils;
 import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dto.Report;
 import org.slf4j.Logger;
@@ -25,13 +24,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.nio.file.attribute.BasicFileAttributes;
 import java.util.Collection;
-import java.util.LinkedList;
+import java.util.Set;
+import java.util.TreeSet;
 
-public class ReportDirectoryWalker extends DirectoryWalker<Object> {
+public class ReportDirectoryWalker extends DirectoryWalker<Report> {
     private static final Logger logger = LoggerFactory.getLogger(ReportDirectoryWalker.class);
-    private ReportDao reportDao = new ReportDao();
+
 
     /**
      * Loads report data in a directory with format like this: maestro/baseline/id/$id/number/$number/$role/$result/$number/$host
@@ -42,7 +41,7 @@ public class ReportDirectoryWalker extends DirectoryWalker<Object> {
      */
 
     @Override
-    protected void handleFile(File file, int depth, Collection<Object> results) throws IOException {
+    protected void handleFile(File file, int depth, Collection<Report> results) throws IOException {
         if (file.getName().equals("test.properties") || file.getName().equals("inspector.properties")) {
             File hostDir = file.getParentFile();
             String host = hostDir.getName();
@@ -63,10 +62,19 @@ public class ReportDirectoryWalker extends DirectoryWalker<Object> {
                 logger.trace("Ignoring duplicated/orphaned test dir {} != {}", legacyTestNumber, testNumber);
             }
             else {
-                logger.info("Test properties found: {}", file);
+                logger.trace("Test properties found: {}", file);
 
                 File testIdDir = testNumberDir.getParentFile().getParentFile();
-                int testId = Integer.parseInt(testIdDir.getName());
+
+                int testId = 0;
+
+                try {
+                    testId = Integer.parseInt(testIdDir.getName());
+                }
+                catch (Throwable t) {
+                    logger.error("Unable to convert directory {}", file);
+                    return;
+                }
 
                 File testNameDir = testIdDir.getParentFile().getParentFile();
                 String testName = testNameDir.getName();
@@ -86,21 +94,18 @@ public class ReportDirectoryWalker extends DirectoryWalker<Object> {
                 report.setValid(true);
                 report.setRetired(false);
 
-                try {
-                    reportDao.insert(report);
-                }
-                catch (Exception e) {
-                    logger.error("Unable to insert record: {}", e.getMessage(), e);
-                }
+                results.add(report);
             }
         }
     }
 
 
-    public void load(final File reportsDir) {
+    public Set<Report> load(final File reportsDir) {
+        Set<Report> reportSet = new TreeSet<>();
+
         try {
             if (reportsDir.exists()) {
-                walk(reportsDir, new LinkedList<>());
+                walk(reportsDir, reportSet);
             }
             else {
                 logger.error("The reports directory does not exist: {}", reportsDir.getPath());
@@ -110,6 +115,7 @@ public class ReportDirectoryWalker extends DirectoryWalker<Object> {
             logger.error("Returning a partial list of all the reports due to errors");
         }
 
+        return reportSet;
 
     }
 }
