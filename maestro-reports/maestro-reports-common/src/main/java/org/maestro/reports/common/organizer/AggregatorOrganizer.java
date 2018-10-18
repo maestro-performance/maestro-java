@@ -20,6 +20,9 @@ package org.maestro.reports.common.organizer;
 
 import java.io.File;
 
+/**
+ * A report directory organizer for aggregated reports
+ */
 public class AggregatorOrganizer extends OfflineOrganizer {
     public AggregatorOrganizer(final String baseDir) {
         super(baseDir);
