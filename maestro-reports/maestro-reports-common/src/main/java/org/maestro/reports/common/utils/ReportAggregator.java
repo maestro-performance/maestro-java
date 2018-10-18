@@ -20,6 +20,7 @@ package org.maestro.reports.common.utils;
 import org.HdrHistogram.*;
 import org.maestro.common.Role;
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.io.data.common.exceptions.InvalidRecordException;
 import org.maestro.common.io.data.writers.BinaryRateUpdater;
 import org.maestro.common.io.data.writers.LatencyWriter;
 import org.slf4j.Logger;
@@ -146,7 +147,12 @@ public class ReportAggregator {
             for (File currentReport : currentReports) {
                 logger.info("Producing aggregated report for: {}", currentReport);
 
-                BinaryRateUpdater.joinFile(binaryRateUpdater, currentReport);
+                try {
+                    BinaryRateUpdater.joinFile(binaryRateUpdater, currentReport);
+                }
+                catch (InvalidRecordException e) {
+                    logger.warn("File {} contains invalid records and will be ignored", currentReport);
+                }
             }
         }
     }
@@ -172,12 +178,19 @@ public class ReportAggregator {
 
         while (logReader.hasNext()) {
             EncodableHistogram eh = logReader.nextIntervalHistogram();
+            if (eh == null) {
+                logger.warn("Unable to aggregate an histogram from file {} because it is empty", sourceFile);
+
+                break;
+            }
+
             if (eh instanceof AbstractHistogram) {
                 AbstractHistogram ah = (AbstractHistogram) eh;
 
                 dest.add(ah);
             }
             else {
+
                 // Maestro-generated histograms should always be AbstractHistogram, so this shouldn't happen
                 throw new MaestroException("The histogram type does not allow it to be aggregated");
             }
