@@ -19,11 +19,14 @@ package org.maestro.reports.server.main.actions;
 
 import org.apache.commons.cli.*;
 import org.maestro.common.Constants;
+import org.maestro.common.HostTypes;
 import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dto.Report;
 import org.maestro.reports.server.loader.ReportDirectoryWalker;
 
 import java.io.File;
+import java.util.Date;
+import java.util.Map;
 import java.util.Set;
 
 public class LoadAction extends Action {
@@ -75,14 +78,29 @@ public class LoadAction extends Action {
         dataDir = new File(dataDirVal);
     }
 
+    private static boolean isInspector(final String role) {
+        return HostTypes.INSPECTOR_HOST_TYPE.equals(role);
+    }
+
+    private static void updateTestDate(final Report report, final Map<Integer, Date> testDatesCache) {
+        Date testDate = testDatesCache.get(report.getTestId());
+
+        if (testDate != null) {
+            report.setTestDate(testDate);
+        }
+
+        return;
+    }
+
     private static int loadData() {
         ReportDirectoryWalker walker = new ReportDirectoryWalker();
 
         try {
             final ReportDao reportDao = new ReportDao();
             final Set<Report> reports = walker.load(dataDir);
+            final Map<Integer, Date> testDatesCache = walker.getTestDatesCache();
 
-
+            reports.stream().filter(r -> isInspector(r.getTestHostRole())).forEach(r -> updateTestDate(r, testDatesCache));
             reports.forEach(System.out::println);
 
             reports.forEach(r -> reportDao.insert(r));
