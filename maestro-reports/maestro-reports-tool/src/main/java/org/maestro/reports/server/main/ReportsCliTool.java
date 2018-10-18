@@ -105,6 +105,14 @@ public class ReportsCliTool {
                 action = new CommentAction(newArgs);
                 break;
             }
+            case "retire": {
+                action = new RetireAction(newArgs);
+                break;
+            }
+            case "unretire": {
+                action = new UnretireAction(newArgs);
+                break;
+            }
             default: {
                 help(1);
                 return;
