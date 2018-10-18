@@ -20,10 +20,7 @@ package org.maestro.reports.server.main;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
-import org.maestro.reports.server.main.actions.Action;
-import org.maestro.reports.server.main.actions.AggregateAction;
-import org.maestro.reports.server.main.actions.LoadAction;
-import org.maestro.reports.server.main.actions.SutNodeAction;
+import org.maestro.reports.server.main.actions.*;
 
 import static java.util.Arrays.copyOfRange;
 
@@ -44,6 +41,7 @@ public class ReportsCliTool {
         System.out.println("   load");
         System.out.println("   aggregate");
         System.out.println("   sut-node");
+        System.out.println("   consolidate");
         System.out.println("----------");
         System.out.println("   help");
         System.out.println("   --version");
@@ -91,7 +89,10 @@ public class ReportsCliTool {
                 action = new SutNodeAction(newArgs);
                 break;
             }
-
+            case "consolidate": {
+                action = new ConsolidateAction(newArgs);
+                break;
+            }
             default: {
                 help(1);
                 return;
