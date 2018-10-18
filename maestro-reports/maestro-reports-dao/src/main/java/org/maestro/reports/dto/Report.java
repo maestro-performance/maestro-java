@@ -170,7 +170,8 @@ public class Report implements Comparable<Report> {
 
     /**
      * Aggregates a set of reports with the given location
-     * @param reports the list of reports to aggregate
+     *
+     * @param reports  the list of reports to aggregate
      * @param location the location of the aggregated reports
      * @return A new Report object instance with the aggregated details
      */
@@ -192,8 +193,7 @@ public class Report implements Comparable<Report> {
         long failures = reports.stream().filter(Report::isAggregated).count();
         if (failures > 0) {
             report.setTestResult(ResultStrings.FAILED);
-        }
-        else {
+        } else {
             report.setTestResult(ResultStrings.SUCCESS);
         }
 
@@ -212,34 +212,26 @@ public class Report implements Comparable<Report> {
     public int compareTo(Report report) {
         if (this.reportId < report.reportId) {
             return -1;
-        }
-        else {
-            if (this.reportId > report.reportId) {
-                return 1;
-            }
-            else {
-                if (this.testId < report.testId) {
-                    return -1;
-                }
-                else {
-                    if (this.testId > report.testId) {
-                        return 1;
-                    }
-                    else {
-                        if (this.testNumber < report.testNumber) {
-                            return -1;
-                        }
-                        else {
-                            if (this.testNumber > report.testNumber) {
-                                return 1;
-                            }
-                            else {
-                                return 0;
-                            }
-                        }
-                    }
-                }
-            }
+        } else if (this.reportId > report.reportId) {
+            return 1;
+        } else if (this.testId < report.testId) {
+            return -1;
+        } else if (this.testId > report.testId) {
+            return 1;
+        } else if (this.testNumber < report.testNumber) {
+            return -1;
+        } else if (this.testNumber > report.testNumber) {
+            return 1;
+        } else if (this.testHostRole.compareTo(report.testHostRole) < 0) {
+            return -1;
+        } else if (this.testHostRole.compareTo(report.testHostRole) > 0) {
+            return 1;
+        } else if (this.testHost.compareTo(report.testHost) < 0) {
+            return -1;
+        } else if (this.testHost.compareTo(report.testHost) > 0) {
+            return 1;
+        } else {
+            return 0;
         }
     }
 
