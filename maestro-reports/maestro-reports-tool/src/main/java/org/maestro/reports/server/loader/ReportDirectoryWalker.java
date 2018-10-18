@@ -20,23 +20,19 @@ import org.apache.commons.io.DirectoryWalker;
 import org.maestro.common.Role;
 import org.maestro.common.io.data.common.RateEntry;
 import org.maestro.common.io.data.readers.BinaryRateReader;
-import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dto.Report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.sql.Date;
 import java.time.Instant;
-import java.util.Collection;
-import java.util.Set;
-import java.util.TreeSet;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
 
 public class ReportDirectoryWalker extends DirectoryWalker<Report> {
     private static final Logger logger = LoggerFactory.getLogger(ReportDirectoryWalker.class);
-
+    private Map<Integer, Date> testDatesCache = new HashMap<>();
 
     /**
      * Loads report data in a directory with format like this: maestro/baseline/id/$id/number/$number/$role/$result/$number/$host
@@ -131,7 +127,10 @@ public class ReportDirectoryWalker extends DirectoryWalker<Report> {
                 if (re != null) {
                     Instant testInstant = Instant.ofEpochMilli(TimeUnit.MICROSECONDS.toMillis(re.getTimestamp()));
 
-                    report.setTestDate(Date.from(testInstant));
+                    Date testDate = Date.from(testInstant);
+                    testDatesCache.put(report.getTestId(), testDate);
+
+                    report.setTestDate(testDate);
                 }
                 else {
                     logger.debug("Ignoring null record and defaulting to the load date as the test date");
@@ -161,6 +160,9 @@ public class ReportDirectoryWalker extends DirectoryWalker<Report> {
         }
 
         return reportSet;
+    }
 
+    public Map<Integer, Date> getTestDatesCache() {
+        return testDatesCache;
     }
 }
