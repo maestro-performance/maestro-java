@@ -47,7 +47,6 @@ public abstract class OfflineOrganizer implements Organizer<String> {
     }
 
     protected String combine() {
-        return baseDir + File.separator + "id" + File.separator + testId + File.separator + "number" + File.separator +
-                testNumber + File.separator;
+        return PathBuilder.build(baseDir ,testId, testNumber);
     }
 }
