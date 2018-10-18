@@ -22,7 +22,7 @@ import org.maestro.common.exceptions.MaestroException;
 import java.util.Date;
 import java.util.List;
 
-public class Report {
+public class Report implements Comparable<Report> {
     private int reportId;
     private int testId;
     private int testNumber;
@@ -206,5 +206,62 @@ public class Report {
         report.setRetiredDate(firstReport.retiredDate);
 
         return report;
+    }
+
+    @Override
+    public int compareTo(Report report) {
+        if (this.reportId < report.reportId) {
+            return -1;
+        }
+        else {
+            if (this.reportId > report.reportId) {
+                return 1;
+            }
+            else {
+                if (this.testId < report.testId) {
+                    return -1;
+                }
+                else {
+                    if (this.testId > report.testId) {
+                        return 1;
+                    }
+                    else {
+                        if (this.testNumber < report.testNumber) {
+                            return -1;
+                        }
+                        else {
+                            if (this.testNumber > report.testNumber) {
+                                return 1;
+                            }
+                            else {
+                                return 0;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    @Override
+    public String toString() {
+        return "Report{" +
+                "reportId=" + reportId +
+                ", testId=" + testId +
+                ", testNumber=" + testNumber +
+                ", testName='" + testName + '\'' +
+                ", testScript='" + testScript + '\'' +
+                ", testHost='" + testHost + '\'' +
+                ", testHostRole='" + testHostRole + '\'' +
+                ", testResult='" + testResult + '\'' +
+                ", location='" + location + '\'' +
+                ", aggregated=" + aggregated +
+                ", testDate=" + testDate +
+                ", testDescription='" + testDescription + '\'' +
+                ", testComments='" + testComments + '\'' +
+                ", valid=" + valid +
+                ", retired=" + retired +
+                ", retiredDate=" + retiredDate +
+                '}';
     }
 }

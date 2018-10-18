@@ -19,9 +19,12 @@ package org.maestro.reports.server.main.actions;
 
 import org.apache.commons.cli.*;
 import org.maestro.common.Constants;
+import org.maestro.reports.dao.ReportDao;
+import org.maestro.reports.dto.Report;
 import org.maestro.reports.server.loader.ReportDirectoryWalker;
 
 import java.io.File;
+import java.util.Set;
 
 public class LoadAction extends Action {
     private static CommandLine cmdLine;
@@ -76,10 +79,20 @@ public class LoadAction extends Action {
         ReportDirectoryWalker walker = new ReportDirectoryWalker();
 
         try {
-            walker.load(dataDir);
+            final ReportDao reportDao = new ReportDao();
+            final Set<Report> reports = walker.load(dataDir);
+
+
+            reports.forEach(System.out::println);
+
+            reports.forEach(r -> reportDao.insert(r));
+
+            System.out.println("Reports to loaded: " + reports.size());
+
             return 0;
         }
         catch (Throwable t) {
+            t.printStackTrace();
             return 1;
         }
     }
