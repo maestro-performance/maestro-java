@@ -41,31 +41,31 @@ function start() {
         MAESTRO_LOCAL_HOSTNAME=$(hostname -f)
     fi
 
-    echo -en "Starting the worker daemon: "
-    nohup "${installDir}/bin/maestro-worker" -m "${MAESTRO_BROKER}" -l "${MAESTRO_LOG_DIR}" -H "${MAESTRO_LOCAL_HOSTNAME}" "$@" >/dev/null 2>/dev/null &
+    echo -en "Starting the reports tool daemon: "
+    nohup "${installDir}/bin/maestro-reports-tool" -m "${MAESTRO_BROKER}" -l "${MAESTRO_LOG_DIR}" -H "${MAESTRO_LOCAL_HOSTNAME}" "$@" >/dev/null 2>/dev/null &
     if [[ $? != 0 ]] ; then
-        eerror "failed to daemonize the Maestro worker"
+        eerror "failed to daemonize the Maestro reports tool"
         exit 1
     fi
 
     sleep 1s
     processCount=0
-    for pid in $(pgrep -f ".*java.*bin/maestro-worker.*") ; do
+    for pid in $(pgrep -f ".*java.*bin/maestro-reports-tool.*") ; do
         if (( processCount == 0 )) ; then
             esuccess
         fi
-        echo -e "Maestro worker started:${GREEN} ${pid} ${RESET}"
+        echo -e "Maestro reports tool started:${GREEN} ${pid} ${RESET}"
         ((processCount++))
     done
 
     if (( processCount == 0 )) ; then
-        eerror "Maestro agent did not start successfully"
+        eerror "Maestro reports tool did not start successfully"
     fi
 }
 
 function stop() {
-    for pid in $(pgrep -f ".*java.*bin/maestro-worker.*") ; do
-        echo "Killing maestro-worker ${pid}"
+    for pid in $(pgrep -f ".*java.*bin/maestro-reports.*") ; do
+        echo "Killing maestro-reports-tool ${pid}"
         kill -TERM ${pid}
     done
 }
