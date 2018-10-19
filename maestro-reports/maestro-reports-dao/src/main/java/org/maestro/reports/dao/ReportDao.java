@@ -73,6 +73,16 @@ public class ReportDao extends AbstractDao {
         return runQueryMany("select * from report", new BeanPropertyRowMapper<>(Report.class));
     }
 
+
+    /**
+     * Fetch all records regardless of any status
+     * @return A list of records
+     * @throws DataNotFoundException
+     */
+    public List<Report> fetchAllAggregated() throws DataNotFoundException {
+        return runQueryMany("select * from report where aggregated = true and valid = true", new BeanPropertyRowMapper<>(Report.class));
+    }
+
     /**
      * Fetch by report ID
      * @param reportId

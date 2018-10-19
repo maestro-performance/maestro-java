@@ -56,6 +56,9 @@ public class DefaultReportsServer implements ReportsServer {
         // Common usage
         app.get("/api/report/", new AllReportsController());
 
+        // Common usage
+        app.get("/api/report/aggregated", new AllAggregatedReportsController());
+
         // For the report/node specific view
         app.get("/api/report/report/:id", new ReportController());
         app.get("/api/report/report/:id/properties", new ReportPropertiesController());
