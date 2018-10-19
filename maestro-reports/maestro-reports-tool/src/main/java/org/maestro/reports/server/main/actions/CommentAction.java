@@ -23,7 +23,7 @@ import org.maestro.reports.dto.Report;
 import java.util.List;
 
 public class CommentAction extends ManageAction {
-    private ReportDao reportDao = new ReportDao();
+    private final ReportDao reportDao = new ReportDao();
 
     public CommentAction(String[] args) {
         super(args);

@@ -22,7 +22,7 @@ import java.io.File;
  * Report path builder utility
  */
 public class PathBuilder {
-    private PathBuilder() {};
+    private PathBuilder() {}
 
     /**
      * Builds a report path
@@ -31,7 +31,7 @@ public class PathBuilder {
      * @param testNumber
      * @return
      */
-    public static final String build(final String baseDir, int testId, int testNumber) {
+    public static String build(final String baseDir, int testId, int testNumber) {
         return baseDir + File.separator + "id" + File.separator + testId + File.separator + "number" + File.separator +
                 testNumber + File.separator;
     }
@@ -44,7 +44,7 @@ public class PathBuilder {
      * @param reportDir
      * @return
      */
-    public static final String build(final String baseDir, int testId, int testNumber, final String reportDir) {
+    public static String build(final String baseDir, int testId, int testNumber, final String reportDir) {
         return baseDir + File.separator + "id" + File.separator + testId + File.separator + "number" + File.separator +
                 testNumber + File.separator + reportDir + File.separator;
     }

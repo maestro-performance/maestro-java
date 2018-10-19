@@ -24,7 +24,7 @@ import java.util.List;
 
 public class RateStatisticsResponse implements Response {
     @JsonProperty("Statistics")
-    private List<Statistics> statistics = new LinkedList<>();
+    private final List<Statistics> statistics = new LinkedList<>();
 
     public List<Statistics> getStatistics() {
         return statistics;

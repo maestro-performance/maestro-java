@@ -16,8 +16,6 @@
 
 package org.maestro.reports.common.organizer;
 
-import java.io.File;
-
 /**
  * A report directory organizer for offline usage (ie.: not dependent on peer info)
  */

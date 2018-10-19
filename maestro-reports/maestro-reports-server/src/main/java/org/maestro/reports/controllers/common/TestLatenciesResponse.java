@@ -26,10 +26,10 @@ public class TestLatenciesResponse implements Response {
 //    private Set<String> percentiles = new LinkedHashSet<>();
 
     @JsonProperty("Service Time")
-    private Map<String, List<Double>> serviceTime = new HashMap<>();
+    private final Map<String, List<Double>> serviceTime = new HashMap<>();
 
     @JsonProperty("Response Time")
-    private Map<String, List<Double>> responseTime = new HashMap<>();
+    private final Map<String, List<Double>> responseTime = new HashMap<>();
 
 //    public Set<String> getPercentiles() {
 //        return percentiles;

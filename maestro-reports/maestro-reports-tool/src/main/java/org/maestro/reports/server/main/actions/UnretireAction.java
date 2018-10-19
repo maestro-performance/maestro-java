@@ -20,12 +20,10 @@ import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.maestro.reports.dto.Report;
 
-import java.time.Instant;
-import java.util.Date;
 import java.util.List;
 
 public class UnretireAction extends ManageAction {
-    private ReportDao reportDao = new ReportDao();
+    private final ReportDao reportDao = new ReportDao();
 
     public UnretireAction(String[] args) {
         super(args);

@@ -30,7 +30,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public class AggregateAction extends Action {
-    private ReportDao reportDao = new ReportDao();
+    private final ReportDao reportDao = new ReportDao();
 
     private CommandLine cmdLine;
     private String directory;

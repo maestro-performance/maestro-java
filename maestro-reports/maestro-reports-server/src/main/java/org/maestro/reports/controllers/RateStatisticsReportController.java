@@ -16,23 +16,12 @@
 
 package org.maestro.reports.controllers;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import io.javalin.Context;
-import org.maestro.common.HostTypes;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.common.serializer.SingleData;
-import org.maestro.plotter.rate.serializer.RateSerializer;
 import org.maestro.reports.controllers.common.RateStatisticsResponse;
-import org.maestro.reports.controllers.common.Response;
 import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.maestro.reports.dto.Report;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.Date;
-import java.util.LinkedList;
-import java.util.List;
 
 public class RateStatisticsReportController extends CommonRateReportController {
     private final ReportDao reportDao = new ReportDao();

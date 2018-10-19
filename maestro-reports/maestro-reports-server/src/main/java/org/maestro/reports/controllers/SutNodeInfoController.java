@@ -25,7 +25,7 @@ import org.maestro.reports.dto.SutNodeInfo;
 import java.util.List;
 
 public class SutNodeInfoController implements Handler {
-    private SutNodeInfoDao dao = new SutNodeInfoDao();
+    private final SutNodeInfoDao dao = new SutNodeInfoDao();
 
     @Override
     public void handle(Context context) throws Exception {

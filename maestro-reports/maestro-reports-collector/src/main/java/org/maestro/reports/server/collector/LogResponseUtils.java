@@ -21,7 +21,6 @@ import org.apache.commons.io.IOUtils;
 import org.maestro.client.notes.LogResponse;
 import org.maestro.contrib.utils.digest.Sha1Digest;
 import org.maestro.reports.common.organizer.DefaultOrganizer;
-import org.maestro.reports.common.organizer.Organizer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

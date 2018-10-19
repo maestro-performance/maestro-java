@@ -32,7 +32,7 @@ import java.util.List;
 public abstract class AbstractDao extends NamedParameterJdbcDaoSupport {
     private static final Logger logger = LoggerFactory.getLogger(AbstractDao.class);
 
-    private JdbcTemplate jdbcTemplate;
+    private final JdbcTemplate jdbcTemplate;
 
     /**
      * Constructor

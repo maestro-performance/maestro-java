@@ -109,7 +109,7 @@ abstract class CommonRateReportController extends AbstractReportFileController {
     protected SingleData<Long> processReport(final Report report, final String hostRole) throws IOException {
         File reportFile = getReportFileForRole(report, hostRole);
 
-        SingleData<Long> ret = reportCache.get(reportFile);
+        @SuppressWarnings("unchecked") SingleData<Long> ret = reportCache.get(reportFile);
         if (ret == null) {
             RateSerializer rateSerializer = new RateSerializer();
             ret = rateSerializer.serialize(reportFile);

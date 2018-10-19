@@ -27,7 +27,7 @@ import java.io.File;
 import java.util.List;
 
 public class ConsolidateAction extends Action {
-    private ReportDao reportDao = new ReportDao();
+    private final ReportDao reportDao = new ReportDao();
 
     private CommandLine cmdLine;
     private String directory;

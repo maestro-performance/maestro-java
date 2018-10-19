@@ -123,7 +123,7 @@ public class DefaultToolLauncher implements ReportsToolLauncher {
     }
 
     protected ReportsServer startServer(final CountDownLatch latch) {
-        ReportsServer reportsServer = new DefaultReportsServer(dataDir);
+        ReportsServer reportsServer = new DefaultReportsServer();
 
         startServer(latch, reportsServer);
 

@@ -28,7 +28,6 @@ import java.util.List;
 
 public class SutNodeAction extends Action {
     private CommandLine cmdLine;
-    private Options options;
 
     public SutNodeAction(String[] args) {
         processCommand(args);
@@ -38,7 +37,7 @@ public class SutNodeAction extends Action {
     protected void processCommand(String[] args) {
         CommandLineParser parser = new DefaultParser();
 
-        options = new Options();
+        Options options = new Options();
 
         options.addOption("h", "help", false, "prints the help");
         options.addOption("a", "action", true, "action (one of: insert, view, link)");
@@ -93,7 +92,7 @@ public class SutNodeAction extends Action {
             SutNodeInfoDao dao = new SutNodeInfoDao();
             List<SutNodeInfo> resources = dao.fetch();
 
-            resources.stream().forEach(item -> System.out.println("SUT node: " + item));
+            resources.forEach(item -> System.out.println("SUT node: " + item));
         }
         catch (DataNotFoundException e) {
             System.out.println("There are not recorded SUT nodes in the database");
