@@ -25,6 +25,8 @@ import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.maestro.reports.dto.Report;
 import org.maestro.reports.dto.ReportAggregationInfo;
 
+import java.sql.Date;
+import java.time.Instant;
 import java.util.List;
 
 import static org.junit.Assert.assertEquals;
@@ -52,6 +54,7 @@ public class ReportDaoTest {
         report.setLocation(this.getClass().getResource(".").getPath());
         report.setTestResult(ResultStrings.SUCCESS);
         report.setTestScript("undefined");
+        report.setTestDate(Date.from(Instant.now()));
 
         dao.insert(report);
         // assertTrue("The record does not match the expected value", ret >= 9);
