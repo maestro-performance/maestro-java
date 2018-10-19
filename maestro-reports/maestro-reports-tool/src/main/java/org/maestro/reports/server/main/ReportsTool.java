@@ -18,23 +18,13 @@
 package org.maestro.reports.server.main;
 
 import org.apache.commons.cli.*;
-import org.maestro.client.exchange.MaestroTopics;
-import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.NetworkUtils;
-import org.maestro.common.exceptions.MaestroException;
-import org.maestro.reports.server.DefaultReportsServer;
-import org.maestro.reports.server.ReportsServer;
-import org.maestro.reports.server.collector.DefaultReportsCollector;
-import org.maestro.worker.common.executor.MaestroWorkerExecutor;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.net.UnknownHostException;
-import java.util.concurrent.*;
 
 public class ReportsTool {
     private static CommandLine cmdLine;
@@ -44,7 +34,7 @@ public class ReportsTool {
     private static File dataDir;
     private static boolean offline;
 
-    private static ReportsServer reportsServer;
+
 
     /**
      * Prints the help for the action and exit
@@ -131,80 +121,11 @@ public class ReportsTool {
 
         LogConfigurator.defaultForDaemons();
 
-        int ret = launchServices();
+        ReportsToolLauncher launcher = new DefaultToolLauncher(dataDir, offline, maestroUrl, host);
+
+        int ret = launcher.launchServices();
         System.exit(ret);
     }
 
-    private static int launchServices() {
-        final CountDownLatch latch = new CountDownLatch(1);
-        ExecutorService executors;
 
-        try {
-            if (!offline) {
-                executors = Executors.newFixedThreadPool(2);
-
-                System.out.println("Starting the collector");
-                executors.submit(() -> startCollector(latch));
-
-                System.out.println("Starting the reports server");
-                executors.submit(() -> startServer(latch));
-            }
-            else {
-                executors = Executors.newSingleThreadScheduledExecutor();
-
-                System.out.println("Starting the reports server (offline)");
-                executors.submit(() -> startServer(latch));
-            }
-
-            try {
-                latch.await();
-                executors.shutdownNow();
-            }
-            catch (InterruptedException e) {
-                System.out.println("Interrupted");
-            }
-        } catch (MaestroException e) {
-            System.err.println(e.getMessage());
-            e.printStackTrace();
-            return 1;
-        }
-        finally {
-            reportsServer.stop();
-        }
-
-
-        return 0;
-    }
-
-    public static void startCollector(final CountDownLatch latch) {
-        try {
-            final PeerInfo peerInfo = new ReportsServerPeer(host);
-
-            DefaultReportsCollector maestroPeer = new DefaultReportsCollector(maestroUrl, peerInfo, dataDir);
-            String[] topics = MaestroTopics.collectorTopics(maestroPeer.getId(), peerInfo);
-
-            MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroPeer);
-            executor.start(topics, 10, 1000);
-            executor.run();
-        } catch (Throwable t) {
-            Logger logger = LoggerFactory.getLogger(ReportsTool.class);
-
-            logger.error("Unable to start the Maestro reports collector: {}", t.getMessage(), t);
-            latch.countDown();
-        }
-    }
-
-    public static void startServer(final CountDownLatch latch) {
-        try {
-            reportsServer = new DefaultReportsServer(dataDir);
-
-            reportsServer.start();
-            latch.await();
-        } catch (Throwable t) {
-            Logger logger = LoggerFactory.getLogger(ReportsTool.class);
-
-            logger.error("Unable to start the Maestro reports server: {}", t.getMessage(), t);
-            latch.countDown();
-        }
-    }
 }
