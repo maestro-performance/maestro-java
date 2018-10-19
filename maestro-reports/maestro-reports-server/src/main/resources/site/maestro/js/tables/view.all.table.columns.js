@@ -7,9 +7,15 @@ var indexDbColumns = [
         data: "testId",
         render: renderTestFull
     },
+    {
+        data: "reportId",
+        render: renderReportIdFull
+    },
     { data: "testNumber" },
     { data: "testName" },
     { data: "testScript" },
+    { data: "testHost" },
+    { data: "testHostRole" },
     {
         data: "testResult",
         render: resultRender
