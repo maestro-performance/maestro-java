@@ -22,7 +22,7 @@ if [[ ${installDir} == "." ]] ; then
 	installDir=".."
 fi
 
-source "${installDir}/config/maestro-worker-service.conf"
+source "${installDir}/config/maestro-reports-tool-service.conf"
 
 RED="\e[0;31m"
 GREEN="\e[0;32m"
