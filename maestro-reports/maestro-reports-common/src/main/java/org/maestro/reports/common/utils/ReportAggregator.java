@@ -86,6 +86,11 @@ public class ReportAggregator {
         }
 
         final File reportFiles[] = reportDir.listFiles();
+        if (reportFiles == null) {
+            logger.error("No files to be aggregated");
+            return;
+        }
+
         for (File reportFile : reportFiles) {
             if (isAggregatable(reportFile.getName())) {
                 List<File> files = aggregatables.get(reportFile.getName());
