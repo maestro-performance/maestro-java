@@ -17,9 +17,7 @@
 package org.maestro.reports.server.main.actions;
 
 import org.apache.commons.cli.*;
-import org.apache.commons.io.FileSystemUtils;
 import org.apache.commons.io.FileUtils;
-import org.apache.commons.io.IOUtils;
 import org.maestro.common.LogConfigurator;
 import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dao.exceptions.DataNotFoundException;
@@ -27,7 +25,6 @@ import org.maestro.reports.dto.Report;
 
 import java.io.File;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class ConsolidateAction extends Action {
     private ReportDao reportDao = new ReportDao();
