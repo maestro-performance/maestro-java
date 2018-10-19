@@ -140,7 +140,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     @Override
     public void handle(Halt note) {
-        logger.trace("Halt request received");
+        logger.info("Halt request received");
 
         setRunning(false);
     }
