@@ -133,8 +133,12 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
             return;
         }
 
-        logger.debug("Checking completion status before aggregation");
-        if (progressMap.keySet().size() == knownPeers.size()) {
+        long progress = progressMap.keySet().size();
+        long remaining = knownPeers.size();
+
+        logger.debug("Checking completion status before aggregation: {} of {} nodes have downloaded so far", progress,
+                remaining);
+        if (progress == remaining) {
             long inProgress = progressMap.values().stream().filter(DownloadProgress::inProgress).count();
             if (inProgress == 0) {
                 logger.info("All downloads currently in progress have finished. Aggregating the data now");
@@ -144,6 +148,9 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
                 knownPeers.clear();
 
                 report = null;
+            }
+            else {
+                logger.debug("{} files still need to be downloaded", inProgress);
             }
         }
     }
