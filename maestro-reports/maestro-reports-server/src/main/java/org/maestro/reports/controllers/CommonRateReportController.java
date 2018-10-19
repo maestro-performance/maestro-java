@@ -18,6 +18,12 @@
 package org.maestro.reports.controllers;
 
 import com.fasterxml.jackson.annotation.JsonProperty;
+import org.ehcache.Cache;
+import org.ehcache.CacheManager;
+import org.ehcache.config.builders.CacheConfigurationBuilder;
+import org.ehcache.config.builders.CacheManagerBuilder;
+import org.ehcache.config.builders.ExpiryPolicyBuilder;
+import org.ehcache.config.builders.ResourcePoolsBuilder;
 import org.jetbrains.annotations.NotNull;
 import org.maestro.common.HostTypes;
 import org.maestro.common.exceptions.MaestroException;
@@ -28,6 +34,7 @@ import org.maestro.reports.dto.Report;
 
 import java.io.File;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -57,6 +64,29 @@ abstract class CommonRateReportController extends AbstractReportFileController {
         }
     }
 
+    private static CacheManager cacheManager;
+    private static Cache<File, SingleData> reportCache;
+
+    protected CommonRateReportController() {
+        if (cacheManager == null) {
+            synchronized (this) {
+                if (cacheManager == null) {
+                    CacheConfigurationBuilder<File, SingleData> config = CacheConfigurationBuilder
+                            .newCacheConfigurationBuilder(File.class, SingleData.class, ResourcePoolsBuilder.heap(30))
+                            .withExpiry(ExpiryPolicyBuilder.timeToLiveExpiration(Duration.ofMinutes(30)));
+
+                    cacheManager = CacheManagerBuilder.newCacheManagerBuilder()
+                            .withCache("rateReport",config)
+                            .build();
+
+                    cacheManager.init();
+
+                    reportCache = cacheManager.getCache("rateReport", File.class, SingleData.class);
+                }
+            }
+        }
+    }
+
     @NotNull
     protected File getReportFileForRole(final Report report, final String hostHole) {
         File reportFile;
@@ -79,8 +109,15 @@ abstract class CommonRateReportController extends AbstractReportFileController {
     protected SingleData<Long> processReport(final Report report, final String hostRole) throws IOException {
         File reportFile = getReportFileForRole(report, hostRole);
 
-        RateSerializer rateSerializer = new RateSerializer();
-        return rateSerializer.serialize(reportFile);
+        SingleData<Long> ret = reportCache.get(reportFile);
+        if (ret == null) {
+            RateSerializer rateSerializer = new RateSerializer();
+            ret = rateSerializer.serialize(reportFile);
+
+            reportCache.put(reportFile, ret);
+        }
+
+        return ret;
     }
 
 

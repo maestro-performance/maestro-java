@@ -17,46 +17,25 @@
 
 package org.maestro.reports.controllers;
 
-import io.javalin.Context;
-import org.maestro.plotter.common.serializer.MaestroSerializer;
 import org.maestro.plotter.latency.serializer.Latency;
 import org.maestro.plotter.latency.serializer.LatencyDistribution;
-import org.maestro.plotter.latency.serializer.SmoothLatencySerializer;
 import org.maestro.reports.controllers.common.LatencyStatisticsResponse;
-import org.maestro.reports.dao.ReportDao;
-import org.maestro.reports.dto.Report;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.Map;
 
-abstract class CommonLatencyStatisticsReportController extends AbstractReportFileController {
-    private static final Logger logger = LoggerFactory.getLogger(CommonLatencyStatisticsReportController.class);
+abstract class CommonLatencyStatisticsReportController extends CommonCachedLatencyReportController<LatencyStatisticsResponse> {
 
-    protected void processReports(final Report report, final LatencyStatisticsResponse latencyStatisticsResponse) {
-        final File file = getReportFile(report, "receiverd-latency.hdr");
+    protected void setResponseData(LatencyStatisticsResponse latencyStatisticsResponse, LatencyDistribution data) {
+        Map<String, Latency> values = data.getLatencyDistribution();
 
-        MaestroSerializer<?> serializer = new SmoothLatencySerializer();
-        try {
-            logger.info("Processing report data for {}", file);
+        Latency serviceTimeLatency = values.get("serviceTime");
+        if (serviceTimeLatency != null) {
+            latencyStatisticsResponse.getServiceTimeStatistics().add(serviceTimeLatency.getStatistics());
+        }
 
-            LatencyDistribution data = (LatencyDistribution) serializer.serialize(file);
-
-            Map<String, Latency> values = data.getLatencyDistribution();
-
-            Latency serviceTimeLatency = values.get("serviceTime");
-            if (serviceTimeLatency != null) {
-                latencyStatisticsResponse.getServiceTimeStatistics().add(serviceTimeLatency.getStatistics());
-            }
-
-            Latency responseTimeLatency = values.get("responseTime");
-            if (responseTimeLatency != null) {
-                latencyStatisticsResponse.getResponseTimeStatistics().add(responseTimeLatency.getStatistics());
-            }
-        } catch (IOException e) {
-            logger.error("Unable to process data: {}", e.getMessage(), e);
+        Latency responseTimeLatency = values.get("responseTime");
+        if (responseTimeLatency != null) {
+            latencyStatisticsResponse.getResponseTimeStatistics().add(responseTimeLatency.getStatistics());
         }
     }
 }

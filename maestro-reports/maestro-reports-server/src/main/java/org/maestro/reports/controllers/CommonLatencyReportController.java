@@ -17,53 +17,33 @@
 
 package org.maestro.reports.controllers;
 
-import org.maestro.plotter.common.serializer.MaestroSerializer;
 import org.maestro.plotter.latency.serializer.Latency;
 import org.maestro.plotter.latency.serializer.LatencyDistribution;
-import org.maestro.plotter.latency.serializer.SmoothLatencySerializer;
 import org.maestro.reports.controllers.common.LatencyResponse;
-import org.maestro.reports.dto.Report;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-abstract class CommonLatencyReportController extends AbstractReportFileController{
-    private static final Logger logger = LoggerFactory.getLogger(CommonLatencyReportController.class);
+abstract class CommonLatencyReportController extends CommonCachedLatencyReportController<LatencyResponse> {
+    protected void setResponseData(LatencyResponse latencyDistribution, LatencyDistribution data) {
+        Map<String, Latency> values = data.getLatencyDistribution();
 
-    protected void processReports(final Report report, final LatencyResponse latencyDistribution) {
-        File file = getReportFile(report, "receiverd-latency.hdr");
+        Latency serviceTimeLatency = values.get("serviceTime");
 
-        MaestroSerializer<?> serializer = new SmoothLatencySerializer();
-        try {
-            logger.info("Processing report data for {}", file);
-
-            LatencyDistribution data = (LatencyDistribution) serializer.serialize(file);
-
-            Map<String, Latency> values = data.getLatencyDistribution();
-
-            Latency serviceTimeLatency = values.get("serviceTime");
-
-            if (serviceTimeLatency != null) {
-                if (latencyDistribution.getCategories().isEmpty()) {
-                    List<String> categories = serviceTimeLatency.getPercentiles()
-                            .stream().map(String::valueOf).collect(Collectors.toList());
-                    latencyDistribution.getCategories().addAll(categories);
-                }
-
-                latencyDistribution.setServiceTime(serviceTimeLatency.getValues());
+        if (serviceTimeLatency != null) {
+            if (latencyDistribution.getCategories().isEmpty()) {
+                List<String> categories = serviceTimeLatency.getPercentiles()
+                        .stream().map(String::valueOf).collect(Collectors.toList());
+                latencyDistribution.getCategories().addAll(categories);
             }
 
-            Latency responseTimeLatency = values.get("responseTime");
-            if (responseTimeLatency != null) {
-                latencyDistribution.setResponseTime(responseTimeLatency.getValues());
-            }
-        } catch (IOException e) {
-            logger.error("Unable to process data: {}", e.getMessage(), e);
+            latencyDistribution.setServiceTime(serviceTimeLatency.getValues());
+        }
+
+        Latency responseTimeLatency = values.get("responseTime");
+        if (responseTimeLatency != null) {
+            latencyDistribution.setResponseTime(responseTimeLatency.getValues());
         }
     }
 }
