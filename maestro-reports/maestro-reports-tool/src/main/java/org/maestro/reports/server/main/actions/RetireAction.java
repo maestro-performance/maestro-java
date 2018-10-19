@@ -25,7 +25,7 @@ import java.util.Date;
 import java.util.List;
 
 public class RetireAction extends ManageAction {
-    private ReportDao reportDao = new ReportDao();
+    private final ReportDao reportDao = new ReportDao();
 
     public RetireAction(String[] args) {
         super(args);

@@ -23,11 +23,8 @@ import org.maestro.client.notes.*;
 import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.LocationType;
 import org.maestro.common.client.notes.Test;
-import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroConnectionException;
-import org.maestro.common.test.TestProperties;
 import org.maestro.common.worker.TestLogUtils;
-import org.maestro.common.worker.WorkerOptions;
 import org.maestro.reports.common.organizer.DefaultOrganizer;
 import org.maestro.common.ResultStrings;
 import org.maestro.reports.dao.ReportDao;
@@ -44,16 +41,16 @@ import static org.maestro.reports.server.collector.LogResponseUtils.save;
 
 public class DefaultReportsCollector extends MaestroWorkerManager implements MaestroLogCollectorListener {
     private static final Logger logger = LoggerFactory.getLogger(DefaultReportsCollector.class);
-    private ReportDao reportDao = new ReportDao();
+    private final ReportDao reportDao = new ReportDao();
 
     private DefaultOrganizer organizer;
 
     private final File dataDir;
     private Report report;
-    private AggregationService aggregationService;
+    private final AggregationService aggregationService;
 
-    private Map<PeerInfo, DownloadProgress> progressMap = new ConcurrentHashMap<>();
-    private Set<PeerInfo> knownPeers = ConcurrentHashMap.newKeySet();
+    private final Map<PeerInfo, DownloadProgress> progressMap = new ConcurrentHashMap<>();
+    private final Set<PeerInfo> knownPeers = ConcurrentHashMap.newKeySet();
 
     public DefaultReportsCollector(final String maestroURL, final PeerInfo peerInfo, final File dataDir) {
         super(maestroURL, peerInfo);

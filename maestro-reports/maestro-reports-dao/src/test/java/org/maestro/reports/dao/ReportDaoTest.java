@@ -17,7 +17,6 @@
 package org.maestro.reports.dao;
 
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.maestro.common.HostTypes;
 import org.maestro.common.ResultStrings;
@@ -35,7 +34,7 @@ public class ReportDaoTest {
     private ReportDao dao;
 
     @Before
-    public void setUp() throws Exception {
+    public void setUp() {
         if (dao == null) {
             dao = new ReportDao(new TestDatabaseBuilder("testInsert"));
         }
@@ -64,7 +63,7 @@ public class ReportDaoTest {
 
         assertTrue("The database should not be empty", reports.size() > 0);
 
-        long aggregatedCount = reports.stream().filter(r -> r.isAggregated()).count();
+        long aggregatedCount = reports.stream().filter(Report::isAggregated).count();
         long expectedAggCount = 0;
         assertEquals("Aggregated reports should not be displayed by default", expectedAggCount, aggregatedCount);
     }
@@ -75,7 +74,7 @@ public class ReportDaoTest {
 
         assertTrue("There should be at least 3 records for the given ID", reports.size() >= 3);
 
-        long aggregatedCount = reports.stream().filter(r -> r.isAggregated()).count();
+        long aggregatedCount = reports.stream().filter(Report::isAggregated).count();
         long expectedAggCount = 0;
         assertEquals("Aggregated reports should not be displayed by default", expectedAggCount, aggregatedCount);
     }

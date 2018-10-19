@@ -31,7 +31,7 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class FileSerializerRegistry {
-    private Map<String, MaestroSerializer> registry = new HashMap<>();
+    private final Map<String, MaestroSerializer> registry = new HashMap<>();
     private static FileSerializerRegistry instance;
 
     private FileSerializerRegistry() {

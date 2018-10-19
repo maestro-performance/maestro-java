@@ -28,11 +28,9 @@ import java.io.File;
 
 public class DefaultReportsServer implements ReportsServer {
     private static final Logger logger = LoggerFactory.getLogger(DefaultReportsServer.class);
-    private final File dataDir;
     private Javalin app;
 
-    public DefaultReportsServer(final File dataDir) {
-        this.dataDir = dataDir;
+    public DefaultReportsServer() {
     }
 
     public void start() {

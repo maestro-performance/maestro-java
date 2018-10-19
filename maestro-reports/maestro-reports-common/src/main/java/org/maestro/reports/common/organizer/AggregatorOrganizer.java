@@ -18,8 +18,6 @@
 package org.maestro.reports.common.organizer;
 
 
-import java.io.File;
-
 /**
  * A report directory organizer for aggregated reports
  */

@@ -22,6 +22,7 @@ import java.util.*;
 
 public class LatencyResponse implements Response {
     @JsonProperty("Percentiles")
+    final
     Set<String> categories = new LinkedHashSet<>();
 
     @JsonProperty("Service Time")

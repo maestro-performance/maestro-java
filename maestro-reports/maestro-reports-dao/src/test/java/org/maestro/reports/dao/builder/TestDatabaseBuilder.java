@@ -30,7 +30,7 @@ import java.sql.SQLException;
 
 public class TestDatabaseBuilder implements TemplateBuilder {
     protected static BasicDataSource ds;
-    private String name;
+    private final String name;
 
 
     public TestDatabaseBuilder(String name) {
@@ -43,8 +43,6 @@ public class TestDatabaseBuilder implements TemplateBuilder {
             synchronized (this) {
                 if (ds == null) {
                     ds = new BasicDataSource();
-
-                    AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
                     final String driverClassName = "org.h2.Driver";
                     ds.setDriverClassName(driverClassName);

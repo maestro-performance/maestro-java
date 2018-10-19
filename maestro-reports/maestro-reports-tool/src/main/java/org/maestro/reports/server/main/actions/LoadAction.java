@@ -89,7 +89,6 @@ public class LoadAction extends Action {
             report.setTestDate(testDate);
         }
 
-        return;
     }
 
     private static int loadData() {
@@ -103,7 +102,7 @@ public class LoadAction extends Action {
             reports.stream().filter(r -> isInspector(r.getTestHostRole())).forEach(r -> updateTestDate(r, testDatesCache));
             reports.forEach(System.out::println);
 
-            reports.forEach(r -> reportDao.insert(r));
+            reports.forEach(reportDao::insert);
 
             System.out.println("Reports to loaded: " + reports.size());
 

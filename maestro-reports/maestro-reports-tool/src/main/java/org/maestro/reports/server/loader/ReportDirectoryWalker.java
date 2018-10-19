@@ -32,7 +32,7 @@ import java.util.concurrent.TimeUnit;
 
 public class ReportDirectoryWalker extends DirectoryWalker<Report> {
     private static final Logger logger = LoggerFactory.getLogger(ReportDirectoryWalker.class);
-    private Map<Integer, Date> testDatesCache = new HashMap<>();
+    private final Map<Integer, Date> testDatesCache = new HashMap<>();
 
     /**
      * Loads report data in a directory with format like this: maestro/baseline/id/$id/number/$number/$role/$result/$number/$host
@@ -68,7 +68,7 @@ public class ReportDirectoryWalker extends DirectoryWalker<Report> {
 
                 File testIdDir = testNumberDir.getParentFile().getParentFile();
 
-                int testId = 0;
+                int testId;
 
                 try {
                     testId = Integer.parseInt(testIdDir.getName());

@@ -32,7 +32,7 @@ public class AggregationService {
     private static final Logger logger = LoggerFactory.getLogger(AggregationService.class);
     private final String directory;
 
-    private ReportDao dao = new ReportDao();
+    private final ReportDao dao = new ReportDao();
 
     public AggregationService(String directory) {
         this.directory = directory;
@@ -60,7 +60,7 @@ public class AggregationService {
 
 
     public void aggregate() {
-        List<ReportAggregationInfo> aggregationInfos = null;
+        List<ReportAggregationInfo> aggregationInfos;
         try {
             aggregationInfos = dao.aggregationInfo();
         } catch (DataNotFoundException e) {
