@@ -1,38 +1,106 @@
 Maestro: Using
 ============
 
-At the end of the tests, you can use the CLI to generate the reports. Some customization is also possible.
+In older versions, prior to 1.5, Maestro reports would be downloaded and managed by the test front-end. Starting with 1.5
+the management of the reports is done through a new component called "Maestro Reports Server". In addition to 
+downloading the reports, it will also serve the files and generate the reports. The server is available on the TCP port 
+6500.
 
-Customizing the Reports
+The reports server provides two types of reports. One is an individual report per node and the other is an aggregated 
+report. The aggregated report is displayed on a per test basis.
+
+At the end of the tests, the test data will be downloaded by the report server and will be aggregated automatically. 
+Maestro offers some features to extend and manage the tests. The management of reports is done via `maestro-reports-cli` 
+CLI too. 
+
+
+Including Hardware Information In the Reports
 ----
 
-It is possible to include SUT node information when generating the reports. To do so, you have to create a properties
-file containing the SUT node information in the following format:
+It is possible to display in the reports the hardware resources of the SUT node used during the test. This is optional.
+
+First, load the sut node information in the database:
 
 ```
-sutJvmMaxMemory=4542955520
-sutJvmVersion=25.171-b11
-sutJavaHome=/usr/lib/jvm/java-8-openjdk-amd64/jre
-sutOperatingSystemArch=amd64
-sutSystemCpuCount=4
-sutOperatingSystemVersion=4.16.0-041600-generic
-sutJvmName=OpenJDK 64-Bit Server VM
-sutJavaVersion=1.8.0_172
-sutOperatingSystemName=Linux
-sutSystemInfo=true
+maestro-reports-cli sut-node -a insert --node-name fake-11.host.com --os-name RHEL --os-version 7.4 --os-arch x86_64 --hw-name true --hw-model "IBM x3550 M3" --hw-cpu "Intel Xeon X5650 @ 12x 2.66GHz" --hw-ram 15873 --hw-disk-type hd --hw-cpu-count 1
 ```
 
-They represent, in order: JVM max memory used by the SUT, JVM version, java home, operating system architecture, CPU 
-count, number of CPU/cores availables, operating system version, JVM name, operating system name. 
-The last property, ```sutSystemInfo```, controls whether or not to display the information on the reports. It must 
-always be set to true if you want this information included on the reports. 
+The SUT node information can be reused many times. If you forget the SUT node id, you can use the `view`
+action to list all of the SUT nodes. 
 
-To include this information on the reports, pass the following option to Maestro CLI when generating the reports: 
+Then, associate the SUT node information with the test:
+```
+maestro-reports-cli sut-node -a link -s 1 -t 1
+```
 
-`--with-sut-node-properties-from /path/to/sut-node.properties` 
+
+Managing Reports
+----
+
+The reports can also be managed. There are 3 main states for them: valid, invalid, retired. They are:
+
+* valid: the test is valid and the data is good
+* invalid: the test is invalid for whatever reason the user decides
+* retired: the test was valid, but it's not useful anymore 
+
+All management commands accept an optional comment argument that is displayed in the report index.
+
+To invalidate a test:
+
+```
+maestro-reports-cli invalidate -t 1 -c "Invalidated because of network issues on the test lab"
+```
+
+To validate a test (only required if you have invalidated it before):
+
+```
+maestro-reports-cli validate -t 1
+```
+
+To retire a test:
+```
+maestro-reports-cli retire -t 1 -c "Retired test because was run with an older JVM"
+```
+
+To reactivate a test that was previously retired:
+```
+maestro-reports-cli unretire -t 1
+```
+
+You can also add comments to a test:
+
+```
+maestro-reports-cli comment -t 1 -c "Good test on build 655. Can be promoted"
+```
+
+Finally, it is also possible to consolidate all the tests into a single location. This is useful if the data has moved 
+over time and is laying around multiple locations:
+
+```
+maestro-reports-cli consolidate -d /new/path/for/reports
+```
 
 
 Converting the Reports
 ----
 
 It is possible to convert old rate records used by maestro with the option ```convert``` of the CLI tool.
+
+Loading Old Reports
+----
+
+```
+maestro-reports-cli load -d /extra/opiske/maestro/1.4/baseline
+```
+
+
+Aggregating Old Reports
+----
+
+```
+maestro-reports-cli aggregate -t 2518 -n 0 -d /tmp/agg
+```
+
+```
+maestro-reports-cli aggregate --all -d /extra/opiske/maestro/1.4/baseline
+```
