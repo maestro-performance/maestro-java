@@ -42,7 +42,7 @@ function start() {
     fi
 
     echo -en "Starting the reports tool daemon: "
-    nohup "${installDir}/bin/maestro-reports-tool" -m "${MAESTRO_BROKER}" -l "${MAESTRO_LOG_DIR}" -H "${MAESTRO_LOCAL_HOSTNAME}" "$@" >/dev/null 2>/dev/null &
+    nohup "${installDir}/bin/maestro-reports-tool" -m "${MAESTRO_BROKER}" -d "${MAESTRO_DATA_DIR}" -H "${MAESTRO_LOCAL_HOSTNAME}" "$@" >/dev/null 2>/dev/null &
     if [[ $? != 0 ]] ; then
         eerror "failed to daemonize the Maestro reports tool"
         exit 1

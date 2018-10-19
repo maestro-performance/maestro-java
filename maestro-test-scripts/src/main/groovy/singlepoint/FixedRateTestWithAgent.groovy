@@ -78,7 +78,6 @@ extPointCommand = System.getenv("EXT_POINT_COMMAND")
 
 managementInterface = System.getenv("MANAGEMENT_INTERFACE")
 inspectorName = System.getenv("INSPECTOR_NAME")
-downloaderName = System.getenv("DOWNLOADER_NAME")
 distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
 
 logLevel = System.getenv("LOG_LEVEL")

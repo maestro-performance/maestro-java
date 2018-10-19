@@ -125,7 +125,6 @@ LogConfigurator.configureLogLevel(logLevel)
 
 managementInterface = System.getenv("MANAGEMENT_INTERFACE")
 inspectorName = System.getenv("INSPECTOR_NAME")
-downloaderName = System.getenv("DOWNLOADER_NAME")
 
 
 rate = (combinedRate / initialParallelCount ) * (1 - (Math.log10(messageSize.doubleValue())) / 10)

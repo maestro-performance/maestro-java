@@ -109,7 +109,6 @@ LogConfigurator.configureLogLevel(logLevel)
 
 managementInterface = System.getenv("MANAGEMENT_INTERFACE")
 inspectorName = System.getenv("INSPECTOR_NAME")
-downloaderName = System.getenv("DOWNLOADER_NAME")
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)

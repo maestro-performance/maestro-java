@@ -78,7 +78,6 @@ maxLatency = System.getenv("MAXIMUM_LATENCY")
 
 managementInterface = System.getenv("MANAGEMENT_INTERFACE")
 inspectorName = System.getenv("INSPECTOR_NAME")
-downloaderName = System.getenv("DOWNLOADER_NAME")
 warmUp = System.getenv("WARM_UP")
 
 println "Connecting to " + maestroURL
