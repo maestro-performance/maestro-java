@@ -50,6 +50,9 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_NOTIFY_DRAIN_COMPLETE: {
                 return new DrainCompleteNotification(unpacker);
             }
+            case MAESTRO_NOTE_NOTIFY_TEST_STARTED: {
+                return new TestStartedNotification(unpacker);
+            }
             default: {
                 throw new MalformedNoteException("Invalid notification command: " + tmpCommand);
            }

@@ -501,4 +501,10 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     protected Test getCurrentTest() {
         return currentTest;
     }
+
+    @Override
+    public void handle(final TestStartedNotification note) {
+        logger.info("Test started notification received from {}: {}", note.getPeerInfo().prettyName(),
+                note.getMessage());
+    }
 }

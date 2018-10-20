@@ -62,6 +62,12 @@ public interface MaestroReceiver {
     void notifyFailure(final Test test, final String message);
 
     /**
+     * Publishes a test started notification message in the broker
+     * @param message payload message
+     */
+    void notifyStarted(final Test test, final String message);
+
+    /**
      * Publishes an abnormal disconnect notification message in the broker
      */
     void abnormalDisconnect();

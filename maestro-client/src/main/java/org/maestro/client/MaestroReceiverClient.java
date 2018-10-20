@@ -164,6 +164,24 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     }
 
     @Override
+    public void notifyStarted(final Test test, final String message) {
+        logger.trace("Sending the test started notification from {}", this.toString());
+        TestStartedNotification notification = new TestStartedNotification();
+
+        notification.setPeerInfo(peerInfo);
+        notification.setId(id);
+
+        notification.setTest(test);
+        notification.setMessage(message);
+
+        try {
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, MqttServiceLevel.EXACTLY_ONCE, false);
+        } catch (Exception e) {
+            logger.error("Unable to publish the test started notification: {}", e.getMessage(), e);
+        }
+    }
+
+    @Override
     public void abnormalDisconnect() {
         // TODO: handle abnormal disconnect and the LWT message
     }

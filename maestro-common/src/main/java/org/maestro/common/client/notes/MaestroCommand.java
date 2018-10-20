@@ -60,7 +60,8 @@ public enum MaestroCommand {
     MAESTRO_NOTE_GROUP_LEAVE(51),
 
     MAESTRO_NOTE_ROLE_ASSIGN(60),
-    MAESTRO_NOTE_ROLE_UNASSIGN(61);
+    MAESTRO_NOTE_ROLE_UNASSIGN(61),
+    MAESTRO_NOTE_NOTIFY_TEST_STARTED(70);
 
 
     private final long value;
@@ -102,6 +103,7 @@ public enum MaestroCommand {
             case 50: return MAESTRO_NOTE_GROUP_JOIN;
             case 60: return MAESTRO_NOTE_ROLE_ASSIGN;
             case 61: return MAESTRO_NOTE_ROLE_UNASSIGN;
+            case 70: return MAESTRO_NOTE_NOTIFY_TEST_STARTED;
             default: {
                 Logger logger = LoggerFactory.getLogger(MaestroCommand.class);
                 logger.error("The command {} is not implemented. This is a bug in Maestro", value);

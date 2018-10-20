@@ -23,4 +23,5 @@ package org.maestro.client.notes;
  */
 public interface MaestroLogCollectorListener {
     void handle(LogResponse note);
+    void handle(TestStartedNotification note);
 }

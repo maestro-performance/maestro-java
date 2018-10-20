@@ -86,8 +86,6 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     public void handle(final TestFailedNotification note) {
         super.handle(note);
 
-        knownPeers.add(note.getPeerInfo());
-
         logRequest(note, LocationType.LAST_FAILED);
 
         createNewReportRecord(ResultStrings.FAILED, note.getPeerInfo());
@@ -96,8 +94,6 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     @Override
     public void handle(final TestSuccessfulNotification note) {
         super.handle(note);
-
-        knownPeers.add(note.getPeerInfo());
 
         logRequest(note, LocationType.LAST_SUCCESS);
 
@@ -151,7 +147,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
                 report = null;
             }
             else {
-                logger.debug("{} files still need to be downloaded", inProgress);
+                logger.debug("A total of {} nodes still have files to be downloaded", inProgress);
             }
         }
     }
@@ -178,6 +174,13 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(final RoleAssign note) {
+    }
+
+    @Override
+    public void handle(TestStartedNotification note) {
+        super.handle(note);
+
+        knownPeers.add(note.getPeerInfo());
     }
 
     @Override
