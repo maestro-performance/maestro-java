@@ -135,7 +135,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
         logger.debug("Checking completion status before aggregation: {} of {} nodes have downloaded so far", progress,
                 remaining);
-        if (progress == remaining) {
+        if (progress >= remaining) {
             long inProgress = progressMap.values().stream().filter(DownloadProgress::inProgress).count();
             if (inProgress == 0) {
                 logger.info("All downloads currently in progress have finished. Aggregating the data now");
