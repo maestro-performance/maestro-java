@@ -34,6 +34,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.time.Instant;
 import java.util.*;
 import java.util.concurrent.*;
 
@@ -213,6 +214,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         report.setTestComments(requestedTest.getTestDetails().getTestComments());
         report.setValid(true);
         report.setRetired(false);
+        report.setTestDate(Date.from(Instant.now()));
 
         super.getClient().replyOk(note);
     }
