@@ -72,6 +72,12 @@ public class MqttClientInstance {
         connOpts.setCleanSession(true);
         connOpts.setAutomaticReconnect(true);
 
+        /*
+         Paho uses 10 as the default max inflight exchanges. This may be a bit too small
+         when sending log files, handling stats messages, ping requests ... all at the same.
+         */
+        connOpts.setMaxInflight(20);
+
         return connOpts;
     }
 
