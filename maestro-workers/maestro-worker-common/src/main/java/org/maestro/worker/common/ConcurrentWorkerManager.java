@@ -96,6 +96,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             if (workers.isEmpty()) {
                 logger.warn("No workers were created");
 
+                getClient().replyInternalError(note, "No workers were created");
                 return false;
             }
 
