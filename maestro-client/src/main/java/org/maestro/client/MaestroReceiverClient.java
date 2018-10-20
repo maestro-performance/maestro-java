@@ -26,7 +26,6 @@ import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.MaestroReceiver;
-import org.maestro.common.client.notes.LocationType;
 import org.maestro.common.client.notes.LocationTypeInfo;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;

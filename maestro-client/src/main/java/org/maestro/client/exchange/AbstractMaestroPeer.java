@@ -27,6 +27,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 
 /**
@@ -40,6 +42,7 @@ import java.util.Arrays;
  */
 public abstract class AbstractMaestroPeer<T extends MaestroNote> implements MqttCallbackExtended {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroPeer.class);
+    private static final Set<Subscription> subscriptions = new LinkedHashSet<>();
 
     private final MqttClient inboundEndPoint;
     private final MaestroNoteDeserializer<? extends T> deserializer;
@@ -122,7 +125,10 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     public void subscribe(final String topic, int qos) {
         try {
             inboundEndPoint.subscribe(topic, qos);
+
+            subscriptions.add(new Subscription(topic, qos));
         } catch (MqttException e) {
+            subscriptions.remove(new Subscription(topic, qos));
             throw new MaestroConnectionException("Unable to subscribe to Maestro topics: " + e.getMessage(), e);
         }
     }
@@ -134,17 +140,8 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     public void subscribe(final String[] topics, int allQos) throws MaestroConnectionException {
         logger.debug("Subscribing to maestro topics {}", Arrays.toString(topics));
 
-        int qos[] = new int[topics.length];
-
-        for (int i = 0; i < topics.length; i++) {
-            qos[i] = allQos;
-        }
-
-        try {
-            inboundEndPoint.subscribe(topics, qos);
-        }
-        catch (MqttException e) {
-            throw new MaestroConnectionException("Unable to subscribe to Maestro topics: " + e.getMessage(), e);
+        for (String topic : topics) {
+            subscribe(topic, allQos);
         }
     }
 
@@ -173,6 +170,13 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     @Override
     public void connectComplete(boolean reconnect, final String serverUri) {
         logger.info("Connection to {} completed (reconnect = {})", serverUri, reconnect);
+
+        if (reconnect) {
+            logger.info("Resubscribing to topics that were previously subscribed");
+            for (Subscription subscription : subscriptions) {
+                subscribe(subscription.getTopic(), subscription.getQos());
+            }
+        }
     }
 
     /**

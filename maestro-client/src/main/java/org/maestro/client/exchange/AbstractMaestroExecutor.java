@@ -21,6 +21,10 @@ import org.maestro.common.exceptions.MaestroConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.locks.Condition;
+import java.util.concurrent.locks.Lock;
+import java.util.concurrent.locks.ReentrantLock;
+
 
 /**
  * Provides an abstract interface that can be used to receive data from a Maestro broker.
@@ -29,7 +33,6 @@ public class AbstractMaestroExecutor implements Runnable {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroExecutor.class);
 
     private final AbstractMaestroPeer<? extends MaestroNote> maestroPeer;
-    private String[] topics;
 
     /**
      * Constructor
@@ -56,7 +59,6 @@ public class AbstractMaestroExecutor implements Runnable {
      */
     public void start(final String[] topics) throws MaestroConnectionException {
         logger.debug("Connecting the Maestro broker");
-        this.topics = topics;
 
         maestroPeer.connect();
         if (topics == null) {
@@ -74,7 +76,6 @@ public class AbstractMaestroExecutor implements Runnable {
      */
     public void start(final String[] topics, int connectionRetries, long retryDelay) throws MaestroConnectionException {
         logger.debug("Connecting the Maestro broker");
-        this.topics = topics;
 
         boolean connected = false;
         do {
@@ -117,19 +118,22 @@ public class AbstractMaestroExecutor implements Runnable {
      * Runs the executor
      */
     public final void run() {
-        while (maestroPeer.isRunning()) {
-            try {
-                logger.trace("Waiting for data ...");
+        final Lock lock = new ReentrantLock();
+        final Condition condition = lock.newCondition();
 
-                if (!maestroPeer.isConnected()) {
-                    logger.error("Disconnected from the broker: reconnecting");
-                    maestroPeer.reconnect(this.topics);
+        try {
+            lock.lock();
+            while (!Thread.currentThread().isInterrupted() && maestroPeer.isRunning()) {
+                try {
+                    condition.await();
+                } catch (InterruptedException e) {
+                    logger.info("Interrupted. Aborting");
+                    break;
                 }
-
-                Thread.sleep(10000);
-            } catch (InterruptedException e) {
-                logger.error(e.getMessage(), e);
             }
+        }
+        finally {
+            lock.unlock();
         }
     }
 

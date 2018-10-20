@@ -19,6 +19,7 @@ package org.maestro.worker.common;
 import org.maestro.client.MaestroReceiverClient;
 import org.maestro.client.exchange.AbstractMaestroPeer;
 import org.maestro.client.exchange.MaestroDeserializer;
+import org.maestro.client.exchange.MaestroNoteDeserializer;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.GroupInfo;
 import org.maestro.client.exchange.support.PeerInfo;
@@ -51,7 +52,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     private final MaestroReceiverClient client;
     private final WorkerOptions workerOptions;
-    private boolean running = true;
+    private volatile boolean running = true;
     private GroupInfo groupInfo;
     private Test currentTest;
 
@@ -61,7 +62,16 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
      * @param peerInfo Information about this peer
      */
     public MaestroWorkerManager(final String maestroURL, final PeerInfo peerInfo) {
-        super(maestroURL, peerInfo, MaestroDeserializer::deserializeEvent);
+        this(maestroURL, peerInfo, MaestroDeserializer::deserializeEvent);
+    }
+
+    /**
+     * Constructor
+     * @param maestroURL Maestro broker URL
+     * @param peerInfo Information about this peer
+     */
+    protected MaestroWorkerManager(final String maestroURL, final PeerInfo peerInfo, MaestroNoteDeserializer<MaestroEvent<MaestroEventListener>> deserializer) {
+        super(maestroURL, peerInfo, deserializer);
 
         logger.debug("Creating the receiver client");
         client = new MaestroReceiverClient(maestroURL, peerInfo, getId());
