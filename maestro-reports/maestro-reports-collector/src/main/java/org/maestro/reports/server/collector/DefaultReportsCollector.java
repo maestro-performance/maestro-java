@@ -133,8 +133,8 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         long progress = progressMap.keySet().size();
         long remaining = knownPeers.size();
 
-        logger.debug("Checking completion status before aggregation: {} of {} nodes have downloaded so far", progress,
-                remaining);
+        logger.debug("Checking completion status before aggregation: {} nodes have provided files so far",
+                (progress - remaining));
         if (progress >= remaining) {
             long inProgress = progressMap.values().stream().filter(DownloadProgress::inProgress).count();
             if (inProgress == 0) {
