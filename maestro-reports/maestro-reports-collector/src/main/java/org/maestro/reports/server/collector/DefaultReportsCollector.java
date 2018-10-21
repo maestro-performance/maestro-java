@@ -177,7 +177,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     }
 
     @Override
-    public void handle(TestStartedNotification note) {
+    public void handle(final TestStartedNotification note) {
         super.handle(note);
 
         knownPeers.add(note.getPeerInfo());
