@@ -35,6 +35,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
 
 
@@ -269,7 +270,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             logger.warn("Request a log but a test execution is in progress. Files will be from older tests");
         }
 
-        super.handle(note, logDir);
+        Executors.newSingleThreadExecutor().submit(() -> super.handle(note, logDir));
     }
 
     private boolean drainStart(final WorkerOptions drainOptions, final MaestroNote note, final Class<MaestroWorker> workerClass) {

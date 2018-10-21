@@ -352,7 +352,6 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
                 logSubDir = TestLogUtils.lastSuccessfulTestLogDir(logDir);
                 break;
             }
-
             case ANY: {
                 String name = note.getTypeName();
                 logSubDir = TestLogUtils.anyTestLogDir(logDir, name);
