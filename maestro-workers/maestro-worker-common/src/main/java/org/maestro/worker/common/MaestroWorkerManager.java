@@ -471,13 +471,16 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     @Override
     public void handle(final RoleUnassign note) {
-        if (getPeerInfo().getRole() != Role.OTHER) {
-            String roleTopic = MaestroTopics.peerTopic(getPeerInfo().getRole());
-            getClient().unsubscribe(roleTopic);
-            logger.debug("Unsubscribed to the role topic at {}", roleTopic);
+        try {
+            if (getPeerInfo().getRole() != Role.OTHER) {
+                final String roleTopic = MaestroTopics.peerTopic(getPeerInfo().getRole());
+                getClient().unsubscribe(roleTopic);
+                logger.debug("Unsubscribed to the role topic at {}", roleTopic);
+            }
+        } finally {
+            getPeerInfo().setRole(Role.OTHER);
         }
 
-        getPeerInfo().setRole(Role.OTHER);
         getClient().replyOk(note);
     }
 
