@@ -51,7 +51,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
 
     private void createInspector(final StartInspector note, final String inspectorType) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
         @SuppressWarnings("unchecked")
-        Class<MaestroInspector> clazz = (Class<MaestroInspector>) Class.forName(inspectorType);
+        final Class<MaestroInspector> clazz = (Class<MaestroInspector>) Class.forName(inspectorType);
 
         inspector = clazz.newInstance();
         inspector.setEndpoint(getClient());
@@ -95,7 +95,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         super.handle(note);
 
         if (note.getOption() == SetRequest.Option.MAESTRO_NOTE_OPT_SET_MI) {
-            String value = note.getValue();
+            final String value = note.getValue();
 
             if (value != null) {
                 setUrl(value);
@@ -132,7 +132,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
     }
 
     @Override
-    public void handle(TestFailedNotification note) {
+    public void handle(final TestFailedNotification note) {
         super.handle(note);
 
         if (inspectorThread != null) {
@@ -143,7 +143,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
 
 
     @Override
-    public void handle(TestSuccessfulNotification note) {
+    public void handle(final TestSuccessfulNotification note) {
         super.handle(note);
 
         if (inspectorThread != null) {
@@ -180,22 +180,22 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
     }
 
     @Override
-    public void handle(RoleAssign note) {
+    public void handle(final RoleAssign note) {
         getClient().replyOk(note);
     }
 
     @Override
-    public void handle(RoleUnassign note) {
+    public void handle(final RoleUnassign note) {
         getClient().replyOk(note);
     }
 
     @Override
-    public void handle(StartWorker note) {
+    public void handle(final StartWorker note) {
         // NO-OP for now
     }
 
     @Override
-    public void handle(StopWorker note) {
+    public void handle(final StopWorker note) {
         // NO-OP for now
     }
 }
