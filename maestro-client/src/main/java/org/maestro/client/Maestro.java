@@ -74,7 +74,7 @@ public final class Maestro implements MaestroRequester {
 
         try {
             collectorExecutor.stop();
-            collectorThread.join();
+            collectorThread.join(5000);
         } catch (InterruptedException e) {
             logger.trace("Interrupted while stopping Maestro {}", e.getMessage(), e);
         }
