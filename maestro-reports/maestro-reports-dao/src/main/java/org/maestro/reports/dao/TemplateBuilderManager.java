@@ -21,8 +21,15 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.reports.dao.builder.ExternalDatabaseBuilder;
 import org.maestro.reports.dao.builder.InternalDatabaseBuilder;
 
+/**
+ * Manages building the template manager based on the configuration settings
+ */
 public final class TemplateBuilderManager {
 
+    /**
+     * Gets the template builder based on the configuration settings
+     * @return the template builder
+     */
     static TemplateBuilder getTemplateBuilder() {
         AbstractConfiguration config = ConfigurationWrapper.getConfig();
 

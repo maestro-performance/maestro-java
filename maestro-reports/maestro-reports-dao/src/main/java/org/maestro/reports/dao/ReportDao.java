@@ -28,12 +28,23 @@ import java.util.List;
  */
 public class ReportDao extends AbstractDao {
 
+    /**
+     * Constructor
+     */
     public ReportDao() {}
 
+    /**
+     * Constructor
+     * @param tp the Spring JDBC template builder
+     */
     public ReportDao(TemplateBuilder tp) {
         super(tp);
     }
 
+    /**
+     * Inserts a new record into the DB
+     * @param report the record to insert
+     */
     public void insert(final Report report) {
         runEmptyInsert(
                 "insert into report(test_id, test_number, test_name, test_script, test_host, test_host_role, " +
@@ -44,6 +55,12 @@ public class ReportDao extends AbstractDao {
                 report);
     }
 
+
+    /**
+     * Updates a record on the DB (by report ID)
+     * @param report the record to update
+     * @return the index of the updated record
+     */
     public int update(final Report report) {
         return runUpdate("update report set test_id = ?, test_number = ?, test_name = ?, test_script = ?, test_host = ?, " +
                 "test_host_role = ?, test_result = ?, location = ?, aggregated = ?, test_description = ?, " +
@@ -57,7 +74,7 @@ public class ReportDao extends AbstractDao {
     /**
      * Fetch all non-aggregated records
      * @return A list of records
-     * @throws DataNotFoundException
+     * @throws DataNotFoundException if no records are found that match the query
      */
     public List<Report> fetch() throws DataNotFoundException {
         return runQueryMany("select * from report where aggregated = false and valid = true",
@@ -67,7 +84,7 @@ public class ReportDao extends AbstractDao {
     /**
      * Fetch all records regardless of any status
      * @return A list of records
-     * @throws DataNotFoundException
+     * @throws DataNotFoundException if no records are found that match the query
      */
     public List<Report> fetchAll() throws DataNotFoundException {
         return runQueryMany("select * from report", new BeanPropertyRowMapper<>(Report.class));
@@ -77,7 +94,7 @@ public class ReportDao extends AbstractDao {
     /**
      * Fetch all records regardless of any status
      * @return A list of records
-     * @throws DataNotFoundException
+     * @throws DataNotFoundException if no records are found that match the query
      */
     public List<Report> fetchAllAggregated() throws DataNotFoundException {
         return runQueryMany("select * from report where aggregated = true and valid = true", new BeanPropertyRowMapper<>(Report.class));
@@ -85,9 +102,9 @@ public class ReportDao extends AbstractDao {
 
     /**
      * Fetch by report ID
-     * @param reportId
-     * @return
-     * @throws DataNotFoundException
+     * @param reportId the report ID
+     * @return the record matching the report ID
+     * @throws DataNotFoundException if no records are found that match the query
      */
     public Report fetch(int reportId) throws DataNotFoundException {
         return runQuery("select * from report where aggregated = false and report_id = ?",
@@ -97,10 +114,10 @@ public class ReportDao extends AbstractDao {
 
     /**
      * Fetch by test ID and test number
-     * @param testId
-     * @param testNumber
-     * @return
-     * @throws DataNotFoundException
+     * @param testId the test id
+     * @param testNumber the test number
+     * @return A list of records matching the test ID and test number
+     * @throws DataNotFoundException if no records are found that match the query
      */
     public List<Report> fetch(int testId, int testNumber) throws DataNotFoundException {
         return runQueryMany("select * from report where aggregated = false and test_id = ? and test_number = ? ",
@@ -110,15 +127,23 @@ public class ReportDao extends AbstractDao {
 
     /**
      * Fetch by test ID
-     * @param testId
-     * @return
-     * @throws DataNotFoundException
+     * @param testId the test ID
+     * @return a list of records matching the test ID
+     * @throws DataNotFoundException if no records are found that match the query
      */
     public List<Report> fetchByTestId(int testId) throws DataNotFoundException {
         return runQueryMany("select * from report where test_id = ?", new BeanPropertyRowMapper<>(Report.class),
                 testId);
     }
 
+
+    /**
+     * The aggregated report record matching the input test ID and test number
+     * @param testId the test ID
+     * @param testNumber the test number
+     * @return the record matching the report ID
+     * @throws DataNotFoundException if no records are found that match the query
+     */
     public Report fetchAggregated(int testId, int testNumber) throws DataNotFoundException {
         return runQuery(
                 "select * from report where aggregated = true and test_id = ? and test_number = ?",
@@ -126,6 +151,13 @@ public class ReportDao extends AbstractDao {
                 testId, testNumber);
     }
 
+
+    /**
+     * Collects the aggregation info for all the records. It can be used to determine which records
+     * have and have not been aggregated
+     * @return A list of aggregation information
+     * @throws DataNotFoundException if no records are found that match the query
+     */
     public List<ReportAggregationInfo> aggregationInfo() throws DataNotFoundException {
         return runQueryMany("SELECT test_id,test_number,sum(aggregated) AS aggregations FROM report " +
                 "GROUP BY test_id,test_number ORDER BY test_id desc",

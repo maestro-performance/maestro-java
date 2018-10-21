@@ -23,6 +23,9 @@ import org.springframework.jdbc.core.JdbcTemplate;
 
 import org.apache.commons.dbcp2.BasicDataSource;
 
+/**
+ * The template builder that creates a JDBC template for external databases
+ */
 public class ExternalDatabaseBuilder implements TemplateBuilder {
     protected static BasicDataSource ds;
 

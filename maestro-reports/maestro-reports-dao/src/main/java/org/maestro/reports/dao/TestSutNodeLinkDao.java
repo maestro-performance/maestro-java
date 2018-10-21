@@ -22,24 +22,53 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
 import java.util.List;
 
+
+/**
+ * DAO for the Test SUT node link table
+ */
 public class TestSutNodeLinkDao extends AbstractDao {
 
+    /**
+     * Constructor
+     */
     public TestSutNodeLinkDao() {}
 
+
+    /**
+     * Constructor
+     * @param tp the Spring JDBC template builder
+     */
     public TestSutNodeLinkDao(TemplateBuilder tp) {
         super(tp);
     }
 
+
+    /**
+     * Inserts a new record into the DB
+     * @param record the record to insert
+     */
     public void insert(final TestSutNodeLinkRecord record) {
         runEmptyInsert("insert into test_sut_node_link(test_id, sut_node_id) values(:testId, :sutNodeId)",
                 record);
     }
 
+
+    /**
+     * Fetch all test sut node link records
+     * @return A list of records
+     * @throws DataNotFoundException if no records are found that match the query
+     */
     public List<TestSutNodeLinkRecord> fetch() throws DataNotFoundException {
         return runQueryMany("select * from test_sut_node_link",
                 new BeanPropertyRowMapper<>(TestSutNodeLinkRecord.class));
     }
 
+
+    /**
+     * Fetch a test sut node link records matching the given test ID
+     * @return A list of records
+     * @throws DataNotFoundException if no records are found that match the query
+     */
     public TestSutNodeLinkRecord fetch(int testId) throws DataNotFoundException {
         return runQuery("select * from test_sut_node_link where test_id = ?",
                 new BeanPropertyRowMapper<>(TestSutNodeLinkRecord.class),

@@ -17,7 +17,7 @@
 package org.maestro.reports.dao.exceptions;
 
 /**
- *
+ * Thrown whenever a DB data is not found
  */
 public class DataNotFoundException extends Exception {
     public DataNotFoundException(String message) {

@@ -22,13 +22,30 @@ import org.springframework.jdbc.core.BeanPropertyRowMapper;
 
 import java.util.List;
 
+/**
+ * DAO for the SUT node info table
+ */
 public class SutNodeInfoDao extends AbstractDao {
+
+    /**
+     * Constructor
+     */
     public SutNodeInfoDao() {}
 
+    /**
+     * Constructor
+     * @param tp the Spring JDBC template builder
+     */
     public SutNodeInfoDao(TemplateBuilder tp) {
         super(tp);
     }
 
+
+    /**
+     * Inserts a new record into the DB
+     * @param sutNodeInfo the record to insert
+     * @return the sut ID for the record just inserted
+     */
     public int insert(final SutNodeInfo sutNodeInfo) {
         return runInsert(
                 "insert into sut_node_info(sut_node_name, sut_node_os_name, sut_node_os_arch, " +
@@ -41,17 +58,35 @@ public class SutNodeInfoDao extends AbstractDao {
                 sutNodeInfo);
     }
 
+
+    /**
+     * Fetch all sut node info records
+     * @return A list of records
+     * @throws DataNotFoundException if no records are found that match the query
+     */
     public List<SutNodeInfo> fetch() throws DataNotFoundException {
         return runQueryMany("select * from sut_node_info",
                 new BeanPropertyRowMapper<>(SutNodeInfo.class));
     }
 
+
+    /**
+     * Fetch a sut node info records matching the given SUT node ID
+     * @return A list of records
+     * @throws DataNotFoundException if no records are found that match the query
+     */
     public SutNodeInfo fetch(int sutNodeId) throws DataNotFoundException {
         return runQuery("select * from sut_node_info where sut_node_id = ?",
                 new BeanPropertyRowMapper<>(SutNodeInfo.class),
                 sutNodeId);
     }
 
+
+    /**
+     * Fetch a sut node info records matching the given test ID
+     * @return A list of records
+     * @throws DataNotFoundException if no records are found that match the query
+     */
     public List<SutNodeInfo> fetchByTest(int testId) throws DataNotFoundException {
         return runQueryMany("SELECT * FROM sut_node_info sn,test_sut_node_link tsnl " +
                         "WHERE sn.sut_node_id = tsnl.sut_node_id AND tsnl.test_id = ?",
