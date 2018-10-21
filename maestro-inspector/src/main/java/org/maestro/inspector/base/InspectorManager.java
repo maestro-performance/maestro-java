@@ -81,6 +81,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
             inspectorThread = new Thread(inspectorContainer);
             inspectorThread.start();
 
+            getClient().notifyStarted(getCurrentTest(), "");
             getClient().replyOk(note);
         }
         catch (Throwable t) {
