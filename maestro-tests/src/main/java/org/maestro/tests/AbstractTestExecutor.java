@@ -28,6 +28,7 @@ import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.client.notes.WorkerStartOptions;
 import org.maestro.common.exceptions.MaestroConnectionException;
+import org.maestro.common.exceptions.TryAgainException;
 import org.maestro.tests.cluster.DistributionStrategy;
 import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
@@ -63,8 +64,30 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         return maestro;
     }
 
+    private void tryTestStart(final Test test) {
+        int retries = 6;
+
+        do {
+            try {
+                exec(maestro::startTest, MaestroTopics.PEER_TOPIC, test);
+            } catch (TryAgainException e) {
+                logger.warn("Waiting 5 seconds because the test cannot be started at this moment : %s", e.getMessage());
+                try {
+                    Thread.sleep(5000);
+                    retries--;
+                    if (retries == 0) {
+                        throw e;
+                    }
+                } catch (InterruptedException e1) {
+                    logger.warn("Interrupted while waiting for the successful test start", e1);
+                    throw e;
+                }
+            }
+        } while (retries > 0);
+    }
+
     protected void testStart(final Test test) {
-        exec(maestro::startTest, MaestroTopics.PEER_TOPIC, test);
+        tryTestStart(test);
 
         running = true;
         startTime = Instant.now();

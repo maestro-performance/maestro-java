@@ -16,6 +16,7 @@
 
 package org.maestro.client.notes;
 
+import org.maestro.common.client.notes.ErrorCode;
 import org.maestro.common.client.notes.LocationTypeInfo;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.client.notes.TestDetails;
@@ -69,9 +70,18 @@ class SerializationUtils {
         return ret;
     }
 
-
     public static void pack(final MessageBufferPacker packer, final TestDetails testDetails) throws IOException {
         packer.packString(testDetails.getTestDescription());
         packer.packString(testDetails.getTestComments());
+    }
+
+    public static ErrorCode unpackErrorCode(final MessageUnpacker unpacker) throws IOException {
+        final int value = unpacker.unpackInt();
+
+        return ErrorCode.from(value);
+    }
+
+    public static void pack(final MessageBufferPacker packer, final ErrorCode errorCode) throws IOException {
+        packer.packInt(errorCode.getCode());
     }
 }

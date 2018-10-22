@@ -21,6 +21,7 @@ import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.common.client.exceptions.MalformedNoteException;
+import org.maestro.common.client.notes.ErrorCode;
 import org.maestro.common.client.notes.LocationType;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.exceptions.MaestroConnectionException;
@@ -208,10 +209,13 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(final StartTestRequest note) {
-        if (countInProgress() > 0) {
-            logger.warn("There are files still being downloaded");
+        long inProgress = countInProgress();
+        if (inProgress > 0) {
+            logger.warn("There are {} files being downloaded", inProgress);
 
-            // TODO: check if it needs to send an internal error
+             super.getClient().replyInternalError(note, ErrorCode.TRY_AGAIN,
+                     "There are %d files being downloaded", inProgress);
+             return;
         }
 
         final Test requestedTest = note.getTest();

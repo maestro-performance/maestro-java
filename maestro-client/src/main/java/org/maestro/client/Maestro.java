@@ -32,6 +32,7 @@ import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.client.notes.*;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.exceptions.TryAgainException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -644,7 +645,14 @@ public final class Maestro implements MaestroRequester {
         for (MaestroNote reply : replies) {
             if (reply instanceof InternalError) {
                 InternalError ie = (InternalError) reply;
-                throw new MaestroException("Error applying a setting to the test cluster: %s", ie.getMessage());
+                if (ie.getErrorCode() == ErrorCode.TRY_AGAIN) {
+                    throw new TryAgainException("The request cannot be handled at this moment on %s: %s",
+                            ie.getPeerInfo().prettyName(), ie.getMessage());
+                }
+                else {
+                    throw new MaestroException("Error applying a setting to the test cluster on %s: %s",
+                            ie.getPeerInfo().prettyName(), ie.getMessage());
+                }
             }
         }
     }
@@ -669,7 +677,14 @@ public final class Maestro implements MaestroRequester {
         for (MaestroNote reply : replies) {
             if (reply instanceof InternalError) {
                 InternalError ie = (InternalError) reply;
-                throw new MaestroException("Error executing a command on the test cluster: %s", ie.getMessage());
+                if (ie.getErrorCode() == ErrorCode.TRY_AGAIN) {
+                    throw new TryAgainException("The request cannot be handled at this moment on %s: %s",
+                            ie.getPeerInfo().prettyName(), ie.getMessage());
+                }
+                else {
+                    throw new MaestroException("Error executing a command on the test cluster on %s: %s",
+                            ie.getPeerInfo().prettyName(), ie.getMessage());
+                }
             }
         }
     }

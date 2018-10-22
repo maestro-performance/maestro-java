@@ -16,6 +16,7 @@
 
 package org.maestro.common.client;
 
+import org.maestro.common.client.notes.ErrorCode;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;
 
@@ -47,7 +48,16 @@ public interface MaestroReceiver {
      * @param message the error message
      * @param args the arguments to format the message
      */
-    void replyInternalError(MaestroNote note, String message,String...args);
+    void replyInternalError(MaestroNote note, String message, Object...args);
+
+    /**
+     * Publishes an internal error reply in the Maestro broker
+     * @param note the request note to correlate this response to
+     * @param errorCode error code associated with the error
+     * @param message the error message
+     * @param args the arguments to format the message
+     */
+    void replyInternalError(MaestroNote note, ErrorCode errorCode, String message, Object...args);
 
     /**
      * Publishes a test success notification message in the broker

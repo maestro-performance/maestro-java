@@ -26,6 +26,7 @@ import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.MaestroReceiver;
+import org.maestro.common.client.notes.ErrorCode;
 import org.maestro.common.client.notes.LocationTypeInfo;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;
@@ -94,9 +95,15 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         }
     }
 
-    public void replyInternalError(final MaestroNote note, final String message, final String...args) {
+    public void replyInternalError(final MaestroNote note, final String message, final Object...args) {
+        replyInternalError(note, ErrorCode.UNSPECIFIED, message, args);
+    }
+
+    public void replyInternalError(final MaestroNote note, final ErrorCode errorCode, final String message,
+                                   final Object...args)
+    {
         logger.trace("Sending the internal error response from {}", this.toString());
-        InternalError errResponse = new InternalError(String.format(message, (Object[]) args));
+        InternalError errResponse = new InternalError(errorCode, String.format(message, (Object[]) args));
 
         errResponse.setPeerInfo(peerInfo);
         errResponse.setId(id);
