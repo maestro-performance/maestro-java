@@ -38,7 +38,7 @@ public class InternalError extends MaestroResponse {
         this.message = message;
     }
 
-    public InternalError(MessageUnpacker unpacker) throws IOException {
+    public InternalError(final MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_INTERNAL_ERROR, unpacker);
 
         errorCode = SerializationUtils.unpackErrorCode(unpacker);
