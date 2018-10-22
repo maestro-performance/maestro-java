@@ -177,7 +177,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
 
     @Override
     public void handle(final LogRequest note) {
-        super.handle(note, logDir);
+        super.handle(note, logDir, getPeerInfo());
     }
 
     @Override

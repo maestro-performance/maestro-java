@@ -270,7 +270,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             logger.warn("Request a log but a test execution is in progress. Files will be from older tests");
         }
 
-        Executors.newSingleThreadExecutor().submit(() -> super.handle(note, logDir));
+        Executors.newSingleThreadExecutor().submit(() -> super.handle(note, logDir, getPeerInfo()));
     }
 
     private boolean drainStart(final WorkerOptions drainOptions, final MaestroNote note, final Class<MaestroWorker> workerClass) {

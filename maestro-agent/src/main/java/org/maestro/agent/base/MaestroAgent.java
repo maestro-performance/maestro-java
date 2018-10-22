@@ -338,7 +338,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
         // It might or might not exist. The agent is very loose in this regard
         File logDirFile = new File(logDir);
         if (logDirFile.exists()) {
-            super.handle(note, logDirFile);
+            super.handle(note, logDirFile, getPeerInfo());
         }
         else {
             logger.warn("The log directory for the agent does not exist");

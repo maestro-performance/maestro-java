@@ -230,7 +230,9 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
      * @param note the requesting note
      * @param hash the hash for the file being sent
      */
-    public void logResponse(final File logFile, final LogRequest note, final String hash, final LocationTypeInfo locationTypeInfo) {
+    public static void logResponse(final File logFile, final LogRequest note, final String hash,
+                                   final LocationTypeInfo locationTypeInfo, final PeerInfo peerInfo,
+                                   final String id, final MaestroReceiverClient client) {
         LogResponse logResponse = new LogResponse();
 
         logResponse.setPeerInfo(peerInfo);
@@ -244,7 +246,8 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
 
         ThrottleCallback throttleCallback = new ThrottleCallback();
 
-        super.publish(MaestroTopics.MAESTRO_LOGS_TOPIC, logResponse, MqttServiceLevel.EXACTLY_ONCE, false, throttleCallback);
+        client.publish(MaestroTopics.MAESTRO_LOGS_TOPIC, logResponse, MqttServiceLevel.EXACTLY_ONCE, false,
+                throttleCallback);
     }
 
 

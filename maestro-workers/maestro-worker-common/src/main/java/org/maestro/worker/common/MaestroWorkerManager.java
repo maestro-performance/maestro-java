@@ -339,7 +339,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
      * @param note the note to handle
      * @param logDir the log directory
      */
-    protected void handle(final LogRequest note, final File logDir) {
+    protected void handle(final LogRequest note, final File logDir, final PeerInfo peerInfo) {
         logger.debug("Log request received");
         File logSubDir;
 
@@ -403,7 +403,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
             }
 
             locationTypeInfo.setIndex(index);
-            getClient().logResponse(file, note, hash, locationTypeInfo);
+            MaestroReceiverClient.logResponse(file, note, hash, locationTypeInfo, peerInfo, getId(), getClient());
             index++;
         }
     }
