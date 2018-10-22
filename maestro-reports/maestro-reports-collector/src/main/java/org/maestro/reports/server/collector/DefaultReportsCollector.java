@@ -112,6 +112,44 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         reportDao.insert(report);
     }
 
+    private boolean allNodesDownloaded() {
+        final long progress = progressMap.keySet().size();
+        final long remaining = knownPeers.size();
+
+        if (progressMap.size() == 0) {
+            return false;
+        }
+
+        logger.debug("Checking completion status: {} nodes have provided files so far",
+                (progress - remaining));
+        if (progress >= remaining) {
+            return true;
+        }
+
+        return false;
+    }
+
+    private long countInProgress() {
+        return progressMap.values().stream().filter(DownloadProgress::inProgress).count();
+    }
+
+    private boolean isCompleted() {
+        if (allNodesDownloaded()) {
+            return false;
+        }
+
+        final long inProgress = countInProgress();
+
+        if (inProgress == 0) {
+            logger.debug("All downloads seem to have been completed");
+            return true;
+        }
+        else {
+            logger.debug("A total of {} nodes still have files to be downloaded", inProgress);
+            return false;
+        }
+    }
+
 
     @Override
     public void handle(final LogResponse note) {
@@ -126,29 +164,14 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         progressMap.put(peerInfo, downloadProgress);
         save(note, organizer);
 
-        if (progressMap.size() == 0) {
-            return;
-        }
+        if (isCompleted()) {
+            logger.info("All downloads currently in progress have finished. Aggregating the data now");
+            Executors.newSingleThreadExecutor().submit(this::runAggregation);
 
-        long progress = progressMap.keySet().size();
-        long remaining = knownPeers.size();
+            progressMap.clear();
+            knownPeers.clear();
 
-        logger.debug("Checking completion status before aggregation: {} nodes have provided files so far",
-                (progress - remaining));
-        if (progress >= remaining) {
-            long inProgress = progressMap.values().stream().filter(DownloadProgress::inProgress).count();
-            if (inProgress == 0) {
-                logger.info("All downloads currently in progress have finished. Aggregating the data now");
-                Executors.newSingleThreadExecutor().submit(this::runAggregation);
-
-                progressMap.clear();
-                knownPeers.clear();
-
-                report = null;
-            }
-            else {
-                logger.debug("A total of {} nodes still have files to be downloaded", inProgress);
-            }
+            report = null;
         }
     }
 
