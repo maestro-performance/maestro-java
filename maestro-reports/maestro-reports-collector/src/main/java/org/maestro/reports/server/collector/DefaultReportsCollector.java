@@ -211,7 +211,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     public void handle(final StartTestRequest note) {
         long inProgress = countInProgress();
         if (inProgress > 0) {
-            logger.warn("There are {} files being downloaded", inProgress);
+            logger.warn("There are {} files being downloaded. Requesting the client to wait", inProgress);
 
              super.getClient().replyInternalError(note, ErrorCode.TRY_AGAIN,
                      "There are %d files being downloaded", inProgress);
