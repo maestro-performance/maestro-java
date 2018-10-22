@@ -38,7 +38,7 @@ public enum ErrorCode {
     public static ErrorCode from(int value) {
         switch (value) {
             case 0: return UNSPECIFIED;
-            case 1: return TRY_AGAIN;
+            case 10: return TRY_AGAIN;
             default: return UNSPECIFIED;
         }
     }
