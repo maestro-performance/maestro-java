@@ -18,7 +18,7 @@ package org.maestro.client.exchange.support;
 
 import org.maestro.common.Role;
 
-public interface PeerInfo {
+public interface PeerInfo extends Comparable<PeerInfo> {
 
     void setRole(Role role);
 
@@ -32,5 +32,22 @@ public interface PeerInfo {
 
     default String prettyName() {
         return peerName() + "@" + peerHost();
+    }
+
+    @Override
+    default int compareTo(PeerInfo peerInfo) {
+        if (peerInfo == null) {
+            return 1;
+        }
+
+        int comp = peerHost().compareTo(peerInfo.peerHost());
+        if (comp == 0) {
+            comp = peerName().compareTo(peerInfo.peerName());
+            if (comp == 0) {
+                comp = getRole().compareTo(peerInfo.getRole());
+            }
+        }
+
+        return comp;
     }
 }
