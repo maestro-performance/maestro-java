@@ -223,26 +223,15 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
         report = new Report();
 
-        if (requestedTest.getTestNumber() == Test.NEXT) {
-            final File testDataDir = TestLogUtils.nextTestLogDir(dataDir);
-            final File lastIterationDir = new File(testDataDir, "0");
+        final File testDataDir = getTestDirectory(requestedTest, dataDir);
+        final File testIterationDir = getTestIterationDirectory(requestedTest, testDataDir);
 
-            logger.info("Collecting log files on {}", lastIterationDir);
-            organizer = new DefaultOrganizer(lastIterationDir.getPath());
+        logger.info("Collecting log files on {}", testIterationDir);
+        report.setTestId(TestLogUtils.testLogDirNum(testDataDir));
 
-            report.setTestId(TestLogUtils.testLogDirNum(testDataDir));
-            report.setTestNumber(TestLogUtils.testLogDirNum(lastIterationDir));
-        }
-        else {
-            final File lastTestDir = TestLogUtils.findLastLogDir(dataDir);
-            final File lastIterationDir = TestLogUtils.findLastLogDir(lastTestDir);
-
-            logger.info("Collecting log files on {}", lastIterationDir);
-            organizer = new DefaultOrganizer(lastIterationDir.getPath());
-
-            report.setTestId(TestLogUtils.testLogDirNum(lastTestDir));
-            report.setTestNumber(TestLogUtils.testLogDirNum(lastIterationDir));
-        }
+        // Beware: on the report, testNumber is the test iteration.
+        report.setTestNumber(TestLogUtils.testLogDirNum(testIterationDir));
+        organizer = new DefaultOrganizer(testIterationDir.getPath());
 
         report.setTestName(requestedTest.getTestName());
         report.setTestScript(requestedTest.getScriptName());
@@ -253,5 +242,35 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         report.setTestDate(Date.from(Instant.now()));
 
         super.getClient().replyOk(note);
+    }
+
+    private static File getTestDirectory(final File baseDir, int num) {
+        File testDir;
+
+        if (num == Test.NEXT) {
+            testDir = TestLogUtils.nextTestLogDir(baseDir);
+        }
+        else {
+            if (num == Test.LAST) {
+                testDir = TestLogUtils.findLastLogDir(baseDir);
+            }
+            else {
+                testDir = TestLogUtils.testLogDir(baseDir, num);
+            }
+        }
+
+        return testDir;
+    }
+
+    private static File getTestDirectory(final Test requestedTest, final File baseDir) {
+        int requestedTestNumber = requestedTest.getTestNumber();
+
+        return getTestDirectory(baseDir, requestedTestNumber);
+    }
+
+    private static File getTestIterationDirectory(final Test requestedTest, final File baseDir) {
+        int requestedTestIteration = requestedTest.getTestIteration();
+
+        return getTestDirectory(baseDir, requestedTestIteration);
     }
 }
