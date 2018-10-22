@@ -115,15 +115,15 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
     private boolean allNodesDownloaded() {
         final long progress = progressMap.keySet().size();
-        final long remaining = knownPeers.size();
+        final long knownNodeCount = knownPeers.size();
 
         if (progressMap.size() == 0) {
             return false;
         }
 
         logger.debug("Checking completion status: {} nodes have provided files so far",
-                (progress - remaining));
-        if (progress >= remaining) {
+                (knownNodeCount - progress));
+        if (progress >= knownNodeCount) {
             return true;
         }
 
