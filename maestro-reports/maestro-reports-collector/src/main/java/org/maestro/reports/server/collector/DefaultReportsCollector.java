@@ -208,10 +208,15 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(final StartTestRequest note) {
+        if (countInProgress() > 0) {
+            logger.warn("There are files still being downloaded");
+
+            // TODO: check if it needs to send an internal error
+        }
+
         final Test requestedTest = note.getTest();
 
         report = new Report();
-
 
         if (requestedTest.getTestNumber() == Test.NEXT) {
             final File testDataDir = TestLogUtils.nextTestLogDir(dataDir);
