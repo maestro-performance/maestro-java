@@ -20,7 +20,9 @@ function resultRender(data, type, full, meta) {
 }
 
 function simpleDateRender(data, type, full, meta) {
-    return (new Date(data)).toLocaleString();
+    var date = moment(data)
+
+    return date.format('DD/MMM/Y HH:mm:ss z')
 }
 
 
