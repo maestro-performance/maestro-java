@@ -70,6 +70,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         do {
             try {
                 exec(maestro::startTest, MaestroTopics.PEER_TOPIC, test);
+                break;
             } catch (TryAgainException e) {
                 logger.warn("Waiting 5 seconds because the test cannot be started at this moment : %s", e.getMessage());
                 try {
