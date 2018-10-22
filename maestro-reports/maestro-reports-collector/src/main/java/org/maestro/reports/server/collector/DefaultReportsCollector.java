@@ -135,7 +135,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     }
 
     private boolean isCompleted() {
-        if (allNodesDownloaded()) {
+        if (!allNodesDownloaded()) {
             return false;
         }
 
