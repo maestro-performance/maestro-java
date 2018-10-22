@@ -50,8 +50,8 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     private Report report;
     private final AggregationService aggregationService;
 
-    private final Map<PeerInfo, DownloadProgress> progressMap = new ConcurrentHashMap<>();
-    private final Set<PeerInfo> knownPeers = ConcurrentHashMap.newKeySet();
+    private final Map<PeerInfo, DownloadProgress> progressMap = new HashMap<>();
+    private final Set<PeerInfo> knownPeers = new TreeSet<>();
 
     public DefaultReportsCollector(final String maestroURL, final PeerInfo peerInfo, final File dataDir) {
         super(maestroURL, peerInfo);
