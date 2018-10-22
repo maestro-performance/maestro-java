@@ -33,31 +33,31 @@ public class LogResponseJoiner {
 
     public LogResponse join(final LogResponse logResponse) {
         String key = logResponse.getId() + "-" + logResponse.getLocationType() + "-" + logResponse.getFileName();
-        logger.debug("Log response key: {}", key);
+        logger.trace("Log response key: {}", key);
 
         final LogResponse prev = cache.get(key);
         if (prev == null) {
-            logger.debug("A previous entry does not exist for file {}. Checking if is has additional chunks ...",
+            logger.trace("A previous entry does not exist for file {}. Checking if is has additional chunks ...",
                     logResponse.getFileName());
 
             if (logResponse.hasNext()) {
-                logger.debug("File {} has additional chunks. Caching and waiting", logResponse.getFileName());
+                logger.trace("File {} has additional chunks. Caching and waiting", logResponse.getFileName());
                 cache.put(key, logResponse);
             }
             else {
-                logger.debug("No additional chunks are reported. The log response is complete for file {}",
+                logger.trace("No additional chunks are reported. The log response is complete for file {}",
                         logResponse.getFileName());
             }
 
             return logResponse;
         }
         else {
-            logger.debug("A previous entry for file {} exists", logResponse.getFileName());
+            logger.trace("A previous entry for file {} exists", logResponse.getFileName());
             prev.join(logResponse);
             prev.next();
 
             if (prev.isLast()) {
-                logger.debug("The last chunk for file {} was successfully joined. Removing from cache and returning",
+                logger.trace("The last chunk for file {} was successfully joined. Removing from cache and returning",
                         prev.getFileName());
                 cache.remove(prev);
                 prev.next();
