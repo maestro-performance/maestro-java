@@ -41,10 +41,6 @@ public class InternalError extends MaestroResponse {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
-    }
-
     @Override
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();

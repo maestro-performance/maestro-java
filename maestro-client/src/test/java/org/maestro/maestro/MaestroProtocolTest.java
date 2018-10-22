@@ -204,7 +204,6 @@ public class MaestroProtocolTest {
 
         note.setId("asfas45");
         note.setPeerInfo(peerInfo);
-        note.setMessage("Test failed");
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
 
