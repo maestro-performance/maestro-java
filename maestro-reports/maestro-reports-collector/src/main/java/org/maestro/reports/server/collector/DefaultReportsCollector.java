@@ -121,7 +121,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
             return false;
         }
 
-        logger.debug("Checking completion status: {} nodes have provided files so far",
+        logger.debug("Checking completion status: {} nodes still have not provided any files",
                 (knownNodeCount - progress));
         if (progress >= knownNodeCount) {
             return true;
