@@ -46,10 +46,8 @@ public final class WorkerContainer {
     private final List<WatchdogObserver> observers = new LinkedList<>();
     private static final long TIMEOUT_STOP_WORKER_MILLIS;
 
-    private Future<?> workerExecutorFuture;
     private ExecutorService workerExecutorService;
 
-    private Future<?> watchDogFuture;
     private ExecutorService watchdogExecutorService;
 
     private LocalDateTime startTime;
@@ -112,7 +110,7 @@ public final class WorkerContainer {
 
             final WorkerWatchdog workerWatchdog = new WorkerWatchdog(this, workers, endSignal);
 
-            watchDogFuture = watchdogExecutorService.submit(workerWatchdog);
+            watchdogExecutorService.submit(workerWatchdog);
 
             startTime = LocalDateTime.now();
         }
@@ -148,11 +146,7 @@ public final class WorkerContainer {
 
         if (workerExecutorService != null) {
             try {
-                // TODO: check
-                //                workerExecutorFuture.cancel(true);
-
                 workerExecutorService.shutdown();
-
 
                 if (!workerExecutorService.awaitTermination(getDeadLine(workers.size()), TimeUnit.MILLISECONDS)) {
                     workerExecutorService.shutdownNow();
@@ -170,10 +164,6 @@ public final class WorkerContainer {
 
         if (watchdogExecutorService != null) {
             try {
-
-                // TODO: check
-                //                watchDogFuture.cancel(true);
-//
                 watchdogExecutorService.shutdown();
                 if (!watchdogExecutorService.awaitTermination(watchDogTimeout, TimeUnit.SECONDS)) {
                     watchdogExecutorService.shutdownNow();
