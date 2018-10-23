@@ -119,10 +119,6 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         final long progress = progressMap.keySet().size();
         final long knownNodeCount = knownPeers.size();
 
-        if (progressMap.size() == 0) {
-            return false;
-        }
-
         logger.debug("Checking completion status: {} nodes still have not provided any files",
                 (knownNodeCount - progress));
         if (progress >= knownNodeCount) {
@@ -167,7 +163,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         progressMap.put(peerInfo, downloadProgress);
         save(note, organizer);
 
-        if (isCompleted()) {
+        if (isCompleted() && !progressMap.isEmpty()) {
             logger.info("All downloads currently in progress have finished. Aggregating the data now");
             executorService.submit(this::runAggregation);
 
@@ -212,7 +208,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     @Override
     public void handle(final StartTestRequest note) {
         long inProgress = countInProgress();
-        if (inProgress > 0) {
+        if (!isCompleted() || !knownPeers.isEmpty() || !progressMap.isEmpty()) {
             logger.warn("There are {} peers with files still being downloaded. Requesting the client to wait",
                     inProgress);
 
