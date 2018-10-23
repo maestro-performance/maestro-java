@@ -61,10 +61,10 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         executorService = Executors.newSingleThreadExecutor();
     }
 
-    private void runAggregation() {
+    private void runAggregation(int maxTestId, int maxTestNumber) {
         final AggregationService aggregationService = new AggregationService(dataDir.getPath());
 
-        aggregationService.aggregate();
+        aggregationService.aggregate(maxTestId, maxTestNumber);
     }
 
     protected void logRequest(final MaestroNotification note, LocationType locationType) {
@@ -165,7 +165,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
         if (isCompleted() && !progressMap.isEmpty()) {
             logger.info("All downloads currently in progress have finished. Aggregating the data now");
-            executorService.submit(this::runAggregation);
+            executorService.submit(() -> runAggregation(report.getTestId(), report.getTestNumber()));
 
             progressMap.clear();
             knownPeers.clear();

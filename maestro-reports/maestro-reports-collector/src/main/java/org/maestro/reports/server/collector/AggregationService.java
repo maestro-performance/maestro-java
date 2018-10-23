@@ -38,7 +38,7 @@ public class AggregationService {
         this.directory = directory;
     }
 
-    private void aggregate(int iTestId, int iTestNumber) throws DataNotFoundException {
+    private void runAggregate(int iTestId, int iTestNumber) throws DataNotFoundException {
         AggregatorOrganizer organizer = new AggregatorOrganizer(directory);
 
         organizer.setTestId(iTestId);
@@ -59,7 +59,7 @@ public class AggregationService {
     }
 
 
-    public void aggregate() {
+    public void aggregate(int maxTestId, int maxTestNumber) {
         List<ReportAggregationInfo> aggregationInfos;
         try {
             aggregationInfos = dao.aggregationInfo();
@@ -71,14 +71,25 @@ public class AggregationService {
 
         for (ReportAggregationInfo aggregationInfo : aggregationInfos) {
             if (aggregationInfo.getAggregations() == 0) {
-                logger.info("Aggregating {}/{}", aggregationInfo.getTestId(), aggregationInfo.getTestNumber());
+                if (isBelowFilter(maxTestId, maxTestNumber, aggregationInfo)) {
+                    logger.info("Aggregating {}/{}", aggregationInfo.getTestId(), aggregationInfo.getTestNumber());
 
-                try {
-                    aggregate(aggregationInfo.getTestId(), aggregationInfo.getTestNumber());
-                } catch (DataNotFoundException e) {
-                    logger.debug("No records to aggregate");
+                    try {
+                        runAggregate(aggregationInfo.getTestId(), aggregationInfo.getTestNumber());
+                    } catch (DataNotFoundException e) {
+                        logger.debug("No records to aggregate");
+                    }
+                }
+                else {
+                    logger.debug("Temporarily ignoring test {}/{} for aggregation", aggregationInfo.getTestId(),
+                            aggregationInfo.getTestNumber());
                 }
             }
         }
+    }
+
+    private boolean isBelowFilter(int maxTestId, int maxTestNumber, ReportAggregationInfo aggregationInfo) {
+        return aggregationInfo.getTestId() < maxTestId ||
+                (aggregationInfo.getTestId() == maxTestId && aggregationInfo.getTestNumber() <= maxTestNumber);
     }
 }
