@@ -158,8 +158,13 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             exitStateCheck(id);
 
             //the test could be considered already stopped here, but cleaning up JMS resources could take some time anyway
-            client.stop();
-            endSignal.countDown();
+            try {
+                client.stop();
+            }
+            finally {
+                endSignal.countDown();
+            }
+
             logger.info("Finalized worker {} after sending {} messages", id, messageCount);
         }
     }
