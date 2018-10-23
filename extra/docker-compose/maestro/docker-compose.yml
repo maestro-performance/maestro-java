@@ -63,4 +63,16 @@ services:
       depends_on:
         - worker
         - broker
+  reports:
+    build:
+      context: maestro
+      args:
+      - MAESTRO_VERSION=1.5.0-SNAPSHOT
+      target: maestro-reports
+    networks:
+    - cluster
+    ports:
+    - "6500:6500"
+    depends_on:
+    - broker
 
