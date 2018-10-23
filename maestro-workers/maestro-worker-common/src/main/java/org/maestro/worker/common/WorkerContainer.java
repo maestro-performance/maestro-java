@@ -120,7 +120,7 @@ public final class WorkerContainer {
             try {
                 throw t;
             } catch (InterruptedException e) {
-                e.printStackTrace();
+                logger.warn("Interrupted", e);
             }
         }
     }
