@@ -133,6 +133,12 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
             return false;
         }
 
+        for (DownloadProgress p : progressMap.values()) {
+            if (p == null) {
+                return false;
+            }
+        }
+
         return true;
     }
 
