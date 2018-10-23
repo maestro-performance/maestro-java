@@ -115,7 +115,14 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     }
 
     private int countRemaining() {
-        return progressMap.values().stream().mapToInt(DownloadProgress::remaining).sum();
+        int remaining = 0;
+        for (DownloadProgress p : progressMap.values()) {
+            if (p != null) {
+                remaining += p.remaining();
+            }
+        }
+
+        return remaining;
     }
 
     private boolean isCompleted() {
