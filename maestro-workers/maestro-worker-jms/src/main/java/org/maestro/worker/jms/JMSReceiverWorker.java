@@ -167,8 +167,8 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
             //the test could be considered already stopped here, but cleaning up JMS resources could take some time anyway
             client.stop();
-            logger.info("Finalized worker {} after receiving {} messages", id, messageCount);
             endSignal.countDown();
+            logger.info("Finalized worker {} after receiving {} messages", id, messageCount);
         }
     }
 
