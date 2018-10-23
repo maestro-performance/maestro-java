@@ -207,10 +207,16 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(final StartTestRequest note) {
-        long inProgress = countInProgress();
-        if (!isCompleted() || !knownPeers.isEmpty() || !progressMap.isEmpty()) {
-            logger.warn("There are {} peers with files still being downloaded. Requesting the client to wait",
-                    inProgress);
+        final long inProgress = countInProgress();
+
+        if (inProgress > 0 || !isCompleted()) {
+            if (inProgress > 0) {
+                logger.warn("There are {} peers with files still being downloaded. Requesting the client to wait",
+                        inProgress);
+            }
+            else {
+                logger.warn("Some downloads may still be in progress and therefore the test cannot start");
+            }
 
              super.getClient().replyInternalError(note, ErrorCode.TRY_AGAIN,
                      "There are %d peers with files still being downloaded", inProgress);
