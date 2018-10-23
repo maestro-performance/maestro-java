@@ -90,6 +90,23 @@ RUN mkdir -p /maestro/${MAESTRO_WORKER_TYPE}/logs
 ADD ${MAESTRO_WORKER_TYPE}/maestro-container-wrapper.sh /usr/bin/maestro-container-wrapper
 CMD [ "sh", "-c", "/usr/bin/maestro-container-wrapper"]
 
+
+## Reports Collector/Server ##
+FROM maestro-base AS maestro-reports
+ENV MAESTRO_WORKER_TYPE reports
+MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
+LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
+EXPOSE 6500
+COPY --from=buildimg /root/build/maestro-java/maestro-${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}-tool/target/maestro-${MAESTRO_WORKER_TYPE}-tool-${MAESTRO_VERSION}-bin.tar.gz .
+RUN mkdir maestro-${MAESTRO_WORKER_TYPE}-tool && tar --strip-components=1 -xvf maestro-${MAESTRO_WORKER_TYPE}-tool-${MAESTRO_VERSION}-bin.tar.gz -C maestro-${MAESTRO_WORKER_TYPE}-tool
+RUN rm -f maestro-${MAESTRO_WORKER_TYPE}-tool-${MAESTRO_VERSION}-bin.tar.gz
+
+# ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/log4j.properties
+# ADD ${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/maestro-${MAESTRO_WORKER_TYPE}.properties
+RUN mkdir -p /maestro/${MAESTRO_WORKER_TYPE}/logs
+ADD ${MAESTRO_WORKER_TYPE}/maestro-container-wrapper.sh /usr/bin/maestro-container-wrapper
+CMD [ "sh", "-c", "/usr/bin/maestro-container-wrapper"]
+
 ## Client ##
 FROM maestro-base as maestro-client
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
