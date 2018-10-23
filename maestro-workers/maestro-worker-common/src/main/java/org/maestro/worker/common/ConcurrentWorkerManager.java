@@ -142,7 +142,6 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
             container.start();
 
-            getClient().notifyStarted(getCurrentTest(), "");
             getClient().replyOk(note);
             return true;
         } catch (Exception e) {
