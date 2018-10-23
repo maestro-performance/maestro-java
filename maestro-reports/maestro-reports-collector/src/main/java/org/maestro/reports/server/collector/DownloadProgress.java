@@ -28,6 +28,10 @@ public class DownloadProgress {
         return downloaded;
     }
 
+    public int remaining() {
+        return total - downloaded;
+    }
+
     public void increment() {
         downloaded++;
     }
