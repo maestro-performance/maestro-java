@@ -46,7 +46,10 @@ public final class WorkerContainer {
     private final List<WatchdogObserver> observers = new LinkedList<>();
     private static final long TIMEOUT_STOP_WORKER_MILLIS;
 
+    private Future<?> workerExecutorFuture;
     private ExecutorService workerExecutorService;
+
+    private Future<?> watchDogFuture;
     private ExecutorService watchdogExecutorService;
 
     private LocalDateTime startTime;
@@ -109,7 +112,7 @@ public final class WorkerContainer {
 
             final WorkerWatchdog workerWatchdog = new WorkerWatchdog(this, workers, endSignal);
 
-            watchdogExecutorService.submit(workerWatchdog);
+            watchDogFuture = watchdogExecutorService.submit(workerWatchdog);
 
             startTime = LocalDateTime.now();
         }
@@ -145,8 +148,18 @@ public final class WorkerContainer {
 
         if (workerExecutorService != null) {
             try {
+                // TODO: check
+                //                workerExecutorFuture.cancel(true);
+
                 workerExecutorService.shutdown();
-                workerExecutorService.awaitTermination(getDeadLine(workers.size()), TimeUnit.MILLISECONDS);
+
+
+                if (!workerExecutorService.awaitTermination(getDeadLine(workers.size()), TimeUnit.MILLISECONDS)) {
+                    workerExecutorService.shutdownNow();
+                    if (!workerExecutorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                        logger.warn("Workers did not terminate cleanly");
+                    }
+                }
             } catch (InterruptedException e) {
                 logger.warn("Interrupted ... forcing workers shutdown");
                 workerExecutorService.shutdownNow();
@@ -157,8 +170,17 @@ public final class WorkerContainer {
 
         if (watchdogExecutorService != null) {
             try {
+
+                // TODO: check
+                //                watchDogFuture.cancel(true);
+//
                 watchdogExecutorService.shutdown();
-                watchdogExecutorService.awaitTermination(watchDogTimeout, TimeUnit.SECONDS);
+                if (!watchdogExecutorService.awaitTermination(watchDogTimeout, TimeUnit.SECONDS)) {
+                    watchdogExecutorService.shutdownNow();
+                    if (watchdogExecutorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                        logger.warn("Worker watchdog did not terminate cleanly");
+                    }
+                }
             } catch (InterruptedException e) {
                 logger.warn("Interrupted ... forcing watchdog shutdown");
                 watchdogExecutorService.shutdownNow();
