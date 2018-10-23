@@ -30,11 +30,11 @@ import java.util.stream.Collectors;
 
 public class AggregationService {
     private static final Logger logger = LoggerFactory.getLogger(AggregationService.class);
-    private final String directory;
-
     private final ReportDao dao = new ReportDao();
 
-    public AggregationService(String directory) {
+    private final String directory;
+
+    public AggregationService(final String directory) {
         this.directory = directory;
     }
 

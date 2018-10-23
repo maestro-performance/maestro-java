@@ -49,7 +49,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
     private final File dataDir;
     private Report report;
-    private final AggregationService aggregationService;
+    private final ExecutorService executorService;
 
     private final Map<PeerInfo, DownloadProgress> progressMap = new HashMap<>();
     private final Set<PeerInfo> knownPeers = new TreeSet<>();
@@ -58,10 +58,12 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         super(maestroURL, peerInfo);
 
         this.dataDir = dataDir;
-        aggregationService = new AggregationService(dataDir.getPath());
+        executorService = Executors.newSingleThreadExecutor();
     }
 
     private void runAggregation() {
+        final AggregationService aggregationService = new AggregationService(dataDir.getPath());
+
         aggregationService.aggregate();
     }
 
@@ -109,7 +111,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         String destinationDir = organizer.organize(peerInfo);
         report.setLocation(destinationDir);
 
-        logger.info("Adding test record to the DB");
+        logger.debug("Adding test record to the DB: {}", report);
         reportDao.insert(report);
     }
 
@@ -167,7 +169,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
         if (isCompleted()) {
             logger.info("All downloads currently in progress have finished. Aggregating the data now");
-            Executors.newSingleThreadExecutor().submit(this::runAggregation);
+            executorService.submit(this::runAggregation);
 
             progressMap.clear();
             knownPeers.clear();
