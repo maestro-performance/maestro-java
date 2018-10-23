@@ -49,4 +49,12 @@ public class TestDetails {
     public void setTestComments(final String testComments) {
         this.testComments = testComments;
     }
+
+    @Override
+    public String toString() {
+        return "TestDetails{" +
+                "testDescription='" + testDescription + '\'' +
+                ", testComments='" + testComments + '\'' +
+                '}';
+    }
 }
