@@ -72,9 +72,9 @@ public abstract class AbstractTestExecutor implements TestExecutor {
                 exec(maestro::startTest, MaestroTopics.PEER_TOPIC, test);
                 break;
             } catch (TryAgainException e) {
-                logger.warn("Waiting 5 seconds because the test cannot be started at this moment : {}", e.getMessage());
+                logger.warn("Waiting 10 seconds because the test cannot be started at this moment : {}", e.getMessage());
                 try {
-                    Thread.sleep(5000);
+                    Thread.sleep(10000);
                     retries--;
                     if (retries == 0) {
                         throw e;
