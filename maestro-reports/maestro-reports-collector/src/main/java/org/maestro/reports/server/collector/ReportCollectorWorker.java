@@ -177,20 +177,9 @@ public class ReportCollectorWorker {
     public void handle(final LogResponse note) {
         final PeerInfo peerInfo = note.getPeerInfo();
 
-        DownloadProgress downloadProgress = aggregatablesMap.get(peerInfo);
-        if (downloadProgress == null) {
-            downloadProgress = new DownloadProgress(note.getLocationTypeInfo().getFileCount());
-        }
-
-        try {
-            downloadProgress.increment();
-        }
-        catch (DownloadCountOverflowException e) {
-            logger.warn("All the files seem to have been downloaded already, therefore not increasing counters");
-        }
-
-        aggregatablesMap.put(peerInfo, downloadProgress);
         save(note, organizer);
+
+        trackProgress(note, peerInfo);
 
         if (isCompleted() && !aggregatablesMap.isEmpty()) {
             logger.info("All downloads currently in progress have finished. Aggregating the data now");
@@ -198,6 +187,21 @@ public class ReportCollectorWorker {
 
             aggregatablesMap.clear();
         }
+    }
+
+    private void trackProgress(LogResponse note, PeerInfo peerInfo) {
+        DownloadProgress downloadProgress = aggregatablesMap.get(peerInfo);
+        if (downloadProgress == null) {
+            downloadProgress = new DownloadProgress(note.getLocationTypeInfo().getFileCount());
+        }
+
+        try {
+            downloadProgress.increment();
+        } catch (DownloadCountOverflowException e) {
+            logger.warn("All the files seem to have been downloaded already, therefore not increasing counters");
+        }
+
+        aggregatablesMap.put(peerInfo, downloadProgress);
     }
 
 
