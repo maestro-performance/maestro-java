@@ -140,7 +140,7 @@ public class ReportCollectorWorker {
          so only check if any download file remains to be downloaded and disregard
          null download progress on the progress map
          */
-        final long remaining = countRemaining();
+        final int remaining = countRemaining();
 
         if (remaining > 0) {
             client.replyInternalError(note, ErrorCode.TRY_AGAIN,
