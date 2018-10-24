@@ -384,4 +384,9 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(TestStartedNotification note) {
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.NOTIFY_TEST_STARTED, note));
     }
+
+    @Override
+    public void handle(DrainCompleteNotification note) {
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.DRAIN, note));
+    }
 }

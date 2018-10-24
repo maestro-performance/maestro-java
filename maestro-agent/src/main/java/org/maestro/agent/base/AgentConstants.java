@@ -79,4 +79,6 @@ class AgentConstants {
     static final String START_TEST = "starttest";
 
     static final String NOTIFY_TEST_STARTED = "notifyteststarted";
+
+    static final String NOTIFY_DRAIN = "notifydrain";
 }
