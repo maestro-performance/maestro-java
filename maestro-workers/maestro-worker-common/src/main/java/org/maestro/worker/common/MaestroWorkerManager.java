@@ -490,7 +490,6 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         currentTest = note.getTest();
 
         getClient().replyOk(note);
-        getClient().notifyStarted(currentTest, "");
     }
 
     @Override

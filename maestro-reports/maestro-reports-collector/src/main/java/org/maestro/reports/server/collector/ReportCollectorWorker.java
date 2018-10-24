@@ -48,7 +48,7 @@ import static org.maestro.reports.server.collector.TestDirectoryUtils.getTestIte
 public class ReportCollectorWorker {
     private static final Logger logger = LoggerFactory.getLogger(ReportCollectorWorker.class);
 
-    private final Map<PeerInfo, DownloadProgress> progressMap = new HashMap<>();
+    private final Map<PeerInfo, DownloadProgress> aggregatablesMap = new HashMap<>();
     private final ReportDao reportDao = new ReportDao();
     private final File dataDir;
     private final ExecutorService executorService;
@@ -72,7 +72,7 @@ public class ReportCollectorWorker {
 
     public int countRemaining() {
         int remaining = 0;
-        for (DownloadProgress p : progressMap.values()) {
+        for (DownloadProgress p : aggregatablesMap.values()) {
             if (p != null) {
                 remaining += p.remaining();
             }
@@ -89,7 +89,7 @@ public class ReportCollectorWorker {
             return false;
         }
 
-        for (DownloadProgress p : progressMap.values()) {
+        for (DownloadProgress p : aggregatablesMap.values()) {
             if (p == null) {
                 return false;
             }
@@ -129,8 +129,8 @@ public class ReportCollectorWorker {
     }
 
     public void handle(final TestStartedNotification note) {
-        if (!progressMap.keySet().contains(note.getPeerInfo())) {
-            progressMap.put(note.getPeerInfo(), null);
+        if (!aggregatablesMap.keySet().contains(note.getPeerInfo())) {
+            aggregatablesMap.put(note.getPeerInfo(), null);
         }
     }
 
@@ -174,12 +174,10 @@ public class ReportCollectorWorker {
     }
 
 
-
-
     public void handle(final LogResponse note) {
         final PeerInfo peerInfo = note.getPeerInfo();
 
-        DownloadProgress downloadProgress = progressMap.get(peerInfo);
+        DownloadProgress downloadProgress = aggregatablesMap.get(peerInfo);
         if (downloadProgress == null) {
             downloadProgress = new DownloadProgress(note.getLocationTypeInfo().getFileCount());
         }
@@ -191,14 +189,14 @@ public class ReportCollectorWorker {
             logger.warn("All the files seem to have been downloaded already, therefore not increasing counters");
         }
 
-        progressMap.put(peerInfo, downloadProgress);
+        aggregatablesMap.put(peerInfo, downloadProgress);
         save(note, organizer);
 
-        if (isCompleted() && !progressMap.isEmpty()) {
+        if (isCompleted() && !aggregatablesMap.isEmpty()) {
             logger.info("All downloads currently in progress have finished. Aggregating the data now");
             executorService.submit(() -> runAggregation(report.getTestId(), report.getTestNumber()));
 
-            progressMap.clear();
+            aggregatablesMap.clear();
         }
     }
 

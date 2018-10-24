@@ -374,5 +374,10 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         container.stop();
     }
 
+    @Override
+    public void handle(StartTestRequest note) {
+        super.handle(note);
 
+        getClient().notifyStarted(getCurrentTest(), "");
+    }
 }
