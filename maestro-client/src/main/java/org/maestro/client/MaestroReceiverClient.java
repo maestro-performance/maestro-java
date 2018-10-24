@@ -160,6 +160,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
 
         notification.setPeerInfo(peerInfo);
         notification.setId(id);
+        notification.setTest(test);
 
         notification.setMessage(message);
 
