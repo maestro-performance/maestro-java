@@ -75,4 +75,8 @@ class AgentConstants {
     static final String INTERNAL_ERROR = "internalerror";
 
     static final String DRAIN = "drain";
+
+    static final String START_TEST = "starttest";
+
+    static final String NOTIFY_TEST_STARTED = "notifyteststarted";
 }

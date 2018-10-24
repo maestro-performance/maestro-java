@@ -373,4 +373,15 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(final RoleUnassign note) {
         getClient().replyOk(note);
     }
+
+    @Override
+    public void handle(StartTestRequest note) {
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.START_TEST, note));
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(TestStartedNotification note) {
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.NOTIFY_TEST_STARTED, note));
+    }
 }
