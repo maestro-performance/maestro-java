@@ -17,13 +17,11 @@
 package org.maestro.plotter.latency.serializer;
 
 import org.HdrHistogram.AbstractHistogram;
-import org.HdrHistogram.DoubleHistogram;
 import org.HdrHistogram.Histogram;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.latency.properties.HistogramHandler;
 
 import java.io.File;
-import java.util.Properties;
 
 public class LatencySerializerHandler implements HistogramHandler {
     private double unitRatio = 1.0;
@@ -40,7 +38,7 @@ public class LatencySerializerHandler implements HistogramHandler {
         statistics.setLatencyStartTS(eh.getStartTimeStamp());
         statistics.setLatencyEndTS(eh.getEndTimeStamp());
 
-        statistics.setLatencyStdDeviation(eh.getMaxValueAsDouble() / unitRatio);
+        statistics.setLatencyMaxValue(eh.getMaxValueAsDouble() / unitRatio);
 
         if (eh instanceof AbstractHistogram) {
             AbstractHistogram ah = (AbstractHistogram) eh;
