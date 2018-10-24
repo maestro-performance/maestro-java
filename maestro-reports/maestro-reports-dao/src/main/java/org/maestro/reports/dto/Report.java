@@ -190,7 +190,7 @@ public class Report implements Comparable<Report> {
         report.setTestHost(null);
         report.setAggregated(true);
 
-        long failures = reports.stream().filter(Report::isAggregated).count();
+        long failures = reports.stream().filter(r -> !r.isAggregated()).filter(r -> ResultStrings.FAILED.equals(r.testResult)).count();
         if (failures > 0) {
             report.setTestResult(ResultStrings.FAILED);
         } else {
