@@ -199,8 +199,6 @@ public class ReportCollectorWorker {
             executorService.submit(() -> runAggregation(report.getTestId(), report.getTestNumber()));
 
             progressMap.clear();
-
-            report = null;
         }
     }
 
