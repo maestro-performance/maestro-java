@@ -374,7 +374,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         }
 
         final File[] files = logSubDir.listFiles();
-        if (files == null) {
+        if (files == null || files.length == 0) {
             logger.error("The client request log files, but the location does not contain any");
 
             getClient().replyInternalError(note,"The client requested the log files for location %s but there's no files there",
