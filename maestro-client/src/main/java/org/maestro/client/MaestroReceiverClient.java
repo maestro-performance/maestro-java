@@ -46,7 +46,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         private static final int defaultDelay;
 
         static {
-            defaultDelay = config.getInteger("worker.throttle.delay", 500);
+            defaultDelay = config.getInteger("worker.throttle.delay", 100);
         }
 
         @Override
