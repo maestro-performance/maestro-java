@@ -384,9 +384,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         }
 
         int index = 0;
-        final LocationTypeInfo locationTypeInfo = new LocationTypeInfo();
-
-        locationTypeInfo.setFileCount(files.length);
+        final LocationTypeInfo locationTypeInfo = new LocationTypeInfo(files.length);
 
         for (File file : files) {
             logger.debug("Sending log file {} with location type {}", file.getName(),

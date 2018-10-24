@@ -94,8 +94,7 @@ public class LogResponseTest {
         logResponse.setTotal(1);
         logResponse.setLocationType(LocationType.ANY);
 
-        LocationTypeInfo locationTypeInfo = new LocationTypeInfo();
-        locationTypeInfo.setFileCount(1);
+        LocationTypeInfo locationTypeInfo = new LocationTypeInfo(1);
         locationTypeInfo.setIndex(0);
         logResponse.setLocationTypeInfo(locationTypeInfo);
         logResponse.setFileHash(logResponse.calculateHash());
@@ -127,8 +126,7 @@ public class LogResponseTest {
         logResponse.setTotal(2);
         logResponse.setTestChunkSize(10);
         logResponse.setLocationType(LocationType.ANY);
-        LocationTypeInfo locationTypeInfo = new LocationTypeInfo();
-        locationTypeInfo.setFileCount(1);
+        LocationTypeInfo locationTypeInfo = new LocationTypeInfo(1);
         locationTypeInfo.setIndex(0);
         logResponse.setLocationTypeInfo(locationTypeInfo);
         logResponse.setFileHash(logResponse.calculateHash());

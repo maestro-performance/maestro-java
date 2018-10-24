@@ -48,17 +48,16 @@ class SerializationUtils {
     }
 
     public static LocationTypeInfo unpackLocationTypeInfo(final MessageUnpacker unpacker) throws IOException {
-        LocationTypeInfo ret = new LocationTypeInfo();
+        LocationTypeInfo ret = new LocationTypeInfo(unpacker.unpackInt());
 
         ret.setIndex(unpacker.unpackInt());
-        ret.setFileCount(unpacker.unpackInt());
 
         return ret;
     }
 
     public static void pack(final MessageBufferPacker packer, final LocationTypeInfo locationTypeInfo) throws IOException {
-        packer.packInt(locationTypeInfo.getIndex());
         packer.packInt(locationTypeInfo.getFileCount());
+        packer.packInt(locationTypeInfo.getIndex());
     }
 
     public static TestDetails unpackTestDetails(final MessageUnpacker unpacker) throws IOException {

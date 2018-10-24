@@ -20,8 +20,12 @@ package org.maestro.common.client.notes;
  * Contains information about the location of the log files (ie.: how many files are there)
  */
 public class LocationTypeInfo {
-    private int fileCount;
+    private final int fileCount;
     private int index;
+
+    public LocationTypeInfo(int fileCount) {
+        this.fileCount = fileCount;
+    }
 
     public int getIndex() {
         return index;
@@ -34,10 +38,4 @@ public class LocationTypeInfo {
     public int getFileCount() {
         return fileCount;
     }
-
-    public void setFileCount(int fileCount) {
-        this.fileCount = fileCount;
-    }
-
-
 }
