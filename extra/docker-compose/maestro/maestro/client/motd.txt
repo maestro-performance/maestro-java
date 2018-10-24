@@ -24,10 +24,10 @@
 #### export DOWNLOADER_NAME=default
 ####
 #### To run a sample test case:
-#### $ maestro-cli exec -s /opt/maestro/maestro-cli/scripts/singlepoint/FixedRateTest.groovy -d /maestro/reports
+#### $ maestro-cli exec -s /opt/maestro/maestro-cli/scripts/singlepoint/FixedRateTest.groovy
 ####
-#### To generate the test report:
-#### $ maestro-cli report -l info -d /maestro/reports/
+#### To access the test reports:
+#### $ http://localhost:6500
 ####
 #### 
 ##########################################################################################
