@@ -17,6 +17,8 @@
 
 package org.maestro.common.client.notes;
 
+import java.util.Objects;
+
 public class Test {
     public static final int NEXT = -1;
     public static final int LAST = -2;
@@ -56,6 +58,23 @@ public class Test {
 
     public TestDetails getTestDetails() {
         return testDetails;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        Test test = (Test) o;
+        return testNumber == test.testNumber &&
+                testIteration == test.testIteration &&
+                Objects.equals(testName, test.testName) &&
+                Objects.equals(scriptName, test.scriptName) &&
+                Objects.equals(testDetails, test.testDetails);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(testNumber, testIteration, testName, scriptName, testDetails);
     }
 
     @Override
