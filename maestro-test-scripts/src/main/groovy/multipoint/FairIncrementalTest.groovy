@@ -88,7 +88,7 @@ combinedCeilingRate = Integer.parseInt(combinedCeilingRateStr)
 
 initialParallelCountStr = System.getenv("INITIAL_PARALLEL_COUNT")
 if (initialParallelCountStr == null) {
-    println "Error: the test parallel count was not given"
+    println "Error: the test initial parallel count was not given"
 
     System.exit(1)
 }
@@ -96,7 +96,7 @@ initialParallelCount = Integer.parseInt(initialParallelCountStr)
 
 ceilingParallelCountStr = System.getenv("CEILING_PARALLEL_COUNT")
 if (ceilingParallelCountStr == null) {
-    println "Error: the test parallel count was not given"
+    println "Error: the test ceiling parallel count was not given"
 
     System.exit(1)
 }
@@ -105,7 +105,7 @@ ceilingParallelCount = Integer.parseInt(ceilingParallelCountStr)
 
 parallelCountIncrementStr = System.getenv("PARALLEL_COUNT_INCREMENT")
 if (parallelCountIncrementStr == null) {
-    println "Error: the test parallel count was not given"
+    println "Error: the test parallel count increment was not given"
 
     System.exit(1)
 }
