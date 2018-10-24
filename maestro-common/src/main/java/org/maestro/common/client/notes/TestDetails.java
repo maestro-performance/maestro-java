@@ -16,6 +16,8 @@
 
 package org.maestro.common.client.notes;
 
+import java.util.Objects;
+
 public class TestDetails {
     private String testDescription = "";
     private String testComments = "";
@@ -48,6 +50,20 @@ public class TestDetails {
 
     public void setTestComments(final String testComments) {
         this.testComments = testComments;
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (this == o) return true;
+        if (o == null || getClass() != o.getClass()) return false;
+        TestDetails that = (TestDetails) o;
+        return Objects.equals(testDescription, that.testDescription) &&
+                Objects.equals(testComments, that.testComments);
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(testDescription, testComments);
     }
 
     @Override
