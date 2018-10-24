@@ -101,9 +101,10 @@ COPY --from=buildimg /root/build/maestro-java/maestro-${MAESTRO_WORKER_TYPE}/mae
 RUN mkdir maestro-${MAESTRO_WORKER_TYPE}-tool && tar --strip-components=1 -xvf maestro-${MAESTRO_WORKER_TYPE}-tool-${MAESTRO_VERSION}-bin.tar.gz -C maestro-${MAESTRO_WORKER_TYPE}-tool
 RUN rm -f maestro-${MAESTRO_WORKER_TYPE}-tool-${MAESTRO_VERSION}-bin.tar.gz
 
-# ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/log4j.properties
-# ADD ${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/maestro-${MAESTRO_WORKER_TYPE}.properties
-RUN mkdir -p /maestro/${MAESTRO_WORKER_TYPE}/logs
+ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/log4j.properties
+ADD ${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}-tool.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}-tool/config/maestro-${MAESTRO_WORKER_TYPE}-tool.properties
+RUN mkdir -p /maestro/${MAESTRO_WORKER_TYPE}
+VOLUME /maestro
 ADD ${MAESTRO_WORKER_TYPE}/maestro-container-wrapper.sh /usr/bin/maestro-container-wrapper
 CMD [ "sh", "-c", "/usr/bin/maestro-container-wrapper"]
 
@@ -120,7 +121,6 @@ RUN mkdir maestro-cli && tar --strip-components=1 -xvf maestro-cli-${MAESTRO_VER
 RUN rm -f maestro-cli-${MAESTRO_VERSION}-bin.tar.gz
 COPY --from=buildimg /root/.m2 /root/.m2
 RUN mkdir -p /maestro
-VOLUME /maestro
 
 ENV MAESTRO_BROKER mqtt://broker:1883
 ENV SEND_RECEIVE_URL amqp://sut:5672/test.performance.queue
