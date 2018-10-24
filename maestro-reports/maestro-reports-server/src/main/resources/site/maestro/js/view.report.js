@@ -86,11 +86,11 @@ function fillPercentileInformation() {
 
 function setRateStatisticsTable(statistics) {
     if (statistics != null) {
-        $("#maxRate").text(statistics.max);
-        $("#minRate").text(statistics.min);
-        $("#mean").text(statistics.mean);
-        $("#geometricMean").text(statistics.geometricMean);
-        $("#stdDeviation").text(statistics.standardDeviation);
+        $("#maxRate").text(Number(statistics.max).toFixed(2));
+        $("#minRate").text(Number(statistics.min).toFixed(2));
+        $("#mean").text(Number(statistics.mean).toFixed(2));
+        $("#geometricMean").text(Number(statistics.geometricMean).toFixed(2));
+        $("#stdDeviation").text(Number(statistics.standardDeviation).toFixed(2));
 
         $("#skipCount").text(statistics.latency99th);
     }

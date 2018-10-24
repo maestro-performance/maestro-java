@@ -102,11 +102,11 @@ $(document).ready(function () {
 
 function setRateStatisticsTable(role, statistics) {
     if (statistics != null) {
-        $("#" + role + "MaxRate").text(statistics.max);
-        $("#" + role + "MinRate").text(statistics.min);
-        $("#" + role + "Mean").text(statistics.mean);
-        $("#" + role + "GeometricMean").text(statistics.geometricMean);
-        $("#" + role + "StdDeviation").text(statistics.standardDeviation);
+        $("#" + role + "MaxRate").text(Number(statistics.max).toFixed(2));
+        $("#" + role + "MinRate").text(Number(statistics.min).toFixed(2));
+        $("#" + role + "Mean").text(Number(statistics.mean).toFixed(2));
+        $("#" + role + "GeometricMean").text(Number(statistics.geometricMean).toFixed(2));
+        $("#" + role + "StdDeviation").text(Number(statistics.standardDeviation).toFixed(2));
 
         $("#" + role + "SkipCount").text(statistics.latency99th);
     }
