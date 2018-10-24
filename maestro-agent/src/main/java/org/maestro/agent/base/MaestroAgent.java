@@ -242,7 +242,6 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      */
     @Override
     public void handle(final StartAgent note) {
-        getClient().notifyStarted(getCurrentTest(), "");
         getClient().replyOk(note);
     }
 
