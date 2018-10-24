@@ -18,6 +18,7 @@ package org.maestro.reports.server.collector;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.IOUtils;
+import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.LogResponse;
 import org.maestro.contrib.utils.digest.Sha1Digest;
 import org.maestro.reports.common.organizer.DefaultOrganizer;
@@ -34,7 +35,9 @@ public class LogResponseUtils {
 
 
     public static void save(final LogResponse logResponse, final DefaultOrganizer organizer) {
-        String destinationDir = organizer.organize(logResponse.getPeerInfo());
+        PeerInfo peerInfo = logResponse.getPeerInfo();
+
+        String destinationDir = organizer.organize(peerInfo);
         File outFile = new File(destinationDir, logResponse.getFileName());
 
         logger.info("Saving file {} to {}", logResponse.getFileName(), outFile);
