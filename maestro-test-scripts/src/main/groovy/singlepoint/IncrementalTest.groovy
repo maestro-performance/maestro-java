@@ -143,7 +143,6 @@ comments = System.getenv("TEST_COMMENTS")
 
 boolean ret = testExecutor.run(this.class.getSimpleName(), description, comments)
 
-reportsDownloader.waitForComplete()
 maestro.stop()
 
 if (!ret) {
