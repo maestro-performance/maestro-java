@@ -30,6 +30,7 @@ import org.maestro.reports.common.organizer.DefaultOrganizer;
 import org.maestro.common.ResultStrings;
 import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dto.Report;
+import org.maestro.reports.server.collector.exceptions.DownloadCountOverflowException;
 import org.maestro.worker.common.MaestroWorkerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -152,7 +153,13 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
             downloadProgress = new DownloadProgress(note.getLocationTypeInfo().getFileCount());
         }
 
-        downloadProgress.increment();
+        try {
+            downloadProgress.increment();
+        }
+        catch (DownloadCountOverflowException e) {
+            logger.warn("All the files seem to have been downloaded already, therefore not increasing counters");
+        }
+
         progressMap.put(peerInfo, downloadProgress);
         save(note, organizer);
 

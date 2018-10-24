@@ -16,11 +16,23 @@
 
 package org.maestro.reports.server.collector;
 
+import org.maestro.common.exceptions.MaestroException;
+import org.maestro.reports.server.collector.exceptions.DownloadCountOverflowException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 public class DownloadProgress {
+    private static final Logger logger = LoggerFactory.getLogger(DownloadProgress.class);
+
     private int downloaded = 0;
     private final int total;
 
     public DownloadProgress(int total) {
+        if (total <= 0) {
+            logger.error("Invalid file count value: {}", total);
+            throw new MaestroException("The file count should be greater than zero");
+        }
+
         this.total = total;
     }
 
@@ -33,7 +45,13 @@ public class DownloadProgress {
     }
 
     public void increment() {
-        downloaded++;
+        if (downloaded < total) {
+            downloaded++;
+        }
+        else {
+            throw new DownloadCountOverflowException("Download count overflow: already downloaded %d of %d ",
+                    downloaded, total);
+        }
     }
 
     public boolean isDone() {
