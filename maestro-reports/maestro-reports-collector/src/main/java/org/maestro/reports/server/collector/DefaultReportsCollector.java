@@ -208,11 +208,14 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(final StartTestRequest note) {
+        /*
+         It may receive the test started notification before the start test request,
+         so only check if any download file remains to be downloaded and disregard
+         null download progress on the progress map
+         */
+        final long remaining = countRemaining();
 
-
-        if (!isCompleted()) {
-            final long remaining = countRemaining();
-
+        if (remaining > 0) {
             super.getClient().replyInternalError(note, ErrorCode.TRY_AGAIN,
                      "There are %d files that are still being downloaded", remaining);
             return;
