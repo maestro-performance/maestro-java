@@ -20,44 +20,89 @@ package org.maestro.reports.server.collector;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.common.client.exceptions.MalformedNoteException;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.worker.common.MaestroWorkerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DefaultReportsCollector extends MaestroWorkerManager implements MaestroLogCollectorListener {
     private static final Logger logger = LoggerFactory.getLogger(DefaultReportsCollector.class);
 
     private final File dataDir;
-    private ReportCollectorWorker reportCollectorWorker;
-
+    private Map<Test, ReportCollectorWorker> workerMap = new HashMap<>();
+    private Map<String, Test> testMap = new HashMap<>();
 
     public DefaultReportsCollector(final String maestroURL, final PeerInfo peerInfo, final File dataDir) {
         super(maestroURL, peerInfo);
 
         this.dataDir = dataDir;
-        reportCollectorWorker = new ReportCollectorWorker(this.dataDir, getClient());
+    }
+
+    private ReportCollectorWorker getCollectorWorker(final Test test) {
+        ReportCollectorWorker reportCollectorWorker = workerMap.get(test);
+        if (reportCollectorWorker == null) {
+            reportCollectorWorker =  new ReportCollectorWorker(this.dataDir, getClient());
+        }
+
+        workerMap.put(test, reportCollectorWorker);
+        return reportCollectorWorker;
     }
 
     @Override
     public void handle(final TestFailedNotification note) {
         super.handle(note);
 
+        ReportCollectorWorker reportCollectorWorker = getCollectorWorker(note.getTest());
+
         reportCollectorWorker.handle(note);
+
+        final String id = note.getId();
+        final Test test = note.getTest();
+
+        logger.info("Associating ID {} with test {}", id, test);
+        testMap.put(id, test);
     }
 
     @Override
     public void handle(final TestSuccessfulNotification note) {
         super.handle(note);
 
+        ReportCollectorWorker reportCollectorWorker = getCollectorWorker(note.getTest());
+
         reportCollectorWorker.handle(note);
+
+        final String id = note.getId();
+        final Test test = note.getTest();
+
+        logger.info("Associating ID {} with test {}", id, test);
+        testMap.put(id, test);
     }
 
     @Override
     public void handle(final LogResponse note) {
+        Test test = testMap.get(note.getId());
+
+        if (test == null) {
+            logger.error("There is not test object associated with a message with ID {}", note.getId());
+            logger.error("Skipping file {} from {}", note.getFileName(), note.getPeerInfo().prettyName());
+
+            return;
+        }
+
+        ReportCollectorWorker reportCollectorWorker = getCollectorWorker(test);
+
         reportCollectorWorker.handle(note);
+
+        if (reportCollectorWorker.isCompleted()) {
+            logger.info("Test transaction is complete, removing the objects from the caches");
+            workerMap.remove(test);
+            testMap.remove(note.getId());
+        }
     }
 
     @Override
@@ -88,11 +133,15 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     public void handle(final TestStartedNotification note) {
         super.handle(note);
 
+        ReportCollectorWorker reportCollectorWorker = getCollectorWorker(note.getTest());
         reportCollectorWorker.handle(note);
     }
 
     @Override
     public void handle(final StartTestRequest note) {
+        ReportCollectorWorker reportCollectorWorker = getCollectorWorker(note.getTest());
+
         reportCollectorWorker.handle(note);
+
     }
 }
