@@ -21,6 +21,12 @@ To deploy the ActiveMQ broker:
 
     kubectl apply -f broker/activemq-deployment.yaml -f broker/cluster-service.yaml -f broker/external-service.yaml
 
+## Deploy the Reports Tool
+
+    kubectl apply -f reports/reports-config.yaml
+    kubectl apply -f reports/reports-service.yaml -f reports/reports-deployment
+    kubectl scale --replicas=1 -f reports/reports-deployment 
+    kubectl expose -f reports/reports-service.yaml --hostname=my.hostname.com
 
 ## Deploy worker
 
