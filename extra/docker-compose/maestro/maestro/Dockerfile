@@ -103,7 +103,7 @@ RUN rm -f maestro-${MAESTRO_WORKER_TYPE}-tool-${MAESTRO_VERSION}-bin.tar.gz
 
 ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/log4j.properties
 ADD ${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}-tool.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}-tool/config/maestro-${MAESTRO_WORKER_TYPE}-tool.properties
-RUN mkdir -p /maestro/${MAESTRO_WORKER_TYPE}
+RUN mkdir -p /maestro/${MAESTRO_WORKER_TYPE}-tool
 VOLUME /maestro
 ADD ${MAESTRO_WORKER_TYPE}/maestro-container-wrapper.sh /usr/bin/maestro-container-wrapper
 CMD [ "sh", "-c", "/usr/bin/maestro-container-wrapper"]
