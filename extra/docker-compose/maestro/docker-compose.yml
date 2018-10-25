@@ -3,7 +3,7 @@ networks:
     cluster:
       driver: bridge
     test:
-          driver: bridge
+      driver: bridge
 services:
   broker:
     build: broker
@@ -70,9 +70,14 @@ services:
       - MAESTRO_VERSION=1.5.0-SNAPSHOT
       target: maestro-reports
     networks:
-    - cluster
+      - cluster
     ports:
-    - "6500:6500"
+      - "6500:6500"
+    volumes:
+      - reports:/maestro
     depends_on:
-    - broker
+      - broker
+
+volumes:
+  reports:
 
