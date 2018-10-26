@@ -131,6 +131,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
         }
     }
 
+
     public void start() {
         startedEpochMillis = System.currentTimeMillis();
         logger.info("Starting the JMS receiver worker");
@@ -144,7 +145,6 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
             }
             catch (Exception e) {
                 logger.error("Unable to start the receiver worker: {}", e.getMessage(), e);
-
                 throw e;
             }
 
@@ -155,7 +155,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
             runReceiveLoop(client);
             logger.debug("JMS receiver worker {} has completed running the load loop", id);
         } catch (InterruptedException e) {
-            logger.error("JMS receiver worker {} interrupted while receiving messages: {}", id,
+            logger.warn("JMS receiver worker {} interrupted while receiving messages: {}", id,
                     e.getMessage());
 
             stop();

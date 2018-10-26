@@ -123,7 +123,6 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
 
-
     public void start() {
         startedEpochMillis = System.currentTimeMillis();
         logger.info("Starting the JMS sender worker");
@@ -147,7 +146,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             runLoadLoop(client);
             logger.debug("JMS sender worker {} has completed running the load loop", id);
         } catch (InterruptedException e) {
-            logger.info("JMS sender worker {} interrupted while sending messages: {}", id,
+            logger.warn("JMS sender worker {} interrupted while sending messages: {}", id,
                     e.getMessage());
 
             stop();
