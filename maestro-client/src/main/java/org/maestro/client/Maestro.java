@@ -624,10 +624,8 @@ public final class Maestro implements MaestroRequester {
         }
     }
 
-
-    public static <T, U> void set(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1, U value2) {
-        final int timeout = 2;
-
+    public static <T, U> void set(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1, U value2,
+                                  int timeout) {
         List<? extends MaestroNote> replies;
         try {
             replies = function.apply(value1, value2).get(timeout, TimeUnit.SECONDS);
@@ -655,6 +653,11 @@ public final class Maestro implements MaestroRequester {
                 }
             }
         }
+    }
+
+
+    public static <T, U> void set(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1, U value2) {
+        set(function, value1, value2, 2);
     }
 
     public static <T> void exec(Supplier<CompletableFuture<List<? extends MaestroNote>>> function) {
