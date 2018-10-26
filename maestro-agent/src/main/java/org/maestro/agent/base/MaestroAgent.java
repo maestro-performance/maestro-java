@@ -222,7 +222,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
 
                 } catch (Exception e) {
                     logger.error("Failing to run the groovy callback: {}", e.getMessage(), e);
-                    groovyHandler.getClient().notifyFailure(getCurrentTest(), e.getMessage());
+                    groovyHandler.getClient().replyInternalError(note, e.getMessage());
                 }
             });
 
