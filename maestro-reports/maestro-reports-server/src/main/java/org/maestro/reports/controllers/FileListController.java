@@ -78,19 +78,16 @@ public class FileListController extends AbstractReportFileController {
                 throw new MaestroException("Invalid file type: expected a directory, but got something else");
             }
 
-            File files[] = location.listFiles(new FileFilter() {
-                @Override
-                public boolean accept(File file) {
-                    String extensions[] = { ".csv", ".hdr", ".dat", ".properties"};
+            File files[] = location.listFiles(file -> {
+                String extensions[] = { ".csv", ".hdr", ".dat", ".properties", ".json", ".xz"};
 
-                    for (String extension : extensions) {
-                        if (file.getName().endsWith(extension)) {
-                            return true;
-                        }
+                for (String extension : extensions) {
+                    if (file.getName().endsWith(extension)) {
+                        return true;
                     }
-
-                    return false;
                 }
+
+                return false;
             });
 
             List<Archive> fileList = Arrays.asList(files).stream().map(f -> new Archive(f, id)).collect(Collectors.toList());
