@@ -49,7 +49,7 @@ public class GroovyHandler implements AgentHandler {
     private WorkerOptions workerOptions;
     private Test currentTest;
 
-    public GroovyHandler(MaestroReceiverClient client) {
+    public GroovyHandler(final MaestroReceiverClient client) {
         this.client = client;
     }
 
@@ -84,7 +84,7 @@ public class GroovyHandler implements AgentHandler {
         return groovyObject;
     }
 
-    public void setContext(Map<String, Object> context) {
+    public void setContext(final Map<String, Object> context) {
         this.context = context;
     }
 
@@ -105,7 +105,7 @@ public class GroovyHandler implements AgentHandler {
     }
 
     @Override
-    public void setInitialPath(File initialPath) throws Exception {
+    public void setInitialPath(final File initialPath) throws Exception {
         GroovyCallbackWalker walker = new GroovyCallbackWalker();
         logger.debug("Processing {}", initialPath.getAbsolutePath());
 
@@ -116,27 +116,15 @@ public class GroovyHandler implements AgentHandler {
         return client;
     }
 
-    public MaestroNote getMaestroNote() {
-        return maestroNote;
-    }
-
-    public void setMaestroNote(MaestroNote maestroNote) {
+    public void setMaestroNote(final MaestroNote maestroNote) {
         this.maestroNote = maestroNote;
     }
 
-    public WorkerOptions getWorkerOptions() {
-        return workerOptions;
-    }
-
-    public void setWorkerOptions(WorkerOptions workerOptions) {
+    public void setWorkerOptions(final WorkerOptions workerOptions) {
         this.workerOptions = workerOptions;
     }
 
-    public Test getCurrentTest() {
-        return currentTest;
-    }
-
-    public void setCurrentTest(Test currentTest) {
+    public void setCurrentTest(final Test currentTest) {
         this.currentTest = currentTest;
     }
 }

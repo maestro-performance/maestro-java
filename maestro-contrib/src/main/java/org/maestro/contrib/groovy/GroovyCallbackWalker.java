@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -39,13 +39,13 @@ public class GroovyCallbackWalker extends DirectoryWalker<File> {
 
     @SuppressWarnings("RedundantThrows")
     @Override
-    protected boolean handleDirectory(File directory, int depth, Collection<File> results) throws IOException {
+    protected boolean handleDirectory(final File directory, int depth, Collection<File> results) throws IOException {
         return true;
     }
 
     @SuppressWarnings("RedundantThrows")
     @Override
-    protected void handleFile(File file, int depth, Collection<File> results)
+    protected void handleFile(final File file, int depth, Collection<File> results)
             throws IOException
 
     {
@@ -80,8 +80,6 @@ public class GroovyCallbackWalker extends DirectoryWalker<File> {
         }
 
         try {
-            fileList = new ArrayList<>();
-
             walk(file, fileList);
         } catch (IOException e) {
             logger.error("Unable to walk the whole directory: " + e.getMessage(), e);
