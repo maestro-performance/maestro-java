@@ -20,6 +20,7 @@ import org.maestro.client.Maestro;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerEndpoint;
 import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.exchange.support.PeerSet;
 
 
 public class NonAssigningStrategy extends AbstractStrategy {
@@ -33,5 +34,10 @@ public class NonAssigningStrategy extends AbstractStrategy {
         String topic = MaestroTopics.peerTopic(id);
 
         return new PeerEndpoint(peerInfo.getRole(), topic);
+    }
+
+    @Override
+    public synchronized PeerSet distribute(PeerSet peers) {
+        return peers;
     }
 }

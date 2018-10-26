@@ -18,6 +18,7 @@ package org.maestro.tests.flex.singlepoint;
 
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.common.Role;
 import org.maestro.common.agent.Source;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestProfile;
@@ -31,6 +32,7 @@ import static org.maestro.client.Maestro.set;
  */
 public class FlexibleTestProfile extends AbstractTestProfile {
     private String sourceURL;
+    private String branch;
     private String brokerURL;
 
     @SuppressWarnings("unused")
@@ -40,6 +42,10 @@ public class FlexibleTestProfile extends AbstractTestProfile {
 
     public void setSendReceiveURL(final String url) {
         this.brokerURL = url;
+    }
+
+    public void setBranch(String branch) {
+        this.branch = branch;
     }
 
     // NO-OP for this
@@ -56,8 +62,8 @@ public class FlexibleTestProfile extends AbstractTestProfile {
 
     @Override
     public void apply(final Maestro maestro, final DistributionStrategy distributionStrategy) throws MaestroException {
-        set(maestro::setBroker, MaestroTopics.WORKERS_TOPIC, this.brokerURL);
+        set(maestro::setBroker, MaestroTopics.peerTopic(Role.AGENT), this.brokerURL);
 
-        set(maestro::sourceRequest, MaestroTopics.WORKERS_TOPIC, new Source(sourceURL, null));
+        set(maestro::sourceRequest, MaestroTopics.peerTopic(Role.AGENT), new Source(sourceURL, branch), 10);
     }
 }

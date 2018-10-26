@@ -212,6 +212,8 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
             groovyHandler.setInitialPath(entryPointDir);
             groovyHandler.setWorkerOptions(getWorkerOptions());
             groovyHandler.setMaestroNote(note);
+            groovyHandler.setCurrentTest(getCurrentTest());
+
             Thread thread = new Thread(() -> {
                 try {
                     if (logger.isTraceEnabled()) {

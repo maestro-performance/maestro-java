@@ -22,6 +22,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import org.maestro.client.MaestroReceiverClient;
 import org.maestro.common.agent.AgentHandler;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.contrib.groovy.GroovyCallbackWalker;
@@ -46,6 +47,7 @@ public class GroovyHandler implements AgentHandler {
 
     private MaestroNote maestroNote;
     private WorkerOptions workerOptions;
+    private Test currentTest;
 
     public GroovyHandler(MaestroReceiverClient client) {
         this.client = client;
@@ -92,6 +94,7 @@ public class GroovyHandler implements AgentHandler {
         groovyObject.invokeMethod("setMaestroNote", this.maestroNote);
         groovyObject.invokeMethod("setWorkerOptions", this.workerOptions);
         groovyObject.invokeMethod("setMaestroClient", this.client);
+        groovyObject.invokeMethod("setCurrentTest", this.currentTest);
         groovyObject.invokeMethod("handle", context);
     }
 
@@ -127,5 +130,13 @@ public class GroovyHandler implements AgentHandler {
 
     public void setWorkerOptions(WorkerOptions workerOptions) {
         this.workerOptions = workerOptions;
+    }
+
+    public Test getCurrentTest() {
+        return currentTest;
+    }
+
+    public void setCurrentTest(Test currentTest) {
+        this.currentTest = currentTest;
     }
 }

@@ -19,9 +19,9 @@ package org.maestro.tests.flex;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.support.PeerSet;
-import org.maestro.client.notes.GetResponse;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.Test;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.AbstractTestProfile;
 import org.maestro.tests.cluster.DistributionStrategy;
@@ -85,10 +85,12 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
      * Test execution logic
      * @return true if the test was successful or false otherwise
      */
-    public boolean run(final String scriptName, int number) {
+    public boolean run(final Test test) {
         try {
             // Clean up the topic
             getMaestro().clear();
+
+            testStart(test);
 
             PeerSet peerSet = distributionStrategy.distribute(getMaestro().getPeers());
             long numPeers = peerSet.workers();

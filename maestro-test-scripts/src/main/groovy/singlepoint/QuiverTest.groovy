@@ -16,24 +16,16 @@
 
 package singlepoint
 
-@GrabConfig(systemClassLoader = true)
-@GrabResolver(name='Eclipse', root='https://repo.eclipse.org/content/repositories/paho-releases/')
-@Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
-
-@GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
-@Grab(group='org.maestro', module='maestro-tests', version='1.5.0-SNAPSHOT')
-@Grab(group='org.maestro', module='maestro-reports', version='1.5.0-SNAPSHOT')
-@Grab(group='net.orpiske', module='quiver-data-plotter', version='1.0.0')
 
 import org.maestro.client.Maestro
 import org.maestro.client.exchange.MaestroTopics
 import org.maestro.common.LogConfigurator
 import org.maestro.common.Role
-
+import org.maestro.common.agent.UserCommandData
+import org.maestro.common.client.notes.Test
+import org.maestro.common.client.notes.TestDetails
 import org.maestro.tests.AbstractTestProfile
 
-import net.orpiske.qdp.main.QuiverReportWalker
-import net.orpiske.qdp.plot.renderer.IndexRenderer
 import org.maestro.tests.cluster.NonAssigningStrategy
 import org.maestro.tests.flex.FlexibleTestExecutor
 import org.maestro.tests.flex.singlepoint.FlexibleTestProfile
@@ -51,14 +43,19 @@ class QuiverExecutor extends FlexibleTestExecutor {
     }
 
     void startServices() {
-        maestro.userCommand(MaestroTopics.peerTopic(Role.AGENT), 0, "rhea")
+        UserCommandData userCommandData = new UserCommandData(0, "rhea");
+
+        maestro.userCommand(MaestroTopics.peerTopic(Role.AGENT), userCommandData)
         // Wait for up to 2 minutes for the test to complete
         Thread.sleep(60*1000*2)
     }
 
     @Override
     boolean run(final String scriptName, final String description, final String comments) {
-        return run(this.class.getSimpleName(), 0)
+        final TestDetails testDetails = new TestDetails(description, comments);
+        final Test test = new Test(Test.NEXT, Test.NEXT, "quiver", scriptName, testDetails);
+
+        return run(test)
     }
 }
 
@@ -98,14 +95,20 @@ FlexibleTestProfile testProfile = new FlexibleTestProfile()
 testProfile.setSendReceiveURL(brokerURL)
 testProfile.setSourceURL(sourceURL)
 
+branch = System.getenv("SOURCE_BRANCH")
+testProfile.setBranch(branch)
+
 println "Creating the executor"
 QuiverExecutor executor = new QuiverExecutor(maestro, testProfile)
+
+description = System.getenv("TEST_DESCRIPTION")
+comments = System.getenv("TEST_COMMENTS")
 
 int ret = 0
 
 try {
     println "Running the test"
-    if (!executor.run()) {
+    if (!executor.run(this.class.getSimpleName(), description, comments)) {
         ret = 1
     }
 } finally {
