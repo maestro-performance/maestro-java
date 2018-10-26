@@ -121,9 +121,10 @@ try {
     }
 } finally {
     println "Stopping the workers on the cluster if they haven't already done so"
-    maestro.stop()
+    maestro.stopAll()
 
-    println "Plotting the data"
+    println "Stopping Maestro client"
+    maestro.stop()
 }
 
 if (ret == 0) {
