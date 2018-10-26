@@ -64,6 +64,6 @@ public class FlexibleTestProfile extends AbstractTestProfile {
     public void apply(final Maestro maestro, final DistributionStrategy distributionStrategy) throws MaestroException {
         set(maestro::setBroker, MaestroTopics.peerTopic(Role.AGENT), this.brokerURL);
 
-        set(maestro::sourceRequest, MaestroTopics.peerTopic(Role.AGENT), new Source(sourceURL, branch), 10);
+        set(maestro::sourceRequest, MaestroTopics.peerTopic(Role.AGENT), new Source(sourceURL, branch), 30);
     }
 }
