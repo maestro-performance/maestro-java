@@ -31,9 +31,7 @@ import java.util.List;
  * Recursively adds jars or files to the groovy classpath
  */
 public class GroovyCallbackWalker extends DirectoryWalker<File> {
-
     private static final Logger logger = LoggerFactory.getLogger(GroovyCallbackWalker.class);
-    private List<File> fileList;
 
     public GroovyCallbackWalker() {
 
@@ -72,10 +70,13 @@ public class GroovyCallbackWalker extends DirectoryWalker<File> {
      */
     @SuppressWarnings("unchecked")
     public List<File> load(final File file) throws IOException {
+        final List<File> fileList = new LinkedList<>();
         logger.debug("Loading classes from directory {}", file.getPath());
 
         if (!file.exists()) {
-            throw new IOException("The input directory " + file.getPath() + " does not exist");
+            logger.warn("Ignoring directory {} because it does not exist", file);
+
+            return fileList;
         }
 
         try {
