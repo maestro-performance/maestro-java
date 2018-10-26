@@ -65,7 +65,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public MaestroAgent(final String maestroURL, final PeerInfo peerInfo) throws MaestroException {
         super(maestroURL, peerInfo);
 
-        AbstractConfiguration config = ConfigurationWrapper.getConfig();
+        final AbstractConfiguration config = ConfigurationWrapper.getConfig();
         String pathStr = config.getString("agent.ext.path.override", null);
 
         if (pathStr == null){
@@ -80,7 +80,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
             logger.warn("The extension point at {} does not exist", defaultExtPointFile.getPath());
         }
 
-        String defaultSourceDir = FileUtils.getTempDirectoryPath() + File.separator + "maestro-agent-work";
+        final String defaultSourceDir = FileUtils.getTempDirectoryPath() + File.separator + "maestro-agent-work";
 
         sourceRoot = config.getString("maestro.agent.source.root", defaultSourceDir);
         groovyHandler = new GroovyHandler(super.getClient());
@@ -302,7 +302,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
         }
         final String projectDir = UUID.randomUUID().toString();
 
-        File repositoryDir = new File(sourceRoot + File.separator + projectDir + File.separator);
+        final File repositoryDir = new File(sourceRoot + File.separator + projectDir + File.separator);
 
         if (!repositoryDir.exists()) {
             if (!repositoryDir.mkdirs()) {
@@ -377,7 +377,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     }
 
     @Override
-    public void handle(StartTestRequest note) {
+    public void handle(final StartTestRequest note) {
         setCurrentTest(note.getTest());
 
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.START_TEST, note));
@@ -386,12 +386,12 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     }
 
     @Override
-    public void handle(TestStartedNotification note) {
+    public void handle(final TestStartedNotification note) {
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.NOTIFY_TEST_STARTED, note));
     }
 
     @Override
-    public void handle(DrainCompleteNotification note) {
+    public void handle(final DrainCompleteNotification note) {
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.DRAIN, note));
     }
 }
