@@ -120,8 +120,11 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
 
             logger.info("Test {} completed successfully", phaseName());
             return true;
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             logger.info("Test execution interrupted");
+        }
+        catch (Exception e) {
+            logger.info("Error executing the test: {}", e.getMessage(), e);
         } finally {
             distributionStrategy.reset();
 
