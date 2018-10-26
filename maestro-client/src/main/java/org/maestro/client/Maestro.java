@@ -375,11 +375,12 @@ public final class Maestro implements MaestroRequester {
         UserCommand1Request maestroNote = new UserCommand1Request();
 
         maestroNote.set(userCommandData.getOption(), userCommandData.getPayload());
-
-
         maestroClient.publish(topic, maestroNote);
+
+        MessageCorrelation correlation = maestroNote.correlate();
+
         return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000, note -> note instanceof UserCommand1Response || note instanceof InternalError)
+                () -> collect(note -> isCorrelated(note, correlation))
         );
     }
 
@@ -392,8 +393,10 @@ public final class Maestro implements MaestroRequester {
         maestroNote.setBranch(source.getBranch());
 
         maestroClient.publish(topic, maestroNote);
+        MessageCorrelation correlation = maestroNote.correlate();
+
         return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000, isOkOrErrorResponse())
+                () -> collect(note -> isCorrelated(note, correlation), 30, 50)
         );
     }
 
@@ -510,10 +513,10 @@ public final class Maestro implements MaestroRequester {
      * @param predicate Returns only the messages matching the predicate
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
-    private List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
+    private List<MaestroNote> collect(Predicate<? super MaestroNote> predicate, int retries, int retryTimeout) {
         List<MaestroNote> replies = new LinkedList<>();
         MaestroMonitor monitor = new MaestroMonitor(predicate);
-        StaleChecker staleChecker = new NonProgressingStaleChecker(10);
+        StaleChecker staleChecker = new NonProgressingStaleChecker(retries);
 
         try {
             collectorExecutor.getCollector().monitor(monitor);
@@ -528,7 +531,7 @@ public final class Maestro implements MaestroRequester {
 
                 try {
                     logger.trace("Not enough responses matching the predicate. Waiting for more messages to arrive");
-                    monitor.doLock(50);
+                    monitor.doLock(retryTimeout);
                 } catch (InterruptedException e) {
                     logger.trace("Interrupted while waiting for message collection");
                 }
@@ -543,6 +546,15 @@ public final class Maestro implements MaestroRequester {
         }
 
         return replies;
+    }
+
+    /**
+     * Collect replies up to a certain limit of retries/timeout
+     * @param predicate Returns only the messages matching the predicate
+     * @return A list of serialized maestro replies or null if none. May return less that expected.
+     */
+    private List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
+        return collect(predicate, 10, 50);
     }
 
     /**
