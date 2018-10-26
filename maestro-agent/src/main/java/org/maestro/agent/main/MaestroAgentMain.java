@@ -36,7 +36,6 @@ public class MaestroAgentMain {
 
     private static String maestroUrl;
     private static String host;
-    private static File logDir;
 
     /**
      * Prints the help for the action and exit
@@ -99,8 +98,6 @@ public class MaestroAgentMain {
         }
 
         assert logDirVal != null;
-        logDir = new File(logDirVal);
-        System.setProperty("maestro.log.dir", logDirVal);
     }
 
     /**
