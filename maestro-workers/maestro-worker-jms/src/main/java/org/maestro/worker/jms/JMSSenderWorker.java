@@ -132,7 +132,13 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         final long id = Thread.currentThread().getId();
         try {
             logger.debug("JMS sender worker {} is now running the client startup", id);
-            doClientStartup(client);
+            try {
+                doClientStartup(client);
+            }
+            catch (Exception e) {
+                logger.error("Unable to start the sender worker: {}", e.getMessage(), e);
+                throw e;
+            }
 
             logger.debug("JMS sender worker {} is signaling as started", id);
             startSignal.countDown();
@@ -141,17 +147,12 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             runLoadLoop(client);
             logger.debug("JMS sender worker {} has completed running the load loop", id);
         } catch (InterruptedException e) {
-            logger.error("JMS sender worker {} interrupted while sending messages: {}", id,
+            logger.info("JMS sender worker {} interrupted while sending messages: {}", id,
                     e.getMessage());
 
             stop();
         } catch (Exception e) {
-            if (!workerStateInfo.isRunning()) {
-                logger.error("Unable to start the sender worker: {}", e.getMessage(), e);
-            }
-            else {
-                logger.error("Unexpected error while running the sender worker: {}", e.getMessage(), e);
-            }
+            logger.error("Unexpected error while running the sender worker: {}", e.getMessage(), e);
 
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_STOPPED, null);
         } finally {
