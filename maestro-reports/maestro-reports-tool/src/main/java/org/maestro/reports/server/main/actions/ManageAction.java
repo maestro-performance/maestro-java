@@ -28,6 +28,12 @@ abstract class ManageAction extends Action {
         processCommand(args);
     }
 
+    protected void defineCustomOptions(final Options options) { }
+
+    protected void parseCustomOptions(final CommandLine cmdLine) {
+
+    }
+
     protected void processCommand(String[] args) {
         CommandLineParser parser = new DefaultParser();
 
@@ -36,6 +42,8 @@ abstract class ManageAction extends Action {
         options.addOption("h", "help", false, "prints the help");
         options.addOption("t", "test-id", true, "the test id to manage");
         options.addOption("", "comments", true, "test comments");
+
+        defineCustomOptions(options);
 
         try {
             cmdLine = parser.parse(options, args);
@@ -68,5 +76,7 @@ abstract class ManageAction extends Action {
         }
 
         comments = cmdLine.getOptionValue("comments");
+
+        parseCustomOptions(cmdLine);
     }
 }
