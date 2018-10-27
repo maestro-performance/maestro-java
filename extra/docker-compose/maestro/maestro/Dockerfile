@@ -101,7 +101,7 @@ COPY --from=buildimg /root/build/maestro-java/maestro-${MAESTRO_WORKER_TYPE}/mae
 RUN mkdir maestro-${MAESTRO_WORKER_TYPE}-tool && tar --strip-components=1 -xvf maestro-${MAESTRO_WORKER_TYPE}-tool-${MAESTRO_VERSION}-bin.tar.gz -C maestro-${MAESTRO_WORKER_TYPE}-tool
 RUN rm -f maestro-${MAESTRO_WORKER_TYPE}-tool-${MAESTRO_VERSION}-bin.tar.gz
 
-ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/log4j.properties
+ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}-tool/config/log4j.properties
 ADD ${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}-tool.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}-tool/config/maestro-${MAESTRO_WORKER_TYPE}-tool.properties
 RUN mkdir -p /maestro/${MAESTRO_WORKER_TYPE}-tool
 VOLUME /maestro
