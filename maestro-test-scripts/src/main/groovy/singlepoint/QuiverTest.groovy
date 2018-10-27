@@ -43,7 +43,9 @@ class QuiverExecutor extends FlexibleTestExecutor {
     }
 
     void startServices() {
-        UserCommandData userCommandData = new UserCommandData(0, "rhea");
+        String testParams = System.getenv("TEST_PARAMS")
+
+        UserCommandData userCommandData = new UserCommandData(0, testParams);
 
         maestro.userCommand(MaestroTopics.peerTopic(Role.AGENT), userCommandData)
         // Wait for up to 2 minutes for the test to complete
@@ -53,7 +55,13 @@ class QuiverExecutor extends FlexibleTestExecutor {
     @Override
     boolean run(final String scriptName, final String description, final String comments) {
         final TestDetails testDetails = new TestDetails(description, comments);
-        final Test test = new Test(Test.NEXT, Test.NEXT, "quiver", scriptName, testDetails);
+
+        String testName = System.getenv("TEST_NAME")
+        if (testName == null) {
+            testName = "flexible"
+        }
+
+        final Test test = new Test(Test.NEXT, Test.NEXT, testName, scriptName, testDetails);
 
         return run(test)
     }
@@ -102,6 +110,7 @@ QuiverExecutor executor = new QuiverExecutor(maestro, testProfile)
 
 description = System.getenv("TEST_DESCRIPTION")
 comments = System.getenv("TEST_COMMENTS")
+
 
 int ret = 0
 
