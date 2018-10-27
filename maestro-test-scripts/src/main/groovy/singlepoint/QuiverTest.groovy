@@ -78,9 +78,8 @@ if (brokerURL == null) {
 
 sourceURL = System.getenv("SOURCE_URL")
 if (sourceURL == null) {
-    println "Warning: the quiver URL was not given. Using default: https://github.com/maestro-performance/maestro-quiver-agent.git"
-
-    sourceURL = "https://github.com/maestro-performance/maestro-quiver-agent.git"
+    println "Error: the source url was not set"
+    System.exit(1)
 }
 
 logLevel = System.getenv("LOG_LEVEL")
