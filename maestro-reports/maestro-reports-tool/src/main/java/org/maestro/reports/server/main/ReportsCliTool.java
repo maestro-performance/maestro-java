@@ -42,6 +42,11 @@ public class ReportsCliTool {
         System.out.println("   aggregate");
         System.out.println("   sut-node");
         System.out.println("   consolidate");
+        System.out.println("   validate");
+        System.out.println("   invalidate");
+        System.out.println("   retire");
+        System.out.println("   unretire");
+        System.out.println("   comment");
         System.out.println("----------");
         System.out.println("   help");
         System.out.println("   --version");
