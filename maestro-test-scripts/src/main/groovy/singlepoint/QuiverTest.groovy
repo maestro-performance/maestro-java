@@ -31,12 +31,12 @@ import org.maestro.tests.flex.FlexibleTestExecutor
 import org.maestro.tests.flex.singlepoint.FlexibleTestProfile
 
 /**
- * This test executes tests via Maestro Agent using Quiver (https://github.com/ssorj/quiver/)
+ * This test executes tests via Maestro Agent
  */
-class QuiverExecutor extends FlexibleTestExecutor {
+class Executor extends FlexibleTestExecutor {
     private Maestro maestro
 
-    QuiverExecutor(Maestro maestro, AbstractTestProfile testProfile) {
+    Executor(Maestro maestro, AbstractTestProfile testProfile) {
         super(maestro, testProfile, new NonAssigningStrategy(maestro))
 
         this.maestro = maestro
@@ -106,7 +106,7 @@ branch = System.getenv("SOURCE_BRANCH")
 testProfile.setBranch(branch)
 
 println "Creating the executor"
-QuiverExecutor executor = new QuiverExecutor(maestro, testProfile)
+Executor executor = new Executor(maestro, testProfile)
 
 description = System.getenv("TEST_DESCRIPTION")
 comments = System.getenv("TEST_COMMENTS")
