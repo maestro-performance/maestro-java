@@ -3,6 +3,8 @@ MAINTAINER Jakub Stejskal <stejskinek@gmail.com>
 
 ARG QPID_DISPATCH_VERSION
 ENV QPID_DISPATCH_VERSION ${QPID_DISPATCH_VERSION:-master}
+ARG QPID_PROTON_VERSION
+ENV QPID_PROTON_VERSION ${QPID_PROTON_VERSION:-master}
 LABEL QPID_DISPATCH_VERSION=${QPID_DISPATCH_VERSION} MAESTRO_SUT=qpid-dispatch
 
 ENV MAESTRO_SUT_ROOT /opt/maestro/sut
@@ -12,7 +14,7 @@ RUN yum -y install gcc cmake libuuid-devel openssl-devel cyrus-sasl-devel cyrus-
 RUN yum clean all
 
 # Create a main directory and clone the qpid-proton repo from github
-RUN mkdir -p ${MAESTRO_SUT_ROOT}/ && cd ${MAESTRO_SUT_ROOT}/ && git clone https://git-wip-us.apache.org/repos/asf/qpid-proton.git && cd ${MAESTRO_SUT_ROOT}/qpid-proton && mkdir -p ${MAESTRO_SUT_ROOT}/qpid-proton/build
+RUN mkdir -p ${MAESTRO_SUT_ROOT}/ && cd ${MAESTRO_SUT_ROOT}/ && git clone https://git-wip-us.apache.org/repos/asf/qpid-proton.git -b ${QPID_PROTON_VERSION} && cd ${MAESTRO_SUT_ROOT}/qpid-proton && mkdir -p ${MAESTRO_SUT_ROOT}/qpid-proton/build
 
 WORKDIR ${MAESTRO_SUT_ROOT}/qpid-proton/build
 # make and install proton
