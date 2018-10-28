@@ -116,12 +116,14 @@ public class ReportCollectorWorker {
         }
     }
 
-    private void createNewReportRecord(final String testResultString, final PeerInfo peerInfo) {
+    private void createNewReportRecord(final String testResultString, final String id, final PeerInfo peerInfo) {
         report.setTestResult(testResultString);
         report.setTestHost(peerInfo.peerHost());
         report.setTestHostRole(peerInfo.getRole().toString());
 
-        String destinationDir = organizer.organize(peerInfo);
+        final String uniquePeerPath = DefaultOrganizer.generateUniquePeerPath(id, peerInfo);
+
+        String destinationDir = organizer.organize(uniquePeerPath);
         report.setLocation(destinationDir);
 
         logger.debug("Adding test record to the DB: {}", report);
@@ -208,13 +210,13 @@ public class ReportCollectorWorker {
     public void handle(final TestFailedNotification note) {
         logRequest(note, LocationType.LAST_FAILED);
 
-        createNewReportRecord(ResultStrings.FAILED, note.getPeerInfo());
+        createNewReportRecord(ResultStrings.FAILED, note.getId(), note.getPeerInfo());
     }
 
     public void handle(final TestSuccessfulNotification note) {
         logRequest(note, LocationType.LAST_SUCCESS);
 
-        createNewReportRecord(ResultStrings.SUCCESS, note.getPeerInfo());
+        createNewReportRecord(ResultStrings.SUCCESS, note.getId(), note.getPeerInfo());
     }
 
 

@@ -25,19 +25,23 @@ import java.io.File;
  * A default organizer for the report layout that organizes the report directory in the format
  * ${basedir}/${host type}/${result type dir}/${test number}/ (ie.: /tmp/sender/failed/0/)
  */
-public class DefaultOrganizer implements Organizer<PeerInfo> {
+public class DefaultOrganizer implements Organizer<String> {
     protected final String baseDir;
 
     public DefaultOrganizer(final String baseDir) {
         this.baseDir = baseDir;
     }
 
-    protected String combine(final PeerInfo peerInfo) {
-        return baseDir + File.separator + peerInfo.getRole() + File.separator + peerInfo.peerHost();
+    protected String combine(final String uniquePeerPath) {
+        return baseDir + File.separator + uniquePeerPath;
     }
 
     @Override
-    public String organize(final PeerInfo peerInfo) {
+    public String organize(final String peerInfo) {
         return combine(peerInfo);
+    }
+
+    public static String generateUniquePeerPath(final String id, final PeerInfo peerInfo) {
+        return id + File.separator + peerInfo.peerHost();
     }
 }

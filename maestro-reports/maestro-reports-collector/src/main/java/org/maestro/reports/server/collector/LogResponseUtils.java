@@ -35,10 +35,10 @@ public class LogResponseUtils {
 
 
     public static void save(final LogResponse logResponse, final DefaultOrganizer organizer) {
-        PeerInfo peerInfo = logResponse.getPeerInfo();
-
-        String destinationDir = organizer.organize(peerInfo);
-        File outFile = new File(destinationDir, logResponse.getFileName());
+        final PeerInfo peerInfo = logResponse.getPeerInfo();
+        final String uniquePeerPath = DefaultOrganizer.generateUniquePeerPath(logResponse.getId(), peerInfo);
+        final String destinationDir = organizer.organize(uniquePeerPath);
+        final File outFile = new File(destinationDir, logResponse.getFileName());
 
         logger.info("Saving file {} to {}", logResponse.getFileName(), outFile);
         if (!outFile.exists()) {
