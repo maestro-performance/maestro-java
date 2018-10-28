@@ -70,7 +70,7 @@ public class ReportCollectorWorker {
         aggregationService.aggregate(maxTestId, maxTestNumber);
     }
 
-    public int countRemaining() {
+    private int countRemaining() {
         int remaining = 0;
         for (DownloadProgress p : aggregatablesMap.values()) {
             if (p != null) {
@@ -98,7 +98,7 @@ public class ReportCollectorWorker {
         return true;
     }
 
-    public void logRequest(final MaestroNotification note, LocationType locationType) {
+    private void logRequest(final MaestroNotification note, LocationType locationType) {
         logger.trace("Sending the log request to {}", this.toString());
         LogRequest request = new LogRequest();
 
