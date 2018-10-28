@@ -153,7 +153,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
             logger.debug("JMS receiver worker {} has started running the receive loop", id);
             runReceiveLoop(client);
-            logger.debug("JMS receiver worker {} has completed running the load loop", id);
+            logger.debug("JMS receiver worker {} has completed running the receive loop", id);
         } catch (InterruptedException e) {
             logger.warn("JMS receiver worker {} interrupted while receiving messages: {}", id,
                     e.getMessage());
