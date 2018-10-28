@@ -125,7 +125,6 @@ ENV MESSAGE_SIZE 256
 ENV TEST_DURATION 90s
 ENV RATE 0
 ENV PARALLEL_COUNT 2
-ENV DOWNLOADER_NAME broker
 
 ADD client/motd.txt /etc/motd
 RUN echo "export PATH=\$PATH:/opt/maestro/maestro-cli/bin/" >> $HOME/.bashrc
