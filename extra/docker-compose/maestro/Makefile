@@ -9,6 +9,7 @@ clean:
 	docker rmi -f maestroperf/maestro-exporter:${MAESTRO_VERSION}
 	docker rmi -f maestroperf/maestro-worker:${MAESTRO_VERSION}
 	docker rmi -f maestroperf/maestro-reports:${MAESTRO_VERSION}
+	docker rmi -f maestro_client maestro_agent maestro_reports maestro_inspector maestro_worker maestro_broker maestro_exporter
 
 broker:
 	cd broker && docker build -t maestroperf/maestro-broker:${MAESTRO_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} .
