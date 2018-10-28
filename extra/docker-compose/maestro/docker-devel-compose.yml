@@ -21,7 +21,7 @@ services:
 #      args:
 #        - QPID_DISPATCH_VERSION=1.4.0
 #        - QPID_PROTON_VERSION=0.26.0
-#    networks:
+    networks:
       - test
     ports:
       - "5672:5672"
