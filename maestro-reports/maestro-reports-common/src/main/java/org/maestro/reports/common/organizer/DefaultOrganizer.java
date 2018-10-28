@@ -23,7 +23,7 @@ import java.io.File;
 
 /**
  * A default organizer for the report layout that organizes the report directory in the format
- * ${basedir}/${host type}/${result type dir}/${test number}/ (ie.: /tmp/sender/failed/0/)
+ * ${basedir}/id/${test id}/number/${test number}/${unique peer id}/${peer host} (ie.: /tmp/sender/failed/0/)
  */
 public class DefaultOrganizer implements Organizer<String> {
     protected final String baseDir;
