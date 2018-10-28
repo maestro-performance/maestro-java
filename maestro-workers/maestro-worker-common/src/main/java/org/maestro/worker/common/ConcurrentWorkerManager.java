@@ -135,9 +135,6 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
                 container.getObservers().add(new DrainObserver(getWorkerOptions(), testWorkerInitializer, getClient()));
             }
 
-            logger.debug("Setting up the observer: worker cleanup observer");
-            container.getObservers().add(new CleanupObserver());
-
             logger.debug("Starting the workers {}", workerClass);
 
             container.start();
@@ -295,15 +292,6 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
             logger.debug("Removing previous observers");
             container.getObservers().clear();
-
-            // TODO: wrong. drain should not sent test notifications
-//            logger.debug("Setting up the observer: worker shutdown observer");
-//            WorkerShutdownObserver workerShutdownObserver = new WorkerShutdownObserver(logDir, getClient(),
-//                    getCurrentTest());
-//            container.getObservers().add(workerShutdownObserver);
-
-            logger.debug("Setting up the observer: worker cleanup observer");
-            container.getObservers().add(new CleanupObserver());
 
             logger.debug("Starting the workers {}", workerClass);
 
