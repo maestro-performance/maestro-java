@@ -247,9 +247,9 @@ public final class Maestro implements MaestroRequester {
     }
 
 
-    private CompletableFuture<List<? extends MaestroNote>> getOkErrorCompletableFuture() {
+    private CompletableFuture<List<? extends MaestroNote>> getOkErrorCompletableFuture(MaestroNote request) {
         return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000, isOkOrErrorResponse())
+                () -> collect(note -> isCorrelated(note, request.correlate()))
         );
     }
 
@@ -259,7 +259,7 @@ public final class Maestro implements MaestroRequester {
         StopInspector maestroNote = new StopInspector();
 
         maestroClient.publish(MaestroTopics.peerTopic(Role.INSPECTOR), maestroNote);
-        return getOkErrorCompletableFuture();
+        return getOkErrorCompletableFuture(maestroNote);
     }
 
 
@@ -268,7 +268,7 @@ public final class Maestro implements MaestroRequester {
         StopInspector maestroNote = new StopInspector();
 
         maestroClient.publish(topic, maestroNote);
-        return getOkErrorCompletableFuture();
+        return getOkErrorCompletableFuture(maestroNote);
     }
 
 
@@ -278,7 +278,7 @@ public final class Maestro implements MaestroRequester {
         StartWorker maestroNote = new StartWorker(options);
 
         maestroClient.publish(topic, maestroNote);
-        return getOkErrorCompletableFuture();
+        return getOkErrorCompletableFuture(maestroNote);
     }
 
     @Override
@@ -286,7 +286,7 @@ public final class Maestro implements MaestroRequester {
         StopWorker maestroNote = new StopWorker();
 
         maestroClient.publish(topic, maestroNote);
-        return getOkErrorCompletableFuture();
+        return getOkErrorCompletableFuture(maestroNote);
     }
 
 
@@ -297,14 +297,16 @@ public final class Maestro implements MaestroRequester {
         maestroClient.publish(MaestroTopics.WORKERS_TOPIC, stopSender);
 
         StopInspector stopInspector = new StopInspector();
+        stopInspector.correlate(stopSender);
 
         maestroClient.publish(MaestroTopics.peerTopic(Role.INSPECTOR), stopInspector);
 
         StopAgent stopAgent = new StopAgent();
+        stopAgent.correlate(stopSender);
 
         maestroClient.publish(MaestroTopics.peerTopic(Role.AGENT), stopAgent);
 
-        return getOkErrorCompletableFuture();
+        return getOkErrorCompletableFuture(stopSender);
     }
 
 
@@ -336,7 +338,7 @@ public final class Maestro implements MaestroRequester {
         Halt maestroNote = new Halt();
 
         maestroClient.publish(topic, maestroNote);
-        return getOkErrorCompletableFuture();
+        return getOkErrorCompletableFuture(maestroNote);
     }
 
 
@@ -358,7 +360,7 @@ public final class Maestro implements MaestroRequester {
         StartAgent maestroNote = new StartAgent();
 
         maestroClient.publish(MaestroTopics.peerTopic(Role.AGENT), maestroNote);
-        return getOkErrorCompletableFuture();
+        return getOkErrorCompletableFuture(maestroNote);
     }
 
     @Override
@@ -366,7 +368,7 @@ public final class Maestro implements MaestroRequester {
         StopAgent maestroNote = new StopAgent();
 
         maestroClient.publish(MaestroTopics.peerTopic(Role.AGENT), maestroNote);
-        return getOkErrorCompletableFuture();
+        return getOkErrorCompletableFuture(maestroNote);
     }
 
 
@@ -396,7 +398,7 @@ public final class Maestro implements MaestroRequester {
         MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
-                () -> collect(note -> isCorrelated(note, correlation), 30, 50)
+                () -> collect(note -> isCorrelated(note, correlation), 300, 50)
         );
     }
 
@@ -456,7 +458,7 @@ public final class Maestro implements MaestroRequester {
         StartTestRequest maestroNote = new StartTestRequest(test);
 
         maestroClient.publish(topic, maestroNote);
-        return getOkErrorCompletableFuture();
+        return getOkErrorCompletableFuture(maestroNote);
     }
 
 
