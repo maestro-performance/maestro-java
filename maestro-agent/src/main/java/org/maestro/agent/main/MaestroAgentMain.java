@@ -27,7 +27,6 @@ import org.maestro.common.NetworkUtils;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
-import java.io.File;
 import java.net.UnknownHostException;
 
 
@@ -96,6 +95,7 @@ public class MaestroAgentMain {
 
             help(options, -1);
         }
+        System.setProperty("maestro.log.dir", logDirVal);
 
         assert logDirVal != null;
     }

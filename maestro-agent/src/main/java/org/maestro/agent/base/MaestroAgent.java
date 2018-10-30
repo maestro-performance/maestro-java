@@ -336,6 +336,12 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(final LogRequest note) {
         final String logDir = System.getProperty("maestro.log.dir");
 
+        if (logDir == null) {
+            logger.error("The log directory is not set on the agent");
+
+            getClient().replyInternalError(note,"The log directory is not set on the agent");
+        }
+
         // It might or might not exist. The agent is very loose in this regard
         File logDirFile = new File(logDir);
         if (logDirFile.exists()) {
