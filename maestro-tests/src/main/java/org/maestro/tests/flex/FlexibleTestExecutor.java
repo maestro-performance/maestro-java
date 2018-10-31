@@ -31,6 +31,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 /**
@@ -123,6 +124,9 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
             return true;
         } catch (InterruptedException e) {
             logger.info("Test execution interrupted");
+        }
+        catch (TimeoutException te) {
+            logger.warn("Timed out waiting for the test notifications");
         }
         catch (Exception e) {
             logger.info("Error executing the test: {}", e.getMessage(), e);
