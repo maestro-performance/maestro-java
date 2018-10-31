@@ -1,0 +1,17 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Reports CLI - Invalidate" type="Application" factoryName="Application" singleton="true">
+    <option name="MAIN_CLASS_NAME" value="org.maestro.reports.server.main.ReportsCliTool" />
+    <module name="maestro-reports-tool" />
+    <option name="PROGRAM_PARAMETERS" value="invalidate -t 3375 --comment &quot;empty data&quot;" />
+    <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="org.maestro.reports.server.main.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
