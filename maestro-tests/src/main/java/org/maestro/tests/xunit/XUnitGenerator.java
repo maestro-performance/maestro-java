@@ -52,8 +52,7 @@ public class XUnitGenerator {
 
             testCase.setAssertions(1);
             testCase.setClassName(test.getScriptName());
-            testCase.setName(test.getTestName());
-
+            testCase.setName(generateName(test));
 
             testCase.setTime(Duration.ofSeconds(duration));
 
@@ -102,8 +101,7 @@ public class XUnitGenerator {
             return;
         }
 
-        File file = new File(xUnitDir, test.getTestName() + "-" + test.getTestNumber() + "-" +
-                test.getTestIteration() + ".xml");
+        File file = new File(xUnitDir, generateName(test) + ".xml");
 
         try {
             FileUtils.forceMkdirParent(file);
@@ -117,5 +115,9 @@ public class XUnitGenerator {
         } catch (IOException e) {
             logger.error("Failed to generate the xunit file: {}", e.getMessage());
         }
+    }
+
+    private static String generateName(final Test test) {
+        return test.getTestName() + "-" + test.getTestNumber() + "-" + test.getTestIteration();
     }
 }
