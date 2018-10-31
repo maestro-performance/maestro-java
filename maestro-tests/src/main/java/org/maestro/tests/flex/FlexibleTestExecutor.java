@@ -30,6 +30,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -93,9 +94,6 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
 
             testStart(test);
 
-            PeerSet peerSet = distributionStrategy.distribute(getMaestro().getPeers());
-            long numPeers = peerSet.workers();
-
             logger.info("Applying the test profile");
             testProfile.apply(maestro, distributionStrategy);
 
@@ -106,8 +104,8 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
             long timeout = getTimeout();
             logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
             List<? extends MaestroNote> results = getMaestro()
-                    .waitForNotifications((int) numPeers)
-                    .get();
+                    .waitForNotifications(1)
+                    .get(timeout, TimeUnit.SECONDS);
 
             XUnitGenerator.generate(test, results, 0);
 

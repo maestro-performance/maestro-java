@@ -20,10 +20,13 @@ import org.maestro.client.Maestro;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.common.Role;
 import org.maestro.common.agent.Source;
+import org.maestro.common.duration.TestDuration;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestProfile;
 import org.maestro.tests.cluster.DistributionStrategy;
 import org.maestro.tests.support.TestEndpointResolver;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import static org.maestro.client.Maestro.set;
 
@@ -31,9 +34,11 @@ import static org.maestro.client.Maestro.set;
  * A simple but flexible single point test profile for usage w/ 3rd party tools
  */
 public class FlexibleTestProfile extends AbstractTestProfile {
+    private static final Logger logger = LoggerFactory.getLogger(FlexibleTestProfile.class);
     private String sourceURL;
     private String branch;
     private String brokerURL;
+    private TestDuration testDuration;
 
     @SuppressWarnings("unused")
     void setSourceURL(final String sourceURL) {
@@ -48,12 +53,14 @@ public class FlexibleTestProfile extends AbstractTestProfile {
         this.branch = branch;
     }
 
-    // NO-OP for this
-    @Override
-    public long getEstimatedCompletionTime() {
-        return 0;
+    public void setDuration(TestDuration testDuration) {
+        this.testDuration = testDuration;
     }
 
+    @Override
+    public long getEstimatedCompletionTime() {
+        return testDuration.getNumericDuration();
+    }
 
     @Override
     public void setTestEndpointResolver(TestEndpointResolver endPointResolver) {
@@ -62,8 +69,10 @@ public class FlexibleTestProfile extends AbstractTestProfile {
 
     @Override
     public void apply(final Maestro maestro, final DistributionStrategy distributionStrategy) throws MaestroException {
+        logger.debug("Setting the broker");
         set(maestro::setBroker, MaestroTopics.peerTopic(Role.AGENT), this.brokerURL);
 
+        logger.debug("Sending the source request");
         set(maestro::sourceRequest, MaestroTopics.peerTopic(Role.AGENT), new Source(sourceURL, branch), 30);
     }
 }

@@ -24,6 +24,7 @@ import org.maestro.common.Role
 import org.maestro.common.agent.UserCommandData
 import org.maestro.common.client.notes.Test
 import org.maestro.common.client.notes.TestDetails
+import org.maestro.common.duration.TestDurationBuilder
 import org.maestro.tests.AbstractTestProfile
 
 import org.maestro.tests.cluster.NonAssigningStrategy
@@ -48,8 +49,6 @@ class Executor extends FlexibleTestExecutor {
         UserCommandData userCommandData = new UserCommandData(0, testParams);
 
         maestro.userCommand(MaestroTopics.peerTopic(Role.AGENT), userCommandData)
-        // Wait for up to 2 minutes for the test to complete
-        Thread.sleep(60*1000*2)
     }
 
     @Override
@@ -90,6 +89,13 @@ if (sourceURL == null) {
     System.exit(1)
 }
 
+duration = System.getenv("TEST_DURATION")
+if (duration == null) {
+    println "Error: the test duration was not given"
+
+    System.exit(1)
+}
+
 logLevel = System.getenv("LOG_LEVEL")
 LogConfigurator.configureLogLevel(logLevel)
 
@@ -111,6 +117,7 @@ Executor executor = new Executor(maestro, testProfile)
 description = System.getenv("TEST_DESCRIPTION")
 comments = System.getenv("TEST_COMMENTS")
 
+testProfile.setDuration(TestDurationBuilder.build(duration));
 
 int ret = 0
 
