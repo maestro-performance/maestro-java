@@ -26,9 +26,11 @@ import org.maestro.common.client.notes.Test;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.cluster.DistributionStrategy;
+import org.maestro.tests.xunit.XUnitGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.BiConsumer;
@@ -81,6 +83,8 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
                 List<? extends MaestroNote> results = getMaestro()
                         .waitForNotifications((int) numPeers)
                         .get(timeout, TimeUnit.SECONDS);
+
+                XUnitGenerator.generate(test, results, 0);
 
                 long failed = results.stream()
                         .filter(this::isTestFailed)

@@ -26,6 +26,7 @@ import org.maestro.common.client.notes.TestDetails;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.cluster.DistributionStrategy;
+import org.maestro.tests.xunit.XUnitGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +93,8 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                 List<? extends MaestroNote> results = getMaestro()
                         .waitForNotifications((int) numPeers)
                         .get(timeout, TimeUnit.SECONDS);
+
+                XUnitGenerator.generate(test, results, 0);
 
                 long failed = results.stream()
                         .filter(this::isTestFailed)

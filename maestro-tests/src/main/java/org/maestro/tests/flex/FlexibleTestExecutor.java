@@ -25,6 +25,7 @@ import org.maestro.common.client.notes.Test;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.AbstractTestProfile;
 import org.maestro.tests.cluster.DistributionStrategy;
+import org.maestro.tests.xunit.XUnitGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -107,6 +108,8 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
             List<? extends MaestroNote> results = getMaestro()
                     .waitForNotifications((int) numPeers)
                     .get();
+
+            XUnitGenerator.generate(test, results, 0);
 
             logger.info("Processing the notifications");
             long failed = results.stream()
