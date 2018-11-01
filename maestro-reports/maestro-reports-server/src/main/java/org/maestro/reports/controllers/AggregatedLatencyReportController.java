@@ -24,6 +24,8 @@ import org.maestro.reports.dto.Report;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Objects;
+
 public class AggregatedLatencyReportController extends CommonLatencyReportController{
     private static final Logger logger = LoggerFactory.getLogger(AggregatedLatencyReportController.class);
 
@@ -32,8 +34,11 @@ public class AggregatedLatencyReportController extends CommonLatencyReportContro
     @Override
     public void handle(Context context) {
         try {
-            int testId = Integer.parseInt(context.param("id"));
-            int testNumber = Integer.parseInt(context.param("number"));
+            int testId = Integer.parseInt(
+                    Objects.requireNonNull(context.param("id"), "The ID must be provided"));
+
+            int testNumber = Integer.parseInt(
+                    Objects.requireNonNull(context.param("number"), "The test number must be provided"));
 
             Report report = reportDao.fetchAggregated(testId, testNumber);
 

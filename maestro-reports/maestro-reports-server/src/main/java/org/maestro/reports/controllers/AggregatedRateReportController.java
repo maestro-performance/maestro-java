@@ -23,14 +23,20 @@ import org.maestro.reports.dao.ReportDao;
 import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.maestro.reports.dto.Report;
 
+import java.util.Objects;
+
 public class AggregatedRateReportController extends CommonRateReportController {
     private final ReportDao reportDao = new ReportDao();
 
     @Override
     public void handle(Context context) {
         try {
-            int testId = Integer.parseInt(context.param("id"));
-            int testNumber = Integer.parseInt(context.param("number"));
+            int testId = Integer.parseInt(
+                    Objects.requireNonNull(context.param("id"), "The ID must be provided"));
+
+            int testNumber = Integer.parseInt(
+                    Objects.requireNonNull(context.param("number"), "The test number must be provided"));
+
             String hostRole = context.param("role");
 
             Report report = reportDao.fetchAggregated(testId, testNumber);

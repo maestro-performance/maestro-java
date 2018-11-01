@@ -181,10 +181,6 @@ public abstract class AbstractHandler implements AgentEndpoint {
     protected static File getTestLogDir() {
         File baseLogDir = getBaseLogDir();
 
-        if (baseLogDir == null) {
-            return null;
-        }
-
         return TestLogUtils.nextTestLogDir(baseLogDir);
     }
 

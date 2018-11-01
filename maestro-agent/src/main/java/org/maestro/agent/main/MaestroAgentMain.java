@@ -95,9 +95,9 @@ public class MaestroAgentMain {
 
             help(options, -1);
         }
-        System.setProperty("maestro.log.dir", logDirVal);
 
         assert logDirVal != null;
+        System.setProperty("maestro.log.dir", logDirVal);
     }
 
     /**

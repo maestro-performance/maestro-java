@@ -57,6 +57,7 @@ public class ExecAction extends Action {
             help(options, 1);
         }
 
+        assert fileStr != null;
         script = new File(fileStr);
     }
 
