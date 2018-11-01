@@ -53,7 +53,7 @@ public class LogResponseTest {
             super.setTotal(total);
         }
 
-        void setTestChunkSize(int testChunkSize) {
+        private void setTestChunkSize(int testChunkSize) {
             this.testChunkSize = testChunkSize;
         }
 
@@ -67,7 +67,7 @@ public class LogResponseTest {
             return super.getChunkSize(testChunkSize);
         }
 
-        String calculateHash() throws IOException {
+        private String calculateHash() throws IOException {
             try (InputStream inputStream = this.getClass().getResourceAsStream("/logresponse/" + getFileName())) {
                 Sha1Digest digest = new Sha1Digest();
 
