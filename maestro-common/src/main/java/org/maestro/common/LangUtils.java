@@ -31,8 +31,8 @@ public class LangUtils {
         if (object != null) {
             try {
                 object.close();
-            } catch (IOException e) {
-
+            } catch (IOException ignored) {
+                // Ignored on purpose.
             }
         }
     }
