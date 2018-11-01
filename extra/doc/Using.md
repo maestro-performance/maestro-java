@@ -31,7 +31,6 @@ Overall, the base set of variables for the tests are:
 | `LOG_LEVEL` | `null` | Optional log level (see below) |
 | `MANAGEMENT_INTERFACE` | `null` | The URL for the [management interface](Inspectors.md) |
 | `INSPECTOR_NAME` | `null` | The name of the [inspector](Inspectors.md) |
-| `DOWNLOADER_NAME` | `null` | The report download method (see below) |
 
 
 **Multipoint Test Variables**: 
@@ -46,7 +45,6 @@ Overall, the base set of variables for the tests are:
 | `LOG_LEVEL` | `null` | Optional log level (see below) |
 | `MANAGEMENT_INTERFACE` | `null` | The URL for the [management interface](Inspectors.md) |
 | `INSPECTOR_NAME` | `null` | The name of the [inspector](Inspectors.md) |
-| `DOWNLOADER_NAME` | `null` | The report download method (see below) |
 | `DISTRIBUTION_STRATEGY` | `balanced` | Determines how to distribute the worker pool (see below) |
 | `ENDPOINT_RESOLVER_NAME` | `role` | Determines how to distribute the test endpoints among the worker pool (see below) |
 
@@ -81,24 +79,6 @@ Log level can be adjusted by setting the LOG_LEVEL variable to one of the follow
 * warn
 
 The default log level is "info".
-
-**Report Downloaders**
-
-After the test is complete, Maestro Client downloads the files for processing them and creating the reports. The files 
-
-* Pooled: in this method, the client requests the peers on the test cluster to push the logs into the Maestro broker 
-into a specific topic for logs. Then, the client downloads those files concurrently. 
-* Broker method via MQTT: in this method, the client requests the peers on the test cluster to push the logs into the 
-Maestro broker into a specific topic for logs. Then, the client downloads those files one at a time. 
-
-Configuring the Report Download Method
-
-* Broker method via MQTT
-  * Used whenever the environment variable DOWNLOADER_NAME is set to "broker"
-  * Optional client configuration is available on ```maestro-cli.properties```.
-  * Optional worker configuration is available on ```maestro-worker.properties```.
-* Pooled
-  * Used whenever the environment variable DOWNLOADER_NAME is set to "pooled-broker"
 
 **Distribution Strategy**
 

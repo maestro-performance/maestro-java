@@ -37,7 +37,6 @@ public class MaestroCliMain {
         System.out.println("Usage: maestro-cli <action>\n");
 
         System.out.println("Actions:");
-        System.out.println("   download");
         System.out.println("   report");
         System.out.println("   extension-point");
         System.out.println("   maestro");
@@ -83,10 +82,6 @@ public class MaestroCliMain {
             }
             case "maestro": {
                 action = new MaestroAction(newArgs);
-                break;
-            }
-            case "download": {
-                action = new DownloadAction(newArgs);
                 break;
             }
             case "extension-point": {
