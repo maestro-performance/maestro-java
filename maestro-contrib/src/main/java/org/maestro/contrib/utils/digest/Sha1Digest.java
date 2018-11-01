@@ -55,7 +55,7 @@ public class Sha1Digest implements MessageDigest {
      * @see org.ssps.common.digest.MessageDigest#verify(java.lang.String)
      */
     public boolean verify(String source) throws IOException {
-        try (InputStream stream = new FileInputStream(source + "." + HASH_NAME);) {
+        try (InputStream stream = new FileInputStream(source + "." + HASH_NAME)) {
 
             final String digest = IOUtils.toString(stream, Charset.defaultCharset()).trim();
 

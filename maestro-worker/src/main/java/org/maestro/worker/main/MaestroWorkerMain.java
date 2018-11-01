@@ -94,6 +94,8 @@ public class MaestroWorkerMain {
 
             help(options, -1);
         }
+
+        assert logDirVal != null;
         logDir = new File(logDirVal);
     }
 

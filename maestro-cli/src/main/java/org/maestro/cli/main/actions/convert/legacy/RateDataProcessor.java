@@ -62,11 +62,7 @@ public class RateDataProcessor implements RecordProcessor {
                 assert i>=0;
                 rateRecord.setCount(i);
             }
-        } catch (ParseException e) {
-            logger.warn("Error parsing record with values ata {}: {}", ata, e.getMessage());
-            errorCount++;
-        }
-        catch (Exception e) {
+        } catch (Exception e) {
             logger.warn("Error parsing record with values ata {}: {}", ata, e.getMessage());
             errorCount++;
         }

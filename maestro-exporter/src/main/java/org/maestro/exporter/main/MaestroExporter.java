@@ -130,8 +130,7 @@ public class MaestroExporter {
         try {
             server = new HTTPServer(port);
 
-            boolean running = true;
-            while (running) {
+            while (true) {
                 logger.debug("Sending requests");
                 CompletableFuture<List<? extends MaestroNote>> statsFutures = maestro.statsRequest();
                 CompletableFuture<List<? extends MaestroNote>> pingFutures = maestro.pingRequest();

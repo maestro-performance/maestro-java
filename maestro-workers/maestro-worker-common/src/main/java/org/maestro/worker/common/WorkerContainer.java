@@ -140,7 +140,7 @@ public final class WorkerContainer {
      * Stops the workers on the container
      */
     private void stop(long watchDogTimeout) {
-        workers.forEach(w -> w.stop());
+        workers.forEach(MaestroWorker::stop);
 
         startTime = null;
 

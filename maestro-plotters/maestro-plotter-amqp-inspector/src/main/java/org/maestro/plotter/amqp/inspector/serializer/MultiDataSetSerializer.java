@@ -16,19 +16,14 @@
 
 package org.maestro.plotter.amqp.inspector.serializer;
 
-import org.apache.commons.compress.utils.Lists;
 import org.maestro.plotter.amqp.inspector.common.MultiDataSet;
-import org.maestro.plotter.amqp.inspector.routerlink.RouterLinkDataSet;
-import org.maestro.plotter.amqp.inspector.routerlink.RouterLinkReader;
 import org.maestro.plotter.common.readers.StreamReader;
 import org.maestro.plotter.common.serializer.MaestroSerializer;
-import org.maestro.plotter.common.serializer.SingleData;
 import org.maestro.plotter.common.statistics.Statistics;
 
 import java.io.File;
 import java.io.IOException;
 import java.util.Date;
-import java.util.List;
 import java.util.Map;
 
 

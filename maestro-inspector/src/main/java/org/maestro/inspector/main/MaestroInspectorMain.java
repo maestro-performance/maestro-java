@@ -96,6 +96,8 @@ public class MaestroInspectorMain {
 
             help(options, -1);
         }
+
+        assert logDirVal != null;
         logDir = new File(logDirVal);
     }
 

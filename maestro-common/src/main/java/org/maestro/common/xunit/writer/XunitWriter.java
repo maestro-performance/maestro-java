@@ -42,7 +42,7 @@ public class XunitWriter {
 
     public XunitWriter() {
         DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
-        DocumentBuilder db = null;
+        DocumentBuilder db;
         try {
             db = dbf.newDocumentBuilder();
         } catch (ParserConfigurationException e) {

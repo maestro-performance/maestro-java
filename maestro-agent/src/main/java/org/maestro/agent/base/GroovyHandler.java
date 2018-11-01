@@ -105,7 +105,7 @@ public class GroovyHandler implements AgentHandler {
     }
 
     @Override
-    public void setInitialPath(final File initialPath) throws Exception {
+    public void setInitialPath(final File initialPath) {
         GroovyCallbackWalker walker = new GroovyCallbackWalker();
         logger.debug("Processing {}", initialPath.getAbsolutePath());
 

@@ -68,6 +68,7 @@ public class ConvertAction extends Action {
             help(options, 1);
         }
 
+        assert fileStr != null;
         input = new File(fileStr);
 
         keep = cmdLine.hasOption("keep");

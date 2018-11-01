@@ -19,7 +19,6 @@ package org.maestro.common.test.properties;
 
 import org.maestro.common.test.properties.annotations.PropertyConsumer;
 import org.maestro.common.test.properties.annotations.PropertyName;
-import org.maestro.common.test.properties.annotations.PropertyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,10 +27,8 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
-import java.util.Map;
 import java.util.Properties;
 
-import static org.maestro.common.test.properties.PropertyUtils.canHandle;
 import static org.maestro.common.test.properties.PropertyUtils.getPropertyName;
 
 public class PropertyReader {
