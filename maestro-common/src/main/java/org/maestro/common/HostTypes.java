@@ -52,10 +52,7 @@ public class HostTypes {
             return false;
         }
 
-        if (str.equals("sender") || str.equals("receiver")) {
-            return true;
-        }
+        return str.equals("sender") || str.equals("receiver");
 
-        return false;
     }
 }
