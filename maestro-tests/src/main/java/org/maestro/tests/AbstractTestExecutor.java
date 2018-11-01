@@ -21,6 +21,7 @@ import org.maestro.client.Maestro;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerEndpoint;
 import org.maestro.client.notes.*;
+import org.maestro.client.notes.InternalError;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Role;
 import org.maestro.common.client.exceptions.NotEnoughRepliesException;
@@ -211,8 +212,16 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     protected boolean isTestFailed(final MaestroNote note) {
         if (note instanceof TestFailedNotification) {
-            TestFailedNotification testFailedNotification = (TestFailedNotification) note;
-            logger.error("Test failed on {}: {}", testFailedNotification.getPeerInfo().prettyName(), testFailedNotification.getMessage());
+            final TestFailedNotification testFailedNotification = (TestFailedNotification) note;
+            logger.error("Test failed on {}: {}", testFailedNotification.getPeerInfo().prettyName(),
+                    testFailedNotification.getMessage());
+            return true;
+        }
+
+        if (note instanceof InternalError) {
+            final InternalError internalError = (InternalError) note;
+            logger.error("Test error occurred on {}: {}", internalError.getPeerInfo().prettyName(),
+                    internalError.getMessage());
             return true;
         }
 
