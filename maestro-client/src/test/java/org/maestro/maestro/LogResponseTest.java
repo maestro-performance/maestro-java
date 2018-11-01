@@ -29,8 +29,7 @@ import org.maestro.contrib.utils.digest.Sha1Digest;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class LogResponseTest {
     private static final PeerInfo peerInfo = new WorkerPeer(Role.RECEIVER, "unittest", "localhost",
@@ -102,9 +101,8 @@ public class LogResponseTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(logResponse));
 
         assertTrue(parsed instanceof LogResponse);
-        assertTrue("Parsed object is not a log response",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_DATA);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_LOG);
+        assertSame("Parsed object is not a log response", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_DATA);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_LOG);
 
         final String expectedHash = "06dbd6b9a75417b7ab5aef1ad58b03c30a43dd83";
 
@@ -142,9 +140,8 @@ public class LogResponseTest {
 
         assertTrue(note instanceof LogResponse);
 
-        assertTrue("Chunk1 object is not a log response",
-                note.getNoteType() == MaestroNoteType.MAESTRO_TYPE_DATA);
-        assertTrue(note.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_LOG);
+        assertSame("Chunk1 object is not a log response", note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_DATA);
+        assertSame(note.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_LOG);
 
         final String expectedHash = "f1b27e5c5ede29e941e3d5fb10c3ef275a0f63a8";
 

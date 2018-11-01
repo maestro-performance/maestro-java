@@ -26,8 +26,7 @@ import org.maestro.client.notes.InternalError;
 import org.maestro.common.Role;
 import org.maestro.common.client.notes.*;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class MaestroProtocolTest {
     private final PeerInfo peerInfo = new WorkerPeer(Role.OTHER, "unittest", "localhost",
@@ -43,9 +42,8 @@ public class MaestroProtocolTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(new PingRequest()));
 
         assertTrue(parsed instanceof PingRequest);
-        assertTrue("Parsed object is not a ping request",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_PING);
+        assertSame("Parsed object is not a ping request", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_PING);
 
         assertTrue(((PingRequest) parsed).getSec() != 0);
         assertTrue(((PingRequest) parsed).getUsec() != 0);
@@ -62,9 +60,8 @@ public class MaestroProtocolTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(okResponse));
 
         assertTrue(parsed instanceof OkResponse);
-        assertTrue("Parsed object is not a OK response",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_OK);
+        assertSame("Parsed object is not a OK response", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_OK);
     }
 
 
@@ -83,9 +80,8 @@ public class MaestroProtocolTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(tsn));
 
         assertTrue(parsed instanceof TestSuccessfulNotification);
-        assertTrue("Parsed object is not a Test Successful Notification",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_NOTIFY_SUCCESS);
+        assertSame("Parsed object is not a Test Successful Notification", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_SUCCESS);
     }
 
     @Test
@@ -103,9 +99,8 @@ public class MaestroProtocolTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(tsn));
 
         assertTrue(parsed instanceof TestFailedNotification);
-        assertTrue("Parsed object is not a Test failed Notification",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_NOTIFY_FAIL);
+        assertSame("Parsed object is not a Test failed Notification", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_FAIL);
     }
 
 
@@ -117,9 +112,8 @@ public class MaestroProtocolTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(getRequest));
 
         assertTrue(parsed instanceof GetRequest);
-        assertTrue("Parsed object is not a GET request",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_GET);
+        assertSame("Parsed object is not a GET request", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_GET);
     }
 
     @Test
@@ -137,9 +131,8 @@ public class MaestroProtocolTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(getResponse));
 
         assertTrue(parsed instanceof GetResponse);
-        assertTrue("Parsed object is not a GET response",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_GET);
+        assertSame("Parsed object is not a GET response", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_GET);
         assertEquals("URLs do not match", url, ((GetResponse)parsed).getValue());
     }
 
@@ -150,9 +143,8 @@ public class MaestroProtocolTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(statsRequest));
 
         assertTrue(parsed instanceof StatsRequest);
-        assertTrue("Parsed object is not a STATS Request",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_STATS);
+        assertSame("Parsed object is not a STATS Request", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_STATS);
     }
 
 
@@ -173,9 +165,8 @@ public class MaestroProtocolTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(statsResponse));
 
         assertTrue(parsed instanceof StatsResponse);
-        assertTrue("Parsed object is not a STATS Request",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_STATS);
+        assertSame("Parsed object is not a STATS Request", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_STATS);
         assertEquals("unittest", ((StatsResponse) parsed).getPeerInfo().peerName());
         assertEquals(1.123, ((StatsResponse) parsed).getLatency(), 0.0);
         assertEquals("1521027548", ((StatsResponse) parsed).getTimestamp());
@@ -193,9 +184,8 @@ public class MaestroProtocolTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
 
         assertTrue(parsed instanceof DrainCompleteNotification);
-        assertTrue("Parsed object is not a Drain Complete Notification",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_NOTIFY_DRAIN_COMPLETE);
+        assertSame("Parsed object is not a Drain Complete Notification", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_DRAIN_COMPLETE);
     }
 
     @Test
@@ -208,9 +198,8 @@ public class MaestroProtocolTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
 
         assertTrue(parsed instanceof InternalError);
-        assertTrue("Parsed object is not a Drain Complete Notification",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_INTERNAL_ERROR);
+        assertSame("Parsed object is not a Drain Complete Notification", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_RESPONSE);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_INTERNAL_ERROR);
     }
 
 
@@ -221,10 +210,9 @@ public class MaestroProtocolTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
 
         assertTrue(parsed instanceof StartWorker);
-        assertTrue("Parsed object is not a Start Receiver message",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_START_WORKER);
-        assertTrue(((StartWorker) parsed).getOptions().getWorkerName().equals("FakeWorker"));
+        assertSame("Parsed object is not a Start Receiver message", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_START_WORKER);
+        assertEquals("FakeWorker", ((StartWorker) parsed).getOptions().getWorkerName());
     }
 
     @Test
@@ -234,9 +222,8 @@ public class MaestroProtocolTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
 
         assertTrue(parsed instanceof StartInspector);
-        assertTrue("Parsed object is not a Start Inspector message",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_START_INSPECTOR);
+        assertSame("Parsed object is not a Start Inspector message", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_START_INSPECTOR);
         assertEquals("Inspector name don't match", "testInspector",
                 ((StartInspector) parsed).getPayload());
     }
@@ -248,9 +235,8 @@ public class MaestroProtocolTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
 
         assertTrue(parsed instanceof StopWorker);
-        assertTrue("Parsed object is not a Stop Worker message",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_STOP_WORKER);
+        assertSame("Parsed object is not a Stop Worker message", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_STOP_WORKER);
     }
 
     @Test
@@ -260,9 +246,8 @@ public class MaestroProtocolTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(note));
 
         assertTrue(parsed instanceof StopInspector);
-        assertTrue("Parsed object is not a Start Inspector message",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_REQUEST);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_STOP_INSPECTOR);
+        assertSame("Parsed object is not a Start Inspector message", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_REQUEST);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_STOP_INSPECTOR);
     }
 
 }
