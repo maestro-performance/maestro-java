@@ -23,6 +23,7 @@ import org.apache.commons.codec.digest.DigestUtils;
 import org.apache.commons.io.IOUtils;
 
 import java.io.*;
+import java.nio.charset.Charset;
 
 public class Sha1Digest implements MessageDigest {
     private static final Logger logger = LoggerFactory.getLogger(Sha1Digest.class);
@@ -31,19 +32,12 @@ public class Sha1Digest implements MessageDigest {
 
     public String calculate(final InputStream inputStream) throws IOException {
         logger.trace("Calculating message digest");
-        return DigestUtils.shaHex(inputStream);
+        return DigestUtils.sha1Hex(inputStream);
     }
 
     public String calculate(final File file) throws IOException {
-        InputStream fileInputStream = null;
-
-        try {
-            fileInputStream = new BufferedInputStream(new FileInputStream(file));
-
+        try (InputStream fileInputStream = new BufferedInputStream(new FileInputStream(file))){
             return calculate(fileInputStream);
-        }
-        finally {
-            IOUtils.closeQuietly(fileInputStream);
         }
     }
 
@@ -61,18 +55,11 @@ public class Sha1Digest implements MessageDigest {
      * @see org.ssps.common.digest.MessageDigest#verify(java.lang.String)
      */
     public boolean verify(String source) throws IOException {
-        InputStream stream = null;
+        try (InputStream stream = new FileInputStream(source + "." + HASH_NAME);) {
 
-        try {
-            stream = new FileInputStream(source + "." + HASH_NAME);
+            final String digest = IOUtils.toString(stream, Charset.defaultCharset()).trim();
 
-            String digest = IOUtils.toString(stream);
-
-            digest = digest.trim();
             return verify(source, digest);
-        }
-        finally {
-            IOUtils.closeQuietly(stream);
         }
     }
 
@@ -94,32 +81,26 @@ public class Sha1Digest implements MessageDigest {
      * @see org.ssps.common.digest.MessageDigest#save(java.lang.String)
      */
     public void save(String source) throws IOException {
-        String digest;
-        FileOutputStream output = null;
+        final String digest = calculate(source);
 
-        try {
-            digest = calculate(source);
+        final File file = new File(source + "." + HASH_NAME);
 
-            File file = new File(source + "." + HASH_NAME);
-
-            if (file.exists()) {
-                if (!file.delete()) {
-                    throw new IOException("Unable to delete an existent file: "
-                            + file.getPath());
-                }
+        if (file.exists()) {
+            if (!file.delete()) {
+                throw new IOException("Unable to delete an existent file: "
+                        + file.getPath());
             }
-            else {
-                if (!file.createNewFile()) {
-                    throw new IOException("Unable to create a new file: "
-                            + file.getPath());
-                }
+        }
+        else {
+            if (!file.createNewFile()) {
+                throw new IOException("Unable to create a new file: "
+                        + file.getPath());
             }
+        }
 
-            output = new FileOutputStream(file);
-            IOUtils.write(digest, output);
+        try (FileOutputStream output = new FileOutputStream(file)) {
+            IOUtils.write(digest, output, Charset.defaultCharset());
         }
-        finally {
-            IOUtils.closeQuietly(output);
-        }
+
     }
 }

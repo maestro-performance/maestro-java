@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -50,7 +51,7 @@ public class URLQuery {
      * @param uri a URI object
      */
     public URLQuery(URI uri) {
-         params = URLEncodedUtils.parse(uri, "UTF-8");
+         params = URLEncodedUtils.parse(uri, Charset.defaultCharset());
 
         for (NameValuePair param : params) {
             logger.trace("{}: {}", param.getName(), param.getValue());
