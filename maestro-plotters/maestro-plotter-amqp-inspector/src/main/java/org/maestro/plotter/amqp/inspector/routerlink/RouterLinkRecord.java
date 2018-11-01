@@ -135,12 +135,12 @@ public class RouterLinkRecord implements Comparable<RouterLinkRecord>, InstantRe
     }
 
     @Override
-    public int compareTo(RouterLinkRecord routerLinkRecord) {
+    public int compareTo(final RouterLinkRecord routerLinkRecord) {
         return this.getTimestamp().compareTo(routerLinkRecord.getTimestamp());
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         RouterLinkRecord that = (RouterLinkRecord) o;

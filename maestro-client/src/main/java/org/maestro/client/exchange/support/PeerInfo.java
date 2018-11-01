@@ -35,7 +35,7 @@ public interface PeerInfo extends Comparable<PeerInfo> {
     }
 
     @Override
-    default int compareTo(PeerInfo peerInfo) {
+    default int compareTo(final PeerInfo peerInfo) {
         if (peerInfo == null) {
             return 1;
         }
