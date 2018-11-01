@@ -23,7 +23,7 @@ class HaltHandler extends AbstractHandler {
 
     @Override
     Object handle() {
-        MaestroReceiverClient receiverClient = (MaestroReceiverClient) this.getClient();
+        MaestroReceiverClient receiverClient = (MaestroReceiverClient) this.getClient()
         receiverClient.replyOk(getNote())
         return null
     }
