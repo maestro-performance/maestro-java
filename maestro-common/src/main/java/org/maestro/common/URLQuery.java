@@ -148,4 +148,13 @@ public class URLQuery {
 
         return ret;
     }
+
+
+    /**
+     * Return the number of options that were set on the query part of the URL
+     * @return the number of options
+     */
+    public int count() {
+        return params.size();
+    }
 }
