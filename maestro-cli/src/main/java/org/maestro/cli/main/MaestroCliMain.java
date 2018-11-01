@@ -76,10 +76,6 @@ public class MaestroCliMain {
 
         Action action;
         switch (first) {
-            case "report": {
-                action = new ReportAction(newArgs);
-                break;
-            }
             case "maestro": {
                 action = new MaestroAction(newArgs);
                 break;
