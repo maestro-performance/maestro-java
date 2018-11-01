@@ -111,8 +111,8 @@ public abstract class AbstractHandler implements AgentEndpoint {
 
     /**
      * Adds the shell prefix for command execution
-     * @param command
-     * @return
+     * @param command the command to execute
+     * @return the command with the shell prefix
      */
     protected static String[] addShellPrefix(final String command) {
         return new String[] {"sh", "-c", command};
@@ -123,7 +123,7 @@ public abstract class AbstractHandler implements AgentEndpoint {
      * Execute a command using the shell
      * @param command the command to execute
      * @return the process exit code
-     * @throws IOException
+     * @throws IOException in case of I/O errors
      */
     protected static int executeOnShell(final String command) throws IOException {
         return executeOnShell(command, new File(System.getProperty("user.dir")));
@@ -135,7 +135,7 @@ public abstract class AbstractHandler implements AgentEndpoint {
      * @param command the command to execute
      * @param workingDir the working directory
      * @return the process exit code
-     * @throws IOException
+     * @throws IOException in case of I/O errors
      */
     protected static int executeOnShell(final String command, final File workingDir) throws IOException {
         logger.debug("Executing {}", command);
@@ -165,7 +165,7 @@ public abstract class AbstractHandler implements AgentEndpoint {
     /**
      * Returns whether the test URL has parameters
      * @return true if it has parameters or false otherwise
-     * @throws URISyntaxException
+     * @throws URISyntaxException if the URI syntax is invalid
      */
     protected boolean hasParams() throws URISyntaxException {
         URLQuery urlQuery = new URLQuery(workerOptions.getBrokerURL());

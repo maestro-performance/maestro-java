@@ -39,8 +39,8 @@ public class DefaultJolokiaParser {
     /**
      * Parse a jolokia property
      * @param converter the jolokia converter to use
-     * @param key
-     * @param object
+     * @param key key
+     * @param object value
      */
     void parse(final JolokiaConverter converter, final Object key, final Object object) {
         if (logger.isTraceEnabled()) {
@@ -70,9 +70,9 @@ public class DefaultJolokiaParser {
 
     /**
      * Parse a jolokia property
-     * @param converter
-     * @param key
-     * @param object
+     * @param converter the converter to use
+     * @param key key
+     * @param object value
      */
     void parseQueueInfo(final QueueInfoConverter converter, final Object key, final Object object) {
         if (logger.isTraceEnabled()) {

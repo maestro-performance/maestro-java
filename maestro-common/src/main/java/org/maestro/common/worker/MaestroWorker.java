@@ -35,7 +35,8 @@ public interface MaestroWorker extends Runnable, TestDuration.TestProgress {
 
     /**
      * Worker initialization
-     * @param startSignal
+     * @param startSignal a count down latch to be used when the code is ready to start
+     * @param endSignal a count down latch to be used when the code is ready to terminate
      */
     void setupBarriers(CountDownLatch startSignal, CountDownLatch endSignal);
 
