@@ -39,7 +39,7 @@ public class TestPropertiesController implements Handler {
     }
 
     @Override
-    public void handle(Context context) throws Exception {
+    public void handle(Context context) {
         try {
             int id = Integer.parseInt(context.param("test"));
             int number = Integer.parseInt(context.param("number"));

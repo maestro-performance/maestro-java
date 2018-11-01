@@ -66,10 +66,9 @@ public class GroovyCallbackWalker extends DirectoryWalker<File> {
     /**
      * The starting directory
      * @param file A file object pointing to the directory
-     * @throws IOException for all sorts of I/O errors
      */
     @SuppressWarnings("unchecked")
-    public List<File> load(final File file) throws IOException {
+    public List<File> load(final File file) {
         final List<File> fileList = new LinkedList<>();
         logger.debug("Loading classes from directory {}", file.getPath());
 

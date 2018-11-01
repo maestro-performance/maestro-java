@@ -32,7 +32,7 @@ public class LatencySerializerHandler implements HistogramHandler {
     }
 
     @Override
-    public void handle(Histogram eh, File histogramFile) throws Exception {
+    public void handle(Histogram eh, File histogramFile) {
         Statistics statistics = new Statistics();
 
         statistics.setLatencyStartTS(eh.getStartTimeStamp());

@@ -30,7 +30,7 @@ public class LatencyStatisticsReportController extends CommonLatencyStatisticsRe
     private final ReportDao reportDao = new ReportDao();
 
     @Override
-    public void handle(Context context) throws Exception {
+    public void handle(Context context) {
         try {
             int id = Integer.parseInt(context.param("id"));
 

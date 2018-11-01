@@ -28,7 +28,7 @@ public class SutNodeInfoController implements Handler {
     private final SutNodeInfoDao dao = new SutNodeInfoDao();
 
     @Override
-    public void handle(Context context) throws Exception {
+    public void handle(Context context) {
         try {
             int testId = Integer.parseInt(context.param("test"));
 

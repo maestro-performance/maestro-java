@@ -28,7 +28,7 @@ public class AggregatedRateStatisticsReportController extends CommonRateReportCo
     private final ReportDao reportDao = new ReportDao();
 
     @Override
-    public void handle(Context context) throws Exception {
+    public void handle(Context context) {
         try {
             int testId = Integer.parseInt(context.param("id"));
             int testNumber = Integer.parseInt(context.param("number"));
