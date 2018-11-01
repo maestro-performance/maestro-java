@@ -23,7 +23,7 @@ import org.maestro.plotter.latency.common.HdrData;
 
 
 public class SmoothLatencySerializer extends LatencySerializer {
-    private double unitRate = 1.0;
+    private final double unitRate = 1.0;
 
     protected HdrData getHdrDataUnbounded(final Histogram histogram) {
         final HdrLogProcessorWrapper processorWrapper = new SmoothHdrLogProcessorWrapper(unitRate);

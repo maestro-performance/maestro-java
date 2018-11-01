@@ -34,8 +34,8 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     private static final Logger logger = LoggerFactory.getLogger(DefaultReportsCollector.class);
 
     private final File dataDir;
-    private Map<Test, ReportCollectorWorker> workerMap = new HashMap<>();
-    private Map<String, Test> testMap = new HashMap<>();
+    private final Map<Test, ReportCollectorWorker> workerMap = new HashMap<>();
+    private final Map<String, Test> testMap = new HashMap<>();
 
     public DefaultReportsCollector(final String maestroURL, final PeerInfo peerInfo, final File dataDir) {
         super(maestroURL, peerInfo);

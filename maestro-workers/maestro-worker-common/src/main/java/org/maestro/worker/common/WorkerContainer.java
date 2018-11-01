@@ -77,7 +77,7 @@ public final class WorkerContainer {
         }
 
         workerExecutorService = Executors.newFixedThreadPool(count, new ThreadFactory() {
-            AtomicInteger count = new AtomicInteger();
+            final AtomicInteger count = new AtomicInteger();
 
             @Override
             public Thread newThread(Runnable runnable) {

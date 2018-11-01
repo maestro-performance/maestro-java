@@ -32,7 +32,7 @@ import java.util.List;
  */
 public class MemoryAreasDataSerializer implements MaestroSerializer<List<MemoryData>> {
     private static final String dataName = "jvm-memory-areas";
-    private MemoryAreasReader reader = new MemoryAreasReader();
+    private final MemoryAreasReader reader = new MemoryAreasReader();
 
     private MemoryData transform(final String name, final MemoryAreasData mad) {
         MemoryData ret = new MemoryData();

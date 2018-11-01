@@ -29,7 +29,7 @@ import java.io.IOException;
  * @param <Y>
  */
 abstract class CommonMemoryDataSerializer<T extends CommonMemoryData<?>, Y extends ReportReader<T>> implements MaestroSerializer<MemoryData> {
-    private Y reader;
+    private final Y reader;
 
     CommonMemoryDataSerializer(Y reader) {
         this.reader = reader;

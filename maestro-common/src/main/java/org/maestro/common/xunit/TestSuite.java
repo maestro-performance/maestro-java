@@ -23,7 +23,7 @@ import java.util.List;
 public class TestSuite {
     private static final String name = "Maestro";
 
-    private List<TestCase> testCaseList = new LinkedList<>();
+    private final List<TestCase> testCaseList = new LinkedList<>();
     private String id;
     private int tests;
 

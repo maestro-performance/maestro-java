@@ -36,7 +36,7 @@ import java.util.Map;
 public class ConnectionsDataSerializer implements MaestroSerializer<SingleData<ConnectionsData>> {
     private static final String dataName = "connections";
 
-    private ConnectionsReader reader = new ConnectionsReader();
+    private final ConnectionsReader reader = new ConnectionsReader();
 
     @Override
     public SingleData<ConnectionsData> serialize(File file) throws IOException {

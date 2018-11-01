@@ -38,7 +38,7 @@ import java.util.Map;
 public class MultiDataSetSerializer<Y extends MultiDataSet, T extends StreamReader<Y>> implements MaestroSerializer<Map<String, Map<Date, Statistics>>> {
     private final String dataName;
 
-    private T reader;
+    private final T reader;
 
     protected MultiDataSetSerializer(final T reader, final String dataName) {
         this.reader = reader;

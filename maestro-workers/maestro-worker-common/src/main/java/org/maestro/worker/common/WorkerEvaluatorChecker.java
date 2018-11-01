@@ -32,7 +32,7 @@ public class WorkerEvaluatorChecker {
     private static final Logger logger = LoggerFactory.getLogger(WorkerEvaluatorChecker.class);
     private final List<? extends MaestroWorker> workers;
     private final Evaluator<?> evaluator;
-    private ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
+    private final ScheduledExecutorService executorService = Executors.newScheduledThreadPool(1);
 
     /**
      * Constructor

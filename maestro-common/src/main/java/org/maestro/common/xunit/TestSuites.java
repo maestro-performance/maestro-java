@@ -21,8 +21,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 public class TestSuites {
-    private List<TestSuite> testSuiteList = new LinkedList<>();
-    private Properties properties = new Properties();
+    private final List<TestSuite> testSuiteList = new LinkedList<>();
+    private final Properties properties = new Properties();
 
     public List<TestSuite> getTestSuiteList() {
         return testSuiteList;

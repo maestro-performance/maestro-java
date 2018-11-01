@@ -228,7 +228,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         return false;
     }
 
-    protected boolean isFailed(MaestroNote note) {
+    protected boolean isFailed(final MaestroNote note) {
         boolean success = true;
 
         if (note instanceof DrainCompleteNotification) {

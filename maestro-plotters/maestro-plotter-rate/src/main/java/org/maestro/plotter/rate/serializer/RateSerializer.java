@@ -27,7 +27,7 @@ import java.io.IOException;
 public class RateSerializer implements MaestroSerializer<SingleData<Long>> {
     private static final String dataName = "rate";
 
-    private RateDataReader rateDataReader = new RateDataReader();
+    private final RateDataReader rateDataReader = new RateDataReader();
 
     @Override
     public String name() {

@@ -24,7 +24,7 @@ import org.maestro.plotter.latency.properties.HistogramHandler;
 import java.io.File;
 
 public class LatencySerializerHandler implements HistogramHandler {
-    private double unitRatio = 1.0;
+    private final double unitRatio = 1.0;
     private final Latency latency;
 
     public LatencySerializerHandler(Latency latency) {

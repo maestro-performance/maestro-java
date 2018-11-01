@@ -29,7 +29,7 @@ public enum ErrorCode {
      */
     TRY_AGAIN(10);
 
-    private int code;
+    private final int code;
 
     ErrorCode(int code) {
         this.code = code;

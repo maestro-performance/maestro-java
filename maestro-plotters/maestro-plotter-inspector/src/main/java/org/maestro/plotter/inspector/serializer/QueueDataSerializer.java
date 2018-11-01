@@ -36,7 +36,7 @@ import java.util.Map;
 public class QueueDataSerializer implements MaestroSerializer<SingleData<Statistics>> {
     private static final String dataName = "queues";
 
-    private QueueReader reader = new QueueReader();
+    private final QueueReader reader = new QueueReader();
 
     @Override
     public SingleData<Statistics> serialize(File file) throws IOException {
