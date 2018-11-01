@@ -21,6 +21,8 @@ import org.maestro.common.agent.AgentEndpoint;
 import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;
+import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerOptions;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -169,6 +171,50 @@ public abstract class AbstractHandler implements AgentEndpoint {
         URLQuery urlQuery = new URLQuery(workerOptions.getBrokerURL());
 
         return urlQuery.count() > 0;
+    }
+
+
+    /**
+     * Gets the test log directory (the location where the reports will be saved)
+     * @return the test log directory
+     */
+    protected static File getTestLogDir() {
+        File baseLogDir = getBaseLogDir();
+
+        if (baseLogDir == null) {
+            return null;
+        }
+
+        return TestLogUtils.nextTestLogDir(baseLogDir);
+    }
+
+    /**
+     * Gets the base log directory
+     * @return the base log directory
+     */
+    private static File getBaseLogDir() {
+        final String baseLogDirStr = System.getProperty("maestro.log.dir");
+
+        if (baseLogDirStr == null) {
+            throw new MaestroException("The log directory is not set on the agent");
+        }
+
+        return new File(baseLogDirStr);
+    }
+
+    /**
+     * Creates the sym links for a failed test
+     */
+    protected static void createTestFailSymlinks() {
+        TestLogUtils.createSymlinks(getBaseLogDir(), true);
+    }
+
+
+    /**
+     * Creates the sym links for a successful test
+     */
+    protected static void createTestSuccessSymlinks() {
+        TestLogUtils.createSymlinks(getBaseLogDir(), false);
     }
 
 }
