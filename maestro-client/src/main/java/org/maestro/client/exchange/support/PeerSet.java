@@ -54,15 +54,40 @@ public class PeerSet {
         return peers.values().stream().filter(peerInfo -> peerInfo.getRole() == Role.OTHER).count();
     }
 
+    private boolean is(final PeerInfo peerInfo, final Role...roles) {
+        if (roles == null || roles.length == 0) {
+            return false;
+        }
+
+        for (Role role : roles) {
+            if (role.equals(peerInfo.getRole())) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+
     /**
      * Count the number of workers peers
      * @return the number of available peers
      */
     public long workers() {
-        return peers.values().stream().filter(this::isWorker).count();
+        return count(Role.RECEIVER, Role.SENDER);
     }
 
-    private boolean isWorker(PeerInfo peerInfo) {
-        return peerInfo.getRole() == Role.RECEIVER || peerInfo.getRole() == Role.SENDER;
+
+    /**
+     * Count the number of peers of a certain role
+     * @param roles One or more roles to count for
+     * @return the number of available peers
+     */
+    public long count(final Role...roles) {
+        if (roles == null || roles.length == 0) {
+            return 0;
+        }
+
+        return peers.values().stream().filter(p -> is(p, roles)).count();
     }
 }

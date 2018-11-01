@@ -20,6 +20,7 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.Role;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;
 import org.maestro.tests.AbstractTestExecutor;
@@ -93,6 +94,8 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
             // Clean up the topic
             getMaestro().clear();
 
+            PeerSet peerSet = maestro.getPeers();
+
             testStart(test);
 
             logger.info("Applying the test profile");
@@ -104,8 +107,9 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
             logger.info("Processing the replies");
             long timeout = getTimeout();
             logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
+
             List<? extends MaestroNote> results = getMaestro()
-                    .waitForNotifications(1)
+                    .waitForNotifications((int) peerSet.count(Role.AGENT))
                     .get(timeout, TimeUnit.SECONDS);
 
             XUnitGenerator.generate(test, results, 0);
