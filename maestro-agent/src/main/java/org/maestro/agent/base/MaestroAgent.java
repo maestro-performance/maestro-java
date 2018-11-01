@@ -340,6 +340,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
             logger.error("The log directory is not set on the agent");
 
             getClient().replyInternalError(note,"The log directory is not set on the agent");
+            return;
         }
 
         // It might or might not exist. The agent is very loose in this regard
