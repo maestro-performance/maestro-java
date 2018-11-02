@@ -125,7 +125,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
                 final String senderName = "JmsSender";
 
                 try {
-                    exec(maestro::startWorker, destination, new WorkerStartOptions(senderName));
+                    exec(maestro::startWorker, destination, new WorkerStartOptions(senderName), 3);
                 }
                 catch (NotEnoughRepliesException e) {
                     logger.warn("While starting the sender: {}", e.getMessage());

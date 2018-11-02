@@ -278,7 +278,11 @@ public final class Maestro implements MaestroRequester {
         StartWorker maestroNote = new StartWorker(options);
 
         maestroClient.publish(topic, maestroNote);
-        return getOkErrorCompletableFuture(maestroNote);
+        MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation), 40, 50)
+        );
     }
 
     @Override
@@ -711,8 +715,14 @@ public final class Maestro implements MaestroRequester {
         set(function, value);
     }
 
-    public static <T, U> void exec(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1, U value2) {
+    public static <T, U> void exec(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1,
+                                   U value2) {
         set(function, value1, value2);
+    }
+
+    public static <T, U> void exec(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1,
+                                   U value2, int timeout) {
+        set(function, value1, value2, timeout);
     }
 
 
