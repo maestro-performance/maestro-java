@@ -1,7 +1,7 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: reports
+  name: maestro-reports
 spec:
   replicas: 0
   selector:
@@ -44,7 +44,7 @@ spec:
             - mountPath: /opt/maestro/maestro-reports-tool/config
               name: config-store
       containers:
-        - name: worker
+        - name: maestro-reports
           image: maestroperf/maestro-reports:1.5.0-SNAPSHOT
           env:
             - name: MAESTRO_BROKER
