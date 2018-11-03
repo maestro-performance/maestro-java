@@ -358,10 +358,10 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     @Override
     public void handle(final StopWorker note) {
         logger.info("Stop worker request received");
-
         getClient().replyOk(note);
 
         container.stop();
+        logger.info("Completed stopping the workers");
     }
 
     @Override
