@@ -201,8 +201,9 @@ public class ArtemisInspector implements MaestroInspector {
             return 0;
         }
         catch (Exception e) {
+            logger.error("Failed to run the inspector: {}", e.getMessage());
             TestLogUtils.createSymlinks(this.baseLogDir, true);
-            endpoint.notifyFailure(test, "Inspector failed");
+            endpoint.notifyFailure(test, "Inspector failed: " + e.getMessage());
             throw e;
         }
         finally {
