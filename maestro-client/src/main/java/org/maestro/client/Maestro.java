@@ -349,8 +349,10 @@ public final class Maestro implements MaestroRequester {
         maestroNote.setGetOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
 
         maestroClient.publish(MaestroTopics.PEER_TOPIC, maestroNote);
+        MessageCorrelation correlation = maestroNote.correlate();
+
         return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000, note -> note instanceof InternalError || note instanceof GetResponse)
+                () -> collect(note -> isCorrelated(note, correlation))
         );
     }
 
