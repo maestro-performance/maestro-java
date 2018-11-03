@@ -23,6 +23,7 @@ import org.maestro.common.exceptions.MaestroConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
@@ -65,7 +66,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         }
 
         if (logger.isTraceEnabled()) {
-            logger.trace("Message {} arrived waking up {} monitors", note.getMaestroCommand(), monitored.size());
+            logger.trace("Message {} arrived waking up {} monitors", note, monitored.size());
         }
 
         monitored.forEach(monitor -> { if (monitor.shouldAwake(note)) monitor.doUnlock(); } );
@@ -105,11 +106,15 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
      */
     public synchronized List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
         logger.trace("Collecting messages");
-        List<MaestroNote> ret = collected.stream()
-                .filter(predicate)
-                .collect(Collectors.toList());
 
-        collected.removeIf(predicate);
+        List<MaestroNote> ret = new ArrayList<>(collected.size());
+
+        for (MaestroNote note : collected) {
+            if (predicate.test(note)) {
+                collected.remove(note);
+                ret.add(note);
+            }
+        }
 
         logger.trace("Number of messages collected: {}", ret.size());
         return ret;
