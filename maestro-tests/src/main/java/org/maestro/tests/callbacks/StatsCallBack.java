@@ -66,31 +66,36 @@ public class StatsCallBack implements MaestroNoteCallback {
 
             updateCounters(statsResponse);
 
-            long messageCount = counters.values().stream().mapToLong(Number::longValue).sum();
-            logger.debug("Current message count: {}", messageCount);
-            if (messageCount >= DurationCount.WARM_UP_COUNT) {
-                logger.info("The warm-up count has been reached: {} of {}",
-                        messageCount, DurationCount.WARM_UP_COUNT);
-                this.executor.stopServices();
-                reset();
-            }
-            else {
-                final int maxDuration = 3;
-                Instant now = Instant.now();
-
-                Duration elapsed = Duration.between(now, executor.getStartTime());
-                if (elapsed.getSeconds() > (Duration.ofMinutes(maxDuration).getSeconds())) {
-                    logger.warn("Stopping the warm-up because the maximum duration was reached");
-
-                    this.executor.stopServices();
-                    reset();
-                }
-            }
+            completeCheck();
 
             return false;
         }
 
         return true;
+    }
+
+    private void completeCheck() {
+        final long messageCount = counters.values().stream().mapToLong(Number::longValue).sum();
+        logger.debug("Current message count: {}", messageCount);
+
+        if (messageCount >= DurationCount.WARM_UP_COUNT) {
+            logger.info("The warm-up count has been reached: {} of {}",
+                    messageCount, DurationCount.WARM_UP_COUNT);
+            this.executor.stopServices();
+            reset();
+        }
+        else {
+            final int maxDuration = 3;
+            Instant now = Instant.now();
+
+            Duration elapsed = Duration.between(now, executor.getStartTime());
+            if (elapsed.getSeconds() > (Duration.ofMinutes(maxDuration).getSeconds())) {
+                logger.warn("Stopping the warm-up because the maximum duration was reached");
+
+                this.executor.stopServices();
+                reset();
+            }
+        }
     }
 
     private boolean isSlow(StatsResponse statsResponse, int targetRate) {
