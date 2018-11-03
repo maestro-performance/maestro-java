@@ -108,7 +108,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
      * @param predicate the predicate that notes need to match in order to be collected
      * @return A list of collected notes
      */
-    public synchronized List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
+    public List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
         logger.trace("Collecting messages");
 
         List<MaestroNote> ret = new ArrayList<>(collected.size());
