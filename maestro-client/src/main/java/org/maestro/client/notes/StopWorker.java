@@ -17,14 +17,21 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageUnpacker;
+
+import java.io.IOException;
 
 public class StopWorker extends MaestroRequest<MaestroEventListener> {
     public StopWorker() {
         super(MaestroCommand.MAESTRO_NOTE_STOP_WORKER);
     }
 
+    public StopWorker(final MessageUnpacker unpacker) throws IOException {
+        super(MaestroCommand.MAESTRO_NOTE_STOP_WORKER, unpacker);
+    }
+
     @Override
-    public void notify(MaestroEventListener visitor) {
+    public void notify(final MaestroEventListener visitor) {
         visitor.handle(this);
     }
 
