@@ -124,6 +124,15 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
         callbacks.add(callback);
     }
 
+
+    /**
+     * Removes a callback executed on note arrival
+     * @param callback the callback to remove
+     */
+    public synchronized void removeCallback(MaestroNoteCallback callback) {
+        callbacks.remove(callback);
+    }
+
     /**
      * Adds a monitor for message arrival
      * @param monitor the monitor to add
