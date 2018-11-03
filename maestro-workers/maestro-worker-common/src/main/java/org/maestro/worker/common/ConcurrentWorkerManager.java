@@ -204,7 +204,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     }
 
     @Override
-    public void handle(StatsRequest note) {
+    public void handle(final StatsRequest note) {
         logger.trace("Stats request received");
         StatsResponse statsResponse = new StatsResponse();
 
@@ -240,6 +240,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         }
         statsResponse.setRoleInfo("");
         statsResponse.setTimestamp("0");
+        statsResponse.correlate(note);
 
         getClient().statsResponse(statsResponse);
     }
