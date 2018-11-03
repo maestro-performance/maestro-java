@@ -57,4 +57,12 @@ public class MessageCorrelation {
 
         return new MessageCorrelation(correlationId, messageId);
     }
+
+    @Override
+    public String toString() {
+        return "MessageCorrelation{" +
+                "correlationId='" + correlationId + '\'' +
+                ", messageId='" + messageId + '\'' +
+                '}';
+    }
 }
