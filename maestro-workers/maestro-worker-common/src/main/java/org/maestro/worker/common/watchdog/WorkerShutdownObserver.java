@@ -49,7 +49,6 @@ public class WorkerShutdownObserver implements WatchdogObserver {
     }
 
     private void sendTestNotification(boolean failed, String exceptionMessage) {
-
         if (failed) {
             if (exceptionMessage != null) {
                 client.notifyFailure(test, exceptionMessage);
@@ -87,7 +86,6 @@ public class WorkerShutdownObserver implements WatchdogObserver {
             }
         }
         finally {
-            // if null => drain worker observer
             if (logDir != null) {
                 TestLogUtils.createSymlinks(logDir, failed);
             }
