@@ -47,7 +47,12 @@ public class StatsCallBack implements MaestroNoteCallback {
     @Override
     public boolean call(MaestroNote note) {
         if (!executor.isWarmUp() || !executor.isRunning()) {
-            logger.warn("The stats callback should be not called outside warm-up phase");
+            logger.trace("The stats callback should be not called outside warm-up phase");
+
+            if (note instanceof StatsResponse) {
+                return false;
+            }
+
             return true;
         }
 
