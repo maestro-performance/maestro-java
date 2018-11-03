@@ -96,7 +96,7 @@ public class MaestroTopics {
      */
     public static String[] peerTopics(final String id) {
         return new String[] { peerTopic(id) ,
-                WORKERS_TOPIC + "/",
+                WORKERS_TOPIC,
                 PEER_TOPIC
         };
     }
