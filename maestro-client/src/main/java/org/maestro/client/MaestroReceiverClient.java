@@ -137,7 +137,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
 
     @Override
     public void notifySuccess(final Test test, final String message) {
-        logger.trace("Sending the test success notification from {}", this.toString());
+        logger.info("Sending the test success notification from {}", this.toString());
         TestSuccessfulNotification notification = new TestSuccessfulNotification();
 
         notification.setPeerInfo(peerInfo);
@@ -155,7 +155,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
 
     @Override
     public void notifyFailure(final Test test, final String message) {
-        logger.trace("Sending the test success notification from {}", this.toString());
+        logger.info("Sending the test success notification from {}", this.toString());
         TestFailedNotification notification = new TestFailedNotification();
 
         notification.setPeerInfo(peerInfo);
