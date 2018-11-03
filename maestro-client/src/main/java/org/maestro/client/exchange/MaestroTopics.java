@@ -137,7 +137,7 @@ public class MaestroTopics {
     public static String peerTopic(final Role role) {
         String roleName = role.toString();
 
-        return PEER_TOPIC + "/by-role/" + roleName + "/";
+        return PEER_TOPIC + "/by-role/" + roleName;
     }
 
     public static String[] inspectorTopics(final String id, final PeerInfo peerInfo) {
