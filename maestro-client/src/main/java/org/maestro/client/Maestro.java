@@ -241,12 +241,6 @@ public final class Maestro implements MaestroRequester {
         );
     }
 
-
-    private Predicate<MaestroNote> isOkOrErrorResponse() {
-        return note -> note instanceof OkResponse || note instanceof InternalError;
-    }
-
-
     private CompletableFuture<List<? extends MaestroNote>> getOkErrorCompletableFuture(MaestroNote request) {
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, request.correlate()))
@@ -429,8 +423,10 @@ public final class Maestro implements MaestroRequester {
         drainRequest.setParallelCount(String.valueOf(drainOptions.getParallelCount()));
 
         maestroClient.publish(topic, drainRequest);
+        MessageCorrelation correlation = drainRequest.correlate();
+
         return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000,isOkOrErrorResponse())
+                () -> collect(note -> isCorrelated(note, correlation), 3000, 50)
         );
     }
 
