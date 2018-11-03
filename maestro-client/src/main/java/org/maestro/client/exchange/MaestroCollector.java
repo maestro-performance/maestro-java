@@ -29,7 +29,6 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * An specialized peer that is used on the front-end side of the code
@@ -50,6 +49,8 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
      */
     public MaestroCollector(final String url) throws MaestroConnectionException {
         super(url, new CollectorPeer(), MaestroDeserializer::deserialize);
+
+        addCallback(new IgnoreCallback());
     }
 
 
