@@ -130,34 +130,34 @@ public class MaestroDeserializer {
                 return new PingRequest(unpacker);
             }
             case MAESTRO_NOTE_STATS: {
-                return new StatsRequest();
+                return new StatsRequest(unpacker);
             }
             case MAESTRO_NOTE_START_WORKER: {
                 return new StartWorker(unpacker);
             }
             case MAESTRO_NOTE_STOP_WORKER: {
-                return new StopWorker();
+                return new StopWorker(unpacker);
             }
             case MAESTRO_NOTE_START_INSPECTOR: {
                 return new StartInspector(unpacker);
             }
             case MAESTRO_NOTE_STOP_INSPECTOR: {
-                return new StopInspector();
+                return new StopInspector(unpacker);
             }
             case MAESTRO_NOTE_SET: {
                 return new SetRequest(unpacker);
             }
             case MAESTRO_NOTE_HALT: {
-                return new Halt();
+                return new Halt(unpacker);
             }
             case MAESTRO_NOTE_GET: {
                 return new GetRequest(unpacker);
             }
             case MAESTRO_NOTE_START_AGENT: {
-                return new StartAgent();
+                return new StartAgent(unpacker);
             }
             case MAESTRO_NOTE_STOP_AGENT: {
-                return new StopAgent();
+                return new StopAgent(unpacker);
             }
             case MAESTRO_NOTE_USER_COMMAND_1: {
                 return new UserCommand1Request(unpacker);
