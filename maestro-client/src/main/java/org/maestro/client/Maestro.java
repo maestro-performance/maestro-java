@@ -106,6 +106,11 @@ public final class Maestro implements MaestroRequester {
 
 
     private boolean isCorrelated(final MaestroNote note, final MessageCorrelation correlation) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Checking correlation between of {} with id {} and {}", note.getMaestroCommand(),
+                    note.correlate(), correlation);
+        }
+
         return note.correlatesTo(correlation);
     }
 
@@ -275,16 +280,21 @@ public final class Maestro implements MaestroRequester {
         MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
-                () -> collect(note -> isCorrelated(note, correlation), 40, 50)
+                () -> collect(note -> isCorrelated(note, correlation), 30, 50)
         );
     }
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> stopWorker(final String topic) throws MaestroConnectionException {
-        StopWorker maestroNote = new StopWorker();
+        final StopWorker maestroNote = new StopWorker();
+
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         maestroClient.publish(topic, maestroNote);
-        return getOkErrorCompletableFuture(maestroNote);
+
+        return CompletableFuture.supplyAsync(
+                () -> collectWithDelay(1000, note -> isCorrelated(note, correlation), 10, 50)
+        );
     }
 
 
@@ -462,6 +472,7 @@ public final class Maestro implements MaestroRequester {
         StartTestRequest maestroNote = new StartTestRequest(test);
 
         maestroClient.publish(topic, maestroNote);
+
         return getOkErrorCompletableFuture(maestroNote);
     }
 
@@ -540,6 +551,7 @@ public final class Maestro implements MaestroRequester {
                     monitor.doLock(retryTimeout);
                 } catch (InterruptedException e) {
                     logger.trace("Interrupted while waiting for message collection");
+                    break;
                 }
 
                 logger.trace("Out of the collection lock. Checking for new messages");
@@ -569,14 +581,15 @@ public final class Maestro implements MaestroRequester {
      * @param predicate Returns only the messages matching the predicate
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
-    private List<MaestroNote> collectWithDelay(long wait, Predicate<? super MaestroNote> predicate) {
+    private List<MaestroNote> collectWithDelay(long wait, Predicate<? super MaestroNote> predicate, int retries,
+                                               int retryTimeout) {
         try {
             Thread.sleep(wait);
         } catch (InterruptedException e) {
             logger.trace("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
         }
 
-        return collectorExecutor.getCollector().collect(predicate);
+        return collect(predicate, retries, retryTimeout);
     }
 
 
@@ -616,10 +629,7 @@ public final class Maestro implements MaestroRequester {
         return note -> note instanceof TestSuccessfulNotification || note instanceof InternalError || note instanceof TestFailedNotification;
     }
 
-
-    public static <T> void set(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, T value) {
-        final int timeout = 2;
-
+    public static <T> void set(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, T value, int timeout) {
         List<? extends MaestroNote> replies;
         try {
             replies = function.apply(value).get(timeout, TimeUnit.SECONDS);
@@ -642,8 +652,13 @@ public final class Maestro implements MaestroRequester {
         }
     }
 
-    public static <T, U> void set(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1, U value2,
-                                  int timeout) {
+    public static <T> void set(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, T value) {
+        set(function, value, 2);
+    }
+
+    public static <T, U> void set(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1,
+                                  final U value2, int timeout)
+    {
         List<? extends MaestroNote> replies;
         try {
             replies = function.apply(value1, value2).get(timeout, TimeUnit.SECONDS);
@@ -674,7 +689,9 @@ public final class Maestro implements MaestroRequester {
     }
 
 
-    public static <T, U> void set(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1, U value2) {
+    public static <T, U> void set(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function,
+                                  final T value1, final U value2)
+    {
         set(function, value1, value2, 2);
     }
 
@@ -711,16 +728,41 @@ public final class Maestro implements MaestroRequester {
     }
 
 
-    public static <T> void exec(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, T value) {
+    public static <T> void exec(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, final T value) {
         set(function, value);
     }
 
-    public static <T, U> void exec(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1,
+    public static <T> void exec(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, final T value,
+                                int timeout) {
+
+        List<? extends MaestroNote> replies;
+        try {
+            replies = function.apply(value).get(timeout, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new MaestroException(e);
+        }
+        catch (TimeoutException e) {
+            throw new NotEnoughRepliesException("Timed out waiting for replies from the test cluster", e);
+        }
+
+        if (replies.size() == 0) {
+            throw new NotEnoughRepliesException("Not enough replies when trying to execute a command on the test cluster");
+        }
+
+        for (MaestroNote reply : replies) {
+            if (reply instanceof InternalError) {
+                InternalError ie = (InternalError) reply;
+                throw new MaestroException("Error applying a setting to the test cluster: %s", ie.getMessage());
+            }
+        }
+    }
+
+    public static <T, U> void exec(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, final T value1,
                                    U value2) {
         set(function, value1, value2);
     }
 
-    public static <T, U> void exec(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1,
+    public static <T, U> void exec(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, final T value1,
                                    U value2, int timeout) {
         set(function, value1, value2, timeout);
     }

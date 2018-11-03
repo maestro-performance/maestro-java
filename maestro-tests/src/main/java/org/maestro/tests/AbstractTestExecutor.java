@@ -36,8 +36,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
+import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -95,7 +97,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         startTime = Instant.now();
     }
 
-    protected void testStop() {
+    public void testStop() {
         running = false;
     }
 
@@ -160,31 +162,63 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         }
     }
 
+    private void checkReplies(List<? extends MaestroNote> replies) {
+        if (replies.size() == 0) {
+            logger.error("Not enough replies when trying to execute a command on the test cluster");
+        }
+
+        for (MaestroNote reply : replies) {
+            if (reply instanceof InternalError) {
+                InternalError ie = (InternalError) reply;
+                logger.error("Error while stopping the workers: {}", ie.getMessage());
+            }
+        }
+    }
+
+    private void verifyStopCommand(CompletableFuture<List<? extends MaestroNote>> completableFuture) {
+        if (!completableFuture.isDone()) {
+            logger.trace("Still waiting for the stop worker replies");
+        }
+    }
+
     /**
      * Stop connected peers
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
     protected final void stopServices(final DistributionStrategy distributionStrategy) throws MaestroConnectionException {
+        logger.info("Requesting all Maestro peers to stop");
+
         Set<PeerEndpoint> endpoints = distributionStrategy.endpoints();
+        List<CompletableFuture<List<? extends MaestroNote>>> futures = new LinkedList<>();
 
         for (PeerEndpoint peerEndpoint : endpoints) {
             if (peerEndpoint.getRole() == Role.SENDER) {
-                exec(maestro::stopWorker, peerEndpoint.getDestination());
+                CompletableFuture<List<? extends MaestroNote>> stopWorkerFuture = getMaestro()
+                        .stopWorker(peerEndpoint.getDestination());
+
+                stopWorkerFuture.thenAccept(this::checkReplies);
+
+                futures.add(stopWorkerFuture);
             }
         }
 
         for (PeerEndpoint peerEndpoint : endpoints) {
             if (peerEndpoint.getRole() == Role.RECEIVER) {
-                exec(maestro::stopWorker, peerEndpoint.getDestination());
+                CompletableFuture<List<? extends MaestroNote>> stopWorkerFuture = getMaestro()
+                        .stopWorker(peerEndpoint.getDestination());
+
+                stopWorkerFuture.thenAccept(this::checkReplies);
+                futures.add(stopWorkerFuture);
             }
         }
 
-        try {
-            exec(maestro::stopInspector, MaestroTopics.peerTopic(Role.INSPECTOR));
-        }
-        catch (NotEnoughRepliesException e) {
-            logger.warn("While stopping the inspector: {}", e.getMessage());
-        }
+        CompletableFuture<List<? extends MaestroNote>> stopWorkerFuture = getMaestro()
+                .stopWorker(MaestroTopics.peerTopic(Role.INSPECTOR));
+        stopWorkerFuture.thenAccept(this::checkReplies);
+
+        futures.add(stopWorkerFuture);
+
+        futures.forEach(this::verifyStopCommand);
     }
 
 
@@ -192,14 +226,13 @@ public abstract class AbstractTestExecutor implements TestExecutor {
      * Stop connected peers
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
-    final public void stopServices() throws MaestroConnectionException {
+    public void stopServices() throws MaestroConnectionException {
         try {
-            exec(maestro::stopWorker, MaestroTopics.WORKERS_TOPIC);
+            exec(maestro::stopWorker, MaestroTopics.WORKERS_TOPIC, 5);
         }
         catch (NotEnoughRepliesException e) {
-            logger.warn("While stopping the peers: {}", e.getMessage());
+            logger.warn("While stopping the peers: {}", e.getMessage(), e);
         }
-
 
         try {
             exec(maestro::stopInspector, MaestroTopics.peerTopic(Role.INSPECTOR));

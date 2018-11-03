@@ -100,6 +100,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
             }
             finally {
                 onComplete();
+
                 drain();
             }
         }
@@ -112,25 +113,36 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
         finally {
             reset();
 
-            testStop();
-
-            try {
-                stopServices(distributionStrategy);
-            }
-            catch (MaestroException e) {
-                if (e.getCause() instanceof TimeoutException) {
-                    logger.warn("Timed out waiting for a stop response");
-                }
-                else {
-                    logger.warn(e.getMessage());
-                }
-            }
-            finally {
-                distributionStrategy.reset();
-            }
+            stopServices();
         }
 
         return false;
+    }
+
+    public void stopServices() {
+        if (!isRunning()) {
+            logger.trace("Not stopping the services because the test is not running");
+
+            return;
+        }
+
+        testStop();
+
+        logger.info("Stopping Maestro services");
+        try {
+            stopServices(distributionStrategy);
+        }
+        catch (MaestroException e) {
+            if (e.getCause() instanceof TimeoutException) {
+                logger.warn("Timed out waiting for a stop response");
+            }
+            else {
+                logger.warn(e.getMessage(), e);
+            }
+        }
+        finally {
+            distributionStrategy.reset();
+        }
     }
 
     protected abstract String phaseName();
