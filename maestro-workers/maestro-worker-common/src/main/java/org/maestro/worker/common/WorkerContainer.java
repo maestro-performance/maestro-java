@@ -72,7 +72,7 @@ public final class WorkerContainer {
 
         if (count > Runtime.getRuntime().availableProcessors()) {
             logger.warn("Trying the create {} worker threads but there is only {} processors available. This can " +
-                    "test instability and too many variations on the load generations", count,
+                    "result in test instability and variability on the rate of load generation", count,
                     Runtime.getRuntime().availableProcessors());
         }
 
