@@ -81,8 +81,7 @@ public class StatsCallBack implements MaestroNoteCallback {
         if (messageCount >= DurationCount.WARM_UP_COUNT) {
             logger.info("The warm-up count has been reached: {} of {}",
                     messageCount, DurationCount.WARM_UP_COUNT);
-            this.executor.stopServices();
-            reset();
+            stop();
         }
         else {
             final int maxDuration = 3;
@@ -92,10 +91,14 @@ public class StatsCallBack implements MaestroNoteCallback {
             if (elapsed.getSeconds() > (Duration.ofMinutes(maxDuration).getSeconds())) {
                 logger.warn("Stopping the warm-up because the maximum duration was reached");
 
-                this.executor.stopServices();
-                reset();
+                stop();
             }
         }
+    }
+
+    private void stop() {
+        this.executor.stopServices();
+        reset();
     }
 
     private boolean isSlow(StatsResponse statsResponse, int targetRate) {
