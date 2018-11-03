@@ -28,6 +28,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
 /**
@@ -40,7 +41,9 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
 
     private final Queue<MaestroNote> collected = new ConcurrentLinkedQueue<>();
     private final List<MaestroNoteCallback> callbacks = new LinkedList<>();
-    private final List<MaestroMonitor> monitored = new LinkedList<>();
+
+    // To prevent throwing ConcurrentModificationException when iterating the list
+    private final List<MaestroMonitor> monitored = new CopyOnWriteArrayList<>();
 
     /**
      * Constructor
