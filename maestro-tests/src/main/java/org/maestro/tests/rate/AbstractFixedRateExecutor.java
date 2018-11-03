@@ -18,7 +18,6 @@ package org.maestro.tests.rate;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
-import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
@@ -40,6 +39,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
     private final FixedRateTestProfile testProfile;
     private final DistributionStrategy distributionStrategy;
 
+
     private static final long coolDownPeriod;
 
     static {
@@ -57,6 +57,10 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
 
     protected abstract void reset();
 
+    protected abstract void onInit();
+
+    protected abstract void onComplete();
+
     protected boolean runTest(final Test test, final BiConsumer<Maestro, DistributionStrategy> apply) {
         try {
             // Clean up the topic
@@ -72,10 +76,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
 
                 startServices(testProfile, distributionStrategy);
 
-                ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
-
-                Runnable task = () -> getMaestro().statsRequest(MaestroTopics.WORKERS_TOPIC);
-                executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
+                onInit();
 
                 long timeout = getTimeout();
                 logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
@@ -98,6 +99,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
                 return true;
             }
             finally {
+                onComplete();
                 drain();
             }
         }

@@ -17,6 +17,7 @@
 package org.maestro.tests.rate;
 
 import org.maestro.client.Maestro;
+import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.client.notes.TestDetails;
 import org.maestro.tests.callbacks.StatsCallBack;
@@ -25,11 +26,18 @@ import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
 /**
  * A test executor that uses fixed rates and warms-up before the test
  */
 public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestExecutor.class);
+
+    private final ScheduledExecutorService statsExecutor = Executors.newSingleThreadScheduledExecutor();
+    private final StatsCallBack statsCallBack;
 
     private volatile boolean warmUp = false;
 
@@ -37,7 +45,7 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
                                  final DistributionStrategy distributionStrategy) {
         super(maestro, testProfile, distributionStrategy);
 
-        getMaestro().getCollector().addCallback(new StatsCallBack(this));
+        statsCallBack = new StatsCallBack(this);
     }
 
     protected void reset() {
@@ -61,6 +69,24 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
         return repeat + CompletionTime.getDeadline();
     }
 
+    @Override
+    protected void onInit() {
+        if (warmUp) {
+            logger.debug("Registering the callback");
+            getMaestro().getCollector().addCallback(statsCallBack);
+
+            Runnable task = () -> getMaestro().statsRequest(MaestroTopics.WORKERS_TOPIC);
+            statsExecutor.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
+        }
+    }
+
+    @Override
+    protected void onComplete() {
+        if (warmUp) {
+            getMaestro().getCollector().removeCallback(statsCallBack);
+            statsExecutor.shutdown();
+        }
+    }
 
     public boolean run(final String scriptName, final String description, final String comments) {
         logger.info("Starting the warm up execution");

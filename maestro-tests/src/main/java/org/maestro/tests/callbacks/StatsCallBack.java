@@ -53,7 +53,9 @@ public class StatsCallBack implements MaestroNoteCallback {
 
         if (note instanceof StatsResponse) {
             StatsResponse statsResponse = (StatsResponse) note;
-            logger.debug("Received stats {}", statsResponse);
+            if (logger.isTraceEnabled()) {
+                logger.trace("Received stats {}", statsResponse);
+            }
 
             int targetRate = executor.getTestProfile().getRate();
             if (isSlow(statsResponse, targetRate)) {
