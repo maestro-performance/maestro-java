@@ -325,8 +325,10 @@ public final class Maestro implements MaestroRequester {
         StatsRequest maestroNote = new StatsRequest();
 
         maestroClient.publish(topic, maestroNote);
+        MessageCorrelation correlation = maestroNote.correlate();
+
         return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000, note -> note instanceof InternalError || note instanceof StatsResponse)
+                () -> collect(note -> isCorrelated(note, correlation))
         );
     }
 
