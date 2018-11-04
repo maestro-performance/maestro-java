@@ -112,10 +112,10 @@ abstract class AbstractMaestroNote implements MaestroNote {
 
     @Override
     public String toString() {
-        return "MaestroNote{" +
+        return "AbstractMaestroNote{" +
                 "noteType=" + noteType +
                 ", maestroCommand=" + maestroCommand +
+                ", correlation=" + correlation +
                 '}';
     }
-
 }
