@@ -47,7 +47,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         ReportCollectorWorker reportCollectorWorker = workerMap.get(test);
         if (reportCollectorWorker == null) {
             logger.debug("Creating a new collector worker for test {}", test);
-            reportCollectorWorker = new ReportCollectorWorker(this.dataDir, getClient());
+            reportCollectorWorker = new ReportCollectorWorker(this.dataDir, getClient(), test);
         }
 
         workerMap.put(test, reportCollectorWorker);

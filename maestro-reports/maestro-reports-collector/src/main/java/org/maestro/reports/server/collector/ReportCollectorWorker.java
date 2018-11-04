@@ -57,11 +57,13 @@ public class ReportCollectorWorker {
     private DefaultOrganizer organizer;
     private Report report;
 
-    public ReportCollectorWorker(final File dataDir, final MaestroReceiverClient client) {
+    public ReportCollectorWorker(final File dataDir, final MaestroReceiverClient client, final Test test) {
         this.dataDir = dataDir;
         this.client = client;
 
         executorService = Executors.newSingleThreadExecutor();
+
+        initializeTest(test);
     }
 
     private void runAggregation(int maxTestId, int maxTestNumber) {
@@ -150,8 +152,11 @@ public class ReportCollectorWorker {
             return;
         }
 
-        final Test requestedTest = note.getTest();
+        client.replyOk(note);
+    }
 
+    private void initializeTest(final Test requestedTest) {
+        logger.info("Initializing a new test");
         report = new Report();
 
         final File testDataDir = getTestDirectory(requestedTest, dataDir);
@@ -171,8 +176,6 @@ public class ReportCollectorWorker {
         report.setValid(true);
         report.setRetired(false);
         report.setTestDate(Date.from(Instant.now()));
-
-        client.replyOk(note);
     }
 
 
