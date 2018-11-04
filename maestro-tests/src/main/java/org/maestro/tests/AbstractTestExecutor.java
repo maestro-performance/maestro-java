@@ -39,10 +39,7 @@ import java.time.Instant;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.TimeoutException;
+import java.util.concurrent.*;
 
 import static org.maestro.client.Maestro.exec;
 
@@ -163,21 +160,20 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     }
 
     private void checkReplies(List<? extends MaestroNote> replies) {
-        if (replies.size() == 0) {
-            logger.error("Not enough replies when trying to execute a command on the test cluster");
-        }
-
-        for (MaestroNote reply : replies) {
-            if (reply instanceof InternalError) {
-                InternalError ie = (InternalError) reply;
-                logger.error("Error while stopping the workers: {}", ie.getMessage());
-            }
-        }
+        Maestro.checkReplies(replies, "stop");
     }
 
     private void verifyStopCommand(CompletableFuture<List<? extends MaestroNote>> completableFuture) {
         if (!completableFuture.isDone()) {
             logger.trace("Still waiting for the stop worker replies");
+        }
+
+        try {
+            completableFuture.get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
         }
     }
 

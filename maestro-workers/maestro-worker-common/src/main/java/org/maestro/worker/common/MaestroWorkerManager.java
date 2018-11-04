@@ -476,9 +476,11 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
             }
         } finally {
             getPeerInfo().setRole(Role.OTHER);
+
+            getClient().replyOk(note);
         }
 
-        getClient().replyOk(note);
+
     }
 
     @Override

@@ -462,7 +462,7 @@ public final class Maestro implements MaestroRequester {
         MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
-                () -> collect(note -> isCorrelated(note, correlation))
+                () -> collectWithDelay(2000, note -> isCorrelated(note, correlation), 10, 50)
         );
     }
 
@@ -481,7 +481,7 @@ public final class Maestro implements MaestroRequester {
      * Clear the container of received messages
      */
     public void clear() {
-        collectorExecutor.clear();
+        // collectorExecutor.clear();
     }
 
     /**
@@ -797,5 +797,31 @@ public final class Maestro implements MaestroRequester {
 
         logger.info("Known peers recorded: {}", knownPeers.size());
         return new PeerSet(knownPeers);
+    }
+
+    /**
+     * Check the replies from Maestro for errors
+     * @param replies the replies to check
+     * @param action the action being executed
+     * @return true if successful or false otherwise
+     */
+    public static boolean checkReplies(List<? extends MaestroNote> replies, final String action) {
+        boolean failed = false;
+
+        if (replies.size() == 0) {
+            logger.warn("Not enough replies when trying to {} workers on the test cluster", action);
+
+            failed = true;
+        }
+
+        for (MaestroNote reply : replies) {
+            if (reply instanceof InternalError) {
+                InternalError ie = (InternalError) reply;
+                logger.warn("Error while trying to {} the workers: {}", action, ie.getMessage());
+                failed = true;
+            }
+        }
+
+        return failed;
     }
 }

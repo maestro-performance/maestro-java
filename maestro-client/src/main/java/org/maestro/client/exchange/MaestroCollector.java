@@ -29,6 +29,7 @@ import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Predicate;
 
 /**
@@ -39,7 +40,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollector.class);
     private volatile boolean running = true;
 
-    private final Queue<MaestroNote> collected = new ConcurrentLinkedQueue<>();
+    private final Queue<MaestroNote> collected = new LinkedBlockingQueue<>();
     private final List<MaestroNoteCallback> callbacks = new LinkedList<>();
 
     // To prevent throwing ConcurrentModificationException when iterating the list
@@ -65,15 +66,20 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
             }
         }
 
-        synchronized (this) {
-            collected.add(note);
-        }
+        collected.add(note);
 
         if (logger.isTraceEnabled()) {
-            logger.trace("Message {} arrived waking up {} monitors", note, monitored.size());
+            logger.trace("Message {} arrived. Running awake check for {} monitors", note, monitored.size());
         }
 
-        monitored.forEach(monitor -> { if (monitor.shouldAwake(note)) monitor.doUnlock(); } );
+        monitored.forEach(monitor -> awakeCheck(note, monitor));
+    }
+
+    private void awakeCheck(final MaestroNote note, final MaestroMonitor monitor) {
+        if (monitor.shouldAwake(note)) {
+            logger.trace("Predicate check successful for note {}", note);
+            monitor.doUnlock();
+        }
     }
 
 
@@ -109,12 +115,12 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
      * @return A list of collected notes
      */
     public List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
-        logger.trace("Collecting messages");
-
         List<MaestroNote> ret = new ArrayList<>(collected.size());
 
+//        collected.a
         for (MaestroNote note : collected) {
             if (predicate.test(note)) {
+                logger.trace("Collecting message {} that matched a predicate", note);
                 collected.remove(note);
                 ret.add(note);
             }
@@ -146,7 +152,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
      * Adds a monitor for message arrival
      * @param monitor the monitor to add
      */
-    public synchronized void monitor(final MaestroMonitor monitor) {
+    public void monitor(final MaestroMonitor monitor) {
         monitored.add(monitor);
     }
 
@@ -154,7 +160,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
      * Removes a monitor
      * @param monitor the monitor to remove
      */
-    public synchronized void remove(final MaestroMonitor monitor) {
+    public void remove(final MaestroMonitor monitor) {
         monitored.remove(monitor);
     }
 }
