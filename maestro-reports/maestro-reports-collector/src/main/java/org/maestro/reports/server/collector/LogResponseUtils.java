@@ -29,12 +29,16 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.util.Objects;
 
 public class LogResponseUtils {
     private static final Logger logger = LoggerFactory.getLogger(LogResponseUtils.class);
 
 
     public static void save(final LogResponse logResponse, final DefaultOrganizer organizer) {
+        Objects.requireNonNull(logResponse);
+        Objects.requireNonNull(organizer);
+
         final PeerInfo peerInfo = logResponse.getPeerInfo();
         final String uniquePeerPath = DefaultOrganizer.generateUniquePeerPath(logResponse.getId(), peerInfo);
         final String destinationDir = organizer.organize(uniquePeerPath);
