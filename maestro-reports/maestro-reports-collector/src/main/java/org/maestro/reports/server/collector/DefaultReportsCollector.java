@@ -46,6 +46,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     private ReportCollectorWorker getCollectorWorker(final Test test) {
         ReportCollectorWorker reportCollectorWorker = workerMap.get(test);
         if (reportCollectorWorker == null) {
+            logger.debug("Creating a new collector worker for test {}", test);
             reportCollectorWorker = new ReportCollectorWorker(this.dataDir, getClient());
         }
 
@@ -139,6 +140,8 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
 
     @Override
     public void handle(final StartTestRequest note) {
+        logger.debug("Test started request received");
+
         ReportCollectorWorker reportCollectorWorker = getCollectorWorker(note.getTest());
 
         reportCollectorWorker.handle(note);
