@@ -23,10 +23,14 @@ import org.maestro.common.client.notes.MessageCorrelation;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessagePack;
 import org.msgpack.core.MessageUnpacker;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 
 abstract class AbstractMaestroNote implements MaestroNote {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroNote.class);
+
     private final MaestroNoteType noteType;
     private final MaestroCommand maestroCommand;
     private MessageCorrelation correlation;
@@ -65,6 +69,11 @@ abstract class AbstractMaestroNote implements MaestroNote {
 
         packer.packString(correlation.getCorrelationId());
         packer.packString(correlation.getMessageId());
+
+        if (logger.isTraceEnabled()) {
+            logger.trace("Packed this {} note with correlation id {} and message id {}", this.maestroCommand,
+                    correlation.getCorrelationId(), correlation.getMessageId());
+        }
 
         return packer;
     }
