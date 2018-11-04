@@ -31,7 +31,7 @@ public class MaestroMonitor extends Monitor<Predicate<? super MaestroNote>> {
      * Constructs a Monitor using the given predicate (ie.: note instanceof TestSuccessfulNotification)
      * @param object the monitoring predicate
      */
-    public MaestroMonitor(Predicate<? super MaestroNote> object) {
+    public MaestroMonitor(final Predicate<? super MaestroNote> object) {
         super(object);
     }
 
@@ -40,7 +40,7 @@ public class MaestroMonitor extends Monitor<Predicate<? super MaestroNote>> {
      * @param subject the subject to test (ie.: a new note arriving on the collector)
      * @return true if it matches or false otherwise
      */
-    public boolean shouldAwake(MaestroNote subject) {
+    public boolean shouldAwake(final MaestroNote subject) {
         return getObject().test(subject);
     }
 
