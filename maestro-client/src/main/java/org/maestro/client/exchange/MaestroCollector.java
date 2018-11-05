@@ -26,8 +26,7 @@ import org.slf4j.LoggerFactory;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
-import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.BlockingQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.function.Predicate;
@@ -40,7 +39,7 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollector.class);
     private volatile boolean running = true;
 
-    private final Queue<MaestroNote> collected = new LinkedBlockingQueue<>();
+    private final BlockingQueue<MaestroNote> collected = new LinkedBlockingQueue<>();
     private final List<MaestroNoteCallback> callbacks = new LinkedList<>();
 
     // To prevent throwing ConcurrentModificationException when iterating the list
@@ -66,13 +65,15 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
             }
         }
 
-        collected.add(note);
-
         if (logger.isTraceEnabled()) {
             logger.trace("Message {} arrived. Running awake check for {} monitors", note, monitored.size());
         }
 
         monitored.forEach(monitor -> awakeCheck(note, monitor));
+
+        if (!collected.add(note)) {
+            logger.error("Unable to add the note {} to the collected notes cache", note);
+        }
     }
 
     private void awakeCheck(final MaestroNote note, final MaestroMonitor monitor) {
@@ -117,11 +118,12 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     public List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
         List<MaestroNote> ret = new ArrayList<>(collected.size());
 
-//        collected.a
         for (MaestroNote note : collected) {
             if (predicate.test(note)) {
                 logger.trace("Collecting message {} that matched a predicate", note);
-                collected.remove(note);
+                if (!collected.remove(note)) {
+                    logger.error("Removing message {} failed", note);
+                }
                 ret.add(note);
             }
         }

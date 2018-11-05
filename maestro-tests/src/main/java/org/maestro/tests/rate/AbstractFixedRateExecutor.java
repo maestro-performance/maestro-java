@@ -63,9 +63,6 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
 
     protected boolean runTest(final Test test, final BiConsumer<Maestro, DistributionStrategy> apply) {
         try {
-            // Clean up the topic
-            getMaestro().clear();
-
             PeerSet peerSet = distributionStrategy.distribute(getMaestro().getPeers());
             long numPeers = peerSet.workers();
 

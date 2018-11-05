@@ -91,9 +91,6 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
      */
     public boolean run(final Test test) {
         try {
-            // Clean up the topic
-            getMaestro().clear();
-
             PeerSet peerSet = maestro.getPeers();
 
             testStart(test);

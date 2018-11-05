@@ -105,9 +105,10 @@ public final class Maestro implements MaestroRequester {
     }
 
 
-    private boolean isCorrelated(final MaestroNote note, final MessageCorrelation correlation) {
+    private static boolean isCorrelated(final MaestroNote note, final MessageCorrelation correlation) {
         if (logger.isTraceEnabled()) {
-            logger.trace("Checking correlation between of {} with id {} and {}", note.getMaestroCommand(),
+            logger.trace("Thread {} checking correlation between {} with id {} and {}", Thread.currentThread().getId(),
+                    note.getMaestroCommand(),
                     note.correlate(), correlation);
         }
 
@@ -288,13 +289,24 @@ public final class Maestro implements MaestroRequester {
     public CompletableFuture<List<? extends MaestroNote>> stopWorker(final String topic) throws MaestroConnectionException {
         final StopWorker maestroNote = new StopWorker();
 
+
+
         final MessageCorrelation correlation = maestroNote.correlate();
+
+        logger.info("Published stop request with IDs {}", correlation);
+
+        CompletableFuture<List<? extends MaestroNote>> ret =  CompletableFuture.supplyAsync(
+                () -> collectNoLock(note -> isCorrelated(note, correlation), 10, 200)
+        );
 
         maestroClient.publish(topic, maestroNote);
 
-        return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000, note -> isCorrelated(note, correlation), 10, 50)
-        );
+        return ret;
+
+
+//        return CompletableFuture.supplyAsync(
+//                () -> collect(note -> isCorrelated(note, correlation), 10, 200)
+//        );
     }
 
 
@@ -462,7 +474,7 @@ public final class Maestro implements MaestroRequester {
         MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(2000, note -> isCorrelated(note, correlation), 10, 50)
+                () -> collect(note -> isCorrelated(note, correlation), 10, 200)
         );
     }
 
@@ -476,13 +488,55 @@ public final class Maestro implements MaestroRequester {
         return getOkErrorCompletableFuture(maestroNote);
     }
 
-
     /**
-     * Clear the container of received messages
+     * Collect replies up to a certain limit of retries/timeout
+     * @param predicate Returns only the messages matching the predicate
+     * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
-    public void clear() {
-        // collectorExecutor.clear();
+    private List<MaestroNote> collectNoLock(Predicate<? super MaestroNote> predicate, int retries, int retryTimeout) {
+        logger.warn("Starting the collectNoLock method w/ thread {}", Thread.currentThread().getId());
+        List<MaestroNote> replies = new LinkedList<>();
+
+        MaestroMonitor monitor = new LockFreeMaestroMonitor(predicate, replies);
+        StaleChecker staleChecker = new NonProgressingStaleChecker(retries);
+
+        try {
+            collectorExecutor.getCollector().monitor(monitor);
+
+            do {
+//                replies.addAll(collectorExecutor.getCollector().collect(predicate));
+                logger.trace("Collected {} notes", replies.size());
+
+                if (staleChecker.isStale(replies.size())) {
+                    break;
+                }
+
+                try {
+                    logger.trace("Not enough responses matching the predicate. Waiting for more messages to arrive. Thread {}",
+                            Thread.currentThread().getId());
+                    monitor.doLock(retryTimeout);
+                } catch (InterruptedException e) {
+                    logger.trace("Interrupted while waiting for message collection. Thread {}",
+                            Thread.currentThread().getId());
+                    break;
+                }
+
+                logger.trace("Out of the collection lock for thread {}. Checking for new messages",
+                        Thread.currentThread().getId());
+            } while (true);
+
+            logger.trace("Exiting the collection loop: {} collected for {}", replies.size(), predicate);
+        }
+        finally {
+            // claim whatever may have been missed
+            replies.addAll(collectorExecutor.getCollector().collect(predicate));
+
+            collectorExecutor.getCollector().remove(monitor);
+        }
+
+        return replies;
     }
+
 
     /**
      * Collect replies up to a certain limit of retries/timeout
@@ -492,13 +546,13 @@ public final class Maestro implements MaestroRequester {
      */
     private List<MaestroNote> collect(int expect, Predicate<? super MaestroNote> predicate) {
         List<MaestroNote> replies = new LinkedList<>();
-        MaestroMonitor monitor = new MaestroMonitor(predicate);
+        MaestroMonitor monitor = new LockFreeMaestroMonitor(predicate, replies);
 
         try {
             collectorExecutor.getCollector().monitor(monitor);
 
             do {
-                replies.addAll(collectorExecutor.getCollector().collect(predicate));
+//                replies.addAll(collectorExecutor.getCollector().collect(predicate));
                 logger.trace("Collected {} of {}", replies.size(), expect);
 
                 if (replies.size() >= expect) {
@@ -519,6 +573,8 @@ public final class Maestro implements MaestroRequester {
                     predicate);
         }
         finally {
+            replies.addAll(collectorExecutor.getCollector().collect(predicate));
+
             collectorExecutor.getCollector().remove(monitor);
         }
 
@@ -531,15 +587,17 @@ public final class Maestro implements MaestroRequester {
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
     private List<MaestroNote> collect(Predicate<? super MaestroNote> predicate, int retries, int retryTimeout) {
+        logger.warn("Starting the collect method w/ thread {}", Thread.currentThread().getId());
         List<MaestroNote> replies = new LinkedList<>();
-        MaestroMonitor monitor = new MaestroMonitor(predicate);
+
+        MaestroMonitor monitor = new LockFreeMaestroMonitor(predicate, replies);
         StaleChecker staleChecker = new NonProgressingStaleChecker(retries);
 
         try {
             collectorExecutor.getCollector().monitor(monitor);
 
             do {
-                replies.addAll(collectorExecutor.getCollector().collect(predicate));
+//                replies.addAll(collectorExecutor.getCollector().collect(predicate));
                 logger.trace("Collected {} notes", replies.size());
 
                 if (staleChecker.isStale(replies.size())) {
@@ -554,7 +612,8 @@ public final class Maestro implements MaestroRequester {
                     break;
                 }
 
-                logger.trace("Out of the collection lock. Checking for new messages");
+                logger.trace("Out of the collection lock for thread {}. Checking for new messages",
+                        Thread.currentThread().getId());
             } while (true);
 
             logger.trace("Exiting the collection loop: {} collected for {}", replies.size(), predicate);

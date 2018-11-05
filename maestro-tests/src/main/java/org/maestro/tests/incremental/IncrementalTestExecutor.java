@@ -75,9 +75,6 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
         logger.info("Starting test execution {}", test.getTestIteration());
 
         try {
-            // Clean up the topic
-            getMaestro().clear();
-
             PeerSet peerSet = distributionStrategy.distribute(getMaestro().getPeers());
             long numPeers = peerSet.workers();
 
