@@ -99,7 +99,7 @@ public class MaestroMqttClient implements MaestroClient {
      * @throws MaestroConnectionException if failed to publish the message
      * @throws MalformedNoteException     in case of other I/O errors
      */
-    protected synchronized void publish(final String topic, final MaestroNote note, int qos, boolean retained) throws
+    protected void publish(final String topic, final MaestroNote note, int qos, boolean retained) throws
             MalformedNoteException, MaestroConnectionException
     {
         do {
@@ -137,7 +137,7 @@ public class MaestroMqttClient implements MaestroClient {
      * @throws MaestroConnectionException if failed to publish the message
      * @throws MalformedNoteException     in case of other I/O errors
      */
-    protected synchronized void publish(final String topic, final MaestroNote note, int qos, boolean retained,
+    protected void publish(final String topic, final MaestroNote note, int qos, boolean retained,
                            final MaestroNoteCallback postProcessCallback) throws
             MalformedNoteException, MaestroConnectionException
     {
@@ -176,7 +176,7 @@ public class MaestroMqttClient implements MaestroClient {
      * @throws MaestroConnectionException if failed to publish the message
      * @throws MalformedNoteException     in case of other I/O errors
      */
-    public synchronized void publish(final String topic, final MaestroNote note) throws MalformedNoteException, MaestroConnectionException {
+    public void publish(final String topic, final MaestroNote note) throws MalformedNoteException, MaestroConnectionException {
         publish(topic, note, MqttServiceLevel.AT_LEAST_ONCE, false);
     }
 
