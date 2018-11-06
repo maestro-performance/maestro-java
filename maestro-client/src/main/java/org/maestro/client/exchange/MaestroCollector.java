@@ -69,18 +69,30 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
             logger.trace("Message {} arrived. Running awake check for {} monitors", note, monitored.size());
         }
 
-        monitored.forEach(monitor -> awakeCheck(note, monitor));
+        boolean handled = false;
+        for (MaestroMonitor monitor : monitored) {
+            handled = awakeCheck(note, monitor);
+            if (handled) {
+                break;
+            }
+        }
 
-        if (!collected.add(note)) {
-            logger.error("Unable to add the note {} to the collected notes cache", note);
+        if (!handled) {
+            if (!collected.add(note)) {
+                logger.error("Unable to add the note {} to the collected notes cache", note);
+            }
         }
     }
 
-    private void awakeCheck(final MaestroNote note, final MaestroMonitor monitor) {
+    private boolean awakeCheck(final MaestroNote note, final MaestroMonitor monitor) {
         if (monitor.shouldAwake(note)) {
             logger.trace("Predicate check successful for note {}", note);
             monitor.doUnlock();
+
+            return true;
         }
+
+        return false;
     }
 
 
