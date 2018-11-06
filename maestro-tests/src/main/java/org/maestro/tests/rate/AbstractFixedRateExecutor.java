@@ -98,7 +98,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
             finally {
                 onComplete();
 
-                drain();
+                drain(peerSet);
             }
         }
         catch (TimeoutException te) {
