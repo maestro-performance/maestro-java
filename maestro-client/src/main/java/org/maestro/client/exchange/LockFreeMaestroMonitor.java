@@ -52,7 +52,7 @@ public class LockFreeMaestroMonitor extends MaestroMonitor {
         boolean ret = getObject().test(subject);
 
         if (ret) {
-            logger.info("Message {} matches the predicate", subject);
+            logger.trace("Message {} matches the predicate", subject);
             andThen(subject);
         }
 
