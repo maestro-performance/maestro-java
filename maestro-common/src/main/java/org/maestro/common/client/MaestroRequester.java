@@ -302,9 +302,10 @@ public interface MaestroRequester {
 
     /**
      * Waits for the drain notifications
+     * @param expect how many notifications to expect
      * @return A completable future
      */
-    CompletableFuture<List<? extends MaestroNote>> waitForDrain();
+    CompletableFuture<List<? extends MaestroNote>> waitForDrain(int expect);
 
 
     /**
