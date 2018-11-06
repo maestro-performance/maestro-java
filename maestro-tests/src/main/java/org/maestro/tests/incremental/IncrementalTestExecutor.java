@@ -109,7 +109,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                 return true;
             }
             finally {
-                drain();
+                drain(peerSet);
             }
         }
         catch (TimeoutException te) {
