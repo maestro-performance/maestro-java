@@ -36,16 +36,16 @@ public class StatsCallBack implements MaestroNoteCallback {
     private final FixedRateTestExecutor executor;
     private final Map<String, Long> counters = new HashMap<>();
 
+    private final int targetRate;
+
     public StatsCallBack(FixedRateTestExecutor executor) {
         this.executor = executor;
-    }
 
-    private void reset() {
-        counters.clear();
+        targetRate = executor.getTestProfile().getRate();
     }
 
     @Override
-    public boolean call(MaestroNote note) {
+    public boolean call(final MaestroNote note) {
         if (!executor.isWarmUp() || !executor.isRunning()) {
             logger.trace("The stats callback should be not called outside warm-up phase");
 
@@ -62,11 +62,11 @@ public class StatsCallBack implements MaestroNoteCallback {
                 logger.trace("Received stats {}", statsResponse);
             }
 
-            int targetRate = executor.getTestProfile().getRate();
+
             if (isSlow(statsResponse, targetRate)) {
-                logger.warn("The warm-up duration might expire of time instead of count because the current " +
+                logger.debug("The warm-up duration might expire of time instead of count because the current " +
                                 "rate {} is much lower than the target rate {}", statsResponse.getRate(),
-                        executor.getTestProfile().getRate());
+                        targetRate);
             }
 
             updateCounters(statsResponse);
@@ -86,7 +86,6 @@ public class StatsCallBack implements MaestroNoteCallback {
         if (messageCount >= DurationCount.WARM_UP_COUNT) {
             logger.info("The warm-up count has been reached: {} of {}",
                     messageCount, DurationCount.WARM_UP_COUNT);
-            stop();
         }
         else {
             final int maxDuration = 3;
@@ -95,16 +94,10 @@ public class StatsCallBack implements MaestroNoteCallback {
             Duration elapsed = Duration.between(now, executor.getStartTime());
             if (elapsed.getSeconds() > (Duration.ofMinutes(maxDuration).getSeconds())) {
                 logger.warn("Stopping the warm-up because the maximum duration was reached");
-
-                stop();
             }
         }
     }
 
-    private void stop() {
-        this.executor.stopServices();
-        reset();
-    }
 
     private boolean isSlow(StatsResponse statsResponse, int targetRate) {
         return (statsResponse.getRate() < ((double) targetRate / 2.0)) && statsResponse.getRate() > 0;
