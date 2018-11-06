@@ -609,7 +609,7 @@ public final class Maestro implements MaestroRequester {
     public CompletableFuture<List<? extends MaestroNote>> waitForDrain(int expect) {
         return CompletableFuture.supplyAsync(
                 () -> collect(expect,
-                        note -> note instanceof DrainCompleteNotification || note instanceof InternalError)
+                        note -> note instanceof DrainCompleteNotification)
         );
     }
 
