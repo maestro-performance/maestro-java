@@ -196,7 +196,6 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         correlations.add(correlation);
 
         maestro.waitFor(correlations).thenAccept(this::checkReplies);
-
     }
 
 

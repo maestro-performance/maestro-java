@@ -20,6 +20,8 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.support.PeerEndpoint;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.MessageCorrelation;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.tests.AbstractTestProfile;
 import org.maestro.tests.cluster.DistributionStrategy;
@@ -27,6 +29,8 @@ import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import static org.maestro.client.Maestro.set;
@@ -119,49 +123,58 @@ public class FixedRateTestProfile extends AbstractTestProfile {
         return CompletionTime.estimate(getDuration().getWarmUpDuration(), warmUpRate);
     }
 
+    private void checkReplies(List<? extends MaestroNote> replies) {
+        Maestro.checkReplies(replies, "apply");
+    }
+
     protected void apply(final Maestro maestro, boolean warmUp, final DistributionStrategy distributionStrategy) {
         Set<PeerEndpoint> endpoints = distributionStrategy.endpoints();
+        List<MessageCorrelation> correlations = new LinkedList<>();
 
         for (PeerEndpoint endpoint : endpoints) {
             String destination = endpoint.getDestination();
             String roleName = endpoint.getRole().toString();
 
-            setSendReceiveURL(maestro, endpoint);
+            setSendReceiveURL(maestro, endpoint, correlations);
 
             if (warmUp) {
                 logger.info("Setting {} warm-up rate to {}", roleName, warmUpRate);
-                set(maestro::setRate, destination, warmUpRate);
+                correlations.add(maestro.setRateAsync(destination, warmUpRate));
 
                 TestDuration warmUpDuration = getDuration().getWarmUpDuration();
                 long balancedDuration = Math.round((double) warmUpDuration.getNumericDuration() / (double) getParallelCount());
 
                 logger.info("Setting {} warm-up duration to {}", roleName, balancedDuration);
-                set(maestro::setDuration, destination, balancedDuration);
+                correlations.add(maestro.setDurationAsync(destination, balancedDuration));
 
                 logger.info("Setting {} warm-up parallel count to {}", roleName, this.warmUpParallelCount);
                 set(maestro::setParallelCount, destination, this.warmUpParallelCount);
+                correlations.add(maestro.setParallelCountAsync(destination, warmUpParallelCount));
             }
             else {
                 logger.info("Setting {} test rate to {}", roleName, getRate());
                 set(maestro::setRate, destination, rate);
+                correlations.add(maestro.setRateAsync(destination, rate));
 
                 logger.info("Setting {} test duration to {}", roleName, getDuration());
-                set(maestro::setDuration, destination, this.getDuration().toString());
+                correlations.add(maestro.setDurationAsync(destination, this.getDuration().toString()));
 
                 logger.info("Setting {} parallel count to {}", roleName, this.parallelCount);
-                set(maestro::setParallelCount, destination, this.parallelCount);
+                correlations.add(maestro.setParallelCountAsync(destination, parallelCount));
             }
 
             logger.info("Setting {} fail-condition-latency to {}", roleName, getMaximumLatency());
-            set(maestro::setFCL, destination, getMaximumLatency());
+            correlations.add(maestro.setFCLAsync(destination, getMaximumLatency()));
 
             logger.info("Setting {} message size to {}", roleName, getMessageSize());
-            set(maestro::setMessageSize, destination, getMessageSize());
+            correlations.add(maestro.setMessageSizeAsync(destination, getMessageSize()));
 
-            applyInspector(maestro, endpoint, destination);
+            applyInspector(maestro, endpoint, destination, correlations);
 
-            applyAgent(maestro, endpoint, destination);
+            applyAgent(maestro, endpoint, destination, correlations);
         }
+
+        maestro.waitFor(correlations).thenAccept(this::checkReplies);
     }
 
     @Override

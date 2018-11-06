@@ -18,12 +18,16 @@ package org.maestro.tests.incremental;
 
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.support.PeerEndpoint;
+import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.MessageCorrelation;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.tests.AbstractTestProfile;
 import org.maestro.tests.cluster.DistributionStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Set;
 
 import static org.maestro.client.Maestro.set;
@@ -163,39 +167,46 @@ public class IncrementalTestProfile extends AbstractTestProfile {
         return getEstimatedCompletionTime(duration, getRate());
     }
 
+    private void checkReplies(List<? extends MaestroNote> replies) {
+        Maestro.checkReplies(replies, "apply");
+    }
+
     public void apply(final Maestro maestro, final DistributionStrategy distributionStrategy) {
         Set<PeerEndpoint> endpoints = distributionStrategy.endpoints();
+        List<MessageCorrelation> correlations = new LinkedList<>();
 
         for (PeerEndpoint endpoint : endpoints) {
             final String destination = endpoint.getDestination();
-            setSendReceiveURL(maestro, endpoint);
+            setSendReceiveURL(maestro, endpoint, correlations);
 
             logger.info("Setting rate to {}", getRate());
-            set(maestro::setRate, destination, rate);
+            correlations.add(maestro.setRateAsync(destination, rate));
 
             logger.info("Rate increment value is {}", getRateIncrement());
 
             logger.info("Setting parallel count to {}", this.parallelCount);
-            set(maestro::setParallelCount, destination, this.parallelCount);
+            correlations.add(maestro.setParallelCountAsync(destination, this.parallelCount));
 
             logger.info("Parallel count increment value is {}", getParallelCountIncrement());
 
             logger.info("Setting duration to {}", getDuration());
-            set(maestro::setDuration, destination, this.getDuration().toString());
+            correlations.add(maestro.setDurationAsync(destination, this.getDuration().toString()));
 
             logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
-            set(maestro::setFCL, destination, getMaximumLatency());
+            correlations.add(maestro.setFCLAsync(destination, getMaximumLatency()));
 
             // Variable message messageSize
             logger.info("Setting message size to: {}", getMessageSize());
-            set(maestro::setMessageSize, destination, getMessageSize());
+            correlations.add(maestro.setMessageSizeAsync(destination, getMessageSize()));
 
-            applyInspector(maestro, endpoint, destination);
+            applyInspector(maestro, endpoint, destination, correlations);
 
-            applyAgent(maestro, endpoint, destination);
+            applyAgent(maestro, endpoint, destination, correlations);
 
             logger.info("Estimated time for test completion: {} seconds", getEstimatedCompletionTime());
         }
+
+        maestro.waitFor(correlations).thenAccept(this::checkReplies);
     }
 
 

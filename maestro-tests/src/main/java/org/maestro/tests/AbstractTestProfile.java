@@ -22,6 +22,7 @@ import org.maestro.common.Role;
 import org.maestro.common.agent.Source;
 import org.maestro.common.agent.UserCommandData;
 import org.maestro.common.client.exceptions.NotEnoughRepliesException;
+import org.maestro.common.client.notes.MessageCorrelation;
 import org.maestro.common.duration.DurationCount;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.tests.support.TestEndpoint;
@@ -29,6 +30,8 @@ import org.maestro.tests.support.TestEndpointResolver;
 import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.List;
 
 import static org.maestro.client.Maestro.set;
 
@@ -105,7 +108,9 @@ public abstract class AbstractTestProfile implements TestProfile {
         this.endpointResolver = endpointResolver;
     }
 
-    protected void applyAgent(Maestro maestro, PeerEndpoint endpoint, String destination) {
+    protected void applyAgent(final Maestro maestro, final PeerEndpoint endpoint, final String destination,
+                              final List<MessageCorrelation> correlations)
+    {
         if (endpoint.getRole() == Role.AGENT) {
             if (getExtPointSource() != null) {
                 if (getExtPointBranch() != null) {
@@ -122,14 +127,15 @@ public abstract class AbstractTestProfile implements TestProfile {
         }
     }
 
-    protected void applyInspector(Maestro maestro, PeerEndpoint endpoint, String destination) {
+    protected void applyInspector(final Maestro maestro, final PeerEndpoint endpoint, final String destination,
+                                  final List<MessageCorrelation> correlations) {
         if (endpoint.getRole() == Role.INSPECTOR) {
             if (getManagementInterface() != null) {
                 if (getInspectorName() != null) {
                     logger.info("Setting the management interface to {} using inspector {}", getManagementInterface(),
                             getInspectorName());
                     try {
-                        set(maestro::setManagementInterface, destination, getManagementInterface());
+                        correlations.add(maestro.setManagementInterfaceAsync(destination, getManagementInterface()));
                     }
                     catch (NotEnoughRepliesException ne) {
                         logger.warn("Apparently no inspector nodes are enabled on this cluster. Ignoring ...");
@@ -139,7 +145,9 @@ public abstract class AbstractTestProfile implements TestProfile {
         }
     }
 
-    protected void setSendReceiveURL(Maestro maestro, PeerEndpoint endpoint) {
+    protected void setSendReceiveURL(final Maestro maestro, final PeerEndpoint endpoint,
+                                     final List<MessageCorrelation> correlations)
+    {
         final TestEndpoint testEndpoint = endpointResolver.resolve(endpoint);
 
         if (testEndpoint == null) {
@@ -153,7 +161,7 @@ public abstract class AbstractTestProfile implements TestProfile {
         else {
             logger.info("Setting {} end point to {}", endpoint.getRole(), testEndpoint.getURL());
 
-            set(maestro::setBroker, endpoint.getDestination(), testEndpoint.getURL());
+            correlations.add(maestro.setBrokerAsync(endpoint.getDestination(), testEndpoint.getURL()));
         }
     }
 
