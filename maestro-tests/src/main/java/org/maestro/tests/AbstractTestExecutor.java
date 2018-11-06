@@ -27,6 +27,7 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Role;
 import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.MessageCorrelation;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.client.notes.WorkerStartOptions;
 import org.maestro.common.exceptions.MaestroConnectionException;
@@ -164,20 +165,6 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         Maestro.checkReplies(replies, "stop");
     }
 
-    private void verifyStopCommand(CompletableFuture<List<? extends MaestroNote>> completableFuture) {
-        if (!completableFuture.isDone()) {
-            logger.trace("Still waiting for the stop worker replies");
-        }
-
-        try {
-            completableFuture.get();
-        } catch (InterruptedException e) {
-            logger.trace("Interrupted while waiting for the stop worker replies");
-        } catch (ExecutionException e) {
-            logger.trace("Execution error while waiting for the stop worker replies: {}", e.getMessage(), e);
-        }
-    }
-
     /**
      * Stop connected peers
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
@@ -186,36 +173,30 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         logger.info("Requesting all Maestro peers to stop");
 
         Set<PeerEndpoint> endpoints = distributionStrategy.endpoints();
-        List<CompletableFuture<List<? extends MaestroNote>>> futures = new LinkedList<>();
+        List<MessageCorrelation> correlations = new LinkedList<>();
 
         for (PeerEndpoint peerEndpoint : endpoints) {
             if (peerEndpoint.getRole() == Role.SENDER) {
-                CompletableFuture<List<? extends MaestroNote>> stopWorkerFuture = getMaestro()
-                        .stopWorker(peerEndpoint.getDestination());
+                MessageCorrelation correlation = getMaestro().stopWorkerAsync(peerEndpoint.getDestination());
 
-                stopWorkerFuture.thenAccept(this::checkReplies);
-
-                futures.add(stopWorkerFuture);
+                correlations.add(correlation);
             }
         }
 
         for (PeerEndpoint peerEndpoint : endpoints) {
             if (peerEndpoint.getRole() == Role.RECEIVER) {
-                CompletableFuture<List<? extends MaestroNote>> stopWorkerFuture = getMaestro()
-                        .stopWorker(peerEndpoint.getDestination());
+                MessageCorrelation correlation = getMaestro().stopWorkerAsync(peerEndpoint.getDestination());
 
-                stopWorkerFuture.thenAccept(this::checkReplies);
-                futures.add(stopWorkerFuture);
+                correlations.add(correlation);
             }
         }
 
-        CompletableFuture<List<? extends MaestroNote>> stopWorkerFuture = getMaestro()
-                .stopWorker(MaestroTopics.peerTopic(Role.INSPECTOR));
-        stopWorkerFuture.thenAccept(this::checkReplies);
+        MessageCorrelation correlation = getMaestro().stopWorkerAsync(MaestroTopics.peerTopic(Role.INSPECTOR));
 
-        futures.add(stopWorkerFuture);
+        correlations.add(correlation);
 
-        futures.forEach(this::verifyStopCommand);
+        maestro.waitFor(correlations).thenAccept(this::checkReplies);
+
     }
 
 

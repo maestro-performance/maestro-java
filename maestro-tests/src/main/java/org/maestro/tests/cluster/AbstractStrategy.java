@@ -21,8 +21,8 @@ import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerEndpoint;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.exchange.support.PeerSet;
-import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.MessageCorrelation;
 import org.maestro.common.exceptions.MaestroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -58,26 +58,14 @@ public abstract class AbstractStrategy implements DistributionStrategy {
         Maestro.checkReplies(replies, "unassign");
     }
 
-    private void verifyCommand(CompletableFuture<List<? extends MaestroNote>> completableFuture) {
-        if (!completableFuture.isDone()) {
-            logger.trace("Still waiting for the stop worker replies");
-        }
-
-        try {
-            completableFuture.get();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        } catch (ExecutionException e) {
-            e.printStackTrace();
-        }
-    }
-
-    private void unassign(final String id, final PeerInfo peerInfo) {
+    private void unassign(final String id, final PeerInfo peerInfo, List<MessageCorrelation> correlations) {
         if (peerInfo.getRole().isWorker()) {
             String topic = MaestroTopics.peerTopic(id);
 
             logger.info("Unassigning node {}@{} as {}", peerInfo.peerName(), peerInfo.peerHost(), peerInfo.getRole());
-            maestro.roleUnassign(topic).thenAccept(this::checkReplies);
+            MessageCorrelation correlation = maestro.roleUnassignAsync(topic);
+
+            correlations.add(correlation);
         }
     }
 
@@ -109,11 +97,16 @@ public abstract class AbstractStrategy implements DistributionStrategy {
     @Override
     public void reset() {
         // Reset peer assignment
+        List<MessageCorrelation> correlations = new LinkedList<>();
+
         if (endpoints.size() > 0) {
-            peers.getPeers().forEach(this::unassign);
+
+            peers.getPeers().forEach((k, v) -> unassign(k, v, correlations));
             this.peers = null;
             this.endpoints.clear();
         }
+
+        maestro.waitFor(correlations).thenAccept(this::checkReplies);
     }
 
     @Override

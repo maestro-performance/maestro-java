@@ -115,6 +115,16 @@ public final class Maestro implements MaestroRequester {
         return note.correlatesTo(correlation);
     }
 
+    private static boolean isCorrelated(final MaestroNote note, final List<MessageCorrelation> correlations) {
+        for (MessageCorrelation correlation : correlations) {
+            if (isCorrelated(note, correlation)) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> setBroker(final String topic, final String value) throws MaestroConnectionException {
@@ -285,28 +295,40 @@ public final class Maestro implements MaestroRequester {
         );
     }
 
-    @Override
-    public CompletableFuture<List<? extends MaestroNote>> stopWorker(final String topic) throws MaestroConnectionException {
+//    @Override
+    public MessageCorrelation stopWorkerAsync(final String topic) throws MaestroConnectionException {
         final StopWorker maestroNote = new StopWorker();
-
-
 
         final MessageCorrelation correlation = maestroNote.correlate();
 
         logger.info("Published stop request with IDs {}", correlation);
 
-        CompletableFuture<List<? extends MaestroNote>> ret =  CompletableFuture.supplyAsync(
-                () -> collectNoLock(note -> isCorrelated(note, correlation), 10, 200)
+        maestroClient.publish(topic, maestroNote);
+
+        return correlation;
+    }
+
+    public CompletableFuture<List<? extends MaestroNote>> waitFor(final List<MessageCorrelation> correlations)
+            throws MaestroConnectionException
+    {
+        return CompletableFuture.supplyAsync(
+                () -> collectNoLock(note -> isCorrelated(note, correlations), 10, 200)
         );
+    }
+
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> stopWorker(final String topic) throws MaestroConnectionException {
+        final StopWorker maestroNote = new StopWorker();
+
+        final MessageCorrelation correlation = maestroNote.correlate();
+
+        logger.info("Published stop request with IDs {}", correlation);
 
         maestroClient.publish(topic, maestroNote);
 
-        return ret;
-
-
-//        return CompletableFuture.supplyAsync(
-//                () -> collect(note -> isCorrelated(note, correlation), 10, 200)
-//        );
+        return CompletableFuture.supplyAsync(
+                () -> collectNoLock(note -> isCorrelated(note, correlation), 10, 200)
+        );
     }
 
 
@@ -464,6 +486,13 @@ public final class Maestro implements MaestroRequester {
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
         );
+    }
+
+    public MessageCorrelation roleUnassignAsync(final String topic) throws MaestroConnectionException {
+        RoleUnassign maestroNote = new RoleUnassign();
+
+        maestroClient.publish(topic, maestroNote);
+        return maestroNote.correlate();
     }
 
     @Override
