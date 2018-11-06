@@ -20,6 +20,7 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerEndpoint;
+import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
 import org.maestro.common.ConfigurationWrapper;
@@ -279,17 +280,20 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         return testProfile.getEstimatedCompletionTime() + CompletionTime.getDeadline();
     }
 
-    protected void drain() {
+    protected void drain(final PeerSet peerSet) {
         long drainDeadline = config.getLong("client.drain.deadline.secs", 60);
 
         try {
+            long numReceivers = peerSet.count(Role.RECEIVER);
+            logger.debug("Waiting for {} drain notifications", numReceivers);
+
             final List<? extends MaestroNote> drainReplies = getMaestro()
-                    .waitForDrain()
+                    .waitForDrain((int) numReceivers)
                     .get(drainDeadline, TimeUnit.SECONDS);
 
-            if (drainReplies.size() == 0) {
-                logger.warn("None of the peers reported a successful drain from the SUT within {} seconds",
-                        drainDeadline);
+            if (drainReplies.size() != numReceivers) {
+                logger.warn("Received only {} of {} expected drain notifications within {} seconds",
+                        drainReplies.size(), numReceivers, drainDeadline);
             }
 
             drainReplies.forEach(this::isFailed);
