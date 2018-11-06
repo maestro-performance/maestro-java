@@ -494,7 +494,10 @@ public final class Maestro implements MaestroRequester {
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
     private List<MaestroNote> collectNoLock(Predicate<? super MaestroNote> predicate, int retries, int retryTimeout) {
-        logger.warn("Starting the collectNoLock method w/ thread {}", Thread.currentThread().getId());
+        if (logger.isTraceEnabled()) {
+            logger.trace("Starting the collectNoLock method w/ thread {}", Thread.currentThread().getId());
+        }
+
         List<MaestroNote> replies = new LinkedList<>();
 
         MaestroMonitor monitor = new LockFreeMaestroMonitor(predicate, replies);
@@ -504,7 +507,6 @@ public final class Maestro implements MaestroRequester {
             collectorExecutor.getCollector().monitor(monitor);
 
             do {
-//                replies.addAll(collectorExecutor.getCollector().collect(predicate));
                 logger.trace("Collected {} notes", replies.size());
 
                 if (staleChecker.isStale(replies.size())) {
@@ -528,13 +530,23 @@ public final class Maestro implements MaestroRequester {
             logger.trace("Exiting the collection loop: {} collected for {}", replies.size(), predicate);
         }
         finally {
-            // claim whatever may have been missed
-            replies.addAll(collectorExecutor.getCollector().collect(predicate));
-
             collectorExecutor.getCollector().remove(monitor);
+
+            claimRemainingMessages(predicate, replies);
         }
 
         return replies;
+    }
+
+    private void claimRemainingMessages(final Predicate<? super MaestroNote> predicate, final List<MaestroNote> replies) {
+        final List<MaestroNote> remaining = collectorExecutor.getCollector().collect(predicate);
+
+        if (remaining.size() > 0) {
+            logger.trace("Claimed {} remaining messages on Thread {}", remaining.size(),
+                    Thread.currentThread().getId());
+        }
+
+        replies.addAll(remaining);
     }
 
 
@@ -545,6 +557,11 @@ public final class Maestro implements MaestroRequester {
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
     private List<MaestroNote> collect(int expect, Predicate<? super MaestroNote> predicate) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Starting the collect method w/ thread {} and expecting {} replies",
+                    Thread.currentThread().getId(), expect);
+        }
+
         List<MaestroNote> replies = new LinkedList<>();
         MaestroMonitor monitor = new LockFreeMaestroMonitor(predicate, replies);
 
@@ -552,7 +569,6 @@ public final class Maestro implements MaestroRequester {
             collectorExecutor.getCollector().monitor(monitor);
 
             do {
-//                replies.addAll(collectorExecutor.getCollector().collect(predicate));
                 logger.trace("Collected {} of {}", replies.size(), expect);
 
                 if (replies.size() >= expect) {
@@ -573,9 +589,9 @@ public final class Maestro implements MaestroRequester {
                     predicate);
         }
         finally {
-            replies.addAll(collectorExecutor.getCollector().collect(predicate));
-
             collectorExecutor.getCollector().remove(monitor);
+
+            claimRemainingMessages(predicate, replies);
         }
 
         return replies;
@@ -587,7 +603,10 @@ public final class Maestro implements MaestroRequester {
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
     private List<MaestroNote> collect(Predicate<? super MaestroNote> predicate, int retries, int retryTimeout) {
-        logger.warn("Starting the collect method w/ thread {}", Thread.currentThread().getId());
+        if (logger.isTraceEnabled()) {
+            logger.trace("Starting the collect method w/ thread {}", Thread.currentThread().getId());
+        }
+
         List<MaestroNote> replies = new LinkedList<>();
 
         MaestroMonitor monitor = new LockFreeMaestroMonitor(predicate, replies);
@@ -597,7 +616,6 @@ public final class Maestro implements MaestroRequester {
             collectorExecutor.getCollector().monitor(monitor);
 
             do {
-//                replies.addAll(collectorExecutor.getCollector().collect(predicate));
                 logger.trace("Collected {} notes", replies.size());
 
                 if (staleChecker.isStale(replies.size())) {
@@ -620,6 +638,8 @@ public final class Maestro implements MaestroRequester {
         }
         finally {
             collectorExecutor.getCollector().remove(monitor);
+
+            claimRemainingMessages(predicate, replies);
         }
 
         return replies;
