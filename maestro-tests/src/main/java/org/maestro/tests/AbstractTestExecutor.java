@@ -171,9 +171,9 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         try {
             completableFuture.get();
         } catch (InterruptedException e) {
-            e.printStackTrace();
+            logger.trace("Interrupted while waiting for the stop worker replies");
         } catch (ExecutionException e) {
-            e.printStackTrace();
+            logger.trace("Execution error while waiting for the stop worker replies: {}", e.getMessage(), e);
         }
     }
 
