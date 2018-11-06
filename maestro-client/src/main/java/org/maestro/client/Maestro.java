@@ -693,11 +693,6 @@ public final class Maestro implements MaestroRequester {
     }
 
     @Override
-    public CompletableFuture<List<? extends MaestroNote>> waitForDrain() {
-        return waitForDrain(1);
-    }
-
-    @Override
     public CompletableFuture<List<? extends MaestroNote>> waitForNotifications(int expect) {
         return CompletableFuture.supplyAsync(
                 () -> collect(expect, maestroNotificationPredicate())
