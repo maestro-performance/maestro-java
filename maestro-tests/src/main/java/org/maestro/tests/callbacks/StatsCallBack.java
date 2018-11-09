@@ -18,6 +18,7 @@ package org.maestro.tests.callbacks;
 
 import org.maestro.client.callback.MaestroNoteCallback;
 import org.maestro.client.notes.StatsResponse;
+import org.maestro.common.Monitor;
 import org.maestro.common.Role;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.duration.DurationCount;
@@ -35,12 +36,15 @@ public class StatsCallBack implements MaestroNoteCallback {
 
     private final FixedRateTestExecutor executor;
     private final Map<String, Long> counters = new HashMap<>();
+    private final Monitor<?> warmUpMonitor;
     private boolean warmUpReached = false;
+
 
     private final int targetRate;
 
-    public StatsCallBack(FixedRateTestExecutor executor) {
+    public StatsCallBack(final FixedRateTestExecutor executor, final Monitor<?> warmUpMonitor) {
         this.executor = executor;
+        this.warmUpMonitor = warmUpMonitor;
 
         targetRate = executor.getTestProfile().getRate();
     }
@@ -104,10 +108,13 @@ public class StatsCallBack implements MaestroNoteCallback {
     }
 
     private void stop() {
-        this.executor.stopStatsCollection();
-
-        this.executor.stopServices();
-        counters.clear();
+        try {
+            this.executor.stopStatsCollection();
+            counters.clear();
+        }
+        finally {
+            warmUpMonitor.doUnlock();
+        }
     }
 
 

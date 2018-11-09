@@ -48,6 +48,11 @@ public class StraightFixedRateTestExecutor extends AbstractFixedRateExecutor {
 
     }
 
+    @Override
+    protected void onTestStarted() {
+
+    }
+
     protected String phaseName() {
         return "run";
     }

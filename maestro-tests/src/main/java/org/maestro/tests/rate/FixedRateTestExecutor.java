@@ -18,6 +18,7 @@ package org.maestro.tests.rate;
 
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.common.Monitor;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.client.notes.TestDetails;
 import org.maestro.tests.callbacks.StatsCallBack;
@@ -38,6 +39,7 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
 
     private final ScheduledExecutorService statsExecutor = Executors.newSingleThreadScheduledExecutor();
     private final StatsCallBack statsCallBack;
+    private final Monitor<Object> monitor;
 
     private volatile boolean warmUp = false;
 
@@ -45,7 +47,8 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
                                  final DistributionStrategy distributionStrategy) {
         super(maestro, testProfile, distributionStrategy);
 
-        statsCallBack = new StatsCallBack(this);
+        monitor = new Monitor(this);
+        statsCallBack = new StatsCallBack(this, monitor);
     }
 
     protected void reset() {
@@ -91,6 +94,22 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
     protected void onComplete() {
         if (warmUp) {
             stopStatsCollection();
+        }
+    }
+
+    @Override
+    protected void onTestStarted() {
+        if (warmUp) {
+            logger.info("Waiting for the warm up to complete");
+            try {
+                monitor.doLock();
+            } catch (InterruptedException e) {
+                logger.trace("Interrupted while waiting for the warm-up condition");
+            }
+
+            logger.info("Warm-up completed. Stopping the test.");
+
+            this.stopServices();
         }
     }
 

@@ -59,10 +59,13 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
 
     protected abstract void onInit();
 
+    protected abstract void onTestStarted();
+
     protected abstract void onComplete();
 
     protected boolean runTest(final Test test, final BiConsumer<Maestro, DistributionStrategy> apply) {
         try {
+
             // Clean up the topic
             getMaestro().clear();
 
@@ -72,31 +75,18 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
             apply.accept(getMaestro(), distributionStrategy);
 
             try {
-                testStart(test);
+                CompletableFuture<List<? extends MaestroNote>> notificationsFuture = doTestStart(test, (int) numPeers);
 
-                startServices(testProfile, distributionStrategy);
+                CompletableFuture<Boolean> failures = notificationsFuture.thenApply(this::reviewResults);
 
-                onInit();
+                onTestStarted();
 
-                long timeout = getTimeout();
-                logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
-                List<? extends MaestroNote> results = getMaestro()
-                        .waitForNotifications((int) numPeers)
-                        .get(timeout, TimeUnit.SECONDS);
+                final long timeout = getTimeout();
+                List<? extends MaestroNote> results = notificationsFuture.get(timeout, TimeUnit.SECONDS);
 
                 XUnitGenerator.generate(test, results, 0);
 
-                long failed = results.stream()
-                        .filter(this::isTestFailed)
-                        .count();
-
-                if (failed > 0) {
-                    logger.info("Test {} completed unsuccessfully", phaseName());
-                    return false;
-                }
-
-                logger.info("Test {} completed successfully", phaseName());
-                return true;
+                return failures.get();
             }
             finally {
                 onComplete();
@@ -117,6 +107,33 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
         }
 
         return false;
+    }
+
+    private CompletableFuture<List<? extends MaestroNote>> doTestStart(Test test, int numPeers) {
+        final long timeout = getTimeout();
+        testStart(test);
+
+        startServices(testProfile, distributionStrategy);
+
+        onInit();
+
+        logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
+
+        return getMaestro().waitForNotifications(numPeers);
+    }
+
+    private boolean reviewResults(final List<? extends MaestroNote> results) {
+        long failed = results.stream()
+                .filter(this::isTestFailed)
+                .count();
+
+        if (failed > 0) {
+            logger.info("Test {} completed unsuccessfully", phaseName());
+            return false;
+        }
+
+        logger.info("Test {} completed successfully", phaseName());
+        return true;
     }
 
     public void stopServices() {
