@@ -35,6 +35,7 @@ public class StatsCallBack implements MaestroNoteCallback {
 
     private final FixedRateTestExecutor executor;
     private final Map<String, Long> counters = new HashMap<>();
+    private boolean warmUpReached = false;
 
     private final int targetRate;
 
@@ -83,9 +84,10 @@ public class StatsCallBack implements MaestroNoteCallback {
         final long messageCount = counters.values().stream().mapToLong(Number::longValue).sum();
         logger.debug("Current message count: {}", messageCount);
 
-        if (messageCount >= DurationCount.WARM_UP_COUNT) {
+        if ((messageCount >= DurationCount.WARM_UP_COUNT) && !warmUpReached) {
             logger.info("The warm-up count has been reached: {} of {}",
                     messageCount, DurationCount.WARM_UP_COUNT);
+            warmUpReached = true;
         }
         else {
             final int maxDuration = 3;
