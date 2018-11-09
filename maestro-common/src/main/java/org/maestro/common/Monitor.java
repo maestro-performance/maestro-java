@@ -52,7 +52,7 @@ public class Monitor<T> {
     public void doLock() throws InterruptedException {
         lock.lock();
         try {
-            logger.trace("Not enough messages satisfying the condition are available. Waiting ...");
+            logger.trace("The condition for waking up the monitor has not been satisfied. Waiting ...");
             condition.await();
         }
         finally {
@@ -67,7 +67,7 @@ public class Monitor<T> {
     public void doLock(long timeout) throws InterruptedException {
         lock.lock();
         try {
-            logger.trace("Not enough messages satisfying the condition are available. Waiting ...");
+            logger.trace("The condition for waking up the monitor has not been satisfied. Waiting ...");
             condition.await(timeout, TimeUnit.MILLISECONDS);
         }
         finally {
@@ -82,7 +82,7 @@ public class Monitor<T> {
     public void doUnlock() {
         lock.lock();
         try {
-            logger.trace("Some messages arrived ... unlocking for check");
+            logger.trace("The condition for unlocking the monitor has been satisfied");
             condition.signal();
         }
         finally {
