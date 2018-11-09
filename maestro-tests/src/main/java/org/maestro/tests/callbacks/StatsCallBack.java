@@ -88,6 +88,8 @@ public class StatsCallBack implements MaestroNoteCallback {
             logger.info("The warm-up count has been reached: {} of {}",
                     messageCount, DurationCount.WARM_UP_COUNT);
             warmUpReached = true;
+
+            stop();
         }
         else {
             final int maxDuration = 3;
@@ -96,8 +98,14 @@ public class StatsCallBack implements MaestroNoteCallback {
             Duration elapsed = Duration.between(now, executor.getStartTime());
             if (elapsed.getSeconds() > (Duration.ofMinutes(maxDuration).getSeconds())) {
                 logger.warn("Stopping the warm-up because the maximum duration was reached");
+                stop();
             }
         }
+    }
+
+    private void stop() {
+        this.executor.stopServices();
+        counters.clear();
     }
 
 
