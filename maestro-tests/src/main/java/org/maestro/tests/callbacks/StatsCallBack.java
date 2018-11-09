@@ -104,6 +104,8 @@ public class StatsCallBack implements MaestroNoteCallback {
     }
 
     private void stop() {
+        this.executor.stopStatsCollection();
+
         this.executor.stopServices();
         counters.clear();
     }

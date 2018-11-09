@@ -80,11 +80,17 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
         }
     }
 
+    public synchronized void stopStatsCollection() {
+        if (!statsExecutor.isShutdown()) {
+            getMaestro().getCollector().removeCallback(statsCallBack);
+            statsExecutor.shutdown();
+        }
+    }
+
     @Override
     protected void onComplete() {
         if (warmUp) {
-            getMaestro().getCollector().removeCallback(statsCallBack);
-            statsExecutor.shutdown();
+            stopStatsCollection();
         }
     }
 
