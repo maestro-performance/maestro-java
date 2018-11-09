@@ -115,9 +115,12 @@ public class MaestroMqttClient implements MaestroClient {
                     logger.warn("The client is disconnected");
                 }
 
-                MqttTopic mqttTopic = mqttClient.getTopic(topic);
+                synchronized (mqttClient) {
+                    MqttTopic mqttTopic = mqttClient.getTopic(topic);
 
-                mqttTopic.publish(bytes, qos, retained);
+                    mqttTopic.publish(bytes, qos, retained);
+                }
+
                 note.next();
             } catch (MqttException e) {
                 throw new MaestroConnectionException("Unable to publish message: " + e.getMessage(), e);
@@ -154,9 +157,12 @@ public class MaestroMqttClient implements MaestroClient {
                     logger.warn("The client is disconnected");
                 }
 
-                MqttTopic mqttTopic = mqttClient.getTopic(topic);
+                synchronized (mqttClient) {
+                    MqttTopic mqttTopic = mqttClient.getTopic(topic);
 
-                mqttTopic.publish(bytes, qos, retained);
+                    mqttTopic.publish(bytes, qos, retained);
+                }
+
                 if (postProcessCallback != null) {
                     postProcessCallback.call(note);
                 }
