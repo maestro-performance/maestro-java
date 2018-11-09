@@ -366,7 +366,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     }
 
     @Override
-    public void handle(StartTestRequest note) {
+    public void handle(final StartTestRequest note) {
         super.handle(note);
 
         getClient().notifyStarted(getCurrentTest(), "");
