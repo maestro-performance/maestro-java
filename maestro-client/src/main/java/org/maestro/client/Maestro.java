@@ -510,6 +510,7 @@ public final class Maestro implements MaestroRequester {
                     monitor.doLock();
                 } catch (InterruptedException e) {
                     logger.trace("Interrupted while waiting for message collection");
+                    break;
                 }
 
                 logger.trace("Out of the collection lock. Checking for new messages");
