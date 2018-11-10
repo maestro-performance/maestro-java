@@ -4,12 +4,19 @@ MAESTRO_LABEL_VERSION?=${MAESTRO_BRANCH}
 
 clean:
 	docker rmi -f maestroperf/maestro-broker:${MAESTRO_VERSION}
+	docker rmi -f maestroperf/maestro-broker:${MAESTRO_LABEL_VERSION}
 	docker rmi -f maestroperf/maestro-client:${MAESTRO_VERSION}
+	docker rmi -f maestroperf/maestro-client:${MAESTRO_LABEL_VERSION}
 	docker rmi -f maestroperf/maestro-agent:${MAESTRO_VERSION}
+	docker rmi -f maestroperf/maestro-agent:${MAESTRO_LABEL_VERSION}
 	docker rmi -f maestroperf/maestro-inspector:${MAESTRO_VERSION}
+	docker rmi -f maestroperf/maestro-inspector:${MAESTRO_LABEL_VERSION}
 	docker rmi -f maestroperf/maestro-exporter:${MAESTRO_VERSION}
+	docker rmi -f maestroperf/maestro-exporter:${MAESTRO_LABEL_VERSION}
 	docker rmi -f maestroperf/maestro-worker:${MAESTRO_VERSION}
+	docker rmi -f maestroperf/maestro-worker:${MAESTRO_LABEL_VERSION}
 	docker rmi -f maestroperf/maestro-reports:${MAESTRO_VERSION}
+	docker rmi -f maestroperf/maestro-reports:${MAESTRO_LABEL_VERSION}
 	docker rmi -f maestro_client maestro_agent maestro_reports maestro_inspector maestro_worker maestro_broker maestro_exporter
 
 broker:
