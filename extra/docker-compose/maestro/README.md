@@ -29,19 +29,19 @@ Artemis 2.5.0 (configurable via ARTEMIS_VERSION and ARTEMIS_JOURNAL). The files 
 You can build the containers with:
 
 ```
- docker-compose -f docker-compose.yml -f docker-artemis-compose.yml build
+ docker-compose -f docker-compose.yml -f suts/docker-artemis-compose.yml build
 ```
 
 or
 
 ```
- docker-compose -f docker-compose.yml -f docker-activemq-compose.yml build
+ docker-compose -f docker-compose.yml -f suts/docker-activemq-compose.yml build
 ```
 
 Optionally, you can also build different versions and branches.
 
 ```
-docker-compose -f docker-compose.yml -f docker-artemis-compose.yml build --build-arg MAESTRO_VERSION=1.5.0-SNAPSHOT --build-arg MAESTRO_BRANCH=dynamic-worker-execution
+docker-compose -f docker-compose.yml -f suts/docker-artemis-compose.yml build --build-arg MAESTRO_VERSION=1.5.0-SNAPSHOT --build-arg MAESTRO_BRANCH=dynamic-worker-execution
 ```
 
 Launching
@@ -50,7 +50,7 @@ Launching
 Run:
 
 ```
- docker-compose -f docker-compose.yml -f docker-artemis-compose.yml up --scale worker=2 -d
+ docker-compose -f docker-compose.yml -f suts/docker-artemis-compose.yml up --scale worker=2 -d
 ```
 
 **Note**: on some rare occasions, the containers for the workers does not start correct. 
