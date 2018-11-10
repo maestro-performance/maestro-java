@@ -27,12 +27,19 @@ build: broker maestro
 
 push: build
 	docker push maestroperf/maestro-broker:${MAESTRO_VERSION}
+	docker push maestroperf/maestro-broker:${MAESTRO_LABEL_VERSION}
 	docker push maestroperf/maestro-client:${MAESTRO_VERSION}
+	docker push maestroperf/maestro-client:${MAESTRO_LABEL_VERSION}
 	docker push maestroperf/maestro-worker:${MAESTRO_VERSION}
+	docker push maestroperf/maestro-worker:${MAESTRO_LABEL_VERSION}
 	docker push maestroperf/maestro-agent:${MAESTRO_VERSION}
+	docker push maestroperf/maestro-agent:${MAESTRO_LABEL_VERSION}
 	docker push maestroperf/maestro-inspector:${MAESTRO_VERSION}
+	docker push maestroperf/maestro-inspector:${MAESTRO_LABEL_VERSION}
 	docker push maestroperf/maestro-exporter:${MAESTRO_VERSION}
+	docker push maestroperf/maestro-exporter:${MAESTRO_LABEL_VERSION}
 	docker push maestroperf/maestro-reports:${MAESTRO_VERSION}
+	docker push maestroperf/maestro-reports:${MAESTRO_LABEL_VERSION}
 
 all: push
 
