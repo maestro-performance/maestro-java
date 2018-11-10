@@ -13,7 +13,7 @@ clean:
 	docker rmi -f maestro_client maestro_agent maestro_reports maestro_inspector maestro_worker maestro_broker maestro_exporter
 
 broker:
-	cd broker && docker build -t maestroperf/maestro-broker:${MAESTRO_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} .
+	cd broker && docker build -t maestroperf/maestro-broker:${MAESTRO_VERSION} -t maestroperf/maestro-broker:${MAESTRO_LABEL_VERSION} --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} .
 
 maestro:
 	cd maestro && docker build --build-arg MAESTRO_VERSION=${MAESTRO_VERSION} --build-arg MAESTRO_BRANCH=${MAESTRO_BRANCH} -t maestroperf/maestro-worker:${MAESTRO_VERSION} -t maestroperf/maestro-worker:${MAESTRO_LABEL_VERSION}  --target maestro-worker .
