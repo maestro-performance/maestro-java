@@ -149,10 +149,6 @@ public class ArtemisInspector implements MaestroInspector {
         File logDir = TestLogUtils.nextTestLogDir(this.baseLogDir);
         InspectorProperties inspectorProperties = new InspectorProperties();
 
-        RuntimeInfoWriter runtimeInfoWriter = new RuntimeInfoWriter(inspectorProperties);
-        OSInfoWriter osInfoWriter = new OSInfoWriter(inspectorProperties);
-        ProductInfoWriter productInfoWriter = new ProductInfoWriter(inspectorProperties);
-
         try (JVMMemoryInfoWriter heapMemoryWriter = new JVMMemoryInfoWriter(logDir, "heap");
              JVMMemoryInfoWriter jvmMemoryAreasWriter = new JVMMemoryInfoWriter(logDir, "memory-areas");
              QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues")
@@ -168,7 +164,7 @@ public class ArtemisInspector implements MaestroInspector {
 
             connect();
 
-            writeInspectorProperties(logDir, inspectorProperties, runtimeInfoWriter, osInfoWriter, productInfoWriter);
+            writeInspectorProperties(logDir, inspectorProperties);
 
             while (duration.canContinue(this) && isRunning()) {
                 LocalDateTime now = LocalDateTime.now();
@@ -211,9 +207,14 @@ public class ArtemisInspector implements MaestroInspector {
         }
     }
 
-    private void writeInspectorProperties(File logDir, InspectorProperties inspectorProperties,
-                                          RuntimeInfoWriter runtimeInfoWriter, OSInfoWriter osInfoWriter,
-                                          ProductInfoWriter productInfoWriter) throws MalformedObjectNameException, J4pException, IOException {
+    private void writeInspectorProperties(final File logDir, final InspectorProperties inspectorProperties)
+            throws MalformedObjectNameException, J4pException, IOException
+    {
+
+        RuntimeInfoWriter runtimeInfoWriter = new RuntimeInfoWriter(inspectorProperties);
+        OSInfoWriter osInfoWriter = new OSInfoWriter(inspectorProperties);
+        ProductInfoWriter productInfoWriter = new ProductInfoWriter(inspectorProperties);
+
         OSInfo osInfo = artemisDataReader.operatingSystem();
         osInfoWriter.write(null, osInfo);
 
