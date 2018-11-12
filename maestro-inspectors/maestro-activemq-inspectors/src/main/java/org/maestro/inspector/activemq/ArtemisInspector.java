@@ -208,7 +208,12 @@ public class ArtemisInspector implements MaestroInspector {
                     logger.error("Unable to read queue information: {}", e.getMessage(), e);
                 }
 
-                Thread.sleep(interval);
+                try {
+                    Thread.sleep(interval);
+                } catch (InterruptedException e) {
+                    logger.trace("Inspection was interrupted");
+                    break;
+                }
             }
         }
     }
