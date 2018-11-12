@@ -210,7 +210,7 @@ public class InterconnectInspector implements MaestroInspector {
 
             TestLogUtils.createSymlinks(this.baseLogDir, false);
             endpoint.notifySuccess(test, "Inspector finished successfully");
-            logger.debug("The test has finished and the Artemis inspector is terminating");
+            logger.debug("The test has finished and the Interconnect inspector is terminating");
 
             return 0;
         } catch (InterruptedException eie) {
