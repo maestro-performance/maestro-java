@@ -33,9 +33,11 @@ import java.util.Objects;
 public class MaestroDeserializer {
     private static final Logger logger = LoggerFactory.getLogger(MaestroDeserializer.class);
 
-    private static MaestroNotification deserializeNotification(MessageUnpacker unpacker) throws IOException, MalformedNoteException {
-        long tmpCommand = unpacker.unpackLong();
-        MaestroCommand command = MaestroCommand.from(tmpCommand);
+    private static MaestroNotification deserializeNotification(final MessageUnpacker unpacker)
+            throws IOException, MalformedNoteException
+    {
+        final long tmpCommand = unpacker.unpackLong();
+        final MaestroCommand command = MaestroCommand.from(tmpCommand);
 
         switch (Objects.requireNonNull(command)) {
             case MAESTRO_NOTE_NOTIFY_FAIL: {
@@ -59,9 +61,9 @@ public class MaestroDeserializer {
         }
     }
 
-    private static MaestroData deserializeData(MessageUnpacker unpacker) throws IOException, MalformedNoteException {
-        long tmpCommand = unpacker.unpackLong();
-        MaestroCommand command = MaestroCommand.from(tmpCommand);
+    private static MaestroData deserializeData(final MessageUnpacker unpacker) throws IOException, MalformedNoteException {
+        final long tmpCommand = unpacker.unpackLong();
+        final MaestroCommand command = MaestroCommand.from(tmpCommand);
 
         switch (Objects.requireNonNull(command)) {
             case MAESTRO_NOTE_LOG: {
@@ -76,9 +78,11 @@ public class MaestroDeserializer {
         }
     }
 
-    private static MaestroResponse deserializeResponse(MessageUnpacker unpacker) throws IOException, MalformedNoteException {
-        long tmpCommand = unpacker.unpackLong();
-        MaestroCommand command = MaestroCommand.from(tmpCommand);
+    private static MaestroResponse deserializeResponse(final MessageUnpacker unpacker)
+            throws IOException, MalformedNoteException
+    {
+        final long tmpCommand = unpacker.unpackLong();
+        final MaestroCommand command = MaestroCommand.from(tmpCommand);
 
         switch (Objects.requireNonNull(command)) {
             case MAESTRO_NOTE_OK: {
@@ -121,9 +125,9 @@ public class MaestroDeserializer {
 
     }
 
-    private static MaestroRequest deserializeRequest(MessageUnpacker unpacker) throws IOException, MalformedNoteException {
-        long tmpCommand = unpacker.unpackLong();
-        MaestroCommand command = MaestroCommand.from(tmpCommand);
+    private static MaestroRequest deserializeRequest(final MessageUnpacker unpacker) throws IOException, MalformedNoteException {
+        final long tmpCommand = unpacker.unpackLong();
+        final MaestroCommand command = MaestroCommand.from(tmpCommand);
 
         switch (Objects.requireNonNull(command)) {
             case MAESTRO_NOTE_PING: {

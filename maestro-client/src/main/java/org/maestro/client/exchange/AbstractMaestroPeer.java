@@ -145,12 +145,12 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
         }
     }
 
-    public void messageArrived(String s, MqttMessage mqttMessage) {
+    public void messageArrived(final String s, final MqttMessage mqttMessage) {
         logger.trace("Message arrived on topic {}", s);
 
-        byte[] payload = mqttMessage.getPayload();
-
         try {
+            final byte[] payload = mqttMessage.getPayload();
+
             final T note = deserializer.deserialize(payload);
             logger.trace("Message type: {}", note.getClass());
 

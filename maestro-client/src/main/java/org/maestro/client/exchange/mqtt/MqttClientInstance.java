@@ -32,11 +32,11 @@ public class MqttClientInstance {
     private final String id;
 
     private MqttClientInstance(final String url) {
-        String adjustedUrl = URLUtils.sanitizeURL(url);
+        final String adjustedUrl = URLUtils.sanitizeURL(url);
 
-        UUID uuid = UUID.randomUUID();
-        String clientId = uuid.toString();
-        MemoryPersistence memoryPersistence = new MemoryPersistence();
+        final UUID uuid = UUID.randomUUID();
+        final String clientId = uuid.toString();
+        final MemoryPersistence memoryPersistence = new MemoryPersistence();
 
         this.id = clientId;
         try {
@@ -52,7 +52,7 @@ public class MqttClientInstance {
     }
 
     public synchronized static MqttClientInstance getInstance(final String url) {
-        String noReuse = System.getProperty("maestro.mqtt.no.reuse");
+        final String noReuse = System.getProperty("maestro.mqtt.no.reuse");
 
         if (noReuse == null) {
             if (instance == null) {
@@ -67,7 +67,7 @@ public class MqttClientInstance {
     }
 
     public static MqttConnectOptions getConnectionOptions() {
-        MqttConnectOptions connOpts = new MqttConnectOptions();
+        final MqttConnectOptions connOpts = new MqttConnectOptions();
 
         connOpts.setCleanSession(true);
         connOpts.setAutomaticReconnect(true);
