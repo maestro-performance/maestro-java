@@ -93,11 +93,11 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> pingRequest(final String topic) throws MaestroConnectionException {
-        PingRequest maestroNote = new PingRequest();
+        final PingRequest maestroNote = new PingRequest();
 
         maestroClient.publish(topic, maestroNote);
 
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -117,12 +117,12 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> setBroker(final String topic, final String value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
+        final SetRequest maestroNote = new SetRequest();
 
         maestroNote.setBroker(value);
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -131,7 +131,7 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> setDuration(final String topic, final Object value) throws MaestroException {
-        SetRequest maestroNote = new SetRequest();
+        final SetRequest maestroNote = new SetRequest();
 
         if (value instanceof String) {
             maestroNote.setDurationType((String) value);
@@ -146,7 +146,7 @@ public final class Maestro implements MaestroRequester {
         }
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -156,13 +156,12 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> setParallelCount(final String topic, final int value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
-
+        final SetRequest maestroNote = new SetRequest();
 
         maestroNote.setParallelCount(Integer.toString(value));
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -178,12 +177,12 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> setMessageSize(final String topic, final String value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
+        final SetRequest maestroNote = new SetRequest();
 
         maestroNote.setMessageSize(value);
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -192,12 +191,12 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> setRate(final String topic, final int value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
+        final SetRequest maestroNote = new SetRequest();
 
         maestroNote.setRate(Integer.toString(value));
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -206,12 +205,12 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> setFCL(final String topic, final int value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
+        final SetRequest maestroNote = new SetRequest();
 
         maestroNote.setFCL(Integer.toString(value));
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -221,12 +220,12 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> setManagementInterface(final String topic, final String value) throws MaestroException {
-        SetRequest maestroNote = new SetRequest();
+        final SetRequest maestroNote = new SetRequest();
 
         maestroNote.setManagementInterface(value);
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -236,10 +235,10 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> startInspector(final String value) throws MaestroConnectionException {
-        StartInspector maestroNote = new StartInspector(value);
+        final StartInspector maestroNote = new StartInspector(value);
 
         maestroClient.publish(MaestroTopics.peerTopic(Role.INSPECTOR), maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -255,7 +254,7 @@ public final class Maestro implements MaestroRequester {
 
     @Deprecated
     public CompletableFuture<List<? extends MaestroNote>> stopInspector() throws MaestroConnectionException {
-        StopInspector maestroNote = new StopInspector();
+        final StopInspector maestroNote = new StopInspector();
 
         maestroClient.publish(MaestroTopics.peerTopic(Role.INSPECTOR), maestroNote);
         return getOkErrorCompletableFuture(maestroNote);
@@ -264,7 +263,7 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> stopInspector(final String topic) throws MaestroConnectionException {
-        StopInspector maestroNote = new StopInspector();
+        final StopInspector maestroNote = new StopInspector();
 
         maestroClient.publish(topic, maestroNote);
         return getOkErrorCompletableFuture(maestroNote);
@@ -274,10 +273,10 @@ public final class Maestro implements MaestroRequester {
     @Override
     public CompletableFuture<List<? extends MaestroNote>> startWorker(final String topic, final WorkerStartOptions options)
             throws MaestroConnectionException {
-        StartWorker maestroNote = new StartWorker(options);
+        final StartWorker maestroNote = new StartWorker(options);
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation), 30, 50)
@@ -300,16 +299,16 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> stopAll() throws MaestroConnectionException {
-        StopWorker stopSender = new StopWorker();
+        final StopWorker stopSender = new StopWorker();
 
         maestroClient.publish(MaestroTopics.WORKERS_TOPIC, stopSender);
 
-        StopInspector stopInspector = new StopInspector();
+        final StopInspector stopInspector = new StopInspector();
         stopInspector.correlate(stopSender);
 
         maestroClient.publish(MaestroTopics.peerTopic(Role.INSPECTOR), stopInspector);
 
-        StopAgent stopAgent = new StopAgent();
+        final StopAgent stopAgent = new StopAgent();
         stopAgent.correlate(stopSender);
 
         maestroClient.publish(MaestroTopics.peerTopic(Role.AGENT), stopAgent);
@@ -326,10 +325,10 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> statsRequest(final String topic) throws MaestroConnectionException {
-        StatsRequest maestroNote = new StatsRequest();
+        final StatsRequest maestroNote = new StatsRequest();
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -345,7 +344,7 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> halt(final String topic) throws MaestroConnectionException {
-        Halt maestroNote = new Halt();
+        final Halt maestroNote = new Halt();
 
         maestroClient.publish(topic, maestroNote);
         return getOkErrorCompletableFuture(maestroNote);
@@ -354,12 +353,12 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> getDataServer() throws MaestroConnectionException {
-        GetRequest maestroNote = new GetRequest();
+        final GetRequest maestroNote = new GetRequest();
 
         maestroNote.setGetOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
 
         maestroClient.publish(MaestroTopics.PEER_TOPIC, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -369,7 +368,7 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> startAgent() throws MaestroConnectionException {
-        StartAgent maestroNote = new StartAgent();
+        final StartAgent maestroNote = new StartAgent();
 
         maestroClient.publish(MaestroTopics.peerTopic(Role.AGENT), maestroNote);
         return getOkErrorCompletableFuture(maestroNote);
@@ -377,7 +376,7 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> stopAgent() throws MaestroConnectionException {
-        StopAgent maestroNote = new StopAgent();
+        final StopAgent maestroNote = new StopAgent();
 
         maestroClient.publish(MaestroTopics.peerTopic(Role.AGENT), maestroNote);
         return getOkErrorCompletableFuture(maestroNote);
@@ -386,12 +385,12 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> userCommand(final String topic, final UserCommandData userCommandData) throws MaestroConnectionException {
-        UserCommand1Request maestroNote = new UserCommand1Request();
+        final UserCommand1Request maestroNote = new UserCommand1Request();
 
         maestroNote.set(userCommandData.getOption(), userCommandData.getPayload());
         maestroClient.publish(topic, maestroNote);
 
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -401,13 +400,13 @@ public final class Maestro implements MaestroRequester {
     @Override
     public CompletableFuture<List<? extends MaestroNote>> sourceRequest(final String topic, final Source source)
             throws MaestroConnectionException {
-        AgentSourceRequest maestroNote = new AgentSourceRequest();
+        final AgentSourceRequest maestroNote = new AgentSourceRequest();
 
         maestroNote.setSourceUrl(source.getSourceUrl());
         maestroNote.setBranch(source.getBranch());
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation), 300, 50)
@@ -416,7 +415,7 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public void logRequest(final String topic, final LocationType locationType, final String typeName) throws MaestroConnectionException {
-        LogRequest maestroNote = new LogRequest();
+        final LogRequest maestroNote = new LogRequest();
 
         maestroNote.setLocationType(locationType);
         if (typeName != null) {
@@ -428,14 +427,14 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> drainRequest(final String topic, final  DrainOptions drainOptions) {
-        DrainRequest drainRequest = new DrainRequest();
+        final DrainRequest drainRequest = new DrainRequest();
 
         drainRequest.setDuration(drainOptions.getDuration());
         drainRequest.setUrl(drainOptions.getUrl());
         drainRequest.setParallelCount(String.valueOf(drainOptions.getParallelCount()));
 
         maestroClient.publish(topic, drainRequest);
-        MessageCorrelation correlation = drainRequest.correlate();
+        final MessageCorrelation correlation = drainRequest.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation), 3000, 50)
@@ -444,10 +443,10 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> roleAssign(final String topic, final Role role) throws MaestroConnectionException {
-        RoleAssign maestroNote = new RoleAssign(role);
+        final RoleAssign maestroNote = new RoleAssign(role);
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -456,10 +455,10 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> roleUnassign(final String topic) throws MaestroConnectionException {
-        RoleUnassign maestroNote = new RoleUnassign();
+        final RoleUnassign maestroNote = new RoleUnassign();
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -469,7 +468,7 @@ public final class Maestro implements MaestroRequester {
 
     @Override
     public CompletableFuture<List<? extends MaestroNote>> startTest(final String topic, final Test test) throws MaestroConnectionException {
-        StartTestRequest maestroNote = new StartTestRequest(test);
+        final StartTestRequest maestroNote = new StartTestRequest(test);
 
         maestroClient.publish(topic, maestroNote);
 
@@ -491,8 +490,8 @@ public final class Maestro implements MaestroRequester {
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
     private List<MaestroNote> collect(int expect, Predicate<? super MaestroNote> predicate) {
-        List<MaestroNote> replies = new LinkedList<>();
-        MaestroMonitor monitor = new MaestroMonitor(predicate);
+        final List<MaestroNote> replies = new LinkedList<>();
+        final MaestroMonitor monitor = new MaestroMonitor(predicate);
 
         try {
             collectorExecutor.getCollector().monitor(monitor);
@@ -532,9 +531,9 @@ public final class Maestro implements MaestroRequester {
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
     private List<MaestroNote> collect(Predicate<? super MaestroNote> predicate, int retries, int retryTimeout) {
-        List<MaestroNote> replies = new LinkedList<>();
-        MaestroMonitor monitor = new MaestroMonitor(predicate);
-        StaleChecker staleChecker = new NonProgressingStaleChecker(retries);
+        final List<MaestroNote> replies = new LinkedList<>();
+        final MaestroMonitor monitor = new MaestroMonitor(predicate);
+        final StaleChecker staleChecker = new NonProgressingStaleChecker(retries);
 
         try {
             collectorExecutor.getCollector().monitor(monitor);
@@ -772,7 +771,7 @@ public final class Maestro implements MaestroRequester {
      */
     public PeerSet getPeers() throws MaestroConnectionException, InterruptedException {
         logger.debug("Sending ping request");
-        CompletableFuture<List<? extends MaestroNote>> repliesFuture = pingRequest(MaestroTopics.PEER_TOPIC);
+        final CompletableFuture<List<? extends MaestroNote>> repliesFuture = pingRequest(MaestroTopics.PEER_TOPIC);
 
         List<? extends MaestroNote> replies;
         try {
