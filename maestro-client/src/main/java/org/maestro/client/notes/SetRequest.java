@@ -45,7 +45,7 @@ public class SetRequest extends MaestroRequest<MaestroEventListener> {
         /** Sets the management interface */
         MAESTRO_NOTE_OPT_SET_MI(8);
 
-        private long value;
+        private final long value;
 
         Option(long value) {
             this.value = value;
@@ -53,10 +53,6 @@ public class SetRequest extends MaestroRequest<MaestroEventListener> {
 
         public long getValue() {
             return value;
-        }
-
-        public void setValue(long value) {
-            this.value = value;
         }
 
         static public Option from(long value) {
