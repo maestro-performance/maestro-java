@@ -111,9 +111,9 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
     public List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
         logger.trace("Collecting messages");
 
-        List<MaestroNote> ret = new ArrayList<>(collected.size());
+        final List<MaestroNote> ret = new ArrayList<>(collected.size());
 
-        for (MaestroNote note : collected) {
+        for (final MaestroNote note : collected) {
             if (predicate.test(note)) {
                 collected.remove(note);
                 ret.add(note);
