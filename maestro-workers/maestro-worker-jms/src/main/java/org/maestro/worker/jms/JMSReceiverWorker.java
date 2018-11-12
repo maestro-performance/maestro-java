@@ -165,15 +165,12 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
 
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
         } finally {
+            endSignal.countDown();
+
             exitStateCheck(id);
 
             //the test could be considered already stopped here, but cleaning up JMS resources could take some time anyway
-            try {
-                client.stop();
-            }
-            finally {
-                endSignal.countDown();
-            }
+            client.stop();
 
             logger.info("Finalized worker {} after receiving {} messages", id, messageCount);
         }
