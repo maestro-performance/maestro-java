@@ -51,7 +51,7 @@ import java.util.List;
 public class ArtemisInspector implements MaestroInspector {
     private static final Logger logger = LoggerFactory.getLogger(ArtemisInspector.class);
     private long startedEpochMillis = Long.MIN_VALUE;
-    private boolean running = false;
+    private volatile boolean running = false;
     private String url;
     private String user;
     private String password;
@@ -130,7 +130,7 @@ public class ArtemisInspector implements MaestroInspector {
     }
 
     public boolean isRunning() {
-        return running;
+        return running && !Thread.currentThread().isInterrupted();
     }
 
     private void connect() {

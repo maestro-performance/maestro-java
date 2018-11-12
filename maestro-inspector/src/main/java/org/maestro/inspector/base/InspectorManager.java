@@ -26,10 +26,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 public class InspectorManager extends MaestroWorkerManager implements MaestroInspectorEventListener {
     private static final Logger logger = LoggerFactory.getLogger(InspectorManager.class);
-    private Thread inspectorThread;
+    private ExecutorService inspectorExecutor;
     private MaestroInspector inspector;
     private final File logDir;
     private final HashMap<String, String> inspectorMap = new HashMap<>();
@@ -78,8 +81,9 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
 
             InspectorContainer inspectorContainer = new InspectorContainer(inspector);
 
-            inspectorThread = new Thread(inspectorContainer);
-            inspectorThread.start();
+            inspectorExecutor = Executors.newCachedThreadPool(runnable -> new Thread("InspectorThread"));
+
+            inspectorExecutor.execute(inspectorContainer);
 
             getClient().replyOk(note);
         }
@@ -114,30 +118,46 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
     public void handle(final StopInspector note) {
         logger.debug("Stop inspector request received");
 
-        if (inspectorThread != null) {
-            try {
+        doInspectorStop();
+
+        getClient().replyOk(note);
+    }
+
+    private void doInspectorStop() {
+        if (inspectorExecutor != null) {
+            if (inspector != null) {
                 inspector.stop();
+            }
+
+            try {
+                inspectorExecutor.shutdown();
+                if (!inspectorExecutor.awaitTermination(1, TimeUnit.SECONDS)) {
+                    logger.warn("Inspector did not terminate within the maximum allowed time");
+                    inspectorExecutor.shutdownNow();
+                    if (!inspectorExecutor.awaitTermination(1, TimeUnit.SECONDS)) {
+                        logger.warn("Inspector did not terminate cleanly");
+                    }
+                }
             } catch (Exception e) {
                 logger.warn("Unable to stop the inspector in a clean way: {}", e.getMessage(), e);
             }
-
-            inspectorThread.interrupt();
-            inspectorThread = null;
+            finally {
+                inspectorExecutor = null;
+                inspector = null;
+            }
         }
         else {
-            logger.warn("Inspector received a stop request but it is not running");
+            logger.warn("Ignoring a stop request for the inspector because it is already stopped");
         }
-
-        getClient().replyOk(note);
     }
 
     @Override
     public void handle(final TestFailedNotification note) {
         super.handle(note);
 
-        if (inspectorThread != null) {
+        if (inspectorExecutor != null) {
             logger.debug("Stopping the inspection as a result of a test failure notification by one of the peers");
-            stopInspectorThread();
+            doInspectorStop();
         }
     }
 
@@ -146,32 +166,10 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
     public void handle(final TestSuccessfulNotification note) {
         super.handle(note);
 
-        if (inspectorThread != null) {
+        if (inspectorExecutor != null) {
             logger.debug("Stopping the inspection as a result of a test success notification by one of the peers");
-            stopInspectorThread();
+            doInspectorStop();
         }
-    }
-
-    private void stopInspectorThread() {
-        try {
-            inspector.stop();
-        } catch (Exception e) {
-            logger.warn("Unable to stop the inspector in a clean way: {}", e.getMessage(), e);
-        }
-
-        try {
-            inspectorThread.join(1000);
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted the inspector thread", e);
-        }
-
-        if (inspectorThread.isAlive()) {
-            logger.warn("The inspector thread is still alive. Forcing it to stop");
-
-            inspectorThread.interrupt();
-        }
-
-        inspectorThread = null;
     }
 
     @Override

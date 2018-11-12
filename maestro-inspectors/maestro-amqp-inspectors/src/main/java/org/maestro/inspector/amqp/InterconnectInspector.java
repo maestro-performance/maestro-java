@@ -45,7 +45,7 @@ import java.time.LocalDateTime;
 public class InterconnectInspector implements MaestroInspector {
     private static final Logger logger = LoggerFactory.getLogger(InterconnectInspector.class);
     private long startedEpochMillis = Long.MIN_VALUE;
-    private boolean running = false;
+    private volatile boolean running = false;
     private String url;
     @SuppressWarnings("FieldCanBeLocal")
     private String user;
@@ -111,7 +111,7 @@ public class InterconnectInspector implements MaestroInspector {
     }
 
     public boolean isRunning() {
-        return running;
+        return running && !Thread.currentThread().isInterrupted();
     }
 
     private void connect() throws JMSException {
