@@ -29,6 +29,8 @@ import java.io.IOException;
 import java.util.Arrays;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
 
 
 /**
@@ -47,6 +49,8 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     private final MqttClient inboundEndPoint;
     private final MaestroNoteDeserializer<? extends T> deserializer;
     private final PeerInfo peerInfo;
+
+    private final ExecutorService messageHandlerService = Executors.newSingleThreadExecutor();
 
     protected AbstractMaestroPeer(final String url, final PeerInfo peerInfo, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
         this(MqttClientInstance.getInstance(url).getClient(), peerInfo, deserializer);
@@ -111,6 +115,7 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
 
     public void disconnect() throws MaestroConnectionException {
         logger.debug("Disconnecting from Maestro Broker");
+        messageHandlerService.shutdown();
 
         try {
             if (inboundEndPoint.isConnected()) {
@@ -145,7 +150,12 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
         }
     }
 
+
     public void messageArrived(final String s, final MqttMessage mqttMessage) {
+        messageHandlerService.submit(() -> handleMessage(s, mqttMessage));
+    }
+
+    private void handleMessage(String s, MqttMessage mqttMessage) {
         logger.trace("Message arrived on topic {}", s);
 
         try {
