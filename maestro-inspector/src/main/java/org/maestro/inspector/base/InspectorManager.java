@@ -117,10 +117,10 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
     @Override
     public void handle(final StopInspector note) {
         logger.debug("Stop inspector request received");
+        getClient().replyOk(note);
 
         doInspectorStop();
-
-        getClient().replyOk(note);
+        logger.info("Completed stopping the inspector");
     }
 
     private void doInspectorStop() {
