@@ -149,11 +149,7 @@ public class ArtemisInspector implements MaestroInspector {
         File logDir = TestLogUtils.nextTestLogDir(this.baseLogDir);
         InspectorProperties inspectorProperties = new InspectorProperties();
 
-        try (JVMMemoryInfoWriter heapMemoryWriter = new JVMMemoryInfoWriter(logDir, "heap");
-             JVMMemoryInfoWriter jvmMemoryAreasWriter = new JVMMemoryInfoWriter(logDir, "memory-areas");
-             QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues")
-        )
-        {
+        try {
             startedEpochMillis = System.currentTimeMillis();
             running = true;
 
@@ -166,25 +162,7 @@ public class ArtemisInspector implements MaestroInspector {
 
             writeInspectorProperties(logDir, inspectorProperties);
 
-            while (duration.canContinue(this) && isRunning()) {
-                LocalDateTime now = LocalDateTime.now();
-                heapMemoryWriter.write(now, artemisDataReader.jvmHeapMemory());
-
-                List<JVMMemoryInfo> memoryInfoList = artemisDataReader.jvmMemoryAreas();
-                for (JVMMemoryInfo memoryInfo : memoryInfoList) {
-                    jvmMemoryAreasWriter.write(now, memoryInfo);
-                }
-
-                try {
-                    QueueInfo queueInfoList = artemisDataReader.queueInformation();
-                    queueInfoWriter.write(now, queueInfoList);
-                }
-                catch (Exception e) {
-                    logger.error("Unable to read queue information: {}", e.getMessage(), e);
-                }
-
-                Thread.sleep(interval);
-            }
+            runInspectionLoop(logDir);
 
             TestLogUtils.createSymlinks(this.baseLogDir, false);
             endpoint.notifySuccess(test, "Inspector finished successfully");
@@ -204,6 +182,34 @@ public class ArtemisInspector implements MaestroInspector {
         }
         finally {
             startedEpochMillis = Long.MIN_VALUE;
+            running = false;
+        }
+    }
+
+    private void runInspectionLoop(final File logDir) throws Exception {
+        try (JVMMemoryInfoWriter heapMemoryWriter = new JVMMemoryInfoWriter(logDir, "heap");
+             JVMMemoryInfoWriter jvmMemoryAreasWriter = new JVMMemoryInfoWriter(logDir, "memory-areas");
+             QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues")
+        )
+        {
+            while (duration.canContinue(this) && isRunning()) {
+                LocalDateTime now = LocalDateTime.now();
+                heapMemoryWriter.write(now, artemisDataReader.jvmHeapMemory());
+
+                List<JVMMemoryInfo> memoryInfoList = artemisDataReader.jvmMemoryAreas();
+                for (JVMMemoryInfo memoryInfo : memoryInfoList) {
+                    jvmMemoryAreasWriter.write(now, memoryInfo);
+                }
+
+                try {
+                    QueueInfo queueInfoList = artemisDataReader.queueInformation();
+                    queueInfoWriter.write(now, queueInfoList);
+                } catch (Exception e) {
+                    logger.error("Unable to read queue information: {}", e.getMessage(), e);
+                }
+
+                Thread.sleep(interval);
+            }
         }
     }
 
