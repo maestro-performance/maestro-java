@@ -118,6 +118,12 @@ public class XUnitGenerator {
     }
 
     private static String generateName(final Test test) {
-        return test.getTestName() + "-" + test.getTestNumber() + "-" + test.getTestIteration();
+        String testName = System.getenv("TEST_XUNIT_NAME");
+
+        if (testName == null) {
+            return test.getTestName() + "-" + test.getTestNumber() + "-" + test.getTestIteration();
+        }
+
+        return testName;
     }
 }
