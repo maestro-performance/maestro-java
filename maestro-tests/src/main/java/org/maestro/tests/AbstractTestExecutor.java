@@ -37,6 +37,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.time.Instant;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
@@ -53,11 +54,17 @@ import static org.maestro.client.Maestro.exec;
 public abstract class AbstractTestExecutor implements TestExecutor {
     private static final Logger logger = LoggerFactory.getLogger(AbstractTestExecutor.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+    private static final List<String> ignoredErrors;
 
     private final Maestro maestro;
 
     private volatile boolean running = false;
     private Instant startTime;
+
+    static {
+        String[] errors = config.getStringArray("ignored.errors");
+        ignoredErrors = Arrays.asList(errors);
+    }
 
     protected AbstractTestExecutor(final Maestro maestro) {
         this.maestro = maestro;
@@ -247,8 +254,14 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     protected boolean isTestFailed(final MaestroNote note) {
         if (note instanceof TestFailedNotification) {
             final TestFailedNotification testFailedNotification = (TestFailedNotification) note;
+
+            if (isIgnored(testFailedNotification)) {
+                return false;
+            }
+
             logger.error("Test failed on {}: {}", testFailedNotification.getPeerInfo().prettyName(),
                     testFailedNotification.getMessage());
+
             return true;
         }
 
@@ -257,6 +270,21 @@ public abstract class AbstractTestExecutor implements TestExecutor {
             logger.error("Test error occurred on {}: {}", internalError.getPeerInfo().prettyName(),
                     internalError.getMessage());
             return true;
+        }
+
+        return false;
+    }
+
+    private boolean isIgnored(TestFailedNotification testFailedNotification) {
+        for (String message : ignoredErrors) {
+            if (testFailedNotification.getMessage().trim().equals(message.trim())) {
+                logger.warn("The test reportedly failed on {} but the error ({}) is being ignored. This is " +
+                        "likely to be caused by a known problem in a software under test",
+                        testFailedNotification.getPeerInfo().prettyName(),
+                        testFailedNotification.getMessage());
+
+                return true;
+            }
         }
 
         return false;
