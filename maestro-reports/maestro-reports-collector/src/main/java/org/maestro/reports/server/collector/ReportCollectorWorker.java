@@ -21,6 +21,7 @@ import org.maestro.client.MaestroReceiverClient;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
+import org.maestro.common.ErrorUtils;
 import org.maestro.common.ResultStrings;
 import org.maestro.common.client.notes.ErrorCode;
 import org.maestro.common.client.notes.LocationType;
@@ -209,11 +210,20 @@ public class ReportCollectorWorker {
         aggregatablesMap.put(peerInfo, downloadProgress);
     }
 
+    private static boolean isIgnored(final TestFailedNotification testFailedNotification) {
+        return ErrorUtils.isIgnored(testFailedNotification.getPeerInfo().prettyName(), testFailedNotification.getMessage());
+    }
+
 
     public void handle(final TestFailedNotification note) {
         logRequest(note, LocationType.LAST_FAILED);
 
-        createNewReportRecord(ResultStrings.FAILED, note.getId(), note.getPeerInfo());
+        if (isIgnored(note)) {
+            createNewReportRecord(ResultStrings.SUCCESS, note.getId(), note.getPeerInfo());
+        }
+        else {
+            createNewReportRecord(ResultStrings.FAILED, note.getId(), note.getPeerInfo());
+        }
     }
 
     public void handle(final TestSuccessfulNotification note) {

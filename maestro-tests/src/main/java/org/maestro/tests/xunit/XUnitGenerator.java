@@ -38,6 +38,8 @@ import java.io.IOException;
 import java.time.Duration;
 import java.util.List;
 
+import static org.maestro.tests.utils.IgnoredErrorUtils.isIgnored;
+
 public class XUnitGenerator {
     private static final Logger logger = LoggerFactory.getLogger(XUnitGenerator.class);
 
@@ -59,10 +61,12 @@ public class XUnitGenerator {
             if (maestroNote instanceof TestFailedNotification) {
                 TestFailedNotification testFailedNotification = (TestFailedNotification) maestroNote;
 
-                Failure failure = new Failure();
+                if (!isIgnored(testFailedNotification)) {
+                    Failure failure = new Failure();
 
-                failure.setMessage(testFailedNotification.getMessage());
-                testCase.setFailure(failure);
+                    failure.setMessage(testFailedNotification.getMessage());
+                    testCase.setFailure(failure);
+                }
             }
             if (maestroNote instanceof InternalError) {
                 InternalError internalError = (InternalError) maestroNote;
