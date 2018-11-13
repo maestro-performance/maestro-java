@@ -153,7 +153,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         } catch (Exception e) {
             logger.error("Unexpected error while running the sender worker: {}", e.getMessage(), e);
 
-            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, null);
+            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
         } finally {
             endSignal.countDown();
 
