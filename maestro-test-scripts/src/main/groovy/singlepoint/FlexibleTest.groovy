@@ -24,6 +24,7 @@ import org.maestro.common.Role
 import org.maestro.common.agent.UserCommandData
 import org.maestro.common.client.notes.Test
 import org.maestro.common.client.notes.TestDetails
+import org.maestro.common.client.notes.TestExecutionInfo
 import org.maestro.common.duration.TestDurationBuilder
 import org.maestro.tests.AbstractTestProfile
 
@@ -122,8 +123,12 @@ testProfile.setDuration(TestDurationBuilder.build(duration));
 int ret = 0
 
 try {
+    final TestDetails testDetails = new TestDetails(description, comments);
+    final Test test = new Test(Test.NEXT, Test.NEXT, "flexible", this.class.getSimpleName(), testDetails);
+    final TestExecutionInfo testExecutionInfo = new TestExecutionInfo(test, null);
+
     println "Running the test"
-    if (!executor.run(this.class.getSimpleName(), description, comments)) {
+    if (!executor.run(testExecutionInfo)) {
         ret = 1
     }
 } finally {

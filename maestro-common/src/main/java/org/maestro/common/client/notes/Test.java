@@ -19,6 +19,9 @@ package org.maestro.common.client.notes;
 
 import java.util.Objects;
 
+/**
+ * Container for the test information
+ */
 public class Test {
     public static final int NEXT = -1;
     public static final int LAST = -2;
@@ -30,6 +33,15 @@ public class Test {
 
     private final TestDetails testDetails;
 
+
+    /**
+     * Constructor
+     * @param testNumber The test number/id
+     * @param testIteration the test iteration
+     * @param testName the test name
+     * @param scriptName the test script being used
+     * @param testDetails other relevant test details
+     */
     public Test(int testNumber, int testIteration, final String testName, final String scriptName,
                 final TestDetails testDetails)
     {
@@ -58,6 +70,10 @@ public class Test {
 
     public TestDetails getTestDetails() {
         return testDetails;
+    }
+
+    public Test iterate() {
+        return new Test(Test.LAST, Test.NEXT, testName, scriptName, testDetails);
     }
 
     @Override

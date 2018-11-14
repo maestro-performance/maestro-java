@@ -16,10 +16,7 @@
 
 package org.maestro.client.notes;
 
-import org.maestro.common.client.notes.ErrorCode;
-import org.maestro.common.client.notes.LocationTypeInfo;
-import org.maestro.common.client.notes.Test;
-import org.maestro.common.client.notes.TestDetails;
+import org.maestro.common.client.notes.*;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
@@ -82,5 +79,53 @@ class SerializationUtils {
 
     public static void pack(final MessageBufferPacker packer, final ErrorCode errorCode) throws IOException {
         packer.packInt(errorCode.getCode());
+    }
+
+
+    public static SutDetails unpackSutDetails(final MessageUnpacker unpacker) throws IOException {
+        int sutId = unpacker.unpackInt();
+        String sutName = unpacker.unpackString();
+        String sutVersion = unpacker.unpackString();
+        String sutJvmVersion = unpacker.unpackString();
+        String sutOtherInfo = unpacker.unpackString();
+        String sutTags = unpacker.unpackString();
+        String labName = unpacker.unpackString();
+        String testTags = unpacker.unpackString();
+
+        return new SutDetails(sutId, sutName, sutVersion, sutJvmVersion, sutOtherInfo, sutTags, labName, testTags);
+    }
+
+    public static void pack(final MessageBufferPacker packer, final SutDetails sutDetails) throws IOException {
+        packer.packInt(sutDetails.getSutId());
+        packer.packString(sutDetails.getSutName());
+        packer.packString(sutDetails.getSutVersion());
+        packer.packString(sutDetails.getSutJvmVersion());
+        packer.packString(sutDetails.getSutOtherInfo());
+        packer.packString(sutDetails.getSutTags());
+        packer.packString(sutDetails.getLabName());
+        packer.packString(sutDetails.getTestTags());
+    }
+
+    public static TestExecutionInfo unpackTestExecutionInfo(final MessageUnpacker unpacker) throws IOException {
+        Test test = SerializationUtils.unpackTest(unpacker);
+
+        boolean hasDetails = unpacker.unpackBoolean();
+
+        SutDetails sutDetails = null;
+
+        if (hasDetails) {
+            sutDetails = SerializationUtils.unpackSutDetails(unpacker);
+        }
+
+        return new TestExecutionInfo(test, sutDetails);
+    }
+
+    public static void pack(final MessageBufferPacker packer, final TestExecutionInfo testExecutionInfo) throws IOException {
+        pack(packer, testExecutionInfo.getTest());
+
+        packer.packBoolean(testExecutionInfo.hasSutDetails());
+        if (testExecutionInfo.hasSutDetails()) {
+            pack(packer, testExecutionInfo.getSutDetails());
+        }
     }
 }

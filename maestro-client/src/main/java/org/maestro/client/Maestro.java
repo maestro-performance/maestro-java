@@ -467,8 +467,11 @@ public final class Maestro implements MaestroRequester {
 
 
     @Override
-    public CompletableFuture<List<? extends MaestroNote>> startTest(final String topic, final Test test) throws MaestroConnectionException {
-        final StartTestRequest maestroNote = new StartTestRequest(test);
+    public CompletableFuture<List<? extends MaestroNote>> startTest(final String topic,
+                                                                    final TestExecutionInfo testExecutionInfo)
+            throws MaestroConnectionException
+    {
+        final StartTestRequest maestroNote = new StartTestRequest(testExecutionInfo);
 
         maestroClient.publish(topic, maestroNote);
 

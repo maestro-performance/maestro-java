@@ -22,6 +22,7 @@ import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;
+import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.cluster.DistributionStrategy;
@@ -64,7 +65,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
 
     protected abstract void onComplete();
 
-    protected boolean runTest(final Test test, final BiConsumer<Maestro, DistributionStrategy> apply) {
+    protected boolean runTest(final TestExecutionInfo testExecutionInfo, final BiConsumer<Maestro, DistributionStrategy> apply) {
         try {
             // Clean up the topic
             getMaestro().clear();
@@ -77,7 +78,8 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
             try {
                 Instant start = Instant.now();
 
-                CompletableFuture<List<? extends MaestroNote>> notificationsFuture = doTestStart(test, (int) numPeers);
+                CompletableFuture<List<? extends MaestroNote>> notificationsFuture =
+                        doTestStart(testExecutionInfo, (int) numPeers);
 
                 CompletableFuture<Boolean> failures = notificationsFuture.thenApply(this::reviewResults);
 
@@ -86,7 +88,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
                 final long timeout = getTimeout();
                 List<? extends MaestroNote> results = notificationsFuture.get(timeout, TimeUnit.SECONDS);
 
-                XUnitGenerator.generate(test, results, start);
+                XUnitGenerator.generate(testExecutionInfo.getTest(), results, start);
 
                 return failures.get();
             }
@@ -111,9 +113,9 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
         return false;
     }
 
-    private CompletableFuture<List<? extends MaestroNote>> doTestStart(Test test, int numPeers) {
+    private CompletableFuture<List<? extends MaestroNote>> doTestStart(final TestExecutionInfo testExecutionInfo, int numPeers) {
         final long timeout = getTimeout();
-        testStart(test);
+        testStart(testExecutionInfo);
 
         startServices(testProfile, distributionStrategy);
 

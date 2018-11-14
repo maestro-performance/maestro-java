@@ -23,6 +23,7 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Role;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;
+import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.AbstractTestProfile;
 import org.maestro.tests.cluster.DistributionStrategy;
@@ -90,7 +91,7 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
      * Test execution logic
      * @return true if the test was successful or false otherwise
      */
-    public boolean run(final Test test) {
+    public boolean run(final TestExecutionInfo testExecutionInfo) {
         try {
             Instant start = Instant.now();
 
@@ -99,7 +100,7 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
 
             PeerSet peerSet = maestro.getPeers();
 
-            testStart(test);
+            testStart(testExecutionInfo);
 
             logger.info("Applying the test profile");
             testProfile.apply(maestro, distributionStrategy);
@@ -115,7 +116,7 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
                     .waitForNotifications((int) peerSet.count(Role.AGENT))
                     .get(timeout, TimeUnit.SECONDS);
 
-            XUnitGenerator.generate(test, results, start);
+            XUnitGenerator.generate(testExecutionInfo.getTest(), results, start);
 
             logger.info("Processing the notifications");
             long failed = results.stream()

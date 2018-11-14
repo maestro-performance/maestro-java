@@ -16,6 +16,8 @@
 
 package org.maestro.tests;
 
+import org.maestro.common.client.notes.TestExecutionInfo;
+
 /**
  * A base interface for executing tests
  */
@@ -23,12 +25,10 @@ public interface TestExecutor {
 
     /**
      * Runs the test
-     * @param scriptName the test script being used
-     * @param description the test description
-     * @param comments the test comments
+     * @param testExecutionInfo the test execution information (ie.: test number, SUT details, etc)
      * @return true if successful or false otherwise
      */
-    boolean run(final String scriptName, final String description, final String comments);
+    boolean run(final TestExecutionInfo testExecutionInfo);
 
     /**
      * Gets the amount of time (in milliseconds) to wait for the SUT to cool down

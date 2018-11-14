@@ -142,7 +142,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     public void handle(final StartTestRequest note) {
         logger.debug("Test started request received");
 
-        ReportCollectorWorker reportCollectorWorker = getCollectorWorker(note.getTest());
+        ReportCollectorWorker reportCollectorWorker = getCollectorWorker(note.getTestExecutionInfo().getTest());
 
         reportCollectorWorker.handle(note);
 

@@ -384,7 +384,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
 
     @Override
     public void handle(final StartTestRequest note) {
-        setCurrentTest(note.getTest());
+        setCurrentTest(note.getTestExecutionInfo().getTest());
 
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.START_TEST, note));
 

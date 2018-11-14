@@ -23,6 +23,7 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.client.notes.TestDetails;
+import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.cluster.DistributionStrategy;
@@ -72,8 +73,8 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
         return "run";
     }
 
-    private boolean runTest(final Test test) {
-        logger.info("Starting test execution {}", test.getTestIteration());
+    private boolean runTest(final TestExecutionInfo testExecutionInfo) {
+        logger.info("Starting test execution {}", testExecutionInfo.getTest().getTestIteration());
 
         try {
             // Clean up the topic
@@ -87,7 +88,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             try {
                 Instant start = Instant.now();
 
-                testStart(test);
+                testStart(testExecutionInfo);
 
                 startServices(testProfile, distributionStrategy);
 
@@ -97,7 +98,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                         .waitForNotifications((int) numPeers)
                         .get(timeout, TimeUnit.SECONDS);
 
-                XUnitGenerator.generate(test, results, start);
+                XUnitGenerator.generate(testExecutionInfo.getTest(), results, start);
 
                 long failed = results.stream()
                         .filter(this::isTestFailed)
@@ -143,24 +144,12 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
         return false;
     }
 
-
-    public boolean run(final String scriptName, final String description, final String comments) {
-        int testIteration = 0;
+    @Override
+    public boolean run(final TestExecutionInfo testExecutionInfo) {
         boolean successful;
 
-        final TestDetails testDetails = new TestDetails(description, comments);
-
         do {
-            Test test;
-
-            if (testIteration == 0) {
-                test = new Test(Test.NEXT, testIteration, "incremental", scriptName, testDetails);
-            }
-            else {
-                test = new Test(Test.LAST, Test.NEXT, "incremental", scriptName, testDetails);
-            }
-
-            successful = runTest(test);
+            successful = runTest(testExecutionInfo);
             if (!successful) {
                 break;
             }
@@ -170,7 +159,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                 break;
             }
             
-            testIteration++;
+            testExecutionInfo.iterate();
         } while (true);
 
         if (!successful) {

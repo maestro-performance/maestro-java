@@ -294,11 +294,11 @@ public interface MaestroRequester {
     /**
      * Starts the test execution
      * @param topic the topic to send the request to
-     * @param test the test information
+     * @param testExecutionInfo the test execution information
      * @throws MaestroException if unable to send the MQTT request
      * @return A completable future
      */
-    CompletableFuture<List<? extends MaestroNote>> startTest(final String topic, final Test test) throws MaestroConnectionException;
+    CompletableFuture<List<? extends MaestroNote>> startTest(final String topic, final TestExecutionInfo testExecutionInfo) throws MaestroConnectionException;
 
     /**
      * Waits for the drain notifications

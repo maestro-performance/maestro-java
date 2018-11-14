@@ -18,6 +18,9 @@ package org.maestro.common.client.notes;
 
 import java.util.Objects;
 
+/**
+ * Test details
+ */
 public class TestDetails {
     private String testDescription = "";
     private String testComments = "";
@@ -25,7 +28,12 @@ public class TestDetails {
     public TestDetails() {
     }
 
-    public TestDetails(String testDescription, String testComments) {
+    /**
+     * Constructor
+     * @param testDescription the test description
+     * @param testComments the test comments
+     */
+    public TestDetails(final String testDescription, final String testComments) {
 
         if (testDescription != null) {
             this.testDescription = testDescription;

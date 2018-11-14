@@ -17,36 +17,36 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
-import org.maestro.common.client.notes.Test;
+import org.maestro.common.client.notes.TestExecutionInfo;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
 
 public class StartTestRequest extends MaestroRequest<MaestroEventListener> {
-    private Test test;
+    private final TestExecutionInfo testExecutionInfo;
 
-    public StartTestRequest(final Test test) {
+    public StartTestRequest(final TestExecutionInfo testExecutionInfo) {
         super(MaestroCommand.MAESTRO_NOTE_START_TEST);
 
-        this.test = test;
+        this.testExecutionInfo = testExecutionInfo;
     }
 
     public StartTestRequest(final MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_START_TEST, unpacker);
 
-        this.test = SerializationUtils.unpackTest(unpacker);
+        testExecutionInfo = SerializationUtils.unpackTestExecutionInfo(unpacker);
     }
 
-    public Test getTest() {
-        return test;
+    public TestExecutionInfo getTestExecutionInfo() {
+        return testExecutionInfo;
     }
 
     @Override
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
-        SerializationUtils.pack(packer, test);
+        SerializationUtils.pack(packer, testExecutionInfo);
 
         return packer;
     }

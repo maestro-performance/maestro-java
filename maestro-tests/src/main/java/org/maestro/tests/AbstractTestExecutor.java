@@ -28,6 +28,7 @@ import org.maestro.common.Role;
 import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;
+import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.common.client.notes.WorkerStartOptions;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.TryAgainException;
@@ -69,12 +70,12 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         return maestro;
     }
 
-    private void tryTestStart(final Test test) {
+    private void tryTestStart(final TestExecutionInfo testExecutionInfo) {
         int retries = 6;
 
         do {
             try {
-                exec(maestro::startTest, MaestroTopics.PEER_TOPIC, test);
+                exec(maestro::startTest, MaestroTopics.PEER_TOPIC, testExecutionInfo);
                 break;
             } catch (TryAgainException e) {
                 logger.warn("Waiting 10 seconds because the test cannot be started at this moment : {}", e.getMessage());
@@ -92,8 +93,8 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         } while (retries > 0);
     }
 
-    protected void testStart(final Test test) {
-        tryTestStart(test);
+    protected void testStart(final TestExecutionInfo testExecutionInfo) {
+        tryTestStart(testExecutionInfo);
 
         running = true;
         startTime = Instant.now();
