@@ -30,6 +30,7 @@ import org.maestro.tests.xunit.XUnitGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.*;
 
@@ -84,6 +85,8 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
             testProfile.apply(getMaestro(), distributionStrategy);
 
             try {
+                Instant start = Instant.now();
+
                 testStart(test);
 
                 startServices(testProfile, distributionStrategy);
@@ -94,7 +97,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
                         .waitForNotifications((int) numPeers)
                         .get(timeout, TimeUnit.SECONDS);
 
-                XUnitGenerator.generate(test, results, 0);
+                XUnitGenerator.generate(test, results, start);
 
                 long failed = results.stream()
                         .filter(this::isTestFailed)

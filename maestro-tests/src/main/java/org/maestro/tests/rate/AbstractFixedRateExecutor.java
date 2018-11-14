@@ -29,6 +29,7 @@ import org.maestro.tests.xunit.XUnitGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.*;
 import java.util.function.BiConsumer;
@@ -65,7 +66,6 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
 
     protected boolean runTest(final Test test, final BiConsumer<Maestro, DistributionStrategy> apply) {
         try {
-
             // Clean up the topic
             getMaestro().clear();
 
@@ -75,6 +75,8 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
             apply.accept(getMaestro(), distributionStrategy);
 
             try {
+                Instant start = Instant.now();
+
                 CompletableFuture<List<? extends MaestroNote>> notificationsFuture = doTestStart(test, (int) numPeers);
 
                 CompletableFuture<Boolean> failures = notificationsFuture.thenApply(this::reviewResults);
@@ -84,7 +86,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
                 final long timeout = getTimeout();
                 List<? extends MaestroNote> results = notificationsFuture.get(timeout, TimeUnit.SECONDS);
 
-                XUnitGenerator.generate(test, results, 0);
+                XUnitGenerator.generate(test, results, start);
 
                 return failures.get();
             }

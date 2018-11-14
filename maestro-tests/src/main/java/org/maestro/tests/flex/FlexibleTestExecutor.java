@@ -30,6 +30,7 @@ import org.maestro.tests.xunit.XUnitGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
@@ -91,6 +92,8 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
      */
     public boolean run(final Test test) {
         try {
+            Instant start = Instant.now();
+
             // Clean up the topic
             getMaestro().clear();
 
@@ -112,7 +115,7 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
                     .waitForNotifications((int) peerSet.count(Role.AGENT))
                     .get(timeout, TimeUnit.SECONDS);
 
-            XUnitGenerator.generate(test, results, 0);
+            XUnitGenerator.generate(test, results, start);
 
             logger.info("Processing the notifications");
             long failed = results.stream()

@@ -36,6 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.io.IOException;
 import java.time.Duration;
+import java.time.Instant;
 import java.util.List;
 
 import static org.maestro.tests.utils.IgnoredErrorUtils.isIgnored;
@@ -87,16 +88,28 @@ public class XUnitGenerator {
     }
 
 
-    public static void generate(final File fileName, final Test test, List<? extends MaestroNote> results, long duration) {
+    /**
+     * Generate the xUnit file
+     * @param test the test case
+     * @param results the results as returned by the peers
+     * @param start the test start time so that the duration can be calculated
+     */
+    public static void generate(final Test test, List<? extends MaestroNote> results, Instant start) {
+        Instant end = Instant.now();
 
-        TestSuites testSuites = convertToTestSuites(test, results, duration);
+        Duration elapsed = Duration.between(start, end);
+        logger.info("Test run in {} seconds", elapsed.getSeconds());
 
-        XunitWriter xunitWriter = new XunitWriter();
-
-        xunitWriter.saveToXML(fileName, testSuites);
-
+        generate(test, results, elapsed.getSeconds());
     }
 
+
+    /**
+     * Generate the xUnit file
+     * @param test the test case
+     * @param results the results as returned by the peers
+     * @param duration the test duration
+     */
     public static void generate(final Test test, List<? extends MaestroNote> results, long duration) {
         String xUnitDir = System.getenv("TEST_XUNIT_DIR");
         if (xUnitDir == null) {
