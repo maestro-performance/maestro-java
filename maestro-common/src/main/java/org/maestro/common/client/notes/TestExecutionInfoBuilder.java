@@ -61,6 +61,14 @@ public class TestExecutionInfoBuilder {
         return this;
     }
 
+    public TestExecutionInfoBuilder withSutId(String sutId) {
+        if (sutId == null) {
+            return withSutId(SutDetails.UNSPECIFIED);
+        }
+
+        return withSutId(Integer.parseInt(sutId));
+    }
+
     public TestExecutionInfoBuilder withSutName(String sutName) {
         this.sutName = sutName;
 

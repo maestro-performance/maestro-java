@@ -125,12 +125,33 @@ FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, testProf
 description = System.getenv("TEST_DESCRIPTION")
 comments = System.getenv("TEST_COMMENTS")
 
+testName = System.getenv("TEST_NAME")
+if (testName == null) {
+    testName = "fixed-rate-agent"
+}
+
+testTags = System.getenv("TEST_TAGS")
+labName = System.getenv("LAB_NAME")
+sutId = System.getenv("SUT_ID")
+sutName = System.getenv("SUT_NAME")
+sutJvmVersion = System.getenv("SUT_JVM_VERSION")
+sutOtherInfo = System.getenv("SUT_OTHER_INFO")
+sutTags = System.getenv("SUT_TAGS")
+
 TestExecutionInfo testExecutionInfo = TestExecutionInfoBuilder.newBuilder()
         .withDescription(description)
         .withComment(comments)
-        .withTestName("fixed-rate-with-agent")
+        .withSutId(sutId)
+        .withSutName(sutName)
+        .withSutJvmVersion(sutJvmVersion)
+        .withSutOtherInfo(sutOtherInfo)
+        .withSutTags(sutTags)
+        .withTestName(testName)
+        .withTestTags(testTags)
+        .withLabName(labName)
         .withScriptName(this.class.getSimpleName())
         .build()
+
 
 boolean ret = testExecutor.run(testExecutionInfo)
 

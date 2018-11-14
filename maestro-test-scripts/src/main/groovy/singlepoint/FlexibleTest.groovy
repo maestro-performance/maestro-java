@@ -113,24 +113,44 @@ testProfile.setSourceURL(sourceURL)
 branch = System.getenv("SOURCE_BRANCH")
 testProfile.setBranch(branch)
 
+testProfile.setDuration(TestDurationBuilder.build(duration));
+
 println "Creating the executor"
 Executor executor = new Executor(maestro, testProfile)
 
 description = System.getenv("TEST_DESCRIPTION")
 comments = System.getenv("TEST_COMMENTS")
 
-testProfile.setDuration(TestDurationBuilder.build(duration));
+testName = System.getenv("TEST_NAME")
+if (testName == null) {
+    testName = "flexible"
+}
+
+testTags = System.getenv("TEST_TAGS")
+labName = System.getenv("LAB_NAME")
+sutId = System.getenv("SUT_ID")
+sutName = System.getenv("SUT_NAME")
+sutJvmVersion = System.getenv("SUT_JVM_VERSION")
+sutOtherInfo = System.getenv("SUT_OTHER_INFO")
+sutTags = System.getenv("SUT_TAGS")
+
+TestExecutionInfo testExecutionInfo = TestExecutionInfoBuilder.newBuilder()
+        .withDescription(description)
+        .withComment(comments)
+        .withSutId(sutId)
+        .withSutName(sutName)
+        .withSutJvmVersion(sutJvmVersion)
+        .withSutOtherInfo(sutOtherInfo)
+        .withSutTags(sutTags)
+        .withTestName(testName)
+        .withTestTags(testTags)
+        .withLabName(labName)
+        .withScriptName(this.class.getSimpleName())
+        .build()
 
 int ret = 0
 
 try {
-    TestExecutionInfo testExecutionInfo = TestExecutionInfoBuilder.newBuilder()
-            .withDescription(description)
-            .withComment(comments)
-            .withTestName("flexible")
-            .withScriptName(this.class.getSimpleName())
-            .build()
-
     println "Running the test"
     if (!executor.run(testExecutionInfo)) {
         ret = 1
