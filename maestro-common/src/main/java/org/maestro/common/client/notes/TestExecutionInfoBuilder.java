@@ -85,7 +85,7 @@ public class TestExecutionInfoBuilder {
         return this;
     }
 
-    public TestExecutionInfoBuilder setSutTags(String sutTags) {
+    public TestExecutionInfoBuilder withSutTags(String sutTags) {
         this.sutTags = sutTags;
 
         return this;
