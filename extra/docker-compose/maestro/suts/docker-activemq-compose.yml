@@ -6,7 +6,5 @@ services:
       - test
     ports:
       - "48161:8161"
-# This is not needed, unless you want to test the
-# broker within the container
-#      - "45672:5672"
-#      - "41616:61616"
+      - "5672:5672"
+      - "61616:61616"

@@ -7,7 +7,4 @@ services:
     hostname: sut
     ports:
       - "15672:15672"
-# This is not needed, unless you want to test the
-# broker within the container
       - "5672:5672"
-#      - "41616:61616"
