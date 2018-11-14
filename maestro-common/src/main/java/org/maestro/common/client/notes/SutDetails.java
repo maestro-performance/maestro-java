@@ -17,6 +17,8 @@
 package org.maestro.common.client.notes;
 
 public class SutDetails {
+    public static final int UNSPECIFIED = -1;
+
     private final int sutId;
     private final String sutName;
     private final String sutVersion;
@@ -33,6 +35,29 @@ public class SutDetails {
         this.sutJvmVersion = sutJvmVersion;
         this.sutOtherInfo = sutOtherInfo;
         this.sutTags = sutTags;
+        this.labName = labName;
+        this.testTags = testTags;
+    }
+
+    public SutDetails(String sutName, String sutVersion, String sutJvmVersion, String sutOtherInfo, String sutTags,
+                      String labName, String testTags) {
+        this.sutId = UNSPECIFIED;
+        this.sutName = sutName;
+        this.sutVersion = sutVersion;
+        this.sutJvmVersion = sutJvmVersion;
+        this.sutOtherInfo = sutOtherInfo;
+        this.sutTags = sutTags;
+        this.labName = labName;
+        this.testTags = testTags;
+    }
+
+    public SutDetails(int sutId, String labName, String testTags) {
+        this.sutId = sutId;
+        this.sutName = "";
+        this.sutVersion = "";
+        this.sutJvmVersion = "";
+        this.sutOtherInfo = "";
+        this.sutTags = "";
         this.labName = labName;
         this.testTags = testTags;
     }

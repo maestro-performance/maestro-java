@@ -17,9 +17,8 @@ package multipoint
 
 import org.maestro.client.Maestro
 import org.maestro.common.Role
-import org.maestro.common.client.notes.Test
-import org.maestro.common.client.notes.TestDetails
 import org.maestro.common.client.notes.TestExecutionInfo
+import org.maestro.common.client.notes.TestExecutionInfoBuilder
 import org.maestro.tests.cluster.DistributionStrategyFactory
 import org.maestro.tests.incremental.IncrementalTestExecutor
 import org.maestro.tests.incremental.IncrementalTestProfile
@@ -182,9 +181,12 @@ IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, test
 description = System.getenv("TEST_DESCRIPTION")
 comments = System.getenv("TEST_COMMENTS")
 
-final TestDetails testDetails = new TestDetails(description, comments);
-final Test test = new Test(Test.NEXT, Test.NEXT, "fair-incremental", this.class.getSimpleName(), testDetails);
-final TestExecutionInfo testExecutionInfo = new TestExecutionInfo(test, null);
+TestExecutionInfo testExecutionInfo = TestExecutionInfoBuilder.newBuilder()
+        .withDescription(description)
+        .withComment(comments)
+        .withTestName("fair-incremental")
+        .withScriptName(this.class.getSimpleName())
+        .build()
 
 boolean ret = testExecutor.run(testExecutionInfo)
 

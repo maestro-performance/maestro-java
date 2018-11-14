@@ -19,9 +19,8 @@ package multipoint
 import org.maestro.client.Maestro
 import org.maestro.common.LogConfigurator
 import org.maestro.common.Role
-import org.maestro.common.client.notes.Test
-import org.maestro.common.client.notes.TestDetails
 import org.maestro.common.client.notes.TestExecutionInfo
+import org.maestro.common.client.notes.TestExecutionInfoBuilder
 import org.maestro.common.duration.TestDurationBuilder
 import org.maestro.tests.cluster.DistributionStrategyFactory
 import org.maestro.tests.rate.FixedRateTestExecutor
@@ -118,9 +117,12 @@ FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, testProf
 description = System.getenv("TEST_DESCRIPTION")
 comments = System.getenv("TEST_COMMENTS")
 
-final TestDetails testDetails = new TestDetails(description, comments);
-final Test test = new Test(Test.NEXT, Test.NEXT, "fixed-rate", this.class.getSimpleName(), testDetails);
-final TestExecutionInfo testExecutionInfo = new TestExecutionInfo(test, null);
+TestExecutionInfo testExecutionInfo = TestExecutionInfoBuilder.newBuilder()
+        .withDescription(description)
+        .withComment(comments)
+        .withTestName("fixed-rate")
+        .withScriptName(this.class.getSimpleName())
+        .build()
 
 if (!testExecutor.run(testExecutionInfo)) {
     maestro.stop()
