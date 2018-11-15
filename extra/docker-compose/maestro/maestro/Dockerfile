@@ -30,8 +30,9 @@ MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
 EXPOSE 8000
 COPY --from=buildimg /root/build/maestro-java/maestro-${MAESTRO_WORKER_TYPE}/target/maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz .
-RUN mkdir maestro-${MAESTRO_WORKER_TYPE} && tar --strip-components=1 -xvf maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz -C maestro-${MAESTRO_WORKER_TYPE}
-RUN rm -f maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz
+RUN mkdir maestro-${MAESTRO_WORKER_TYPE} && \
+    tar --strip-components=1 -xvf maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz -C maestro-${MAESTRO_WORKER_TYPE} && \
+    rm -f maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz
 
 ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/log4j.properties
 ADD ${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/maestro-${MAESTRO_WORKER_TYPE}.properties
@@ -47,8 +48,9 @@ MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
 EXPOSE 8000
 COPY --from=buildimg /root/build/maestro-java/maestro-${MAESTRO_WORKER_TYPE}/target/maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz .
-RUN mkdir maestro-${MAESTRO_WORKER_TYPE} && tar --strip-components=1 -xvf maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz -C maestro-${MAESTRO_WORKER_TYPE}
-RUN rm -f maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz
+RUN mkdir maestro-${MAESTRO_WORKER_TYPE} && \
+    tar --strip-components=1 -xvf maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz -C maestro-${MAESTRO_WORKER_TYPE} && \
+    rm -f maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz
 
 ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/log4j.properties
 ADD ${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/maestro-${MAESTRO_WORKER_TYPE}.properties
@@ -63,8 +65,9 @@ MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
 EXPOSE 8000
 COPY --from=buildimg /root/build/maestro-java/maestro-${MAESTRO_WORKER_TYPE}/target/maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz .
-RUN mkdir maestro-${MAESTRO_WORKER_TYPE} && tar --strip-components=1 -xvf maestro-exporter-${MAESTRO_VERSION}-bin.tar.gz -C maestro-exporter
-RUN rm -f maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz
+RUN mkdir maestro-${MAESTRO_WORKER_TYPE} && \
+    tar --strip-components=1 -xvf maestro-exporter-${MAESTRO_VERSION}-bin.tar.gz -C maestro-exporter && \
+    rm -f maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz
 
 ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/log4j.properties
 ADD ${MAESTRO_WORKER_TYPE}/maestro-exporter.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/maestro-${MAESTRO_WORKER_TYPE}.properties
@@ -80,8 +83,9 @@ MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
 EXPOSE 8000
 COPY --from=buildimg /root/build/maestro-java/maestro-${MAESTRO_WORKER_TYPE}/target/maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz .
-RUN mkdir maestro-${MAESTRO_WORKER_TYPE} && tar --strip-components=1 -xvf maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz -C maestro-${MAESTRO_WORKER_TYPE}
-RUN rm -f maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz
+RUN mkdir maestro-${MAESTRO_WORKER_TYPE} && \
+    tar --strip-components=1 -xvf maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz -C maestro-${MAESTRO_WORKER_TYPE} && \
+    rm -f maestro-${MAESTRO_WORKER_TYPE}-${MAESTRO_VERSION}-bin.tar.gz
 
 ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/log4j.properties
 ADD ${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/maestro-${MAESTRO_WORKER_TYPE}.properties
@@ -97,8 +101,9 @@ MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
 EXPOSE 6500
 COPY --from=buildimg /root/build/maestro-java/maestro-${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}-tool/target/maestro-${MAESTRO_WORKER_TYPE}-tool-${MAESTRO_VERSION}-bin.tar.gz .
-RUN mkdir maestro-${MAESTRO_WORKER_TYPE}-tool && tar --strip-components=1 -xvf maestro-${MAESTRO_WORKER_TYPE}-tool-${MAESTRO_VERSION}-bin.tar.gz -C maestro-${MAESTRO_WORKER_TYPE}-tool
-RUN rm -f maestro-${MAESTRO_WORKER_TYPE}-tool-${MAESTRO_VERSION}-bin.tar.gz
+RUN mkdir maestro-${MAESTRO_WORKER_TYPE}-tool && \
+    tar --strip-components=1 -xvf maestro-${MAESTRO_WORKER_TYPE}-tool-${MAESTRO_VERSION}-bin.tar.gz -C maestro-${MAESTRO_WORKER_TYPE}-tool && \
+    rm -f maestro-${MAESTRO_WORKER_TYPE}-tool-${MAESTRO_VERSION}-bin.tar.gz
 
 ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}-tool/config/log4j.properties
 ADD ${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}-tool.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}-tool/config/maestro-${MAESTRO_WORKER_TYPE}-tool.properties
@@ -115,8 +120,8 @@ ENV GROOVY_VERSION 2.4.15
 LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
 RUN yum install -y java-1.8.0-openjdk liberation-fonts && yum clean all
 COPY --from=buildimg /root/build/maestro-java/maestro-cli/target/maestro-cli-${MAESTRO_VERSION}-bin.tar.gz .
-RUN mkdir maestro-cli && tar --strip-components=1 -xvf maestro-cli-${MAESTRO_VERSION}-bin.tar.gz -C maestro-cli
-RUN rm -f maestro-cli-${MAESTRO_VERSION}-bin.tar.gz
+RUN mkdir maestro-cli && tar --strip-components=1 -xvf maestro-cli-${MAESTRO_VERSION}-bin.tar.gz -C maestro-cli && \
+    rm -f maestro-cli-${MAESTRO_VERSION}-bin.tar.gz
 COPY --from=buildimg /root/.m2 /root/.m2
 RUN mkdir -p /maestro
 
