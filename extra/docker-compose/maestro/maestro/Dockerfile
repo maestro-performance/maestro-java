@@ -36,7 +36,6 @@ LABEL MAESTRO_VERSION=${MAESTRO_VERSION}
 ENV MAESTRO_APP_ROOT /opt/maestro
 ENV JAVA_HOME /etc/alternatives/jre
 RUN mkdir -p ${MAESTRO_APP_ROOT} && mkdir -p /maestro
-RUN mkdir -p /maestro
 WORKDIR ${MAESTRO_APP_ROOT}
 RUN yum install -y java-1.8.0-openjdk-headless unzip which ntp rsync && yum clean all
 
@@ -45,7 +44,7 @@ FROM maestro-base AS maestro-worker
 ENV MAESTRO_WORKER_TYPE worker
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
-COPY --from=buildimg ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE} .
+COPY --from=buildimg ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE} maestro-${MAESTRO_WORKER_TYPE}
 
 ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/log4j.properties
 ADD ${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/maestro-${MAESTRO_WORKER_TYPE}.properties
@@ -59,7 +58,7 @@ FROM maestro-base AS maestro-inspector
 ENV MAESTRO_WORKER_TYPE inspector
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
-COPY --from=buildimg ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE} .
+COPY --from=buildimg ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE} maestro-${MAESTRO_WORKER_TYPE}
 
 ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/log4j.properties
 ADD ${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/maestro-${MAESTRO_WORKER_TYPE}.properties
@@ -73,7 +72,7 @@ ENV MAESTRO_WORKER_TYPE exporter
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
 EXPOSE 9120
-COPY --from=buildimg ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE} .
+COPY --from=buildimg ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE} maestro-${MAESTRO_WORKER_TYPE}
 
 ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/log4j.properties
 ADD ${MAESTRO_WORKER_TYPE}/maestro-exporter.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/maestro-${MAESTRO_WORKER_TYPE}.properties
@@ -87,7 +86,7 @@ FROM maestro-base AS maestro-agent
 ENV MAESTRO_WORKER_TYPE agent
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
-COPY --from=buildimg ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE} .
+COPY --from=buildimg ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE} maestro-${MAESTRO_WORKER_TYPE}
 
 ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/log4j.properties
 ADD ${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}/config/maestro-${MAESTRO_WORKER_TYPE}.properties
@@ -102,7 +101,7 @@ ENV MAESTRO_WORKER_TYPE reports
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
 EXPOSE 6500
-COPY --from=buildimg ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE} .
+COPY --from=buildimg ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE} maestro-${MAESTRO_WORKER_TYPE}
 
 ADD ${MAESTRO_WORKER_TYPE}/log4j.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}-tool/config/log4j.properties
 ADD ${MAESTRO_WORKER_TYPE}/maestro-${MAESTRO_WORKER_TYPE}-tool.properties ${MAESTRO_APP_ROOT}/maestro-${MAESTRO_WORKER_TYPE}-tool/config/maestro-${MAESTRO_WORKER_TYPE}-tool.properties
@@ -118,7 +117,7 @@ LABEL MAESTRO_WORKER_TYPE=client
 ENV GROOVY_VERSION 2.4.15
 LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
 RUN yum install -y java-1.8.0-openjdk liberation-fonts && yum clean all
-COPY --from=buildimg ${MAESTRO_APP_ROOT}/maestro-cli .
+COPY --from=buildimg ${MAESTRO_APP_ROOT}/maestro-cli maestro-cli
 
 ENV MAESTRO_BROKER mqtt://broker:1883
 ENV SEND_RECEIVE_URL amqp://sut:5672/test.performance.queue
