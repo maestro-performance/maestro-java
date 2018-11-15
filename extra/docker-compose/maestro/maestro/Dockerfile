@@ -122,7 +122,6 @@ RUN yum install -y java-1.8.0-openjdk liberation-fonts && yum clean all
 COPY --from=buildimg /root/build/maestro-java/maestro-cli/target/maestro-cli-${MAESTRO_VERSION}-bin.tar.gz .
 RUN mkdir maestro-cli && tar --strip-components=1 -xvf maestro-cli-${MAESTRO_VERSION}-bin.tar.gz -C maestro-cli && \
     rm -f maestro-cli-${MAESTRO_VERSION}-bin.tar.gz
-COPY --from=buildimg /root/.m2 /root/.m2
 RUN mkdir -p /maestro
 
 ENV MAESTRO_BROKER mqtt://broker:1883
