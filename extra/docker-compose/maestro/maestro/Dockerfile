@@ -21,8 +21,7 @@ ENV MAESTRO_APP_ROOT /opt/maestro
 ENV JAVA_HOME /etc/alternatives/jre
 RUN mkdir -p ${MAESTRO_APP_ROOT}
 WORKDIR ${MAESTRO_APP_ROOT}
-RUN yum install -y java-1.8.0-openjdk-headless unzip which ntp rsync
-RUN yum clean all
+RUN yum install -y java-1.8.0-openjdk-headless unzip which ntp rsync && yum clean all
 
 ## Worker ##
 FROM maestro-base AS maestro-worker
@@ -114,8 +113,7 @@ MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 LABEL MAESTRO_WORKER_TYPE=client
 ENV GROOVY_VERSION 2.4.15
 LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
-RUN yum install -y java-1.8.0-openjdk liberation-fonts
-RUN yum clean all
+RUN yum install -y java-1.8.0-openjdk liberation-fonts && yum clean all
 COPY --from=buildimg /root/build/maestro-java/maestro-cli/target/maestro-cli-${MAESTRO_VERSION}-bin.tar.gz .
 RUN mkdir maestro-cli && tar --strip-components=1 -xvf maestro-cli-${MAESTRO_VERSION}-bin.tar.gz -C maestro-cli
 RUN rm -f maestro-cli-${MAESTRO_VERSION}-bin.tar.gz
