@@ -7,7 +7,7 @@ spec:
   ports:
     - name: mqtt
       port: 1883
-      targetPort: mqtt
+      nodePort: 31883
   selector:
     app: maestro
     component: broker
