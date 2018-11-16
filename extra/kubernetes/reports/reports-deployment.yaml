@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: maestro-reports
 spec:
-  replicas: 0
+  replicas: 1
   selector:
     matchLabels:
       component: reports
