@@ -7,7 +7,7 @@ spec:
   ports:
     - name: http
       port: 6500
-      targetPort: 6500
+      nodePort: 30001
   selector:
     app: maestro
     component: reports
