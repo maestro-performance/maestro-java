@@ -21,6 +21,7 @@ import org.maestro.common.exceptions.MaestroConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.locks.Condition;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantLock;
@@ -125,7 +126,7 @@ public class AbstractMaestroExecutor implements Runnable {
             lock.lock();
             while (!Thread.currentThread().isInterrupted() && maestroPeer.isRunning()) {
                 try {
-                    condition.await();
+                    condition.await(500, TimeUnit.MILLISECONDS);
                 } catch (InterruptedException e) {
                     logger.info("Interrupted. Aborting");
                     break;
