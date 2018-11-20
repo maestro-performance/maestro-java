@@ -3,9 +3,7 @@ MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 ARG ACTIVEMQ_VERSION
 ENV ACTIVEMQ_VERSION ${ACTIVEMQ_VERSION:-5.15.2}
 ENV MAESTRO_SUT_ROOT /opt/maestro/sut/
-EXPOSE 8161
-EXPOSE 5672
-EXPOSE 61616
+EXPOSE 8161 5672 61616
 RUN yum install -y java-1.8.0-openjdk && yum clean all
 ENV JAVA_HOME /etc/alternatives/jre
 RUN mkdir -p ${MAESTRO_SUT_ROOT}
