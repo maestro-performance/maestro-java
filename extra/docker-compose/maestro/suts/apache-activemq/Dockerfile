@@ -11,6 +11,6 @@ ENV JAVA_HOME /etc/alternatives/jre
 RUN mkdir -p ${MAESTRO_SUT_ROOT}
 WORKDIR ${MAESTRO_SUT_ROOT}
 RUN curl https://archive.apache.org/dist/activemq/${ACTIVEMQ_VERSION}/apache-activemq-${ACTIVEMQ_VERSION}-bin.tar.gz -o apache-activemq.tar.gz && \
-    tar -xvf apache-activemq.tar.gz && ln -s ${MAESTRO_SUT_ROOT}/apache-activemq-${ACTIVEMQ_VERSION} ${MAESTRO_SUT_ROOT}/apache-activemq && \
+    mkdir -p apache-activemq && tar --strip-components=1 -xvf apache-activemq.tar.gz -C apache-activemq && \
     rm -f apache-activemq.tar.gz
 CMD [ "sh", "-c", "./apache-activemq/bin/activemq console" ] 
