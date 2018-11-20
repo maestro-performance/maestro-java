@@ -83,8 +83,6 @@ services:
       args:
       - MAESTRO_VERSION=1.5.0-SNAPSHOT
       target: maestro-exporter
-    volumes:
-      - reports:/maestro
     networks:
       - cluster
     ports:
