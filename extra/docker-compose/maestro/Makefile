@@ -28,8 +28,8 @@ clean:
 
 suts:
 	cd suts/apache-activemq && docker build --build-arg ACTIVEMQ_VERSION=${ACTIVEMQ_VERSION} -t maestroci/activemq:${ACTIVEMQ_VERSION} -t maestroci/activemq:${MAESTRO_LABEL_VERSION} .
-	cd suts/apache-artemis && docker build --build-arg ARTEMIS_VERSION=${ARTEMIS_VERSION} -t maestroci/artemis:${ARTEMIS_VERSION} -t maestroci/artemis:${MAESTRO_LABEL_VERSION} .
-	cd suts/apache-artemis-tls && docker build --build-arg ARTEMIS_VERSION=${ARTEMIS_VERSION} -t maestroci/artemis-tls:${ARTEMIS_VERSION} -t maestroci/artemis-tls:${MAESTRO_LABEL_VERSION} .
+	cd suts/apache-artemis && docker build --build-arg ARTEMIS_VERSION=${ARTEMIS_VERSION} -t maestroci/artemis:${ARTEMIS_VERSION} -t maestroci/artemis:${MAESTRO_LABEL_VERSION} --target artemis .
+	cd suts/apache-artemis && docker build --build-arg ARTEMIS_VERSION=${ARTEMIS_VERSION} -t maestroci/artemis-tls:${ARTEMIS_VERSION} -t maestroci/artemis-tls:${MAESTRO_LABEL_VERSION} --target artemis-tls .
 	cd suts/qpid-dispatch && docker build --build-arg QPID_DISPATCH_VERSION=${QPID_DISPATCH_VERSION} --build-arg QPID_PROTON_VERSION=${QPID_PROTON_VERSION} -t maestroci/qpid-dispatch:${QPID_DISPATCH_VERSION} -t maestroci/qpid-dispatch:${MAESTRO_LABEL_VERSION} .
 
 push-suts: suts
