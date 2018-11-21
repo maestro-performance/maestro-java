@@ -19,34 +19,33 @@ package org.maestro.reports.server;
 import io.javalin.Javalin;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.common.ConfigurationWrapper;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.controllers.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DefaultReportsServer implements ReportsServer {
     private static final Logger logger = LoggerFactory.getLogger(DefaultReportsServer.class);
-    private Javalin app;
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+    private final Javalin app;
 
     public DefaultReportsServer() {
-    }
-
-    public void start() {
-        if (app != null) {
-            throw new MaestroException("Reports server is already started");
-        }
-
-        AbstractConfiguration config = ConfigurationWrapper.getConfig();
-
         final int port = config.getInteger("maestro.reports.server", 6500);
 
-         app = Javalin.create()
+        app = Javalin.create()
                 .port(port)
                 .enableStaticFiles("/site")
                 .enableCorsForAllOrigins()
-                .disableStartupBanner()
-                .start();
+                .disableStartupBanner();
 
+        registerUris();
+
+    }
+
+    protected Javalin getServerInstance() {
+        return app;
+    }
+
+    private void registerUris() {
         app.get("/api/live", ctx -> ctx.result("Hello World"));
 
         // Common usage
@@ -77,6 +76,10 @@ public class DefaultReportsServer implements ReportsServer {
         app.get("/raw/report/:id/files/:name", new RawFileController());
     }
 
+    public void start() {
+        app.start();
+    }
+
 
     public void stop() {
         try {
@@ -86,7 +89,7 @@ public class DefaultReportsServer implements ReportsServer {
             }
         }
         finally {
-            app = null;
+
         }
     }
 
