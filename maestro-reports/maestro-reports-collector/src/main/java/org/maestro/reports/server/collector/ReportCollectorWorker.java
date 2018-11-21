@@ -67,12 +67,6 @@ public class ReportCollectorWorker {
         initializeTest(test);
     }
 
-    private void runAggregation(int maxTestId, int maxTestNumber) {
-        final AggregationService aggregationService = new AggregationService(dataDir.getPath());
-
-        aggregationService.aggregate(maxTestId, maxTestNumber);
-    }
-
     private int countRemaining() {
         int remaining = 0;
         for (DownloadProgress p : aggregatablesMap.values()) {
@@ -177,6 +171,14 @@ public class ReportCollectorWorker {
         report.setValid(true);
         report.setRetired(false);
         report.setTestDate(Date.from(Instant.now()));
+    }
+
+    protected void runAggregation(int maxTestId, int maxTestNumber, final AggregationService aggregationService) {
+        aggregationService.aggregate(maxTestId, maxTestNumber);
+    }
+
+    protected void runAggregation(int maxTestId, int maxTestNumber) {
+        runAggregation(maxTestId, maxTestNumber, new AggregationService(dataDir.getPath()));
     }
 
 

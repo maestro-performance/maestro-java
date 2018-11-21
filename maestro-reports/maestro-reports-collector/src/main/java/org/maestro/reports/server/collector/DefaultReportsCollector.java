@@ -36,18 +36,25 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     private final File dataDir;
     private final Map<Test, ReportCollectorWorker> workerMap = new HashMap<>();
     private final Map<String, Test> testMap = new HashMap<>();
+    private final ReportCollectorWorkerFactory reportCollectorWorkerFactory;
 
     public DefaultReportsCollector(final String maestroURL, final PeerInfo peerInfo, final File dataDir) {
+        this(maestroURL, peerInfo, dataDir, new DefaultReportCollectorWorkerFactory());
+
+    }
+
+    protected DefaultReportsCollector(final String maestroURL, final PeerInfo peerInfo, final File dataDir,
+                                      final ReportCollectorWorkerFactory reportCollectorWorkerFactory) {
         super(maestroURL, peerInfo);
 
         this.dataDir = dataDir;
+        this.reportCollectorWorkerFactory = reportCollectorWorkerFactory;
     }
 
-    private ReportCollectorWorker getCollectorWorker(final Test test) {
+    protected ReportCollectorWorker getCollectorWorker(final Test test) {
         ReportCollectorWorker reportCollectorWorker = workerMap.get(test);
         if (reportCollectorWorker == null) {
-            logger.debug("Creating a new collector worker for test {}", test);
-            reportCollectorWorker = new ReportCollectorWorker(this.dataDir, getClient(), test);
+            reportCollectorWorker = reportCollectorWorkerFactory.newWorker(this.dataDir, getClient(), test);
         }
 
         workerMap.put(test, reportCollectorWorker);

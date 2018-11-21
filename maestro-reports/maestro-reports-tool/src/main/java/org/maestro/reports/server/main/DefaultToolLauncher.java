@@ -129,4 +129,20 @@ public class DefaultToolLauncher implements ReportsToolLauncher {
 
         return reportsServer;
     }
+
+    protected File getDataDir() {
+        return dataDir;
+    }
+
+    protected boolean isOffline() {
+        return offline;
+    }
+
+    protected String getMaestroUrl() {
+        return maestroUrl;
+    }
+
+    protected PeerInfo getPeerInfo() {
+        return peerInfo;
+    }
 }

@@ -25,17 +25,23 @@ import org.maestro.reports.dto.ReportAggregationInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.LinkedList;
 import java.util.List;
 import java.util.stream.Collectors;
 
 public class AggregationService {
     private static final Logger logger = LoggerFactory.getLogger(AggregationService.class);
     private final ReportDao dao = new ReportDao();
+    private final List<PostAggregationHook> hooks = new LinkedList<>();
 
     private final String directory;
 
     public AggregationService(final String directory) {
         this.directory = directory;
+    }
+
+    public List<PostAggregationHook> getHooks() {
+        return hooks;
     }
 
     private void runAggregate(int iTestId, int iTestNumber) throws DataNotFoundException {
@@ -46,7 +52,6 @@ public class AggregationService {
 
         String aggregatedReportDir = organizer.organize(null);
 
-
         List<Report> reports = dao.fetch(iTestId, iTestNumber);
 
         List<String> reportDirs = reports.stream().map(Report::getLocation)
@@ -56,6 +61,9 @@ public class AggregationService {
         Report aggregated = Report.aggregate(reports, aggregatedReportDir);
 
         dao.insert(aggregated);
+
+        logger.debug("Running the post-aggregation hooks");
+        hooks.forEach(hook -> hook.exec(reports));
     }
 
 
