@@ -110,10 +110,32 @@ public class ReportsTool {
         dataDir = new File(dataDirVal);
     }
 
-    protected int run() {
-        ReportsToolLauncher launcher = new DefaultToolLauncher(dataDir, offline, maestroUrl, host);
+    public CommandLine getCmdLine() {
+        return cmdLine;
+    }
 
+    public String getMaestroUrl() {
+        return maestroUrl;
+    }
+
+    public String getHost() {
+        return host;
+    }
+
+    public File getDataDir() {
+        return dataDir;
+    }
+
+    public boolean isOffline() {
+        return offline;
+    }
+
+    protected int run(final ReportsToolLauncher launcher) {
         return launcher.launchServices();
+    }
+
+    protected int run() {
+        return run(new DefaultToolLauncher(dataDir, offline, maestroUrl, host));
     }
 
     /**
