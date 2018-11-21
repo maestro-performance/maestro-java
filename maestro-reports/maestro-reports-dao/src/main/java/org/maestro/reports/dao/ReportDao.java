@@ -19,7 +19,10 @@ package org.maestro.reports.dao;
 import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.maestro.reports.dto.Report;
 import org.maestro.reports.dto.ReportAggregationInfo;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
+import org.springframework.jdbc.core.SingleColumnRowMapper;
 
 import java.util.List;
 
@@ -27,6 +30,7 @@ import java.util.List;
  * DAO for the reports table
  */
 public class ReportDao extends AbstractDao {
+    private static final Logger logger = LoggerFactory.getLogger(ReportDao.class);
 
     /**
      * Constructor
@@ -162,5 +166,50 @@ public class ReportDao extends AbstractDao {
         return runQueryMany("SELECT test_id,test_number,sum(aggregated) AS aggregations FROM report " +
                 "GROUP BY test_id,test_number ORDER BY test_id desc",
                 new BeanPropertyRowMapper<>(ReportAggregationInfo.class));
+    }
+
+    public int getLastTestId() {
+        try {
+            Integer ret = runQuery("select MAX(test_id) from report",
+                    new SingleColumnRowMapper<>(Integer.class));
+
+            if (ret == null) {
+                return -1;
+            }
+
+            return ret.intValue();
+        }
+        catch (DataNotFoundException e) {
+            logger.warn("The query runner returned data not found. Returning -1 as the next test ID");
+
+            return -1;
+        }
+    }
+
+    public int getNextTestId() {
+        return getLastTestId() + 1;
+    }
+
+    public int getLastTestNumber(int testId) {
+        try {
+            Integer ret = runQuery("select MAX(test_number) from report where test_id = ?",
+                    new SingleColumnRowMapper<>(Integer.class),
+                    testId);
+
+            if (ret == null) {
+                return -1;
+            }
+
+            return ret.intValue();
+        }
+        catch (DataNotFoundException e) {
+            logger.warn("The query runner returned data not found. Returning -1 as the next test number");
+
+            return -1;
+        }
+    }
+
+    public int getNextTestNumber(int testId) {
+        return getLastTestNumber(testId) + 1;
     }
 }

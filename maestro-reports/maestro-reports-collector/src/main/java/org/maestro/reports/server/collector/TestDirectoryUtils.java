@@ -42,15 +42,25 @@ public class TestDirectoryUtils {
         return testDir;
     }
 
-    public static File getTestDirectory(final Test requestedTest, final File baseDir) {
-        int requestedTestNumber = requestedTest.getTestNumber();
-
+    public static File getTestDirectory(int requestedTestNumber, final File baseDir) {
         return getTestDirectory(baseDir, requestedTestNumber);
     }
 
+    @Deprecated
+    public static File getTestDirectory(final Test requestedTest, final File baseDir) {
+        int requestedTestNumber = requestedTest.getTestNumber();
+
+        return getTestDirectory(requestedTestNumber, baseDir);
+    }
+
+    public static File getTestIterationDirectory(int requestedTestIteration, final File baseDir) {
+        return getTestDirectory(baseDir, requestedTestIteration);
+    }
+
+    @Deprecated
     public static File getTestIterationDirectory(final Test requestedTest, final File baseDir) {
         int requestedTestIteration = requestedTest.getTestIteration();
 
-        return getTestDirectory(baseDir, requestedTestIteration);
+        return getTestDirectory(requestedTestIteration, baseDir);
     }
 }
