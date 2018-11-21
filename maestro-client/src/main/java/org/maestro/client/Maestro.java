@@ -80,7 +80,7 @@ public final class Maestro implements MaestroRequester {
             logger.trace("Interrupted while stopping Maestro {}", e.getMessage(), e);
         }
         finally {
-            logger.info("Disconnecting the Maestro client");
+            logger.debug("Disconnecting the Maestro client");
             maestroClient.disconnect();
         }
     }

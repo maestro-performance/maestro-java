@@ -31,6 +31,7 @@ import java.util.LinkedHashSet;
 import java.util.Set;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -114,16 +115,29 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     }
 
     public void disconnect() throws MaestroConnectionException {
-        logger.debug("Disconnecting from Maestro Broker");
+        logger.info("Disconnecting from Maestro Broker");
         messageHandlerService.shutdown();
 
         try {
-            if (inboundEndPoint.isConnected()) {
-                inboundEndPoint.disconnect();
+            if (!messageHandlerService.awaitTermination(1, TimeUnit.SECONDS)) {
+                messageHandlerService.shutdownNow();
+                if (!messageHandlerService.awaitTermination(1, TimeUnit.SECONDS)) {
+                    logger.warn("Message handler service did not stop cleanly");
+                }
             }
         }
-        catch (MqttException e) {
-            throw new MaestroConnectionException("Unable to disconnect cleanly from Maestro: " + e.getMessage(), e);
+        catch (InterruptedException e) {
+           logger.trace("Interrupted while waiting for the message handler service to shutdown");
+        }
+        finally {
+            try {
+                if (inboundEndPoint.isConnected()) {
+                    inboundEndPoint.disconnect();
+                }
+            }
+            catch (MqttException e) {
+                throw new MaestroConnectionException("Unable to disconnect cleanly from Maestro: " + e.getMessage(), e);
+            }
         }
     }
 
