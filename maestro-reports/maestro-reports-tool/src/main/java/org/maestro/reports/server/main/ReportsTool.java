@@ -27,21 +27,29 @@ import java.io.File;
 import java.net.UnknownHostException;
 
 public class ReportsTool {
-    private static CommandLine cmdLine;
+    private CommandLine cmdLine;
 
-    private static String maestroUrl;
-    private static String host;
-    private static File dataDir;
-    private static boolean offline;
+    private String maestroUrl;
+    private String host;
+    private File dataDir;
+    private boolean offline;
 
 
+    static {
+        LogConfigurator.defaultForDaemons();
+    }
+
+
+    public ReportsTool(final String[] args) {
+        processCommand(args);
+    }
 
     /**
      * Prints the help for the action and exit
      * @param options the options object
      * @param code the exit code
      */
-    private static void help(final Options options, int code) {
+    protected void help(final Options options, int code) {
         HelpFormatter formatter = new HelpFormatter();
 
         System.out.println("maestro " + Constants.VERSION + "\n");
@@ -49,7 +57,7 @@ public class ReportsTool {
         System.exit(code);
     }
 
-    private static void processCommand(String[] args) {
+    protected void processCommand(String[] args) {
         CommandLineParser parser = new DefaultParser();
 
         Options options = new Options();
@@ -100,7 +108,12 @@ public class ReportsTool {
             help(options, -1);
         }
         dataDir = new File(dataDirVal);
+    }
 
+    protected int run() {
+        ReportsToolLauncher launcher = new DefaultToolLauncher(dataDir, offline, maestroUrl, host);
+
+        return launcher.launchServices();
     }
 
     /**
@@ -117,14 +130,9 @@ public class ReportsTool {
             System.exit(1);
         }
 
-        processCommand(args);
+        ReportsTool reportsTool = new ReportsTool(args);
 
-        LogConfigurator.defaultForDaemons();
-
-        ReportsToolLauncher launcher = new DefaultToolLauncher(dataDir, offline, maestroUrl, host);
-
-        int ret = launcher.launchServices();
-        System.exit(ret);
+        System.exit(reportsTool.run());
     }
 
 
