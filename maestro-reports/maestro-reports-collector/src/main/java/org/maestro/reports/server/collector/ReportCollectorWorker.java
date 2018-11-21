@@ -29,6 +29,7 @@ import org.maestro.common.client.notes.Test;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.reports.common.organizer.DefaultOrganizer;
 import org.maestro.reports.dao.ReportDao;
+import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.maestro.reports.dto.Report;
 import org.maestro.reports.server.collector.exceptions.DownloadCountOverflowException;
 import org.slf4j.Logger;
@@ -154,8 +155,20 @@ public class ReportCollectorWorker {
         logger.info("Initializing a new test");
         report = new Report();
 
-        final File testDataDir = getTestDirectory(requestedTest, dataDir);
-        final File testIterationDir = getTestIterationDirectory(requestedTest, testDataDir);
+        int testId;
+        int testNumber;
+        try {
+            testId = reportDao.getNextTestId();
+            testNumber = reportDao.getNextTestNumber(testId);
+        } catch (DataNotFoundException e) {
+            logger.error("Data not found", e);
+            e.printStackTrace();
+
+            return;
+        }
+
+        final File testDataDir = getTestDirectory(testId, dataDir);
+        final File testIterationDir = getTestIterationDirectory(testNumber, testDataDir);
 
         logger.info("Collecting log files on {}", testIterationDir);
         report.setTestId(TestLogUtils.testLogDirNum(testDataDir));

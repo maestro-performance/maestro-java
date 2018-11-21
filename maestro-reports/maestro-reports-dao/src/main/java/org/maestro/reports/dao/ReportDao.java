@@ -163,4 +163,15 @@ public class ReportDao extends AbstractDao {
                 "GROUP BY test_id,test_number ORDER BY test_id desc",
                 new BeanPropertyRowMapper<>(ReportAggregationInfo.class));
     }
+
+    public int getNextTestId() throws DataNotFoundException {
+        return runQuery("select MAX(test_id) + 1 from report",
+                new BeanPropertyRowMapper<>(Integer.class));
+    }
+
+    public int getNextTestNumber(int testId) throws DataNotFoundException {
+        return runQuery("select MAX(test_number) + 1 from report where test_id = ?",
+                new BeanPropertyRowMapper<>(Integer.class),
+                testId);
+    }
 }
