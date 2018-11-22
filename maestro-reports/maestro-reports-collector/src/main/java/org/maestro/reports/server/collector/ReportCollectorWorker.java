@@ -29,7 +29,6 @@ import org.maestro.common.client.notes.Test;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.reports.common.organizer.DefaultOrganizer;
 import org.maestro.reports.dao.ReportDao;
-import org.maestro.reports.dao.exceptions.DataNotFoundException;
 import org.maestro.reports.dto.Report;
 import org.maestro.reports.server.collector.exceptions.DownloadCountOverflowException;
 import org.slf4j.Logger;
