@@ -155,17 +155,8 @@ public class ReportCollectorWorker {
         logger.info("Initializing a new test");
         report = new Report();
 
-        int testId;
-        int testNumber;
-        try {
-            testId = reportDao.getNextTestId();
-            testNumber = reportDao.getNextTestNumber(testId);
-        } catch (DataNotFoundException e) {
-            logger.error("Data not found", e);
-            e.printStackTrace();
-
-            return;
-        }
+        int testId = getTestId(requestedTest);
+        int testNumber = getTestNumber(requestedTest, testId);
 
         final File testDataDir = getTestDirectory(testId, dataDir);
         final File testIterationDir = getTestIterationDirectory(testNumber, testDataDir);
@@ -184,6 +175,32 @@ public class ReportCollectorWorker {
         report.setValid(true);
         report.setRetired(false);
         report.setTestDate(Date.from(Instant.now()));
+    }
+
+    private int getTestNumber(Test requestedTest, int testId) {
+        int testNumber;
+
+        if (requestedTest.getTestIteration() == Test.NEXT) {
+            testNumber = reportDao.getNextTestNumber(testId);
+        }
+        else {
+            testNumber = reportDao.getLastTestNumber(testId);
+        }
+
+        return testNumber;
+    }
+
+    private int getTestId(Test requestedTest) {
+        int testId;
+
+        if (requestedTest.getTestNumber() == Test.NEXT) {
+           testId = reportDao.getNextTestId();
+        }
+        else {
+            testId = reportDao.getLastTestId();
+        }
+
+        return testId;
     }
 
     protected void runAggregation(int maxTestId, int maxTestNumber, final AggregationService aggregationService) {
