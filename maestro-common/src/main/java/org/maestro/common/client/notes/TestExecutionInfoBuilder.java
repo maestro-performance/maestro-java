@@ -31,26 +31,34 @@ public class TestExecutionInfoBuilder {
     private String labName;
     private String testTags;
 
+    private static String setOrDefault(final String value) {
+        if (value == null) {
+            return "";
+        }
+
+        return null;
+    }
+
     public TestExecutionInfoBuilder withDescription(String description) {
-        this.description = description;
+        this.description = setOrDefault(description);
 
         return this;
     }
 
     public TestExecutionInfoBuilder withComment(String comment) {
-        this.comment = comment;
+        this.comment = setOrDefault(comment);
 
         return this;
     }
 
     public TestExecutionInfoBuilder withTestName(String testName) {
-        this.testName = testName;
+        this.testName = setOrDefault(testName);
 
         return this;
     }
 
     public TestExecutionInfoBuilder withScriptName(String scriptName) {
-        this.scriptName = scriptName;
+        this.scriptName = setOrDefault(scriptName);
 
         return this;
     }
@@ -70,43 +78,45 @@ public class TestExecutionInfoBuilder {
     }
 
     public TestExecutionInfoBuilder withSutName(String sutName) {
-        this.sutName = sutName;
+        this.sutName = setOrDefault(sutName);
 
         return this;
     }
 
     public TestExecutionInfoBuilder withSutVersion(String sutVersion) {
-        this.sutVersion = sutVersion;
+        this.sutVersion = setOrDefault(sutVersion);
 
         return this;
     }
 
+
+
     public TestExecutionInfoBuilder withSutJvmVersion(String sutJvmVersion) {
-        this.sutJvmVersion = sutJvmVersion;
+        this.sutJvmVersion = setOrDefault(sutJvmVersion);
 
         return this;
     }
 
     public TestExecutionInfoBuilder withSutOtherInfo(String sutOtherInfo) {
-        this.sutOtherInfo = sutOtherInfo;
+        this.sutOtherInfo = setOrDefault(sutOtherInfo);
 
         return this;
     }
 
     public TestExecutionInfoBuilder withSutTags(String sutTags) {
-        this.sutTags = sutTags;
+        this.sutTags = setOrDefault(sutTags);
 
         return this;
     }
 
     public TestExecutionInfoBuilder withTestTags(String testTags) {
-        this.testTags = testTags;
+        this.testTags = setOrDefault(testTags);
 
         return this;
     }
 
     public TestExecutionInfoBuilder withLabName(String labName) {
-        this.labName = labName;
+        this.labName = setOrDefault(labName);
 
         return this;
     }
@@ -121,11 +131,11 @@ public class TestExecutionInfoBuilder {
 
         SutDetails sutDetails = null;
 
-        if (this.sutId != SutDetails.UNSPECIFIED) {
-            sutDetails = new SutDetails(this.sutId, this.labName, this.testTags);
+        if (sutId != SutDetails.UNSPECIFIED) {
+            sutDetails = new SutDetails(sutId, labName, testTags);
         }
         else {
-            if (this.sutName != null && this.sutVersion != null && this.sutTags != null) {
+            if (sutName != null && !sutName.isEmpty() && sutVersion != null && !sutVersion.isEmpty() && sutTags != null && !sutTags.isEmpty()) {
                 sutDetails = new SutDetails(this.sutName, this.sutVersion, this.sutJvmVersion, this.sutOtherInfo,
                         this.sutTags, this.labName, this.testTags);
             }
