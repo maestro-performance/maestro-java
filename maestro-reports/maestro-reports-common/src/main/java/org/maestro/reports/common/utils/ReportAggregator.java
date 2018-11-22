@@ -170,7 +170,7 @@ public class ReportAggregator {
         try (LatencyWriter latencyWriter = new LatencyWriter(destFile)) {
 
             for (File currentReport : currentReports) {
-                logger.info("Producing aggregated report for : {}", currentReport);
+                logger.info("Producing aggregated report for: {}", currentReport);
                 joinHistograms(aggregatedHistogram, currentReport);
             }
 
