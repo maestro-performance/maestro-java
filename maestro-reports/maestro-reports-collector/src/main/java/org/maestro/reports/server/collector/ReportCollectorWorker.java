@@ -113,8 +113,10 @@ public class ReportCollectorWorker {
         }
     }
 
-    private void createNewReportRecord(final String testResultString, final String id, final PeerInfo peerInfo) {
+    private void createNewReportRecord(final String testResultString, final String message, final String id,
+                                       final PeerInfo peerInfo) {
         report.setTestResult(testResultString);
+        report.setTestResultMessage(message);
         report.setTestHost(peerInfo.peerHost());
         report.setTestHostRole(peerInfo.getRole().toString());
 
@@ -250,17 +252,17 @@ public class ReportCollectorWorker {
         logRequest(note, LocationType.LAST_FAILED);
 
         if (isIgnored(note)) {
-            createNewReportRecord(ResultStrings.SUCCESS, note.getId(), note.getPeerInfo());
+            createNewReportRecord(ResultStrings.SUCCESS, note.getMessage(), note.getId(), note.getPeerInfo());
         }
         else {
-            createNewReportRecord(ResultStrings.FAILED, note.getId(), note.getPeerInfo());
+            createNewReportRecord(ResultStrings.FAILED, note.getMessage(), note.getId(), note.getPeerInfo());
         }
     }
 
     public void handle(final TestSuccessfulNotification note) {
         logRequest(note, LocationType.LAST_SUCCESS);
 
-        createNewReportRecord(ResultStrings.SUCCESS, note.getId(), note.getPeerInfo());
+        createNewReportRecord(ResultStrings.SUCCESS, note.getMessage(), note.getId(), note.getPeerInfo());
     }
 
 

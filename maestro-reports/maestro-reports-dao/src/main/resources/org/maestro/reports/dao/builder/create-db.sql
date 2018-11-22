@@ -7,6 +7,7 @@ CREATE TABLE IF NOT EXISTS `report` (
   `test_host` VARCHAR(128) NULL,
   `test_host_role` VARCHAR(64) NULL,
   `test_result` VARCHAR(45) NULL,
+  `test_result_message` VARCHAR(45) NULL,
   `location` VARCHAR(1024) NULL,
   `aggregated` BOOLEAN,
   `test_date` TIMESTAMP NOT NULL DEFAULT NOW(),

@@ -31,6 +31,7 @@ public class Report implements Comparable<Report> {
     private String testHost;
     private String testHostRole;
     private String testResult;
+    private String testResultMessage;
     private String location;
     private boolean aggregated;
     private Date testDate;
@@ -102,6 +103,14 @@ public class Report implements Comparable<Report> {
 
     public void setTestResult(String testResult) {
         this.testResult = testResult;
+    }
+
+    public String getTestResultMessage() {
+        return testResultMessage;
+    }
+
+    public void setTestResultMessage(String testResultMessage) {
+        this.testResultMessage = testResultMessage;
     }
 
     public String getLocation() {
@@ -193,8 +202,10 @@ public class Report implements Comparable<Report> {
         long failures = reports.stream().filter(r -> !r.isAggregated()).filter(r -> ResultStrings.FAILED.equals(r.testResult)).count();
         if (failures > 0) {
             report.setTestResult(ResultStrings.FAILED);
+            report.setTestResultMessage("");
         } else {
             report.setTestResult(ResultStrings.SUCCESS);
+            report.setTestResultMessage("");
         }
 
         report.setLocation(location);
@@ -246,6 +257,7 @@ public class Report implements Comparable<Report> {
                 ", testHost='" + testHost + '\'' +
                 ", testHostRole='" + testHostRole + '\'' +
                 ", testResult='" + testResult + '\'' +
+                ", testResultMessage='" + testResultMessage + '\'' +
                 ", location='" + location + '\'' +
                 ", aggregated=" + aggregated +
                 ", testDate=" + testDate +
