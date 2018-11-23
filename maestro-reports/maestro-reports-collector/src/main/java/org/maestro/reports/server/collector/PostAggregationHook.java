@@ -17,6 +17,7 @@
 
 package org.maestro.reports.server.collector;
 
+import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.reports.dto.Report;
 
 import java.util.List;
@@ -28,7 +29,8 @@ public interface PostAggregationHook {
 
     /**
      * Executes the post-aggregation hook
+     * @param testExecutionInfo information given by the test script about the test execution
      * @param reports the list of reports being aggregated
      */
-    void exec(List<Report> reports);
+    void exec(TestExecutionInfo testExecutionInfo, List<Report> reports);
 }

@@ -18,7 +18,7 @@
 package org.maestro.reports.server.collector;
 
 import org.maestro.client.MaestroReceiverClient;
-import org.maestro.common.client.notes.Test;
+import org.maestro.common.client.notes.TestExecutionInfo;
 
 import java.io.File;
 
@@ -31,8 +31,8 @@ public interface ReportCollectorWorkerFactory {
      * Create a new ReportCollectorWorker
      * @param dataDir data directory
      * @param client maestro receiver client instance
-     * @param test current active test
+     * @param testExecutionInfo test execution info
      * @return a new ReportCollectorWorker
      */
-    ReportCollectorWorker newWorker(final File dataDir, final MaestroReceiverClient client, final Test test);
+    ReportCollectorWorker newWorker(final File dataDir, final MaestroReceiverClient client, final TestExecutionInfo testExecutionInfo);
 }

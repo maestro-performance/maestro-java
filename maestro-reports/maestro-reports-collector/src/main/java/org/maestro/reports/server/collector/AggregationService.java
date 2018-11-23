@@ -16,6 +16,7 @@
 
 package org.maestro.reports.server.collector;
 
+import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.reports.common.organizer.AggregatorOrganizer;
 import org.maestro.reports.common.utils.ReportAggregator;
 import org.maestro.reports.dao.ReportDao;
@@ -35,9 +36,11 @@ public class AggregationService {
     private final List<PostAggregationHook> hooks = new LinkedList<>();
 
     private final String directory;
+    private final TestExecutionInfo testExecutionInfo;
 
-    public AggregationService(final String directory) {
+    public AggregationService(final String directory, final TestExecutionInfo testExecutionInfo) {
         this.directory = directory;
+        this.testExecutionInfo = testExecutionInfo;
     }
 
     public List<PostAggregationHook> getHooks() {
@@ -63,7 +66,7 @@ public class AggregationService {
         dao.insert(aggregated);
 
         logger.debug("Running the post-aggregation hooks");
-        hooks.forEach(hook -> hook.exec(reports));
+        hooks.forEach(hook -> hook.exec(testExecutionInfo, reports));
     }
 
 

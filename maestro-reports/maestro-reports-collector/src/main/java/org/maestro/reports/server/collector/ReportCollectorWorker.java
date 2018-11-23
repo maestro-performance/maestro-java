@@ -26,6 +26,7 @@ import org.maestro.common.ResultStrings;
 import org.maestro.common.client.notes.ErrorCode;
 import org.maestro.common.client.notes.LocationType;
 import org.maestro.common.client.notes.Test;
+import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.reports.common.organizer.DefaultOrganizer;
 import org.maestro.reports.dao.ReportDao;
@@ -54,17 +55,21 @@ public class ReportCollectorWorker {
     private final File dataDir;
     private final ExecutorService executorService;
     private final MaestroReceiverClient client;
+    private final TestExecutionInfo testExecutionInfo;
 
     private DefaultOrganizer organizer;
     private Report report;
 
-    public ReportCollectorWorker(final File dataDir, final MaestroReceiverClient client, final Test test) {
+    public ReportCollectorWorker(final File dataDir, final MaestroReceiverClient client,
+                                 final TestExecutionInfo testExecutionInfo)
+    {
         this.dataDir = dataDir;
         this.client = client;
+        this.testExecutionInfo = testExecutionInfo;
 
         executorService = Executors.newSingleThreadExecutor();
 
-        initializeTest(test);
+        initializeTest(testExecutionInfo.getTest());
     }
 
     private int countRemaining() {
@@ -209,7 +214,7 @@ public class ReportCollectorWorker {
     }
 
     protected void runAggregation(int maxTestId, int maxTestNumber) {
-        runAggregation(maxTestId, maxTestNumber, new AggregationService(dataDir.getPath()));
+        runAggregation(maxTestId, maxTestNumber, new AggregationService(dataDir.getPath(), testExecutionInfo));
     }
 
 

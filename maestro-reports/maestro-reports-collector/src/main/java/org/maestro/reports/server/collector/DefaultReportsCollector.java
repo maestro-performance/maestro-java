@@ -21,6 +21,7 @@ import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.Test;
+import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.worker.common.MaestroWorkerManager;
 import org.slf4j.Logger;
@@ -52,12 +53,17 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     }
 
     protected ReportCollectorWorker getCollectorWorker(final Test test) {
-        ReportCollectorWorker reportCollectorWorker = workerMap.get(test);
+        return workerMap.get(test);
+    }
+
+
+    protected ReportCollectorWorker getCollectorWorker(final TestExecutionInfo testExecutionInfo) {
+        ReportCollectorWorker reportCollectorWorker = workerMap.get(testExecutionInfo.getTest());
         if (reportCollectorWorker == null) {
-            reportCollectorWorker = reportCollectorWorkerFactory.newWorker(this.dataDir, getClient(), test);
+            reportCollectorWorker = reportCollectorWorkerFactory.newWorker(this.dataDir, getClient(), testExecutionInfo);
         }
 
-        workerMap.put(test, reportCollectorWorker);
+        workerMap.put(testExecutionInfo.getTest(), reportCollectorWorker);
         return reportCollectorWorker;
     }
 
@@ -149,7 +155,7 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     public void handle(final StartTestRequest note) {
         logger.debug("Test started request received");
 
-        ReportCollectorWorker reportCollectorWorker = getCollectorWorker(note.getTestExecutionInfo().getTest());
+        ReportCollectorWorker reportCollectorWorker = getCollectorWorker(note.getTestExecutionInfo());
 
         reportCollectorWorker.handle(note);
 

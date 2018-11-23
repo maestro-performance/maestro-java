@@ -18,7 +18,7 @@
 package org.maestro.reports.server.collector;
 
 import org.maestro.client.MaestroReceiverClient;
-import org.maestro.common.client.notes.Test;
+import org.maestro.common.client.notes.TestExecutionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,9 +32,9 @@ public class DefaultReportCollectorWorkerFactory implements ReportCollectorWorke
     private static final Logger logger = LoggerFactory.getLogger(DefaultReportCollectorWorkerFactory.class);
 
     @Override
-    public ReportCollectorWorker newWorker(File dataDir, MaestroReceiverClient client, Test test) {
-        logger.debug("Creating a new default collector worker for test {}", test);
+    public ReportCollectorWorker newWorker(File dataDir, MaestroReceiverClient client, TestExecutionInfo testExecutionInfo) {
+        logger.debug("Creating a new default collector worker for test {}", testExecutionInfo);
 
-        return new ReportCollectorWorker(dataDir, client, test);
+        return new ReportCollectorWorker(dataDir, client, testExecutionInfo);
     }
 }
