@@ -36,7 +36,7 @@ public class TestExecutionInfoBuilder {
             return "";
         }
 
-        return null;
+        return value;
     }
 
     public TestExecutionInfoBuilder withDescription(String description) {
