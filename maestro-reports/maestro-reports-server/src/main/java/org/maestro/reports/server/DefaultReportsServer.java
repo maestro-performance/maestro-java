@@ -29,24 +29,28 @@ public class DefaultReportsServer implements ReportsServer {
     private final Javalin app;
 
     public DefaultReportsServer() {
+        app = Javalin.create();
+
+        configure(app);
+
+        registerUris(app);
+    }
+
+    protected void configure(final Javalin app) {
         final int port = config.getInteger("maestro.reports.server", 6500);
 
-        app = Javalin.create()
-                .port(port)
+        app.port(port)
                 .enableStaticFiles("/site")
                 .enableCorsForAllOrigins()
                 .disableStartupBanner();
-
-        registerUris();
-
     }
 
     protected Javalin getServerInstance() {
         return app;
     }
 
-    private void registerUris() {
-        logger.debug("Registering reports server URIs");
+    protected void registerUris(final Javalin app) {
+        logger.warn("Registering reports server URIs");
 
         app.get("/api/live", ctx -> ctx.result("Hello World"));
 
@@ -78,7 +82,7 @@ public class DefaultReportsServer implements ReportsServer {
         app.get("/raw/report/:id/files/:name", new RawFileController());
     }
 
-    public void start() {
+    public final void start() {
         logger.debug("Starting the reports server");
         app.start();
     }
