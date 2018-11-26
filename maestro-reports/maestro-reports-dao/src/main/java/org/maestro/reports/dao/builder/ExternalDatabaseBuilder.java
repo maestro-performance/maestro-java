@@ -18,7 +18,10 @@ package org.maestro.reports.dao.builder;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.dao.TemplateBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.jdbc.core.JdbcTemplate;
 
 import org.apache.commons.dbcp2.BasicDataSource;
@@ -34,28 +37,36 @@ public class ExternalDatabaseBuilder implements TemplateBuilder {
         if (ds == null) {
             synchronized (this) {
                 if (ds == null) {
-                    ds = new BasicDataSource();
+                    try {
+                        ds = new BasicDataSource();
 
-                    AbstractConfiguration config = ConfigurationWrapper.getConfig();
+                        AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
-                    final String driverClassName = config.getString("maestro.reports.driver");
-                    ds.setDriverClassName(driverClassName);
+                        final String driverClassName = config.getString("maestro.reports.driver");
+                        ds.setDriverClassName(driverClassName);
 
-                    final String url = config.getString("maestro.reports.datasource.url");
-                    ds.setUrl(url);
+                        final String url = config.getString("maestro.reports.datasource.url");
+                        ds.setUrl(url);
 
-                    final String username = config.getString("maestro.reports.datasource.username");
-                    ds.setUsername(username);
+                        final String username = config.getString("maestro.reports.datasource.username");
+                        ds.setUsername(username);
 
-                    final String password = config.getString("maestro.reports.datasource.password");
-                    ds.setPassword(password);
+                        final String password = config.getString("maestro.reports.datasource.password");
+                        ds.setPassword(password);
 
-                    ds.setInitialSize(2);
+                        ds.setInitialSize(2);
 
-                    JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
-                    jdbcTemplate.update("select 1 from dual");
+                        JdbcTemplate jdbcTemplate = new JdbcTemplate(ds);
+                        jdbcTemplate.update("select 1 from dual");
 
-                    return jdbcTemplate;
+                        return jdbcTemplate;
+                    }
+                    catch (Throwable t) {
+                        Logger logger = LoggerFactory.getLogger(ExternalDatabaseBuilder.class);
+                        logger.error("Unable to connect to an external DB: {}", t.getMessage(), t);
+
+                        throw new MaestroException(t);
+                    }
                 }
             }
         }
