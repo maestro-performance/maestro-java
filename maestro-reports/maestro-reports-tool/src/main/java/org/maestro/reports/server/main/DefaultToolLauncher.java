@@ -56,16 +56,16 @@ public class DefaultToolLauncher implements ReportsToolLauncher {
             if (!offline) {
                 executors = Executors.newFixedThreadPool(2);
 
-                System.out.println("Starting the collector");
+                logger.debug("Starting the collector");
                 executors.submit(() -> startCollector(latch));
 
-                System.out.println("Starting the reports server");
+                logger.debug("Starting the reports server");
                 reportsServerFuture = executors.submit(() -> startServer(latch));
             }
             else {
                 executors = Executors.newSingleThreadScheduledExecutor();
 
-                System.out.println("Starting the reports server (offline)");
+                logger.debug("Starting the reports server (offline)");
                 reportsServerFuture = executors.submit(() -> startServer(latch));
             }
 
@@ -74,16 +74,16 @@ public class DefaultToolLauncher implements ReportsToolLauncher {
                 executors.shutdownNow();
             }
             catch (InterruptedException e) {
-                System.out.println("Interrupted");
+                logger.trace("Interrupted");
             }
 
             ReportsServer reportsServer = reportsServerFuture.get();
             reportsServer.stop();
         } catch (InterruptedException e) {
-            System.out.println("Interrupted");
+            logger.trace("Interrupted the execution of the reports tools");
         } catch (ExecutionException | MaestroException e) {
-            System.err.println(e.getMessage());
-            e.printStackTrace();
+            logger.error("Error while executing the reports tool: {}", e.getMessage(), e);
+
             return 1;
         }
 
