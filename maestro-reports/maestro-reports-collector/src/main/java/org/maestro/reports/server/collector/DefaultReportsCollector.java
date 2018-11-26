@@ -72,6 +72,12 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         super.handle(note);
 
         ReportCollectorWorker reportCollectorWorker = getCollectorWorker(note.getTest());
+        if (reportCollectorWorker == null) {
+            logger.warn("It is possible that the server was launched while a test execution was in progress. " +
+                    "Ignoring the current note");
+
+            return;
+        }
 
         reportCollectorWorker.handle(note);
 
@@ -87,6 +93,13 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         super.handle(note);
 
         ReportCollectorWorker reportCollectorWorker = getCollectorWorker(note.getTest());
+
+        if (reportCollectorWorker == null) {
+            logger.warn("It is possible that the server was launched while a test execution was in progress. " +
+                    "Ignoring the current note");
+
+            return;
+        }
 
         reportCollectorWorker.handle(note);
 
@@ -109,6 +122,12 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
         }
 
         ReportCollectorWorker reportCollectorWorker = getCollectorWorker(test);
+        if (reportCollectorWorker == null) {
+            logger.warn("It is possible that the server was launched while a test execution was in progress. " +
+                    "Ignoring the current note");
+
+            return;
+        }
 
         reportCollectorWorker.handle(note);
 
