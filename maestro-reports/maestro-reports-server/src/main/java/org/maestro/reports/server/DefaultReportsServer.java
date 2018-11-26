@@ -46,6 +46,8 @@ public class DefaultReportsServer implements ReportsServer {
     }
 
     private void registerUris() {
+        logger.debug("Registering reports server URIs");
+
         app.get("/api/live", ctx -> ctx.result("Hello World"));
 
         // Common usage
@@ -77,6 +79,7 @@ public class DefaultReportsServer implements ReportsServer {
     }
 
     public void start() {
+        logger.debug("Starting the reports server");
         app.start();
     }
 

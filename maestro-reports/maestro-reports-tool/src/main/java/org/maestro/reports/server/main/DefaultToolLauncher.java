@@ -95,7 +95,7 @@ public class DefaultToolLauncher implements ReportsToolLauncher {
             String[] topics = MaestroTopics.collectorTopics(maestroPeer.getId(), peerInfo);
 
             MaestroWorkerExecutor executor = new MaestroWorkerExecutor(maestroPeer);
-            logger.info("Starting the Reports Collector instance");
+            logger.info("Starting the reports Collector instance");
             executor.start(topics, 10, 1000);
             executor.run();
             logger.error("Collector worker has finished running");
@@ -113,8 +113,10 @@ public class DefaultToolLauncher implements ReportsToolLauncher {
 
     protected void startServer(final CountDownLatch latch, final ReportsServer reportsServer) {
         try {
-            logger.info("Starting the Reports Server instance");
+            logger.info("Starting the reports server instance");
             reportsServer.start();
+
+            logger.info("Started the reports server instance");
             latch.await();
         } catch (Throwable t) {
             logger.error("Unable to start the Maestro reports server: {}", t.getMessage(), t);
