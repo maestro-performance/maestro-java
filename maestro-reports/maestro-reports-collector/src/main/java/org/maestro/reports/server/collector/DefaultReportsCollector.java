@@ -163,6 +163,11 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     }
 
     @Override
+    public void handle(RoleUnassign note) {
+
+    }
+
+    @Override
     public void handle(final TestStartedNotification note) {
         super.handle(note);
 
