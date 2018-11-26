@@ -117,8 +117,6 @@ public class DefaultToolLauncher implements ReportsToolLauncher {
             reportsServer.start();
             latch.await();
         } catch (Throwable t) {
-            Logger logger = LoggerFactory.getLogger(ReportsTool.class);
-
             logger.error("Unable to start the Maestro reports server: {}", t.getMessage(), t);
         }
         finally {
