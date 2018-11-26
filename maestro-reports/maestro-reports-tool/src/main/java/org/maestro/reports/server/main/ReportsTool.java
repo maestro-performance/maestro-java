@@ -42,6 +42,18 @@ public class ReportsTool {
 
     public ReportsTool(final String[] args) {
         processCommand(args);
+
+        initConfig();
+    }
+
+    protected void initConfig() {
+        try {
+            ConfigurationWrapper.initConfiguration(Constants.MAESTRO_CONFIG_DIR, "maestro-reports-tool.properties");
+        } catch (Exception e) {
+            System.err.println("Unable to initialize configuration file: " + e.getMessage());
+            e.printStackTrace();
+            System.exit(1);
+        }
     }
 
     /**
@@ -144,14 +156,6 @@ public class ReportsTool {
      *      -d /storage/data
      */
     public static void main(String[] args) {
-        try {
-            ConfigurationWrapper.initConfiguration(Constants.MAESTRO_CONFIG_DIR, "maestro-reports-tool.properties");
-        } catch (Exception e) {
-            System.err.println("Unable to initialize configuration file: " + e.getMessage());
-            e.printStackTrace();
-            System.exit(1);
-        }
-
         ReportsTool reportsTool = new ReportsTool(args);
 
         System.exit(reportsTool.run());
