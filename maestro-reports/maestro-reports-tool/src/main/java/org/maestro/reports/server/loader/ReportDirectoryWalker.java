@@ -17,6 +17,7 @@
 package org.maestro.reports.server.loader;
 
 import org.apache.commons.io.DirectoryWalker;
+import org.maestro.common.HostTypes;
 import org.maestro.common.Role;
 import org.maestro.common.io.data.common.RateEntry;
 import org.maestro.common.io.data.readers.BinaryRateReader;
@@ -34,6 +35,7 @@ public class ReportDirectoryWalker extends DirectoryWalker<Report> {
     private static final Logger logger = LoggerFactory.getLogger(ReportDirectoryWalker.class);
     private final Map<Integer, Date> testDatesCache = new HashMap<>();
 
+
     /**
      * Loads report data in a directory with format like this: maestro/baseline/id/$id/number/$number/$role/$result/$number/$host
      * @param file
@@ -43,8 +45,18 @@ public class ReportDirectoryWalker extends DirectoryWalker<Report> {
      */
 
     @Override
-    protected void handleFile(File file, int depth, Collection<Report> results) throws IOException {
+    protected void handleFile(final File file, int depth, Collection<Report> results) throws IOException {
         if (file.getName().equals("test.properties") || file.getName().equals("inspector.properties")) {
+            logger.info("Processing file {}", file);
+
+             /*
+
+    /maestro/baseline-sep-2018/id/3779/number/0/ failed/1/mrg-qe-30.lab.eng.brq.redhat.com/test.properties
+
+    /maestro/Baseline/id/1058/number/0/ receiver/ success/0/mrg-qe-27.lab.eng.brq.redhat.com/test.properties
+
+     */
+
             File hostDir = file.getParentFile();
             String host = hostDir.getName();
 
@@ -56,8 +68,28 @@ public class ReportDirectoryWalker extends DirectoryWalker<Report> {
 
             File resourceRoleDir = testResultStringDir.getParentFile();
             String resourceRole = resourceRoleDir.getName();
+            File testNumberDir;
 
-            File testNumberDir = resourceRoleDir.getParentFile();
+            if (Role.hostTypeByName(resourceRole) == Role.OTHER) {
+                File latencyFile = new File(hostDir, "latency.properties");
+
+                if (latencyFile.exists()) {
+                    resourceRole = HostTypes.RECEIVER_HOST_TYPE;
+                }
+                else {
+                    File rateFile = new File(hostDir, "rate.properties");
+                    if (rateFile.exists()) {
+                        resourceRole = HostTypes.SENDER_HOST_TYPE;
+                    }
+                }
+
+                testNumberDir = resourceRoleDir;
+            }
+            else {
+                resourceRole = resourceRoleDir.getName();
+                testNumberDir = resourceRoleDir.getParentFile();
+            }
+
             int testNumber = Integer.parseInt(testNumberDir.getName());
 
             if (testNumber != legacyTestNumber) {
