@@ -77,7 +77,7 @@ public class PropertyUtils {
 
                 context.putAll(params);
             } catch (URISyntaxException e) {
-                e.printStackTrace();
+                logger.warn("Invalid URI: {}", e.getMessage(), e);
             }
 
             if (((String) value).toLowerCase().startsWith("amqps")) {
