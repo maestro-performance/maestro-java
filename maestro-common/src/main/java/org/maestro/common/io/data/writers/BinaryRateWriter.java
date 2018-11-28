@@ -20,6 +20,7 @@ import org.maestro.common.Constants;
 import org.maestro.common.io.data.common.FileHeader;
 import org.maestro.common.io.data.common.RateEntry;
 import org.maestro.common.io.data.common.exceptions.InvalidRecordException;
+import org.maestro.common.io.data.common.exceptions.RecordOverwriteException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -126,7 +127,7 @@ public class BinaryRateWriter implements RateWriter {
             }
 
             logger.error("Cannot save multiple records within the same second slot: {} == {}", now, last);
-            throw new InvalidRecordException("Cannot save multiple records for within the same second slot");
+            throw new RecordOverwriteException("Cannot save multiple records for within the same second slot");
         }
         else {
             long next = last + 1;
