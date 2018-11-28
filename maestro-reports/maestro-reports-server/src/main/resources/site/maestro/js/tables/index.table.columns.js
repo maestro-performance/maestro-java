@@ -1,5 +1,9 @@
 var indexDbColumns = [
     {
+        data: "testId",
+        visible: false
+    },
+    {
         data: "testDate",
         render: simpleDateRender
     },

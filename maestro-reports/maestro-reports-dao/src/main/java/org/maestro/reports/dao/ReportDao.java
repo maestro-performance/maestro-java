@@ -83,7 +83,7 @@ public class ReportDao extends AbstractDao {
      * @throws DataNotFoundException if no records are found that match the query
      */
     public List<Report> fetch() throws DataNotFoundException {
-        return runQueryMany("select * from report where aggregated = false and valid = true",
+        return runQueryMany("select * from report where aggregated = false and valid = true order by report_id desc",
                 new BeanPropertyRowMapper<>(Report.class));
     }
 
