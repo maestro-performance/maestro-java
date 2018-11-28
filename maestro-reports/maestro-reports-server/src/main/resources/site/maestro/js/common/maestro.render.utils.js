@@ -36,7 +36,7 @@ function renderRoundedRate(data, type, full, meta) {
 
 function renderTestFull(data, type, full, meta) {
     return '<a href=\"view-test-report.html?test-id=' + full.testId + '&test-number=' + full.testNumber +
-    '\"><span class=\"pficon pficon-cluster\"></span> View Test ' + data +'</a>';
+    '\"><span class=\"pficon pficon-cluster\"></span> View Test ' + full.testId +'</a>';
 }
 
 function renderReportIdFull(data, type, full, meta) {
