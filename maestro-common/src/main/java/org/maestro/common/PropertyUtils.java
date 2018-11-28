@@ -76,6 +76,7 @@ public class PropertyUtils {
                 Map<String, String> params = urlQuery.getParams();
 
                 context.putAll(params);
+                context.put((String) key, value);
             } catch (URISyntaxException e) {
                 logger.warn("Invalid URI: {}", e.getMessage(), e);
             }
