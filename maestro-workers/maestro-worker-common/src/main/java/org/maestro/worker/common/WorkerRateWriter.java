@@ -19,6 +19,7 @@ package org.maestro.worker.common;
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.io.data.common.exceptions.InvalidRecordException;
 import org.maestro.common.io.data.writers.BinaryRateWriter;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.worker.WorkerUtils;
@@ -79,7 +80,12 @@ public class WorkerRateWriter implements Runnable {
         }
 
         if (!stopped) {
-            writeRecord(clazz, cache, currentCount);
+            try {
+                writeRecord(clazz, cache, currentCount);
+            }
+            catch (InvalidRecordException e) {
+                logger.error("{}: now = {}, last = {}", e.getNow(), e.getLast());
+            }
         }
     }
 

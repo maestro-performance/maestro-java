@@ -17,22 +17,7 @@
 package org.maestro.common.io.data.common.exceptions;
 
 public class RecordOverwriteException extends InvalidRecordException {
-    public RecordOverwriteException() {
-    }
-
-    public RecordOverwriteException(String message) {
-        super(message);
-    }
-
-    public RecordOverwriteException(String message, Throwable cause) {
-        super(message, cause);
-    }
-
-    public RecordOverwriteException(Throwable cause) {
-        super(cause);
-    }
-
-    public RecordOverwriteException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+    public RecordOverwriteException(long now, long last, String message) {
+        super(now, last, message);
     }
 }

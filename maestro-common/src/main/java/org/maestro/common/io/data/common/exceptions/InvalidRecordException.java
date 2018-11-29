@@ -23,22 +23,22 @@ import org.maestro.common.exceptions.MaestroException;
  */
 @SuppressWarnings("serial")
 public class InvalidRecordException extends MaestroException {
-    public InvalidRecordException() {
-    }
+    private final long now;
+    private final long last;
 
-    public InvalidRecordException(String message) {
+
+    public InvalidRecordException(long now, long last, String message) {
         super(message);
+
+        this.now = now;
+        this.last = last;
     }
 
-    public InvalidRecordException(String message, Throwable cause) {
-        super(message, cause);
+    public long getNow() {
+        return now;
     }
 
-    public InvalidRecordException(Throwable cause) {
-        super(cause);
-    }
-
-    public InvalidRecordException(String message, Throwable cause, boolean enableSuppression, boolean writableStackTrace) {
-        super(message, cause, enableSuppression, writableStackTrace);
+    public long getLast() {
+        return last;
     }
 }

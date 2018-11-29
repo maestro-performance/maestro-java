@@ -122,12 +122,10 @@ public class BinaryRateWriter implements RateWriter {
     private void checkRecordTimeSlot(long now) {
         if (now <= last) {
             if (now < last) {
-                logger.error("Cannot save sequential record with a timestamp in the in the past: now {} < {}", now, last);
-                throw new InvalidRecordException("Cannot save sequential record with a timestamp in the in the past");
+                throw new InvalidRecordException(now, last, "Sequential record with a timestamp in the in the past");
             }
 
-            logger.error("Cannot save multiple records within the same second slot: {} == {}", now, last);
-            throw new RecordOverwriteException("Cannot save multiple records for within the same second slot");
+            throw new RecordOverwriteException(now, last, "Multiple records for within the same second slot");
         }
         else {
             long next = last + 1;

@@ -175,7 +175,7 @@ public class BinaryRateUpdater implements AutoCloseable {
 
         if (olderTs != newerTs) {
             logger.error("Cannot update records that are not within the same second slot: {} == {}", olderTs, newerTs);
-            throw new InvalidRecordException("Cannot save multiple records for within the same second slot");
+            throw new InvalidRecordException(olderTs, newerTs, "Cannot save multiple records for within the same second slot");
         }
 
         byteBuffer.putInt(older.getMetadata());
