@@ -19,6 +19,7 @@ package org.maestro.tests.rate;
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.common.Monitor;
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.tests.callbacks.StatsCallBack;
 import org.maestro.tests.cluster.DistributionStrategy;
@@ -26,6 +27,7 @@ import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -110,6 +112,15 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
 
             this.stopServices();
         }
+    }
+
+    @Override
+    protected boolean onNotified(List<? extends MaestroNote> results) {
+        if (warmUp) {
+            monitor.doUnlock();
+        }
+
+        return super.onNotified(results);
     }
 
     @Override

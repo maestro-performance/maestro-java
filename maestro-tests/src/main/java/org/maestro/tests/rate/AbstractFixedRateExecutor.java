@@ -81,7 +81,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
                 CompletableFuture<List<? extends MaestroNote>> notificationsFuture =
                         doTestStart(testExecutionInfo, (int) numPeers);
 
-                CompletableFuture<Boolean> failures = notificationsFuture.thenApply(this::reviewResults);
+                CompletableFuture<Boolean> failures = notificationsFuture.thenApply(this::onNotified);
 
                 onTestStarted();
 
@@ -126,7 +126,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
         return getMaestro().waitForNotifications(numPeers);
     }
 
-    private boolean reviewResults(final List<? extends MaestroNote> results) {
+    protected boolean onNotified(final List<? extends MaestroNote> results) {
         long failed = results.stream()
                 .filter(this::isTestFailed)
                 .count();
