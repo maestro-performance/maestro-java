@@ -18,6 +18,7 @@ package org.maestro.reports.dao;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.reports.dao.builder.EnvironmentDatabaseBuilder;
 import org.maestro.reports.dao.builder.ExternalDatabaseBuilder;
 import org.maestro.reports.dao.builder.InternalDatabaseBuilder;
 
@@ -39,7 +40,11 @@ public final class TemplateBuilderManager {
             return new InternalDatabaseBuilder();
         }
 
-        return new ExternalDatabaseBuilder();
+        if (type.equals("external")) {
+            return new ExternalDatabaseBuilder();
+        }
+
+        return new EnvironmentDatabaseBuilder();
     }
 
 }
