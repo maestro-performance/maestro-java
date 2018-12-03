@@ -16,8 +16,10 @@
 
 package org.maestro.inspector.base;
 
+import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.worker.common.MaestroWorkerManager;
@@ -128,12 +130,16 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
                 inspector.stop();
             }
 
+            final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+            int interval = config.getInteger("inspector.sleep.interval", 5000) + 1000;
+
             try {
                 inspectorExecutor.shutdown();
-                if (!inspectorExecutor.awaitTermination(1, TimeUnit.SECONDS)) {
+
+                if (!inspectorExecutor.awaitTermination(interval, TimeUnit.MILLISECONDS)) {
                     logger.warn("Inspector did not terminate within the maximum allowed time");
                     inspectorExecutor.shutdownNow();
-                    if (!inspectorExecutor.awaitTermination(1, TimeUnit.SECONDS)) {
+                    if (!inspectorExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
                         logger.warn("Inspector did not terminate cleanly");
                     }
                 }
