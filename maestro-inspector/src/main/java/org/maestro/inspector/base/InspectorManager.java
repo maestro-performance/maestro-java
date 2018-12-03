@@ -52,21 +52,20 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         this.url = url;
     }
 
-    private void createInspector(final StartInspector note, final String inspectorType) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
+    private void createInspector(final StartInspector note, final String inspectorType) throws IllegalAccessException,
+            InstantiationException, ClassNotFoundException
+    {
+        logger.info("Creating a {} inspector", inspectorType);
+
         @SuppressWarnings("unchecked")
         final Class<MaestroInspector> clazz = (Class<MaestroInspector>) Class.forName(inspectorType);
 
         inspector = clazz.newInstance();
         inspector.setEndpoint(getClient());
         inspector.setBaseLogDir(logDir);
+        inspector.setUrl(url);
 
-        try {
-            inspector.setUrl(url);
-        } catch (MaestroException e) {
-            logger.error("Unable to set the management interface URL {}: {}", url, e.getMessage(), e);
-            getClient().replyInternalError(note,"Unable to set the management interface URL %s: %s", url,
-                    e.getMessage());
-        }
+        logger.debug("A {} inspector was created successfully", inspectorType);
     }
 
     @Override
