@@ -195,5 +195,12 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
     public void handle(final StopWorker note) {
         // NO-OP for now
     }
+
+    @Override
+    public void handle(StartTestRequest note) {
+        super.handle(note);
+
+        getClient().notifyStarted(getCurrentTest(), "");
+    }
 }
 
