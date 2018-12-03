@@ -25,16 +25,24 @@ public class InspectorContainer implements Runnable {
     private final MaestroInspector inspector;
 
     public InspectorContainer(final MaestroInspector inspector) {
+        logger.debug("Created the inspector container");
         this.inspector = inspector;
     }
 
 
+    public void stop() {
+        inspector.stop();
+    }
+
+    @Override
     public void run() {
         try {
+            logger.info("Starting the inspector container");
             inspector.start();
         }
         catch (InterruptedException e) {
             try {
+                logger.info("Stopping the inspector");
                 inspector.stop();
             } catch (Exception e1) {
                 logger.error("Error stopping the inspector: {}", e.getMessage(), e);

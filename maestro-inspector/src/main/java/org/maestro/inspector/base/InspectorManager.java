@@ -20,6 +20,7 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.worker.common.MaestroWorkerManager;
@@ -30,15 +31,24 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
 import java.util.concurrent.TimeUnit;
 
 public class InspectorManager extends MaestroWorkerManager implements MaestroInspectorEventListener {
     private static final Logger logger = LoggerFactory.getLogger(InspectorManager.class);
     private ExecutorService inspectorExecutor;
-    private MaestroInspector inspector;
+    private InspectorContainer inspectorContainer;
+
     private final File logDir;
     private final HashMap<String, String> inspectorMap = new HashMap<>();
     private String url;
+
+    private class InspectorThreadFactory implements ThreadFactory {
+        @Override
+        public Thread newThread(Runnable runnable) {
+            return new Thread(runnable, String.format("InspectorThread"));
+        }
+    }
 
     public InspectorManager(final String maestroURL, final PeerInfo peerInfo, final File logDir) throws MaestroException
     {
@@ -54,7 +64,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         this.url = url;
     }
 
-    private void createInspector(final StartInspector note, final String inspectorType) throws IllegalAccessException,
+    private MaestroInspector createInspector(final StartInspector note, final String inspectorType) throws IllegalAccessException,
             InstantiationException, ClassNotFoundException
     {
         logger.info("Creating a {} inspector", inspectorType);
@@ -62,12 +72,22 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         @SuppressWarnings("unchecked")
         final Class<MaestroInspector> clazz = (Class<MaestroInspector>) Class.forName(inspectorType);
 
-        inspector = clazz.newInstance();
+        if (clazz == null) {
+            throw new MaestroException("There is no inspector recorded for %s", inspectorType);
+        }
+
+        MaestroInspector inspector = clazz.newInstance();
+        logger.debug("A {} inspector was created successfully", inspectorType);
+
+        return inspector;
+    }
+
+    private void setInspectorParameters(MaestroInspector inspector) throws DurationParseException {
         inspector.setEndpoint(getClient());
         inspector.setBaseLogDir(logDir);
         inspector.setUrl(url);
-
-        logger.debug("A {} inspector was created successfully", inspectorType);
+        inspector.setWorkerOptions(getWorkerOptions());
+        inspector.setTest(getCurrentTest());
     }
 
     @Override
@@ -75,14 +95,13 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         logger.debug("Start inspector request received");
 
         try {
-            createInspector(note, inspectorMap.get(note.getPayload()));
+            inspectorExecutor = Executors.newSingleThreadExecutor(new InspectorThreadFactory());
 
-            inspector.setWorkerOptions(getWorkerOptions());
-            inspector.setTest(getCurrentTest());
+            MaestroInspector inspector = createInspector(note, inspectorMap.get(note.getPayload()));
 
-            InspectorContainer inspectorContainer = new InspectorContainer(inspector);
+            setInspectorParameters(inspector);
 
-            inspectorExecutor = Executors.newCachedThreadPool(runnable -> new Thread("InspectorThread"));
+            inspectorContainer = new InspectorContainer(inspector);
 
             inspectorExecutor.execute(inspectorContainer);
 
@@ -125,10 +144,13 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
     }
 
     private void doInspectorStop() {
+        if (inspectorContainer ==  null) {
+            return;
+        }
+
+        inspectorContainer.stop();
+
         if (inspectorExecutor != null) {
-            if (inspector != null) {
-                inspector.stop();
-            }
 
             final AbstractConfiguration config = ConfigurationWrapper.getConfig();
             int interval = config.getInteger("inspector.sleep.interval", 5000) + 1000;
@@ -147,8 +169,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
                 logger.warn("Unable to stop the inspector in a clean way: {}", e.getMessage(), e);
             }
             finally {
-                inspectorExecutor = null;
-                inspector = null;
+                inspectorContainer.stop();
             }
         }
         else {
