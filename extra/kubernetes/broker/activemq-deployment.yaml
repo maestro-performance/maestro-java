@@ -17,23 +17,36 @@ spec:
       affinity:
         nodeAffinity:
           preferredDuringSchedulingIgnoredDuringExecution:
-            - weight: 1
-              preference:
-                matchExpressions:
-                  - key: nodetype
-                    operator: In
-                    values:
-                      - maestroperf
+          - weight: 1
+            preference:
+              matchExpressions:
+              - key: maestro-node-role
+                operator: In
+                values:
+                - infra
       containers:
-        - name: broker
-          image: maestroperf/maestro-broker:1.5.0-SNAPSHOT
-          ports:
-            - name: mqtt
-              containerPort: 1883
-          volumeMounts:
-            - mountPath: /opt/maestro/broker/apache-activemq-5.15.3/data
-              name: data
+      - name: broker
+        image: maestroperf/maestro-broker:edge
+        imagePullPolicy: Always
+        livenessProbe:
+          httpGet:
+            path: /
+            port: 8161
+          initialDelaySeconds: 5
+          timeoutSeconds: 5
+          periodSeconds: 20
+          failureThreshold: 3
+        ports:
+        - name: mqtt
+          containerPort: 1883
+        volumeMounts:
+        - mountPath: /opt/maestro/broker/apache-activemq/data
+          name: data
+        - mountPath: /opt/maestro/broker/apache-activemq/tmp
+          name: tmp
       volumes:
-        - name: data
-          emptyDir: {}
+      - name: data
+        emptyDir: {}
+      - name: tmp
+        emptyDir: {}
 

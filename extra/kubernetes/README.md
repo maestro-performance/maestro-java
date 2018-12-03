@@ -5,8 +5,8 @@ allows you to load test messaging endpoints internally on the cluster in case yo
 expose the service outside of Kubernetes.
 
 In order to isolate the maestro infra from the SUT hosts, all deployments have a node affinity to
-nodes labeled 'nodetype=maestroperf'. By adding this label to your nodes, you can control where
-maestro is running.
+nodes labeled 'maestro-node-role=worker' and 'maestro-node-role=infra'. By adding this label
+to your nodes, you can control where maestro is running.
 
 ## Deploy broker
 
@@ -33,11 +33,11 @@ The worker connects to the maestro broker through the service.
 
 To deploy the worker:
 
-    kubectl apply -f worker/
+    kubectl apply -f worker/worker-deployment.yaml
 
 Scale the workers up to the amount of replicas that you need for your test: 
 
-    kubectl scale --replicas=2 -f worker/worker-deployment.yaml
+    kubectl scale deployment --replicas=2 maestro-worker
 
 ## Running the client
 
