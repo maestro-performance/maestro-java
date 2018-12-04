@@ -13,6 +13,13 @@ At the end of the tests, the test data will be downloaded by the report server a
 Maestro offers some features to extend and manage the tests. The management of reports is done via `maestro-reports-cli` 
 CLI too. 
 
+Database Support
+----
+
+Although the code base has support for both H2 and MariaDB, only H2 is a supported databases for the reports tool. If 
+support for MariaDB is desired, then usage of the [Maestro ResultsDB](https://github.com/maestro-performance/maestro-results-db) 
+is recommended. 
+
 
 Including Hardware Information In the Reports
 ----
