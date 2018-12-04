@@ -6,16 +6,24 @@ Maestro Architecture and Overview
 
 Maestro works by coordinating the work of multiple nodes to generate load and simulate load behavior 
 hitting the software under test (SUT). The set represented by the Maestro client, its nodes (aka backends)
-and the Maestro cluster is referenced as the Maestro Test Cluster.   
+and the Maestro cluster is referenced as the Maestro Test Cluster.
+
+The preferred way of running larger deployments of Maestro is within an container-orchestration system such as
+[Kubernetes](http://kubernetes.io), [Origin Community Distribution of Kubernetes](http://www.okd.io).
 
 ![Maestro Overview](figures/maestro_architecture.png)
 
 Maestro can be used for both low-scale as well as large scale tests. For large scale tests, the recommended
-way is to deploy multiple nodes, each on a dedicated environment. For small scale and local tests, the docker
-containers should be sufficient (at a small performance penalty cost of ~10% in the max throughput).
+way is to deploy multiple nodes. For small scale and local tests, the docker containers should be sufficient (at a 
+small performance penalty cost of ~10% in the max throughput).
 
 The backends generate the load on the SUT using the Protocol Under Test (PUT), which can be any of the supported
 protocols.
+
+Maestro Deployment: Using Kubernetes
+----
+
+This deployment method is documented in greater detail [here](../kubernetes).
 
 Maestro Deployment: Multi-host deployment via Ansible
 ----
@@ -48,11 +56,6 @@ a new feature that needs to be matured.
 
 This deployment method is documented in greater detail [here](../docker-compose/maestro).
 
-Maestro Deployment: Using Kubernetes
-----
-
-This deployment method is documented in greater detail [here](../kubernetes).
-
 
 Maestro Libraries: Deploying in Self-Maintained Maven Repository
 ----
@@ -75,12 +78,10 @@ maestro-cli maestro -c ping -m mqtt://host:1883
 The output should be similar to this:
 
 ```
-12:33:20,167 Connecting to Maestro Broker
-12:33:20,187 Connected to Maestro Broker
-12:33:20,189 Connection to tcp://broker:1883 completed (reconnect = false)
-12:33:20,189 Subscribing to maestro topics [/mpt/maestro, /mpt/notifications]
-Reply: PingResponse{elapsed=7} MaestroResponse{id='b83eb781-2624-4e5a-985e-f6c3a08bba52', name='receiver@receiver'} MaestroNote{noteType=MAESTRO_TYPE_RESPONSE, maestroCommand=MAESTRO_NOTE_PING}
-Reply: PingResponse{elapsed=7} MaestroResponse{id='5d2f6fb7-d7c2-473a-85f4-ed4f1cf31f97', name='sender@sender'} MaestroNote{noteType=MAESTRO_TYPE_RESPONSE, maestroCommand=MAESTRO_NOTE_PING}
-Reply: PingResponse{elapsed=7} MaestroResponse{id='1f883236-90b5-4390-82b7-9d06ba536a1b', name='agent@agent'} MaestroNote{noteType=MAESTRO_TYPE_RESPONSE, maestroCommand=MAESTRO_NOTE_PING}
-Reply: PingResponse{elapsed=7} MaestroResponse{id='78d1db88-38e3-40c0-b1c9-5df2fa7dedb1', name='inspector@inspector'} MaestroNote{noteType=MAESTRO_TYPE_RESPONSE, maestroCommand=MAESTRO_NOTE_PING}
+15:42:46,997 Connecting to Maestro Broker
+15:42:47,340 Connection to tcp://my.host.com:31883 completed (reconnect = false)
+Command                 Name               Host                              Group Name    Member Name
+MAESTRO_NOTE_PING       inspector          maestro-inspector-67d8947bdd-k9zr6    all                     
+MAESTRO_NOTE_PING       worker             maestro-worker-77c94d6df7-kwpr9    all                     
+MAESTRO_NOTE_PING       worker             maestro-worker-77c94d6df7-48ppf    all        
 ```
