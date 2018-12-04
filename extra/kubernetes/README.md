@@ -83,7 +83,7 @@ kubectl expose -f reports/reports-service.yaml --hostname=my.hostname.com
 Deploy worker
 ----
 
-The worker connects to the maestro broker through the service.
+The worker connects to the maestro broker through the broker service.
 
 To deploy the worker:
 
@@ -96,6 +96,27 @@ Scale the workers up to the amount of replicas that you need for your test:
 ```
 kubectl scale deployment --replicas=2 maestro-worker
 ```
+
+Deploy inspector
+----
+
+To deploy the inspector:
+
+```
+kubectl apply -f inspector/inspector-deployment.yaml
+``` 
+
+**Note**: the inspector is as an experimental component which may affect the stability of the SUT.
+
+Deploy agent
+----
+
+To deploy the agent:
+
+```
+kubectl apply -f agent/agent-deployment.yaml
+``` 
+
 
 Running the client
 ----
