@@ -63,9 +63,6 @@ public class MaestroCliMain {
             System.err.println("The action is missing!");
             help(1);
         }
-        else {
-            System.out.println("Running " + args[0]);
-        }
 
         String first = args[0];
         String[] newArgs = copyOfRange(args, 1, args.length);
