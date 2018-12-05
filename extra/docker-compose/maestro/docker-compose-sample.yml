@@ -22,7 +22,6 @@ services:
       - test
     depends_on:
       - broker
-      - sut
   inspector:
       image: maestroperf/maestro-inspector:1.5.0-SNAPSHOT
       ports:
