@@ -160,3 +160,12 @@ If you maintain your own Maven repository, you can deploy this library using:
 ```
 mvn deploy -DaltDeploymentRepository=libs-snapshot::default::http://hostname:8081/path/to/libs-snapshot-local
 ```
+
+Releasing
+----
+
+To release a new version and publish the jars to the public repositories:
+
+```
+mvn -DautoVersionSubmodules=true -PDelivery release:prepare && echo "Prepare complete" && mvn -PDelivery release:perform
+```
