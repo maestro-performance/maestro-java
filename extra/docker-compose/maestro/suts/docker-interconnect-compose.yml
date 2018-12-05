@@ -1,12 +1,8 @@
 version: '3.4'
 services: 
   sut:
-    build: 
-        context: suts/qpid-dispatch
-        args:
-                - QPID_DISPATCH_VERSION=1.4.0
-                - QPID_PROTON_VERSION=0.26.0
-    networks: 
+    image: maestroci/qpid-dispatch:1.4.0
+    networks:
       - test
     ports:
       - "48161:8161"

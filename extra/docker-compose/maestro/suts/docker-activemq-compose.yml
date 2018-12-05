@@ -1,7 +1,7 @@
 version: '3.4'
 services: 
   sut:
-    build: suts/apache-activemq
+    image: maestroci/activemq:5.15.2
     networks: 
       - test
     ports:
