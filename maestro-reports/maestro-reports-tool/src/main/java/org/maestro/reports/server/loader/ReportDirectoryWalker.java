@@ -49,13 +49,6 @@ public class ReportDirectoryWalker extends DirectoryWalker<Report> {
         if (file.getName().equals("test.properties") || file.getName().equals("inspector.properties")) {
             logger.info("Processing file {}", file);
 
-             /*
-
-    /maestro/baseline-sep-2018/id/3779/number/0/ failed/1/mrg-qe-30.lab.eng.brq.redhat.com/test.properties
-
-    /maestro/Baseline/id/1058/number/0/ receiver/ success/0/mrg-qe-27.lab.eng.brq.redhat.com/test.properties
-
-     */
 
             File hostDir = file.getParentFile();
             String host = hostDir.getName();
