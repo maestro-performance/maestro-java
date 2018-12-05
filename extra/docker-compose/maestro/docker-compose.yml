@@ -29,8 +29,6 @@ services:
         args:
           - MAESTRO_VERSION=1.5.0-SNAPSHOT
         target: maestro-inspector
-      ports:
-        - "38000:8000"
       networks:
         - cluster
         - test
@@ -43,8 +41,6 @@ services:
         args:
           - MAESTRO_VERSION=1.5.0-SNAPSHOT
         target: maestro-agent
-      ports:
-        - "48000:8000"
       networks:
         - cluster
         - test
@@ -58,8 +54,6 @@ services:
         target: maestro-client
       networks:
         - cluster
-      ports:
-        - "8000:8000"
       depends_on:
         - worker
         - broker
