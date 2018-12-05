@@ -1,0 +1,5 @@
+#[mpt]
+#[Histogram log format version 1.2]
+#[StartTime: 35295850.575 (seconds since epoch), Thu Feb 21:20:48 GMT 1971]
+"StartTimestamp","EndTimestamp","Interval_Max","Interval_Compressed_Histogram"
+627655.777,627686.902,61.0,HISTFAAAAGN4nJNpmSzMwMDgyQABzFCaEYhFZK8nMNh/gAj0Mc9i+8baxPaM9R9rC9sf1j+sL1gnsf1g/cT6i/Ue6zS2DrYPrG+A8i+Asn1st1hnsL1hvcTEyMTJxMnCyASkmKEQAHfJGdg=

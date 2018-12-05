@@ -19,7 +19,7 @@
     <parent>
         <artifactId>maestro-java</artifactId>
         <groupId>org.maestro</groupId>
-        <version>1.4.3-SNAPSHOT</version>
+        <version>1.5.0-SNAPSHOT</version>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
@@ -74,7 +74,7 @@
                         <manifest>
                             <addClasspath>true</addClasspath>
                             <classpathPrefix>../lib</classpathPrefix>
-                            <mainClass>org.maestro.inspector.main.Main</mainClass>
+                            <mainClass>org.maestro.inspector.main.MaestroInspectorMain</mainClass>
                         </manifest>
                     </archive>
                 </configuration>

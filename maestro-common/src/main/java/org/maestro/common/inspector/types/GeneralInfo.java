@@ -31,7 +31,7 @@ public class GeneralInfo implements InspectorType, GeneralInfoType {
         this.generalProperties = Collections.unmodifiableList(generalProperties);
     }
 
-    public List getGeneralProperties() {
+    public List<Map<String, Object>> getGeneralProperties() {
         return generalProperties;
     }
 

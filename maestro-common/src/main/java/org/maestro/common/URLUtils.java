@@ -20,6 +20,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.maestro.common.exceptions.MaestroException;
 
 import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 
 /**
@@ -51,6 +53,37 @@ public class URLUtils {
 
             return url.getHost();
         } catch (MalformedURLException e) {
+            throw new MaestroException("Invalid URL: " + string);
+        }
+    }
+
+    /**
+     * Rewrites the path part of a URL adding and extra String to it
+     * @param inputUrl the input URL (ie.: amqp://hostname:port/queue)
+     * @param string the string to add to the path part
+     * @return the modified URL with the extra string added to its path (ie.:  amqp://hostname:port/queue.extrastring)
+     */
+    public static String rewritePath(final String inputUrl, final String string) {
+        try {
+            URI url = new URI(inputUrl);
+
+            final String userInfo = url.getUserInfo();
+            final String host = url.getHost();
+
+            if (host == null) {
+                throw new MaestroException("Invalid URI: null host");
+            }
+
+            URI ret;
+            if (host.equals(userInfo)) {
+                ret = new URI(url.getScheme(), null, url.getHost(), url.getPort(), url.getPath() + "." + string, url.getQuery(), null);
+            }
+            else {
+                ret = new URI(url.getScheme(), url.getUserInfo(), url.getHost(), url.getPort(), url.getPath() + "." + string, url.getQuery(), null);
+            }
+
+            return ret.toString();
+        } catch (URISyntaxException e) {
             throw new MaestroException("Invalid URL: " + string);
         }
     }

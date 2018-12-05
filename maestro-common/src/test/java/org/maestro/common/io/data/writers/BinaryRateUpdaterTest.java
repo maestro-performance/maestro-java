@@ -19,6 +19,7 @@ package org.maestro.common.io.data.writers;
 import org.apache.commons.io.FileUtils;
 import org.junit.Test;
 import org.maestro.common.Constants;
+import org.maestro.common.Role;
 import org.maestro.common.io.data.common.FileHeader;
 import org.maestro.common.io.data.common.RateEntry;
 import org.maestro.common.io.data.readers.BinaryRateReader;
@@ -48,38 +49,35 @@ public class BinaryRateUpdaterTest {
 
         FileUtils.copyFile(baseFile, reportFile);
 
-        try {
-            BinaryRateUpdater binaryRateUpdater = new BinaryRateUpdater(reportFile);
-
+        try (BinaryRateUpdater binaryRateUpdater = new BinaryRateUpdater(reportFile)) {
             File reportFile1 = new File(path, "sender-1.dat");
             BinaryRateUpdater.joinFile(binaryRateUpdater, reportFile1);
 
             File reportFile2 = new File(path, "sender-2.dat");
             BinaryRateUpdater.joinFile(binaryRateUpdater, reportFile2);
 
-            binaryRateUpdater.close();
+            try (BinaryRateReader reader = new BinaryRateReader(reportFile)) {
 
-            BinaryRateReader reader = new BinaryRateReader(reportFile);
+                FileHeader fileHeader = reader.getHeader();
+                assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
+                assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
 
-            FileHeader fileHeader = reader.getHeader();
-            assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
-            assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
+                // The file was generated w/ when the code was still marked as 1.3.8-SNAPSHOT
+                assertEquals(138, fileHeader.getMaestroVersion());
+                assertEquals(Role.SENDER, fileHeader.getRole());
 
-            // The file was generated w/ when the code was still marked as 1.3.8-SNAPSHOT
-            assertEquals(138, fileHeader.getMaestroVersion());
-            assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+                long count = 0;
+                RateEntry entry = reader.readRecord();
+                while (entry != null) {
+                    count++;
+                    assertEquals("Unexpected value", entry.getCount(), count * 3);
+                    entry = reader.readRecord();
+                }
 
-            long count = 0;
-            RateEntry entry = reader.readRecord();
-            while (entry != null) {
-                count++;
-                assertEquals("Unexpected value", entry.getCount(), count * 3);
-                entry = reader.readRecord();
+                long total = 86400;
+                assertEquals("The number of records don't match",
+                        total, count);
             }
-
-            long total = 86400;
-            assertEquals("The number of records don't match",
-                    total, count);
         }
         finally {
             clean(reportFile);
@@ -96,8 +94,7 @@ public class BinaryRateUpdaterTest {
         String path = this.getClass().getResource(".").getPath();
         File reportFile = new File(path, "sender.dat");
 
-        try {
-            BinaryRateUpdater binaryRateUpdater = new BinaryRateUpdater(reportFile, false);
+        try (BinaryRateUpdater binaryRateUpdater = new BinaryRateUpdater(reportFile, false)) {
 
             File reportFile0 = new File(path, "sender-0.dat");
             BinaryRateUpdater.joinFile(binaryRateUpdater, reportFile0);
@@ -108,27 +105,25 @@ public class BinaryRateUpdaterTest {
             File reportFile2 = new File(path, "sender-2.dat");
             BinaryRateUpdater.joinFile(binaryRateUpdater, reportFile2);
 
-            binaryRateUpdater.close();
+            try (BinaryRateReader reader = new BinaryRateReader(reportFile)) {
+                FileHeader fileHeader = reader.getHeader();
+                assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
+                assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
+                assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
+                assertEquals(Role.SENDER, fileHeader.getRole());
 
-            BinaryRateReader reader = new BinaryRateReader(reportFile);
+                long count = 0;
+                RateEntry entry = reader.readRecord();
+                while (entry != null) {
+                    count++;
+                    assertEquals("Unexpected value", entry.getCount(), count * 3);
+                    entry = reader.readRecord();
+                }
 
-            FileHeader fileHeader = reader.getHeader();
-            assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
-            assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
-            assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
-            assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
-
-            long count = 0;
-            RateEntry entry = reader.readRecord();
-            while (entry != null) {
-                count++;
-                assertEquals("Unexpected value", entry.getCount(), count * 3);
-                entry = reader.readRecord();
+                long total = 86400;
+                assertEquals("The number of records don't match",
+                        total, count);
             }
-
-            long total = 86400;
-            assertEquals("The number of records don't match",
-                    total, count);
         }
         finally {
             clean(reportFile);

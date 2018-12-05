@@ -1,6 +1,6 @@
 <component name="ProjectRunConfigurationManager">
   <configuration default="false" name="CLI - Composed Report" type="Application" factoryName="Application">
-    <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.Main" />
+    <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.MaestroCliMain" />
     <module name="maestro-cli" />
     <option name="PROGRAM_PARAMETERS" value="report -d $MODULE_DIR$/target/classes/composed-reports -l debug --composed" />
     <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes" />

@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018 Otavio Rodolfo Piske
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.maestro.inspector.amqp;
 
 import org.apache.commons.configuration.AbstractConfiguration;
@@ -26,7 +42,6 @@ public class InterconnectReadData {
     private final Destination destination;
     private final MessageConsumer responseConsumer;
     private final MessageProducer requestProducer;
-    private final AbstractConfiguration config = ConfigurationWrapper.getConfig();
     private final long timeout;
 
     public InterconnectReadData(Session session,
@@ -38,6 +53,7 @@ public class InterconnectReadData {
         this.requestProducer = requestProducer;
         this.responseConsumer = responseConsumer;
 
+        AbstractConfiguration config = ConfigurationWrapper.getConfig();
         timeout = config.getInteger("inspector.amqp.management.timeout", 2000);
     }
 
@@ -48,13 +64,13 @@ public class InterconnectReadData {
      * unable to read the message, returns an empty map
      * @throws JMSException if it can't send or receive message
      */
-    private HashMap collectData(final String component) throws JMSException {
+    private HashMap<?, ?> collectData(final String component) throws JMSException {
         requestProducer.send(createMessage(component));
 
         Message message = collectResponse();
         if (message == null) {
             logger.warn("No message was received, returning an empty data map");
-            return new HashMap();
+            return new HashMap<>();
         }
 
         return message.getBody(HashMap.class);
@@ -109,7 +125,7 @@ public class InterconnectReadData {
 
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
 
-        HashMap collectedData = collectData("router.link");
+        HashMap<?, ?> collectedData = collectData("router.link");
 
         return new RouterLinkInfo(converter.parseReceivedMessage(collectedData));
     }
@@ -124,7 +140,7 @@ public class InterconnectReadData {
 
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
 
-        HashMap collectedData = collectData("connection");
+        HashMap<?, ?> collectedData = collectData("connection");
 
         return new ConnectionsInfo(converter.parseReceivedMessage(collectedData));
     }
@@ -138,7 +154,7 @@ public class InterconnectReadData {
     QDMemoryInfo collectMemoryInfo() throws JMSException {
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
 
-        HashMap collectedData = collectData("allocator");
+        HashMap<?, ?> collectedData = collectData("allocator");
 
         return new QDMemoryInfo(converter.parseReceivedMessage(collectedData));
     }
@@ -152,7 +168,7 @@ public class InterconnectReadData {
     GeneralInfo collectGeneralInfo() throws JMSException {
         InterconnectInfoConverter converter = new InterconnectInfoConverter();
 
-        HashMap collectedData = collectData("router");
+        HashMap<?, ?> collectedData = collectData("router");
 
         return new GeneralInfo(converter.parseReceivedMessage(collectedData));
     }

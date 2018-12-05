@@ -20,11 +20,16 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.callback.MaestroNoteCallback;
 import org.maestro.client.exchange.MaestroMqttClient;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.MqttServiceLevel;
+import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.MaestroReceiver;
+import org.maestro.common.client.notes.ErrorCode;
+import org.maestro.common.client.notes.LocationTypeInfo;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
 import org.slf4j.Logger;
@@ -33,7 +38,14 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A maestro client that receives data
+ */
 public class MaestroReceiverClient extends MaestroMqttClient implements MaestroReceiver {
+    /**
+     * A callback object for throttling the sending of the log data (to prevent flooding
+     * or abusing the Maestro Broker resources)
+     */
     private static class ThrottleCallback implements MaestroNoteCallback {
         private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
         private static final Logger logger = LoggerFactory.getLogger(ThrottleCallback.class);
@@ -41,7 +53,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         private static final int defaultDelay;
 
         static {
-            defaultDelay = config.getInteger("maestro.worker.throttle.delay", 500);
+            defaultDelay = config.getInteger("worker.throttle.delay", 100);
         }
 
         @Override
@@ -59,25 +71,40 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     private static final Logger logger = LoggerFactory.getLogger(MaestroReceiverClient.class);
 
     private final EpochMicroClock epochMicroClock;
-    private final String clientName;
-    private final String host;
+    private final PeerInfo peerInfo;
     private final String id;
 
-    public MaestroReceiverClient(String url, final String clientName, final String host, final String id) {
+    /**
+     * Constructor
+     * @param url the broker URL
+     * @param peerInfo the peer information
+     * @param id the client ID
+     */
+    public MaestroReceiverClient(final String url, final PeerInfo peerInfo, final String id) {
         super(url);
 
-        this.clientName = clientName;
-        this.host = host;
+        this.peerInfo = peerInfo;
         this.id = id;
         //it is supposed to be used just by one thread
         this.epochMicroClock = EpochClocks.exclusiveMicro();
     }
 
+
+    /**
+     * Gets the client id
+     * @return the client id
+     */
+    public String getId() {
+        return id;
+    }
+
+
+    @Override
     public void replyOk(final MaestroNote note) {
         logger.trace("Sending the OK response from {}", this.toString());
         OkResponse okResponse = new OkResponse();
 
-        okResponse.setName(clientName + "@" + host);
+        okResponse.setPeerInfo(peerInfo);
         okResponse.setId(id);
         okResponse.correlate(note);
 
@@ -88,21 +115,32 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         }
     }
 
-    public void replyInternalError(final MaestroNote note, final String message, final String...args) {
-        logger.trace("Sending the internal error response from {}", this.toString());
-        InternalError errResponse = new InternalError(String.format(message, args));
 
-        errResponse.setName(clientName + "@" + host);
+    @Override
+    public void replyInternalError(final MaestroNote note, final String message, final Object...args) {
+        replyInternalError(note, ErrorCode.UNSPECIFIED, message, args);
+    }
+
+
+    @Override
+    public void replyInternalError(final MaestroNote note, final ErrorCode errorCode, final String message,
+                                   final Object...args)
+    {
+        logger.trace("Sending the internal error response from {}", this.toString());
+        InternalError errResponse = new InternalError(errorCode, String.format(message, (Object[]) args));
+
+        errResponse.setPeerInfo(peerInfo);
         errResponse.setId(id);
         errResponse.correlate(note);
 
         try {
-            super.publish(MaestroTopics.MAESTRO_TOPIC, errResponse);
+            super.publish(MaestroTopics.MAESTRO_TOPIC, errResponse, MqttServiceLevel.AT_LEAST_ONCE, false);
         } catch (Exception e) {
             logger.error("Unable to publish the internal error response: {}", e.getMessage(), e);
         }
     }
 
+    @Override
     public void pingResponse(final MaestroNote note, long sec, long uSec) {
         logger.trace("Creation seconds.micro: {}.{}", sec, uSec);
 
@@ -114,45 +152,65 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         PingResponse response = new PingResponse();
 
         response.setElapsed(TimeUnit.MICROSECONDS.toMillis(elapsedMicros));
-        response.setName(clientName + "@" + host);
+        response.setPeerInfo(peerInfo);
         response.setId(id);
         response.correlate(note);
 
-        super.publish(MaestroTopics.MAESTRO_TOPIC, response);
+        super.publish(MaestroTopics.MAESTRO_TOPIC, response, MqttServiceLevel.AT_MOST_ONCE, false);
     }
 
 
     @Override
-    public void notifySuccess(String message) {
-        logger.trace("Sending the test success notification from {}", this.toString());
+    public void notifySuccess(final Test test, final String message) {
+        logger.info("Sending the test success notification for {}", test.getTestName());
         TestSuccessfulNotification notification = new TestSuccessfulNotification();
 
-        notification.setName(clientName + "@" + host);
+        notification.setPeerInfo(peerInfo);
         notification.setId(id);
 
+        notification.setTest(test);
         notification.setMessage(message);
 
         try {
-            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, false);
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, MqttServiceLevel.EXACTLY_ONCE, false);
         } catch (Exception e) {
             logger.error("Unable to publish the success notification: {}", e.getMessage(), e);
         }
     }
 
     @Override
-    public void notifyFailure(String message) {
-        logger.trace("Sending the test success notification from {}", this.toString());
+    public void notifyFailure(final Test test, final String message) {
+        logger.info("Sending the test success notification for {}", test.getTestName());
         TestFailedNotification notification = new TestFailedNotification();
 
-        notification.setName(clientName + "@" + host);
+        notification.setPeerInfo(peerInfo);
         notification.setId(id);
+        notification.setTest(test);
 
         notification.setMessage(message);
 
         try {
-            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, false);
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, MqttServiceLevel.EXACTLY_ONCE, false);
         } catch (Exception e) {
             logger.error("Unable to publish the failure notification: {}", e.getMessage(), e);
+        }
+    }
+
+    @Override
+    public void notifyStarted(final Test test, final String message) {
+        logger.trace("Sending the test started notification for {}", test.getTestName());
+        TestStartedNotification notification = new TestStartedNotification();
+
+        notification.setPeerInfo(peerInfo);
+        notification.setId(id);
+
+        notification.setTest(test);
+        notification.setMessage(message);
+
+        try {
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, MqttServiceLevel.EXACTLY_ONCE, false);
+        } catch (Exception e) {
+            logger.error("Unable to publish the test started notification: {}", e.getMessage(), e);
         }
     }
 
@@ -166,11 +224,11 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
      * @param statsResponse the stats response to publish
      */
     public void statsResponse(final StatsResponse statsResponse) {
-        statsResponse.setName(clientName + "@" + host);
+        statsResponse.setPeerInfo(peerInfo);
         statsResponse.setId(id);
 
         try {
-            super.publish(MaestroTopics.MAESTRO_TOPIC, statsResponse, 0, false);
+            super.publish(MaestroTopics.MAESTRO_TOPIC, statsResponse, MqttServiceLevel.AT_MOST_ONCE, false);
         } catch (Exception e) {
             logger.error("Unable to publish the status response: {}", e.getMessage(), e);
         }
@@ -182,11 +240,11 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
      * @param getResponse the get response to publish
      */
     public void getResponse(final GetResponse getResponse) {
-        getResponse.setName(clientName + "@" + host);
+        getResponse.setPeerInfo(peerInfo);
         getResponse.setId(id);
 
         try {
-            super.publish(MaestroTopics.MAESTRO_TOPIC, getResponse, 0, false);
+            super.publish(MaestroTopics.MAESTRO_TOPIC, getResponse, MqttServiceLevel.AT_MOST_ONCE, false);
         } catch (Exception e) {
             logger.error("Unable to publish the get response: {}", e.getMessage(), e);
         }
@@ -195,37 +253,51 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     /**
      * Sends log files via Maestro broker
      * @param logFile the log file to send
-     * @param locationType the location type
+     * @param note the requesting note
      * @param hash the hash for the file being sent
+     * @param locationTypeInfo information about the location of the log files
+     * @param peerInfo information about the peer sending the files
+     * @param id peer ID
+     * @param client the MaestroReceiverClient instance to use to send the log data
      */
-    public void logResponse(final File logFile, final LocationType locationType, final String hash) {
+    public static void logResponse(final File logFile, final LogRequest note, final String hash,
+                                   final LocationTypeInfo locationTypeInfo, final PeerInfo peerInfo,
+                                   final String id, final MaestroReceiverClient client) {
         LogResponse logResponse = new LogResponse();
 
-        logResponse.setName(clientName + "@" + host);
+        logResponse.setPeerInfo(peerInfo);
         logResponse.setId(id);
 
-        logResponse.setLocationType(locationType);
+        logResponse.setLocationType(note.getLocationType());
+        logResponse.setLocationTypeInfo(locationTypeInfo);
         logResponse.setFile(logFile);
         logResponse.setFileHash(hash);
+        logResponse.correlate(note);
 
         ThrottleCallback throttleCallback = new ThrottleCallback();
 
-        super.publish(MaestroTopics.MAESTRO_LOGS_TOPIC, logResponse, 0, false, throttleCallback);
+        client.publish(MaestroTopics.MAESTRO_LOGS_TOPIC, logResponse, MqttServiceLevel.EXACTLY_ONCE, false,
+                throttleCallback);
     }
 
 
+    /**
+     * Notifies that the drain operation is finished
+     * @param status whether the drain was successful (true) or not (false)
+     * @param message Any message related to the drain completion status
+     */
     public void notifyDrainComplete(boolean status, final String message) {
         logger.trace("Sending the drain complete notification from {}", this.toString());
         DrainCompleteNotification notification = new DrainCompleteNotification();
 
-        notification.setName(clientName + "@" + host);
+        notification.setPeerInfo(peerInfo);
         notification.setId(id);
 
         notification.setSuccessful(status);
         notification.setMessage(message);
 
         try {
-            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, 0, false);
+            super.publish(MaestroTopics.NOTIFICATION_TOPIC, notification, MqttServiceLevel.AT_LEAST_ONCE, false);
         } catch (Exception e) {
             logger.error("Unable to publish the drain complete notification: {}", e.getMessage(), e);
         }

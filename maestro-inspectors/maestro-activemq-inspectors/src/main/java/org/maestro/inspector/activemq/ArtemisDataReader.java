@@ -52,6 +52,7 @@ public class ArtemisDataReader {
 
         // Throws if unable to read
         J4pReadResponse response = j4pClient.execute(req);
+        assert response != null : "The response object must never be null";
 
         JSONObject jo = response.getValue();
 

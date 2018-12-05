@@ -1,0 +1,3 @@
+#!/bin/bash
+echo "$DOCKER_PASSWORD" | docker login -u "$DOCKER_USERNAME" --password-stdin
+cd extra/docker-compose/maestro && MAESTRO_LABEL_VERSION=$1 make all

@@ -124,14 +124,13 @@ public class MaestroExporter {
     public int run(int port) throws MaestroConnectionException, IOException {
         logger.info("Exporting metrics on 0.0.0.0:{}", port);
 
-        final int updateInterval = config.getInt("maestro.exporter.update.interval", 100000);
+        final int updateInterval = config.getInt("exporter.update.interval", 100000);
         HTTPServer server = null;
 
         try {
             server = new HTTPServer(port);
 
-            boolean running = true;
-            while (running) {
+            while (true) {
                 logger.debug("Sending requests");
                 CompletableFuture<List<? extends MaestroNote>> statsFutures = maestro.statsRequest();
                 CompletableFuture<List<? extends MaestroNote>> pingFutures = maestro.pingRequest();

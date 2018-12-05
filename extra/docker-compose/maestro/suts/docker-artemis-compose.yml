@@ -1,0 +1,9 @@
+version: '3.4'
+services:
+  sut:
+    image: maestroci/artemis:2.6.3
+    networks: 
+      - test
+    ports:
+      - "48161:8161"
+      - "5672:5672"

@@ -1,84 +1,30 @@
+/*
+ * Copyright 2018 Otavio Rodolfo Piske
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.maestro.common.io.data.common;
 
 import org.apache.commons.lang3.StringUtils;
 import org.maestro.common.Constants;
-import org.maestro.common.HostTypes;
+import org.maestro.common.Role;
 import org.maestro.common.io.data.common.exceptions.InvalidHeaderValueException;
 
 /**
  * Maestro data file header
  */
 public class FileHeader {
-    public enum Role {
-        OTHER(0),
-        SENDER(1),
-        RECEIVER(2),
-        INSPECTOR(3),
-        AGENT(3),
-        EXPORTER(4);
-
-        private final int code;
-
-        Role(int code) {
-            this.code = code;
-        }
-
-        public int getCode() {
-            return code;
-        }
-
-        public static Role from(int code) {
-            switch (code) {
-                case 0: {
-                    return OTHER;
-                }
-                case 1: {
-                    return SENDER;
-                }
-                case 2: {
-                    return RECEIVER;
-                }
-                case 3: {
-                    return INSPECTOR;
-                }
-                case 4: {
-                    return AGENT;
-                }
-                default: {
-                    return OTHER;
-                }
-            }
-        }
-
-        public static Role hostTypeByName(final String name) {
-            if (name == null) {
-                return OTHER;
-            }
-
-            switch (name) {
-                case HostTypes.SENDER_HOST_TYPE: {
-                    return SENDER;
-                }
-                case HostTypes.RECEIVER_HOST_TYPE: {
-                    return RECEIVER;
-                }
-                case HostTypes.INSPECTOR_HOST_TYPE: {
-                    return INSPECTOR;
-                }
-                case HostTypes.AGENT_HOST_TYPE: {
-                    return AGENT;
-                }
-                case HostTypes.EXPORTER_HOST_TYPE: {
-                    return EXPORTER;
-                }
-                default: {
-                    return OTHER;
-                }
-            }
-        }
-    }
-
-
     public static final int FORMAT_NAME_SIZE = 8;
 
     private final String formatName;

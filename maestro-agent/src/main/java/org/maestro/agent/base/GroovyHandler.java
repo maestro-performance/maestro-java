@@ -22,6 +22,7 @@ import org.codehaus.groovy.control.CompilationFailedException;
 import org.maestro.client.MaestroReceiverClient;
 import org.maestro.common.agent.AgentHandler;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.contrib.groovy.GroovyCallbackWalker;
@@ -46,8 +47,9 @@ public class GroovyHandler implements AgentHandler {
 
     private MaestroNote maestroNote;
     private WorkerOptions workerOptions;
+    private Test currentTest;
 
-    public GroovyHandler(MaestroReceiverClient client) {
+    public GroovyHandler(final MaestroReceiverClient client) {
         this.client = client;
     }
 
@@ -82,27 +84,28 @@ public class GroovyHandler implements AgentHandler {
         return groovyObject;
     }
 
-    public void setContext(Map<String, Object> context) {
+    public void setContext(final Map<String, Object> context) {
         this.context = context;
     }
 
-    private void runCallback(final File file, String callbackName) {
+    private void runCallback(final File file) {
         GroovyObject groovyObject = getObject(file);
 
         groovyObject.invokeMethod("setMaestroNote", this.maestroNote);
         groovyObject.invokeMethod("setWorkerOptions", this.workerOptions);
         groovyObject.invokeMethod("setMaestroClient", this.client);
-        groovyObject.invokeMethod(callbackName, context);
+        groovyObject.invokeMethod("setCurrentTest", this.currentTest);
+        groovyObject.invokeMethod("handle", context);
     }
 
     public void runCallbacks(){
         for (File file : fileList){
-            runCallback(file, "handle");
+            runCallback(file);
         }
     }
 
     @Override
-    public void setInitialPath(File initialPath) throws Exception {
+    public void setInitialPath(final File initialPath) {
         GroovyCallbackWalker walker = new GroovyCallbackWalker();
         logger.debug("Processing {}", initialPath.getAbsolutePath());
 
@@ -113,19 +116,15 @@ public class GroovyHandler implements AgentHandler {
         return client;
     }
 
-    public MaestroNote getMaestroNote() {
-        return maestroNote;
-    }
-
-    public void setMaestroNote(MaestroNote maestroNote) {
+    public void setMaestroNote(final MaestroNote maestroNote) {
         this.maestroNote = maestroNote;
     }
 
-    public WorkerOptions getWorkerOptions() {
-        return workerOptions;
+    public void setWorkerOptions(final WorkerOptions workerOptions) {
+        this.workerOptions = workerOptions;
     }
 
-    public void setWorkerOptions(WorkerOptions workerOptions) {
-        this.workerOptions = workerOptions;
+    public void setCurrentTest(final Test currentTest) {
+        this.currentTest = currentTest;
     }
 }

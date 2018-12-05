@@ -21,6 +21,18 @@ after_success:
     - sh -c "curl --ftp-create-dirs -T ./maestro-agent/target/maestro-agent-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-agent-devel-bin.tar.gz"
     - sh -c "curl --ftp-create-dirs -T ./maestro-inspector/target/maestro-inspector-*-bin.tar.gz -u $FTP_USER:$FTP_PASSWORD $FTP_ENDPOINT/maestro-inspector-devel-bin.tar.gz"
 
+deploy:
+  # push edge to docker hub
+  - provider: script
+    script: bash docker_push edge
+    on:
+      branch: devel
+  # push stable to docker hub
+  - provider: script
+    script: bash docker_push stable
+    on:
+      branch: master
+
 addons:
   coverity_scan:
     project:

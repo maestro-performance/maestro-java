@@ -1,0 +1,18 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Reports CLI - New SUT node" type="Application" factoryName="Application">
+    <option name="MAIN_CLASS_NAME" value="org.maestro.reports.server.main.ReportsCliTool" />
+    <module name="maestro-reports-tool" />
+    <option name="PROGRAM_PARAMETERS" value="sut-node -a insert --node-name fake-11.host.com --os-name RHEL --os-version 7.4 --os-arch x86_64 --hw-name true --hw-model &quot;IBM x3550 M3&quot; --hw-cpu &quot;Intel Xeon X5650 @ 12x 2.66GHz&quot; --hw-ram 15873 --hw-disk-type hd --hw-cpu-count 1" />
+    <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes" />
+    <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
+    <extension name="coverage">
+      <pattern>
+        <option name="PATTERN" value="net.orpiske.maestro.results.main.*" />
+        <option name="ENABLED" value="true" />
+      </pattern>
+    </extension>
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

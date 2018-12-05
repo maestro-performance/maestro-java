@@ -22,6 +22,7 @@ import org.jolokia.client.J4pClient;
 import org.jolokia.client.exception.J4pException;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.MaestroReceiver;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
@@ -29,6 +30,7 @@ import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.common.inspector.types.*;
 import org.maestro.common.test.InspectorProperties;
+import org.maestro.common.test.properties.PropertyWriter;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.inspector.activemq.writers.*;
@@ -49,7 +51,7 @@ import java.util.List;
 public class ArtemisInspector implements MaestroInspector {
     private static final Logger logger = LoggerFactory.getLogger(ArtemisInspector.class);
     private long startedEpochMillis = Long.MIN_VALUE;
-    private boolean running = false;
+    private volatile boolean running = false;
     private String url;
     private String user;
     private String password;
@@ -59,7 +61,8 @@ public class ArtemisInspector implements MaestroInspector {
     private MaestroReceiver endpoint;
 
     private ArtemisDataReader artemisDataReader;
-    private J4pClient j4p;
+
+    private Test test;
 
     private final int interval;
 
@@ -68,6 +71,7 @@ public class ArtemisInspector implements MaestroInspector {
         interval = config.getInteger("inspector.sleep.interval", 5000);
     }
 
+    @Override
     public void setUrl(final String value) {
         try {
             URL url = new URL(value);
@@ -93,14 +97,17 @@ public class ArtemisInspector implements MaestroInspector {
         }
     }
 
+    @Override
     public void setUser(final String user) {
         this.user = user;
     }
 
+    @Override
     public void setPassword(final String password) {
         this.password = password;
     }
 
+    @Override
     public void setWorkerOptions(final WorkerOptions workerOptions) throws DurationParseException {
         this.duration = TestDurationBuilder.build(workerOptions.getDuration());
 
@@ -117,12 +124,17 @@ public class ArtemisInspector implements MaestroInspector {
         this.endpoint = endpoint;
     }
 
+    @Override
+    public void setTest(final Test test) {
+        this.test = test;
+    }
+
     public boolean isRunning() {
-        return running;
+        return running && !Thread.currentThread().isInterrupted();
     }
 
     private void connect() {
-        j4p = J4pClient.url(url)
+        J4pClient j4p = J4pClient.url(url)
                 .user(user)
                 .password(password)
                 .authenticator(new BasicAuthenticator().preemptive())
@@ -137,13 +149,6 @@ public class ArtemisInspector implements MaestroInspector {
         File logDir = TestLogUtils.nextTestLogDir(this.baseLogDir);
         InspectorProperties inspectorProperties = new InspectorProperties();
 
-        JVMMemoryInfoWriter heapMemoryWriter = new JVMMemoryInfoWriter(logDir, "heap");
-        JVMMemoryInfoWriter jvmMemoryAreasWriter = new JVMMemoryInfoWriter(logDir, "memory-areas");
-        RuntimeInfoWriter runtimeInfoWriter = new RuntimeInfoWriter(inspectorProperties);
-        OSInfoWriter osInfoWriter = new OSInfoWriter(inspectorProperties);
-        QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues");
-        ProductInfoWriter productInfoWriter = new ProductInfoWriter(inspectorProperties);
-
         try {
             startedEpochMillis = System.currentTimeMillis();
             running = true;
@@ -155,8 +160,38 @@ public class ArtemisInspector implements MaestroInspector {
 
             connect();
 
-            writeInspectorProperties(logDir, inspectorProperties, runtimeInfoWriter, osInfoWriter, productInfoWriter);
+            writeInspectorProperties(logDir, inspectorProperties);
 
+            runInspectionLoop(logDir);
+
+            TestLogUtils.createSymlinks(this.baseLogDir, false);
+            endpoint.notifySuccess(test, "Inspector finished successfully");
+            logger.debug("The test has finished and the Artemis inspector is terminating");
+
+            return 0;
+        } catch (InterruptedException eie) {
+            TestLogUtils.createSymlinks(this.baseLogDir, false);
+            endpoint.notifySuccess(test, "Inspector finished successfully");
+            return 0;
+        }
+        catch (Exception e) {
+            logger.error("Failed to run the inspector: {}", e.getMessage());
+            TestLogUtils.createSymlinks(this.baseLogDir, true);
+            endpoint.notifyFailure(test, "Inspector failed: " + e.getMessage());
+            throw e;
+        }
+        finally {
+            startedEpochMillis = Long.MIN_VALUE;
+            running = false;
+        }
+    }
+
+    private void runInspectionLoop(final File logDir) throws Exception {
+        try (JVMMemoryInfoWriter heapMemoryWriter = new JVMMemoryInfoWriter(logDir, "heap");
+             JVMMemoryInfoWriter jvmMemoryAreasWriter = new JVMMemoryInfoWriter(logDir, "memory-areas");
+             QueueInfoWriter queueInfoWriter = new QueueInfoWriter(logDir, "queues")
+        )
+        {
             while (duration.canContinue(this) && isRunning()) {
                 LocalDateTime now = LocalDateTime.now();
                 heapMemoryWriter.write(now, artemisDataReader.jvmHeapMemory());
@@ -169,47 +204,22 @@ public class ArtemisInspector implements MaestroInspector {
                 try {
                     QueueInfo queueInfoList = artemisDataReader.queueInformation();
                     queueInfoWriter.write(now, queueInfoList);
-                }
-                catch (Exception e) {
+                } catch (Exception e) {
                     logger.error("Unable to read queue information: {}", e.getMessage(), e);
                 }
 
                 Thread.sleep(interval);
             }
-
-            TestLogUtils.createSymlinks(this.baseLogDir, false);
-            endpoint.notifySuccess("Inspector finished successfully");
-            logger.debug("The test has finished and the Artemis inspector is terminating");
-
-            return 0;
-        } catch (InterruptedException eie) {
-            TestLogUtils.createSymlinks(this.baseLogDir, false);
-            endpoint.notifySuccess("Inspector finished successfully");
-            return 0;
-        }
-        catch (Exception e) {
-            TestLogUtils.createSymlinks(this.baseLogDir, true);
-            endpoint.notifyFailure("Inspector failed");
-            throw e;
-        }
-        finally {
-            startedEpochMillis = Long.MIN_VALUE;
-
-            try {
-                heapMemoryWriter.close();
-                jvmMemoryAreasWriter.close();
-                queueInfoWriter.close();
-            }
-            catch (Exception e) {
-                logger.warn(e.getMessage(), e);
-            }
         }
     }
 
-    private void writeInspectorProperties(File logDir, InspectorProperties inspectorProperties,
-                                          RuntimeInfoWriter runtimeInfoWriter, OSInfoWriter osInfoWriter,
-                                          ProductInfoWriter productInfoWriter) throws MalformedObjectNameException, J4pException, IOException {
-        setCommonProperties(inspectorProperties, workerOptions);
+    private void writeInspectorProperties(final File logDir, final InspectorProperties inspectorProperties)
+            throws MalformedObjectNameException, J4pException, IOException
+    {
+
+        RuntimeInfoWriter runtimeInfoWriter = new RuntimeInfoWriter(inspectorProperties);
+        OSInfoWriter osInfoWriter = new OSInfoWriter(inspectorProperties);
+        ProductInfoWriter productInfoWriter = new ProductInfoWriter(inspectorProperties);
 
         OSInfo osInfo = artemisDataReader.operatingSystem();
         osInfoWriter.write(null, osInfo);
@@ -221,10 +231,12 @@ public class ArtemisInspector implements MaestroInspector {
         productInfoWriter.write(null, productInfo);
 
         File propertiesFile = new File(logDir, InspectorProperties.FILENAME);
-        inspectorProperties.write(propertiesFile);
+
+        PropertyWriter writer = new PropertyWriter();
+        writer.write(inspectorProperties, propertiesFile);
     }
 
-    public void stop() throws Exception {
+    public void stop() {
         running = false;
     }
 

@@ -1,6 +1,24 @@
+/*
+ * Copyright 2018 Otavio Rodolfo Piske
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.maestro.client.notes;
 
 import org.apache.commons.io.FileUtils;
+import org.maestro.common.client.notes.LocationType;
+import org.maestro.common.client.notes.LocationTypeInfo;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.exceptions.MaestroException;
 import org.msgpack.core.MessageBufferPacker;
@@ -10,7 +28,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.*;
 
-public class LogResponse extends MaestroResponse {
+public class LogResponse extends MaestroData<MaestroLogCollectorListener> {
     private static final Logger logger = LoggerFactory.getLogger(LogResponse.class);
     // Limit payload to 255 Mb because MQTT cannot have a payload bigger than 256Mb
     // 268435456
@@ -20,6 +38,7 @@ public class LogResponse extends MaestroResponse {
     protected static final int LOG_RESPONSE_MAX_PAYLOAD_SIZE = 10000000;
 
     private LocationType locationType;
+    private LocationTypeInfo locationTypeInfo;
     private String fileName;
     private int index = 0;
     private int total;
@@ -42,6 +61,7 @@ public class LogResponse extends MaestroResponse {
         super(MaestroCommand.MAESTRO_NOTE_LOG, unpacker);
 
         this.locationType = LocationType.byCode(unpacker.unpackInt());
+        this.locationTypeInfo = SerializationUtils.unpackLocationTypeInfo(unpacker);
         setFileName(unpacker.unpackString());
         setIndex(unpacker.unpackInt());
         setTotal(unpacker.unpackInt());
@@ -58,8 +78,16 @@ public class LogResponse extends MaestroResponse {
         return locationType;
     }
 
-    public void setLocationType(LocationType locationType) {
+    public void setLocationType(final LocationType locationType) {
         this.locationType = locationType;
+    }
+
+    public LocationTypeInfo getLocationTypeInfo() {
+        return locationTypeInfo;
+    }
+
+    public void setLocationTypeInfo(final LocationTypeInfo locationTypeInfo) {
+        this.locationTypeInfo = locationTypeInfo;
     }
 
     public String getFileName() {
@@ -141,22 +169,29 @@ public class LogResponse extends MaestroResponse {
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
-        packer.packInt(locationType.code);
-        packer.packString(fileName);
-        packer.packInt(index);
-        packer.packInt(total);
+        try {
+            packer.packInt(locationType.getCode());
+            SerializationUtils.pack(packer, this.locationTypeInfo);
+            packer.packString(fileName);
+            packer.packInt(index);
+            packer.packInt(total);
 
-        packer.packLong(fileSize);
-        packer.packString(fileHash);
+            packer.packLong(fileSize);
+            packer.packString(fileHash);
 
-        packData(packer);
+            packData(packer);
+        } catch (Exception e) {
+            packer.close();
+
+            throw e;
+        }
 
         return packer;
     }
 
 
     protected InputStream initializeInputStream() throws IOException {
-        return new FileInputStream(file);
+        return new BufferedInputStream(new FileInputStream(file));
     }
 
 
@@ -240,6 +275,11 @@ public class LogResponse extends MaestroResponse {
 
     public boolean isLast() {
         return (index == (total - 1));
+    }
+
+    @Override
+    public void notify(MaestroLogCollectorListener visitor) {
+        visitor.handle(this);
     }
 
     @Override

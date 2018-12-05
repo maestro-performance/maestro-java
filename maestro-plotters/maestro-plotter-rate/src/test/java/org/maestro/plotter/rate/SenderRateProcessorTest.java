@@ -17,7 +17,7 @@
 package org.maestro.plotter.rate;
 
 import org.junit.Test;
-import org.maestro.plotter.common.properties.PropertyWriter;
+import org.maestro.common.test.properties.PropertyWriter;
 import org.maestro.plotter.common.statistics.Statistics;
 
 import java.io.File;

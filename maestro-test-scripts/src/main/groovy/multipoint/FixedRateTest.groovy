@@ -17,14 +17,16 @@
 package multipoint
 
 import org.maestro.client.Maestro
-import org.maestro.client.exchange.MaestroTopics
 import org.maestro.common.LogConfigurator
+import org.maestro.common.Role
+import org.maestro.common.client.notes.TestExecutionInfo
+import org.maestro.common.client.notes.TestExecutionInfoBuilder
 import org.maestro.common.duration.TestDurationBuilder
-import org.maestro.reports.downloaders.DownloaderBuilder
-import org.maestro.reports.downloaders.ReportsDownloader
-import org.maestro.tests.MultiPointProfile
+import org.maestro.tests.cluster.DistributionStrategyFactory
 import org.maestro.tests.rate.FixedRateTestExecutor
-import org.maestro.tests.rate.multipoint.FixedRateMultipointTestProfile
+import org.maestro.tests.rate.FixedRateTestProfile
+import org.maestro.tests.support.DefaultTestEndpoint
+import org.maestro.tests.support.TestEndpointResolver
 import org.maestro.tests.utils.ManagementInterface
 
 maestroURL = System.getenv("MAESTRO_BROKER")
@@ -34,15 +36,15 @@ if (maestroURL == null) {
     System.exit(1)
 }
 
-senderBrokerURL = System.getenv("SEND_URL")
-if (senderBrokerURL == null) {
+senderURL = System.getenv("SEND_URL")
+if (senderURL == null) {
     println "Error: the sender point URL was not given"
 
     System.exit(1)
 }
 
-receiverBrokerURL = System.getenv("RECEIVE_URL")
-if (receiverBrokerURL == null) {
+receiverURL = System.getenv("RECEIVE_URL")
+if (receiverURL == null) {
     println "Error: the receiver point URL was not given"
 
     System.exit(1)
@@ -78,9 +80,8 @@ if (parallelCount == null) {
 
 maxLatency = System.getenv("MAXIMUM_LATENCY")
 
-managementInterface = System.getenv("MANAGEMENT_INTERFACE");
-inspectorName = System.getenv("INSPECTOR_NAME");
-downloaderName = System.getenv("DOWNLOADER_NAME");
+managementInterface = System.getenv("MANAGEMENT_INTERFACE")
+inspectorName = System.getenv("INSPECTOR_NAME")
 
 logLevel = System.getenv("LOG_LEVEL")
 LogConfigurator.configureLogLevel(logLevel)
@@ -88,12 +89,16 @@ LogConfigurator.configureLogLevel(logLevel)
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
+distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
 
-FixedRateMultipointTestProfile testProfile = new FixedRateMultipointTestProfile()
+FixedRateTestProfile testProfile = new FixedRateTestProfile()
 
-testProfile.addEndPoint(new MultiPointProfile.EndPoint("sender", MaestroTopics.SENDER_DAEMONS, senderBrokerURL))
-testProfile.addEndPoint(new MultiPointProfile.EndPoint("receiver", MaestroTopics.RECEIVER_DAEMONS, receiverBrokerURL))
+TestEndpointResolver endpointResolver = TestEndpointResolverFactory.createTestEndpointResolver(System.getenv("ENDPOINT_RESOLVER_NAME"))
+
+endpointResolver.register(Role.SENDER, new DefaultTestEndpoint(sendURL))
+endpointResolver.register(Role.RECEIVER, new DefaultTestEndpoint(receiveURL))
+
+testProfile.setTestEndpointResolver(endpointResolver)
 
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(messageSize)
@@ -106,11 +111,42 @@ testProfile.setRate(Integer.parseInt(rate))
 testProfile.setParallelCount(Integer.parseInt(parallelCount))
 
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
-ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
+FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, testProfile, distributionStrategy)
 
-FixedRateTestExecutor testExecutor = new FixedRateTestExecutor(maestro, reportsDownloader, testProfile)
-if (!testExecutor.run()) {
+description = System.getenv("TEST_DESCRIPTION")
+comments = System.getenv("TEST_COMMENTS")
+
+testName = System.getenv("TEST_NAME")
+if (testName == null) {
+    testName = "fixed-rate"
+}
+
+testTags = System.getenv("TEST_TAGS")
+labName = System.getenv("LAB_NAME")
+sutId = System.getenv("SUT_ID")
+sutName = System.getenv("SUT_NAME")
+sutVersion = System.getenv("SUT_VERSION")
+sutJvmVersion = System.getenv("SUT_JVM_VERSION")
+sutOtherInfo = System.getenv("SUT_OTHER_INFO")
+sutTags = System.getenv("SUT_TAGS")
+
+TestExecutionInfo testExecutionInfo = TestExecutionInfoBuilder.newBuilder()
+        .withDescription(description)
+        .withComment(comments)
+        .withSutId(sutId)
+        .withSutName(sutName)
+        .withSutVersion(sutVersion)
+        .withSutJvmVersion(sutJvmVersion)
+        .withSutOtherInfo(sutOtherInfo)
+        .withSutTags(sutTags)
+        .withTestName(testName)
+        .withTestTags(testTags)
+        .withLabName(labName)
+        .withScriptName(this.class.getSimpleName())
+        .build()
+
+if (!testExecutor.run(testExecutionInfo)) {
     maestro.stop()
 
     System.exit(1)

@@ -1,0 +1,10 @@
+version: '3.4'
+services: 
+  sut:
+    image: maestroci/activemq:5.15.2
+    networks: 
+      - test
+    ports:
+      - "48161:8161"
+      - "5672:5672"
+      - "61616:61616"

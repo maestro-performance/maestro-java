@@ -18,8 +18,8 @@ package org.maestro.plotter.rate;
 
 
 import org.maestro.plotter.common.ReportData;
-import org.maestro.plotter.common.properties.annotations.PropertyName;
-import org.maestro.plotter.common.properties.annotations.PropertyProvider;
+import org.maestro.common.test.properties.annotations.PropertyName;
+import org.maestro.common.test.properties.annotations.PropertyProvider;
 import org.maestro.plotter.common.statistics.Statistics;
 import org.maestro.plotter.common.statistics.StatisticsBuilder;
 
@@ -41,7 +41,7 @@ public class RateData implements ReportData {
         recordSet = new TreeSet<>();
     }
 
-    RateData(final Set<RateRecord> other) {
+    public RateData(final Set<RateRecord> other) {
         this.recordSet = other;
     }
 

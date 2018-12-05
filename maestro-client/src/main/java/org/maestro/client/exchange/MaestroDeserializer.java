@@ -33,9 +33,11 @@ import java.util.Objects;
 public class MaestroDeserializer {
     private static final Logger logger = LoggerFactory.getLogger(MaestroDeserializer.class);
 
-    private static MaestroNotification deserializeNotification(MessageUnpacker unpacker) throws IOException, MalformedNoteException {
-        long tmpCommand = unpacker.unpackLong();
-        MaestroCommand command = MaestroCommand.from(tmpCommand);
+    private static MaestroNotification deserializeNotification(final MessageUnpacker unpacker)
+            throws IOException, MalformedNoteException
+    {
+        final long tmpCommand = unpacker.unpackLong();
+        final MaestroCommand command = MaestroCommand.from(tmpCommand);
 
         switch (Objects.requireNonNull(command)) {
             case MAESTRO_NOTE_NOTIFY_FAIL: {
@@ -50,15 +52,37 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_NOTIFY_DRAIN_COMPLETE: {
                 return new DrainCompleteNotification(unpacker);
             }
+            case MAESTRO_NOTE_NOTIFY_TEST_STARTED: {
+                return new TestStartedNotification(unpacker);
+            }
             default: {
                 throw new MalformedNoteException("Invalid notification command: " + tmpCommand);
            }
         }
     }
 
-    private static MaestroResponse deserializeResponse(MessageUnpacker unpacker) throws IOException, MalformedNoteException {
-        long tmpCommand = unpacker.unpackLong();
-        MaestroCommand command = MaestroCommand.from(tmpCommand);
+    private static MaestroData deserializeData(final MessageUnpacker unpacker) throws IOException, MalformedNoteException {
+        final long tmpCommand = unpacker.unpackLong();
+        final MaestroCommand command = MaestroCommand.from(tmpCommand);
+
+        switch (Objects.requireNonNull(command)) {
+            case MAESTRO_NOTE_LOG: {
+                LogResponseJoiner instance = LogResponseJoiner.getInstance();
+
+                return instance.join(new LogResponse(unpacker));
+            }
+            default: {
+                logger.error("Type unknown: {}", command.getClass());
+                throw new MalformedNoteException("Invalid response command: " + tmpCommand);
+            }
+        }
+    }
+
+    private static MaestroResponse deserializeResponse(final MessageUnpacker unpacker)
+            throws IOException, MalformedNoteException
+    {
+        final long tmpCommand = unpacker.unpackLong();
+        final MaestroCommand command = MaestroCommand.from(tmpCommand);
 
         switch (Objects.requireNonNull(command)) {
             case MAESTRO_NOTE_OK: {
@@ -82,23 +106,16 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_USER_COMMAND_1: {
                 return new UserCommand1Response(unpacker);
             }
-            case MAESTRO_NOTE_LOG: {
-                LogResponseJoiner instance = LogResponseJoiner.getInstance();
-
-                return instance.join(new LogResponse(unpacker));
-            }
-            case MAESTRO_NOTE_START_RECEIVER:
-            case MAESTRO_NOTE_STOP_RECEIVER:
-            case MAESTRO_NOTE_START_SENDER:
-            case MAESTRO_NOTE_STOP_SENDER:
+            case MAESTRO_NOTE_START_WORKER:
+            case MAESTRO_NOTE_STOP_WORKER:
             case MAESTRO_NOTE_START_INSPECTOR:
             case MAESTRO_NOTE_STOP_INSPECTOR:
-            case MAESTRO_NOTE_FLUSH:
             case MAESTRO_NOTE_SET:
             case MAESTRO_NOTE_HALT:
             case MAESTRO_NOTE_START_AGENT:
             case MAESTRO_NOTE_STOP_AGENT:{
                 logger.warn("Unexpected maestro command for a response: {}", tmpCommand);
+                throw new MalformedNoteException("Invalid response command: " + tmpCommand);
             }
             default: {
                 logger.error("Type unknown: {}", command.getClass());
@@ -108,52 +125,43 @@ public class MaestroDeserializer {
 
     }
 
-    private static MaestroRequest deserializeRequest(MessageUnpacker unpacker) throws IOException, MalformedNoteException {
-        long tmpCommand = unpacker.unpackLong();
-        MaestroCommand command = MaestroCommand.from(tmpCommand);
+    private static MaestroRequest deserializeRequest(final MessageUnpacker unpacker) throws IOException, MalformedNoteException {
+        final long tmpCommand = unpacker.unpackLong();
+        final MaestroCommand command = MaestroCommand.from(tmpCommand);
 
         switch (Objects.requireNonNull(command)) {
             case MAESTRO_NOTE_PING: {
                 return new PingRequest(unpacker);
             }
-            case MAESTRO_NOTE_FLUSH: {
-                return new FlushRequest();
-            }
             case MAESTRO_NOTE_STATS: {
-                return new StatsRequest();
+                return new StatsRequest(unpacker);
             }
-            case MAESTRO_NOTE_START_RECEIVER: {
-                return new StartReceiver();
+            case MAESTRO_NOTE_START_WORKER: {
+                return new StartWorker(unpacker);
             }
-            case MAESTRO_NOTE_STOP_RECEIVER: {
-                return new StopReceiver();
-            }
-            case MAESTRO_NOTE_START_SENDER: {
-                return new StartSender();
-            }
-            case MAESTRO_NOTE_STOP_SENDER: {
-                return new StopSender();
+            case MAESTRO_NOTE_STOP_WORKER: {
+                return new StopWorker(unpacker);
             }
             case MAESTRO_NOTE_START_INSPECTOR: {
                 return new StartInspector(unpacker);
             }
             case MAESTRO_NOTE_STOP_INSPECTOR: {
-                return new StopInspector();
+                return new StopInspector(unpacker);
             }
             case MAESTRO_NOTE_SET: {
                 return new SetRequest(unpacker);
             }
             case MAESTRO_NOTE_HALT: {
-                return new Halt();
+                return new Halt(unpacker);
             }
             case MAESTRO_NOTE_GET: {
                 return new GetRequest(unpacker);
             }
             case MAESTRO_NOTE_START_AGENT: {
-                return new StartAgent();
+                return new StartAgent(unpacker);
             }
             case MAESTRO_NOTE_STOP_AGENT: {
-                return new StopAgent();
+                return new StopAgent(unpacker);
             }
             case MAESTRO_NOTE_USER_COMMAND_1: {
                 return new UserCommand1Request(unpacker);
@@ -166,6 +174,24 @@ public class MaestroDeserializer {
             }
             case MAESTRO_NOTE_DRAIN: {
                 return new DrainRequest(unpacker);
+            }
+            case MAESTRO_NOTE_GROUP_JOIN: {
+                return new GroupJoinRequest(unpacker);
+            }
+            case MAESTRO_NOTE_GROUP_LEAVE: {
+                return new GroupLeaveRequest(unpacker);
+            }
+            case MAESTRO_NOTE_ROLE_ASSIGN: {
+                return new RoleAssign(unpacker);
+            }
+            case MAESTRO_NOTE_ROLE_UNASSIGN: {
+                return new RoleUnassign(unpacker);
+            }
+            case MAESTRO_NOTE_START_TEST: {
+                return new StartTestRequest(unpacker);
+            }
+            case MAESTRO_NOTE_STOP_TEST: {
+                return new StopTestRequest(unpacker);
             }
             default: {
                 throw new MalformedNoteException("Invalid request command: " + tmpCommand);
@@ -183,6 +209,8 @@ public class MaestroDeserializer {
                     return deserializeRequest(unpacker);
                 case MAESTRO_TYPE_NOTIFICATION:
                     return deserializeNotification(unpacker);
+                case MAESTRO_TYPE_DATA:
+                    return deserializeData(unpacker);
                 default:
                     throw new MalformedNoteException("Invalid event type: " + tmpType);
             }
@@ -201,6 +229,8 @@ public class MaestroDeserializer {
                     return deserializeResponse(unpacker);
                 case MAESTRO_TYPE_NOTIFICATION:
                     return deserializeNotification(unpacker);
+                case MAESTRO_TYPE_DATA:
+                    return deserializeData(unpacker);
                 default:
                     throw new MalformedNoteException("Invalid note type: " + tmpType);
             }

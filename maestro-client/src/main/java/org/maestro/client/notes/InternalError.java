@@ -16,6 +16,7 @@
 
 package org.maestro.client.notes;
 
+import org.maestro.common.client.notes.ErrorCode;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
@@ -23,17 +24,24 @@ import org.msgpack.core.MessageUnpacker;
 import java.io.IOException;
 
 public class InternalError extends MaestroResponse {
-    private String message;
+    private final ErrorCode errorCode;
+    private final String message;
 
     public InternalError(final String message) {
+        this(ErrorCode.UNSPECIFIED, message);
+    }
+
+    public InternalError(final ErrorCode errorCode, final String message) {
         super(MaestroCommand.MAESTRO_NOTE_INTERNAL_ERROR);
 
+        this.errorCode = errorCode;
         this.message = message;
     }
 
-    public InternalError(MessageUnpacker unpacker) throws IOException {
+    public InternalError(final MessageUnpacker unpacker) throws IOException {
         super(MaestroCommand.MAESTRO_NOTE_INTERNAL_ERROR, unpacker);
 
+        errorCode = SerializationUtils.unpackErrorCode(unpacker);
         message = unpacker.unpackString();
     }
 
@@ -41,14 +49,15 @@ public class InternalError extends MaestroResponse {
         return message;
     }
 
-    public void setMessage(String message) {
-        this.message = message;
+    public ErrorCode getErrorCode() {
+        return errorCode;
     }
 
     @Override
     protected MessageBufferPacker pack() throws IOException {
         MessageBufferPacker packer = super.pack();
 
+        packer.packInt(errorCode.getCode());
         packer.packString(message);
 
         return packer;

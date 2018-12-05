@@ -1,0 +1,29 @@
+##########################################################################################
+####  #     #
+####  ##   ##   ##   ######  ####  ##### #####   ####
+####  # # # #  #  #  #      #        #   #    # #    #
+####  #  #  # #    # #####   ####    #   #    # #    #
+####  #     # ###### #           #   #   #####  #    #
+####  #     # #    # #      #    #   #   #   #  #    #
+####  #     # #    # ######  ####    #   #    #  ####
+####
+#### 
+#### Test parameters can be set by adjusting the following variables (shown w/ defaults):
+#### SEND_RECEIVE_URL=amqp://sut:5672/test.performance.queue
+#### MESSAGE_SIZE=256
+#### TEST_DURATION=90s
+#### RATE=0
+#### PARALLEL_COUNT=2
+####
+#### The following additional variables may be exported to enable inspectors:
+#### INSPECTOR_NAME, MANAGEMENT_INTERFACE (or just use one of the
+#### setup-*-inspector.sh scripts)
+####
+#### To run a sample test case:
+#### $ maestro-cli exec -s /opt/maestro/maestro-cli/scripts/singlepoint/FixedRateTest.groovy
+####
+#### To access the test reports, if running on Docker, point your browser to:
+#### $ http://localhost:6500
+####
+#### 
+##########################################################################################

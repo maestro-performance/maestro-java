@@ -34,6 +34,10 @@ import java.nio.file.Paths;
 public class TestLogUtils {
     private static final Logger logger = LoggerFactory.getLogger(TestLogUtils.class);
 
+    public static File testLogDir(final File baseDir, int number) {
+        return new File(baseDir, String.valueOf(number));
+    }
+
     public static File findLastLogDir(final File logDir) {
         File currentLogDir = new File(logDir, "0");
         File lastLogDir = currentLogDir;
@@ -63,6 +67,10 @@ public class TestLogUtils {
 
     public static File anyTestLogDir(final File logDir, final String name) {
         return new File(logDir, name);
+    }
+
+    public static int testLogDirNum(final File testLogDir) {
+        return Integer.parseInt(testLogDir.getName());
     }
 
     public static File nextTestLogDir(final File logDir) {

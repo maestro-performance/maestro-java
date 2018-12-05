@@ -125,12 +125,12 @@ public class QDMemoryRecord implements Comparable<QDMemoryRecord>, InstantRecord
     }
 
     @Override
-    public int compareTo(QDMemoryRecord routerLinkRecord) {
+    public int compareTo(final QDMemoryRecord routerLinkRecord) {
         return this.getTimestamp().compareTo(routerLinkRecord.getTimestamp());
     }
 
     @Override
-    public boolean equals(Object o) {
+    public boolean equals(final Object o) {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         QDMemoryRecord that = (QDMemoryRecord) o;

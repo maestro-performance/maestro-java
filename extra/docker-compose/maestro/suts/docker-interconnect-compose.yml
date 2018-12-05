@@ -1,0 +1,9 @@
+version: '3.4'
+services: 
+  sut:
+    image: maestroci/qpid-dispatch:1.4.0
+    networks:
+      - test
+    ports:
+      - "48161:8161"
+      - "5672:5672"

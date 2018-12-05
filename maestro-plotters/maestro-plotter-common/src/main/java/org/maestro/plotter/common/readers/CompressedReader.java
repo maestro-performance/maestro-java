@@ -16,7 +16,6 @@
 
 package org.maestro.plotter.common.readers;
 
-import org.apache.commons.io.IOUtils;
 import org.maestro.plotter.common.ReportData;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -32,20 +31,11 @@ public abstract class CompressedReader<T extends ReportData> extends StreamReade
 
     @Override
     public T read(final File filename) throws IOException {
-        InputStream fileStream = null;
-        InputStream gzipStream = null;
-
         logger.debug("Reading file {}", filename);
 
-        try {
-            fileStream = new FileInputStream(filename);
-            gzipStream = new GZIPInputStream(fileStream);
-
+        try (InputStream fileStream = new FileInputStream(filename);
+             InputStream gzipStream = new GZIPInputStream(fileStream)) {
             return readStream(gzipStream);
-        }
-        finally {
-            IOUtils.closeQuietly(gzipStream);
-            IOUtils.closeQuietly(fileStream);
         }
     }
 

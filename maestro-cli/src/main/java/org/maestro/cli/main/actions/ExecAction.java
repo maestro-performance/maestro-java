@@ -26,7 +26,6 @@ public class ExecAction extends Action {
     private CommandLine cmdLine;
 
     private File script;
-    private String directory;
 
     public ExecAction(final String[] args) {
         processCommand(args);
@@ -39,7 +38,6 @@ public class ExecAction extends Action {
         Options options = new Options();
 
         options.addOption("h", "help", false, "prints the help");
-        options.addOption("d", "directory", true, "the directory to generate the report");
         options.addOption("s", "script", true, "the path to the test script");
 
         try {
@@ -53,18 +51,13 @@ public class ExecAction extends Action {
             help(options, 0);
         }
 
-        directory = cmdLine.getOptionValue('d');
-        if (directory == null) {
-            System.err.println("The input directory is a required option");
-            help(options, 1);
-        }
-
         String fileStr = cmdLine.getOptionValue('s');
         if (fileStr == null) {
             System.err.println("The test script is required option");
             help(options, 1);
         }
 
+        assert fileStr != null;
         script = new File(fileStr);
     }
 
@@ -73,7 +66,7 @@ public class ExecAction extends Action {
         GroovyWrapper groovyWrapper = new GroovyWrapper();
 
         try {
-            groovyWrapper.run(script, new String[] {directory});
+            groovyWrapper.run(script, new String[] {});
         } catch (IOException e) {
             e.printStackTrace();
             return 1;

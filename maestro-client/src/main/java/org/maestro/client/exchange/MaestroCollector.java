@@ -17,17 +17,19 @@
 package org.maestro.client.exchange;
 
 import org.maestro.client.callback.MaestroNoteCallback;
+import org.maestro.client.exchange.support.CollectorPeer;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
+import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
-import java.util.stream.Collectors;
 
 /**
  * An specialized peer that is used on the front-end side of the code
@@ -39,7 +41,9 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
 
     private final Queue<MaestroNote> collected = new ConcurrentLinkedQueue<>();
     private final List<MaestroNoteCallback> callbacks = new LinkedList<>();
-    private final List<MaestroMonitor> monitored = new LinkedList<>();
+
+    // To prevent throwing ConcurrentModificationException when iterating the list
+    private final List<MaestroMonitor> monitored = new CopyOnWriteArrayList<>();
 
     /**
      * Constructor
@@ -47,7 +51,9 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
      * @throws MaestroConnectionException if unable to connect
      */
     public MaestroCollector(final String url) throws MaestroConnectionException {
-        super(url, "maestro-java-collector",MaestroDeserializer::deserialize);
+        super(url, new CollectorPeer(), MaestroDeserializer::deserialize);
+
+        addCallback(new IgnoreCallback());
     }
 
 
@@ -59,10 +65,12 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
             }
         }
 
-        collected.add(note);
+        synchronized (this) {
+            collected.add(note);
+        }
 
         if (logger.isTraceEnabled()) {
-            logger.trace("Message {} arrived waking up {} monitors", note.getMaestroCommand(), monitored.size());
+            logger.trace("Message {} arrived waking up {} monitors", note, monitored.size());
         }
 
         monitored.forEach(monitor -> { if (monitor.shouldAwake(note)) monitor.doUnlock(); } );
@@ -100,13 +108,17 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
      * @param predicate the predicate that notes need to match in order to be collected
      * @return A list of collected notes
      */
-    public synchronized List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
+    public List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
         logger.trace("Collecting messages");
-        List<MaestroNote> ret = collected.stream()
-                .filter(predicate)
-                .collect(Collectors.toList());
 
-        collected.removeIf(predicate);
+        final List<MaestroNote> ret = new ArrayList<>(collected.size());
+
+        for (final MaestroNote note : collected) {
+            if (predicate.test(note)) {
+                collected.remove(note);
+                ret.add(note);
+            }
+        }
 
         logger.trace("Number of messages collected: {}", ret.size());
         return ret;
@@ -119,6 +131,15 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
      */
     public synchronized void addCallback(MaestroNoteCallback callback) {
         callbacks.add(callback);
+    }
+
+
+    /**
+     * Removes a callback executed on note arrival
+     * @param callback the callback to remove
+     */
+    public synchronized void removeCallback(MaestroNoteCallback callback) {
+        callbacks.remove(callback);
     }
 
     /**

@@ -18,6 +18,7 @@ package org.maestro.common.agent;
 
 import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.worker.WorkerOptions;
 
 /**
@@ -68,4 +69,18 @@ public interface AgentEndpoint {
      * @return the worker options object
      */
     WorkerOptions getWorkerOptions();
+
+
+    /**
+     * Gets the current test (if any)
+     * @return the current test
+     */
+    Test getCurrentTest();
+
+
+    /**
+     * Sets the current test
+     * @param currentTest the current test
+     */
+    void setCurrentTest(Test currentTest);
 }

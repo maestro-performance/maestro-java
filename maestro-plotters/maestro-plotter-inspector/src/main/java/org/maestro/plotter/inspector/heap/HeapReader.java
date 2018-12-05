@@ -57,7 +57,6 @@ public class HeapReader extends StreamReader<HeapData> {
                         record.get(5));
             } catch (Throwable t) {
                 logger.warn("Unable to parse record: {}", t.getMessage(), t);
-                continue;
             }
         }
 

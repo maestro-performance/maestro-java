@@ -17,23 +17,26 @@
 package org.maestro.client;
 
 import org.maestro.client.exchange.*;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
 import org.maestro.common.NonProgressingStaleChecker;
+import org.maestro.common.Role;
 import org.maestro.common.StaleChecker;
+import org.maestro.common.agent.Source;
+import org.maestro.common.agent.UserCommandData;
 import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.MaestroRequester;
 import org.maestro.common.client.exceptions.NotEnoughRepliesException;
-import org.maestro.common.client.notes.GetOption;
-import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.common.client.notes.MessageCorrelation;
+import org.maestro.common.client.notes.*;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.exceptions.TryAgainException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.*;
 import java.util.function.*;
 
@@ -72,124 +75,69 @@ public final class Maestro implements MaestroRequester {
 
         try {
             collectorExecutor.stop();
-            collectorThread.join();
+            collectorThread.join(5000);
         } catch (InterruptedException e) {
             logger.trace("Interrupted while stopping Maestro {}", e.getMessage(), e);
         }
         finally {
-            logger.info("Disconnecting the Maestro client");
+            logger.debug("Disconnecting the Maestro client");
             maestroClient.disconnect();
         }
     }
 
-    /**
-     * Sends a flush request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> flushRequest() throws MaestroConnectionException {
-        return flushRequest(MaestroTopics.ALL_DAEMONS);
-    }
-
-
-    /**
-     * Sends a flush request
-     * @param topic the topic to send the request to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> flushRequest(final String topic) throws MaestroConnectionException {
-        FlushRequest maestroNote = new FlushRequest();
-
-        maestroClient.publish(topic, maestroNote);
-
-        return getOkErrorCompletableFuture();
-    }
-
-    /**
-     * Sends a ping request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
+    @Override
     public CompletableFuture<List<? extends MaestroNote>> pingRequest() throws MaestroConnectionException {
-        return pingRequest(MaestroTopics.ALL_DAEMONS);
+        return pingRequest(MaestroTopics.PEER_TOPIC);
     }
 
 
-    /**
-     * Sends a ping request
-     * @param topic the topic to send the request to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
+    @Override
     public CompletableFuture<List<? extends MaestroNote>> pingRequest(final String topic) throws MaestroConnectionException {
-        PingRequest maestroNote = new PingRequest();
+        final PingRequest maestroNote = new PingRequest();
 
         maestroClient.publish(topic, maestroNote);
 
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
         );
     }
 
+
     private boolean isCorrelated(final MaestroNote note, final MessageCorrelation correlation) {
+        if (logger.isTraceEnabled()) {
+            logger.trace("Checking correlation between of {} with id {} and {}", note.getMaestroCommand(),
+                    note.correlate(), correlation);
+        }
+
         return note.correlatesTo(correlation);
     }
 
-    /**
-     * Sends a set broker request
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setBroker(final String value) throws MaestroConnectionException {
-        return setBroker(MaestroTopics.ALL_DAEMONS, value);
-    }
 
-
-    /**
-     * Sends a set broker request
-     * @param topic the topic to send the request to
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
+    @Override
     public CompletableFuture<List<? extends MaestroNote>> setBroker(final String topic, final String value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
+        final SetRequest maestroNote = new SetRequest();
 
         maestroNote.setBroker(value);
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
         );
     }
 
-
-
-
-    /**
-     * Sends a set duration request
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setDuration(final Object value) throws MaestroException {
-        return setDuration(MaestroTopics.ALL_DAEMONS, value);
-    }
-
-
-    /**
-     * Sends a set duration request
-     * @param topic the topic to send the request to
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroException if unable to send the MQTT request
-     */
+    @Override
     public CompletableFuture<List<? extends MaestroNote>> setDuration(final String topic, final Object value) throws MaestroException {
-        SetRequest maestroNote = new SetRequest();
+        final SetRequest maestroNote = new SetRequest();
 
         if (value instanceof String) {
             maestroNote.setDurationType((String) value);
         }
         else {
-            if (Long.class.isInstance(value)) {
+            if (value instanceof Long) {
                 maestroNote.setDurationType(Long.toString((long) value));
             }
             else {
@@ -198,7 +146,7 @@ public final class Maestro implements MaestroRequester {
         }
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -206,179 +154,63 @@ public final class Maestro implements MaestroRequester {
     }
 
 
-
-    /**
-     * Sends a set log level request
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setLogLevel(final String value) throws MaestroConnectionException {
-        return setLogLevel(MaestroTopics.ALL_DAEMONS, value);
-    }
-
-
-    /**
-     * Sends a set log level request
-     * @param topic the topic to send the request to
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setLogLevel(final String topic, final String value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
-
-        maestroNote.setLogLevel(value);
-
-        maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
-
-        return CompletableFuture.supplyAsync(
-                () -> collect(note -> isCorrelated(note, correlation))
-        );
-    }
-
-
-    /**
-     * Sends a set parallel count request
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setParallelCount(final int value) throws MaestroConnectionException {
-        return setParallelCount(MaestroTopics.ALL_DAEMONS, value);
-    }
-
-
-    /**
-     * Sends a set parallel count request
-     * @param topic the topic to send the request to
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
+    @Override
     public CompletableFuture<List<? extends MaestroNote>> setParallelCount(final String topic, final int value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
-
+        final SetRequest maestroNote = new SetRequest();
 
         maestroNote.setParallelCount(Integer.toString(value));
 
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
         );
     }
 
-    /**
-     * Sends a set message size request (this one can be used for fixed or variable message sizes)
-     *
-     * @param value the value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setMessageSize(final String value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
+
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> setMessageSize(final String topic, final long value) throws MaestroConnectionException {
+        return setMessageSize(topic, Long.toString(value));
+    }
+
+
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> setMessageSize(final String topic, final String value) throws MaestroConnectionException {
+        final SetRequest maestroNote = new SetRequest();
 
         maestroNote.setMessageSize(value);
 
-        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
-
-        return CompletableFuture.supplyAsync(
-                () -> collect(note -> isCorrelated(note, correlation))
-        );
-    }
-
-
-    /**
-     * Sends a set message size request (this one can be used for fixed message sizes)
-     *
-     * @param value the value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setMessageSize(final long value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
-
-        maestroNote.setMessageSize(Long.toString(value));
-
-        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
-
-        return CompletableFuture.supplyAsync(
-                () -> collect(note -> isCorrelated(note, correlation))
-        );
-    }
-
-
-    /**
-     * Sends a set throttle request
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setThrottle(final int value) throws MaestroConnectionException {
-        return setThrottle(MaestroTopics.ALL_DAEMONS, value);
-    }
-
-
-    /**
-     * Sends a set throttle request
-     * @param topic the topic to send the request to
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setThrottle(final String topic, final int value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
-
-        maestroNote.setThrottle(Integer.toString(value));
-
         maestroClient.publish(topic, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
         );
     }
 
-
-    /**
-     * Sends a set rate request
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setRate(final int value) throws MaestroConnectionException {
-        return setRate(MaestroTopics.ALL_DAEMONS, value);
-    }
-
-
-    /**
-     * Sends a set rate request
-     * @param topic the topic to send the request to
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
+    @Override
     public CompletableFuture<List<? extends MaestroNote>> setRate(final String topic, final int value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
+        final SetRequest maestroNote = new SetRequest();
 
         maestroNote.setRate(Integer.toString(value));
 
-        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        maestroClient.publish(topic, maestroNote);
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
         );
     }
 
-
-    /**
-     * Sends a set fail-condition-latency (FCL) request
-     * @param value The value to set the (remote) parameter to
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setFCL(final int value) throws MaestroConnectionException {
-        SetRequest maestroNote = new SetRequest();
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> setFCL(final String topic, final int value) throws MaestroConnectionException {
+        final SetRequest maestroNote = new SetRequest();
 
         maestroNote.setFCL(Integer.toString(value));
 
-        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        maestroClient.publish(topic, maestroNote);
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -386,19 +218,14 @@ public final class Maestro implements MaestroRequester {
     }
 
 
-    /**
-     * Sets the management interface URL
-     * @param value The management interface URL
-     * @throws MaestroException if unable to send the MQTT request
-     * @return A completable future
-     */
-    public CompletableFuture<List<? extends MaestroNote>> setManagementInterface(final String value) throws MaestroException {
-        SetRequest maestroNote = new SetRequest();
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> setManagementInterface(final String topic, final String value) throws MaestroException {
+        final SetRequest maestroNote = new SetRequest();
 
         maestroNote.setManagementInterface(value);
 
-        maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        maestroClient.publish(topic, maestroNote);
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -406,18 +233,102 @@ public final class Maestro implements MaestroRequester {
     }
 
 
-    /**
-     * Sends a start inspector request
-     * @param value The name of the inspector to start. The URL is set via setManagementInterface
-     *              command
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
+    @Override
     public CompletableFuture<List<? extends MaestroNote>> startInspector(final String value) throws MaestroConnectionException {
-        StartInspector maestroNote = new StartInspector(value);
+        final StartInspector maestroNote = new StartInspector(value);
 
-        maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, maestroNote);
-        MessageCorrelation correlation = maestroNote.correlate();
+        maestroClient.publish(MaestroTopics.peerTopic(Role.INSPECTOR), maestroNote);
+        final MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation))
+        );
+    }
+
+    private CompletableFuture<List<? extends MaestroNote>> getOkErrorCompletableFuture(MaestroNote request) {
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, request.correlate()))
+        );
+    }
+
+
+    @Deprecated
+    public CompletableFuture<List<? extends MaestroNote>> stopInspector() throws MaestroConnectionException {
+        final StopInspector maestroNote = new StopInspector();
+
+        maestroClient.publish(MaestroTopics.peerTopic(Role.INSPECTOR), maestroNote);
+        return getOkErrorCompletableFuture(maestroNote);
+    }
+
+
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> stopInspector(final String topic) throws MaestroConnectionException {
+        final StopInspector maestroNote = new StopInspector();
+
+        maestroClient.publish(topic, maestroNote);
+        return getOkErrorCompletableFuture(maestroNote);
+    }
+
+
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> startWorker(final String topic, final WorkerStartOptions options)
+            throws MaestroConnectionException {
+        final StartWorker maestroNote = new StartWorker(options);
+
+        maestroClient.publish(topic, maestroNote);
+        final MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation), 30, 50)
+        );
+    }
+
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> stopWorker(final String topic) throws MaestroConnectionException {
+        final StopWorker maestroNote = new StopWorker();
+
+        final MessageCorrelation correlation = maestroNote.correlate();
+
+        maestroClient.publish(topic, maestroNote);
+
+        return CompletableFuture.supplyAsync(
+                () -> collectWithDelay(1000, note -> isCorrelated(note, correlation), 10, 50)
+        );
+    }
+
+
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> stopAll() throws MaestroConnectionException {
+        final StopWorker stopSender = new StopWorker();
+
+        maestroClient.publish(MaestroTopics.WORKERS_TOPIC, stopSender);
+
+        final StopInspector stopInspector = new StopInspector();
+        stopInspector.correlate(stopSender);
+
+        maestroClient.publish(MaestroTopics.peerTopic(Role.INSPECTOR), stopInspector);
+
+        final StopAgent stopAgent = new StopAgent();
+        stopAgent.correlate(stopSender);
+
+        maestroClient.publish(MaestroTopics.peerTopic(Role.AGENT), stopAgent);
+
+        return getOkErrorCompletableFuture(stopSender);
+    }
+
+
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> statsRequest() throws MaestroConnectionException {
+        return statsRequest(MaestroTopics.WORKERS_TOPIC);
+    }
+
+
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> statsRequest(final String topic) throws MaestroConnectionException {
+        final StatsRequest maestroNote = new StatsRequest();
+
+        maestroClient.publish(topic, maestroNote);
+        final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
                 () -> collect(note -> isCorrelated(note, correlation))
@@ -425,251 +336,86 @@ public final class Maestro implements MaestroRequester {
     }
 
 
-    private Predicate<MaestroNote> isOkOrErrorResponse() {
-        return note -> note instanceof OkResponse || note instanceof InternalError;
-    }
-
-
-    private CompletableFuture<List<? extends MaestroNote>> getOkErrorCompletableFuture() {
-        return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000, isOkOrErrorResponse())
-        );
-    }
-
-    /**
-     * Sends a stop inspector request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
-    public CompletableFuture<List<? extends MaestroNote>> stopInspector() throws MaestroConnectionException {
-        StopInspector maestroNote = new StopInspector();
-
-        maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, maestroNote);
-        return getOkErrorCompletableFuture();
-    }
-
-
-    /**
-     * Sends a start sender request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
-    public CompletableFuture<List<? extends MaestroNote>> startSender() throws MaestroConnectionException {
-        StartSender maestroNote = new StartSender();
-
-        maestroClient.publish(MaestroTopics.SENDER_DAEMONS, maestroNote);
-        return getOkErrorCompletableFuture();
-    }
-
-
-    /**
-     * Sends a stop sender request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
-    public CompletableFuture<List<? extends MaestroNote>> stopSender() throws MaestroConnectionException {
-        StopSender maestroNote = new StopSender();
-
-        maestroClient.publish(MaestroTopics.SENDER_DAEMONS, maestroNote);
-        return getOkErrorCompletableFuture();
-    }
-
-    /**
-     * Sends a start receiver request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
-    public CompletableFuture<List<? extends MaestroNote>> startReceiver() throws MaestroConnectionException {
-        StartReceiver maestroNote = new StartReceiver();
-
-        maestroClient.publish(MaestroTopics.RECEIVER_DAEMONS, maestroNote);
-        return getOkErrorCompletableFuture();
-    }
-
-
-    /**
-     * Sends a stop receiver request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
-    public CompletableFuture<List<? extends MaestroNote>> stopReceiver() throws MaestroConnectionException {
-        StopReceiver maestroNote = new StopReceiver();
-
-        maestroClient.publish(MaestroTopics.RECEIVER_DAEMONS, maestroNote);
-        return getOkErrorCompletableFuture();
-    }
-
-
-    /**
-     * Sends a stop receiver request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
-    public CompletableFuture<List<? extends MaestroNote>> stopAll() throws MaestroConnectionException {
-        StopSender stopSender = new StopSender();
-
-        maestroClient.publish(MaestroTopics.SENDER_DAEMONS, stopSender);
-
-        StopReceiver stopReceiver = new StopReceiver();
-
-        maestroClient.publish(MaestroTopics.RECEIVER_DAEMONS, stopReceiver);
-
-        StopInspector stopInspector = new StopInspector();
-
-        maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, stopInspector);
-
-        StopAgent stopAgent = new StopAgent();
-
-        maestroClient.publish(MaestroTopics.AGENT_DAEMONS, stopAgent);
-
-        return getOkErrorCompletableFuture();
-    }
-
-
-    /**
-     * Starts all of the receivers, senders and inspectors peers on the test cluster
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
-    public CompletableFuture<List<? extends MaestroNote>> startAll(final String inspectorName) throws MaestroConnectionException {
-        maestroClient.publish(MaestroTopics.RECEIVER_DAEMONS, new StartReceiver());
-
-        if (inspectorName != null) {
-            StartInspector note = new StartInspector(inspectorName);
-
-            maestroClient.publish(MaestroTopics.INSPECTOR_DAEMONS, note);
-        }
-
-        maestroClient.publish(MaestroTopics.SENDER_DAEMONS, new StartSender());
-
-        return getOkErrorCompletableFuture();
-    }
-
-
-    /**
-     * Sends a stats request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
-    public CompletableFuture<List<? extends MaestroNote>> statsRequest() throws MaestroConnectionException {
-        StatsRequest maestroNote = new StatsRequest();
-
-        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
-        return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000, note -> note instanceof InternalError || note instanceof StatsResponse)
-        );
-    }
-
-
-    /**
-     * Sends a halt request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
+    @Override
     public CompletableFuture<List<? extends MaestroNote>> halt() throws MaestroConnectionException {
-        Halt maestroNote = new Halt();
-
-        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
-        return getOkErrorCompletableFuture();
+        return halt(MaestroTopics.PEER_TOPIC);
     }
 
 
-    /**
-     * Sends a get request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> halt(final String topic) throws MaestroConnectionException {
+        final Halt maestroNote = new Halt();
+
+        maestroClient.publish(topic, maestroNote);
+        return getOkErrorCompletableFuture(maestroNote);
+    }
+
+
+    @Override
     public CompletableFuture<List<? extends MaestroNote>> getDataServer() throws MaestroConnectionException {
-        GetRequest maestroNote = new GetRequest();
+        final GetRequest maestroNote = new GetRequest();
 
         maestroNote.setGetOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
 
-        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
+        maestroClient.publish(MaestroTopics.PEER_TOPIC, maestroNote);
+        final MessageCorrelation correlation = maestroNote.correlate();
+
         return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000, note -> note instanceof InternalError || note instanceof GetResponse)
+                () -> collect(note -> isCorrelated(note, correlation))
         );
     }
 
-    /**
-     * Sends a start agent request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
+
+    @Override
     public CompletableFuture<List<? extends MaestroNote>> startAgent() throws MaestroConnectionException {
-        StartAgent maestroNote = new StartAgent();
+        final StartAgent maestroNote = new StartAgent();
 
-        maestroClient.publish(MaestroTopics.ALL_DAEMONS, maestroNote);
-        return getOkErrorCompletableFuture();
+        maestroClient.publish(MaestroTopics.peerTopic(Role.AGENT), maestroNote);
+        return getOkErrorCompletableFuture(maestroNote);
     }
 
-    /**
-     * Sends a stop agent request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
+    @Override
     public CompletableFuture<List<? extends MaestroNote>> stopAgent() throws MaestroConnectionException {
-        StopAgent maestroNote = new StopAgent();
+        final StopAgent maestroNote = new StopAgent();
 
-        maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
-        return getOkErrorCompletableFuture();
+        maestroClient.publish(MaestroTopics.peerTopic(Role.AGENT), maestroNote);
+        return getOkErrorCompletableFuture(maestroNote);
     }
 
-    /**
-     * Sends a user command request
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
-    public CompletableFuture<List<? extends MaestroNote>> userCommand(final long option, final String payload) throws MaestroConnectionException {
-        UserCommand1Request maestroNote = new UserCommand1Request();
 
-        maestroNote.set(option, payload);
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> userCommand(final String topic, final UserCommandData userCommandData) throws MaestroConnectionException {
+        final UserCommand1Request maestroNote = new UserCommand1Request();
 
+        maestroNote.set(userCommandData.getOption(), userCommandData.getPayload());
+        maestroClient.publish(topic, maestroNote);
 
-        maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
+        final MessageCorrelation correlation = maestroNote.correlate();
+
         return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000, note -> note instanceof UserCommand1Response || note instanceof InternalError)
+                () -> collect(note -> isCorrelated(note, correlation))
         );
     }
 
-    /**
-     * Sends a source request to the agent (which causes it to download the given source)
-     * @param sourceUrl the source url (ie.: git://host/path/to/extension-endpoint.git)
-     * @param branch branch to use for the source URL
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     * @return A completable future
-     */
-    public CompletableFuture<List<? extends MaestroNote>> sourceRequest(final String sourceUrl, final String branch) throws MaestroConnectionException {
-        AgentSourceRequest maestroNote = new AgentSourceRequest();
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> sourceRequest(final String topic, final Source source)
+            throws MaestroConnectionException {
+        final AgentSourceRequest maestroNote = new AgentSourceRequest();
 
-        maestroNote.setSourceUrl(sourceUrl);
-        maestroNote.setBranch(branch);
+        maestroNote.setSourceUrl(source.getSourceUrl());
+        maestroNote.setBranch(source.getBranch());
 
-        maestroClient.publish(MaestroTopics.AGENT_DAEMONS, maestroNote);
+        maestroClient.publish(topic, maestroNote);
+        final MessageCorrelation correlation = maestroNote.correlate();
+
         return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000, isOkOrErrorResponse())
+                () -> collect(note -> isCorrelated(note, correlation), 300, 50)
         );
     }
 
-    /**
-     * Sends a log request
-     * @param locationType The location type
-     * @param typeName The optional type name (mandatory if the location type is ANY)
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
-    public void logRequest(final LocationType locationType, final String typeName) throws MaestroConnectionException {
-        logRequest(MaestroTopics.ALL_DAEMONS, locationType, typeName);
-    }
-
-
-    /**
-     * Sends a log request
-     * @param topic the topic to send the request to
-     * @param locationType The location type
-     * @param typeName The optional type name (mandatory if the location type is ANY)
-     * @throws MaestroConnectionException if unable to send the MQTT request
-     */
+    @Override
     public void logRequest(final String topic, final LocationType locationType, final String typeName) throws MaestroConnectionException {
-        LogRequest maestroNote = new LogRequest();
+        final LogRequest maestroNote = new LogRequest();
 
         maestroNote.setLocationType(locationType);
         if (typeName != null) {
@@ -679,26 +425,59 @@ public final class Maestro implements MaestroRequester {
         maestroClient.publish(topic, maestroNote);
     }
 
-    /**
-     * Issues a drain request
-     * @param topic the topic to send the request to
-     * @param duration duration of the drain
-     * @param url URL to drain
-     * @param parallelCount parallel count
-     * @return A completable future
-     */
-    public CompletableFuture<List<? extends MaestroNote>> drainRequest(final String topic, final String duration, final String url, int parallelCount) {
-        DrainRequest drainRequest = new DrainRequest();
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> drainRequest(final String topic, final  DrainOptions drainOptions) {
+        final DrainRequest drainRequest = new DrainRequest();
 
-        drainRequest.setDuration(duration);
-        drainRequest.setUrl(url);
-        drainRequest.setParallelCount(String.valueOf(parallelCount));
+        drainRequest.setDuration(drainOptions.getDuration());
+        drainRequest.setUrl(drainOptions.getUrl());
+        drainRequest.setParallelCount(String.valueOf(drainOptions.getParallelCount()));
 
         maestroClient.publish(topic, drainRequest);
+        final MessageCorrelation correlation = drainRequest.correlate();
+
         return CompletableFuture.supplyAsync(
-                () -> collectWithDelay(1000,isOkOrErrorResponse())
+                () -> collect(note -> isCorrelated(note, correlation), 3000, 50)
         );
     }
+
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> roleAssign(final String topic, final Role role) throws MaestroConnectionException {
+        final RoleAssign maestroNote = new RoleAssign(role);
+
+        maestroClient.publish(topic, maestroNote);
+        final MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation))
+        );
+    }
+
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> roleUnassign(final String topic) throws MaestroConnectionException {
+        final RoleUnassign maestroNote = new RoleUnassign();
+
+        maestroClient.publish(topic, maestroNote);
+        final MessageCorrelation correlation = maestroNote.correlate();
+
+        return CompletableFuture.supplyAsync(
+                () -> collect(note -> isCorrelated(note, correlation))
+        );
+    }
+
+
+    @Override
+    public CompletableFuture<List<? extends MaestroNote>> startTest(final String topic,
+                                                                    final TestExecutionInfo testExecutionInfo)
+            throws MaestroConnectionException
+    {
+        final StartTestRequest maestroNote = new StartTestRequest(testExecutionInfo);
+
+        maestroClient.publish(topic, maestroNote);
+
+        return getOkErrorCompletableFuture(maestroNote);
+    }
+
 
     /**
      * Clear the container of received messages
@@ -714,8 +493,8 @@ public final class Maestro implements MaestroRequester {
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
     private List<MaestroNote> collect(int expect, Predicate<? super MaestroNote> predicate) {
-        List<MaestroNote> replies = new LinkedList<>();
-        MaestroMonitor monitor = new MaestroMonitor(predicate);
+        final List<MaestroNote> replies = new LinkedList<>();
+        final MaestroMonitor monitor = new MaestroMonitor(predicate);
 
         try {
             collectorExecutor.getCollector().monitor(monitor);
@@ -733,6 +512,7 @@ public final class Maestro implements MaestroRequester {
                     monitor.doLock();
                 } catch (InterruptedException e) {
                     logger.trace("Interrupted while waiting for message collection");
+                    break;
                 }
 
                 logger.trace("Out of the collection lock. Checking for new messages");
@@ -753,10 +533,10 @@ public final class Maestro implements MaestroRequester {
      * @param predicate Returns only the messages matching the predicate
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
-    private List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
-        List<MaestroNote> replies = new LinkedList<>();
-        MaestroMonitor monitor = new MaestroMonitor(predicate);
-        StaleChecker staleChecker = new NonProgressingStaleChecker(10);
+    private List<MaestroNote> collect(Predicate<? super MaestroNote> predicate, int retries, int retryTimeout) {
+        final List<MaestroNote> replies = new LinkedList<>();
+        final MaestroMonitor monitor = new MaestroMonitor(predicate);
+        final StaleChecker staleChecker = new NonProgressingStaleChecker(retries);
 
         try {
             collectorExecutor.getCollector().monitor(monitor);
@@ -771,9 +551,10 @@ public final class Maestro implements MaestroRequester {
 
                 try {
                     logger.trace("Not enough responses matching the predicate. Waiting for more messages to arrive");
-                    monitor.doLock(50);
+                    monitor.doLock(retryTimeout);
                 } catch (InterruptedException e) {
                     logger.trace("Interrupted while waiting for message collection");
+                    break;
                 }
 
                 logger.trace("Out of the collection lock. Checking for new messages");
@@ -790,18 +571,28 @@ public final class Maestro implements MaestroRequester {
 
     /**
      * Collect replies up to a certain limit of retries/timeout
+     * @param predicate Returns only the messages matching the predicate
+     * @return A list of serialized maestro replies or null if none. May return less that expected.
+     */
+    private List<MaestroNote> collect(Predicate<? super MaestroNote> predicate) {
+        return collect(predicate, 10, 50);
+    }
+
+    /**
+     * Collect replies up to a certain limit of retries/timeout
      * @param wait how much time between each retry
      * @param predicate Returns only the messages matching the predicate
      * @return A list of serialized maestro replies or null if none. May return less that expected.
      */
-    private List<MaestroNote> collectWithDelay(long wait, Predicate<? super MaestroNote> predicate) {
+    private List<MaestroNote> collectWithDelay(long wait, Predicate<? super MaestroNote> predicate, int retries,
+                                               int retryTimeout) {
         try {
             Thread.sleep(wait);
         } catch (InterruptedException e) {
             logger.trace("Interrupted while collecting Maestro replies {}", e.getMessage(), e);
         }
 
-        return collectorExecutor.getCollector().collect(predicate);
+        return collect(predicate, retries, retryTimeout);
     }
 
 
@@ -821,24 +612,11 @@ public final class Maestro implements MaestroRequester {
     public CompletableFuture<List<? extends MaestroNote>> waitForDrain(int expect) {
         return CompletableFuture.supplyAsync(
                 () -> collect(expect,
-                        note -> note instanceof DrainCompleteNotification || note instanceof InternalError)
+                        note -> note instanceof DrainCompleteNotification)
         );
     }
 
-    /**
-     * Waits for the drain notifications
-     * @return A completable future
-     */
-    public CompletableFuture<List<? extends MaestroNote>> waitForDrain() {
-        return waitForDrain(1);
-    }
-
-
-    /**
-     * Waits for notifications
-     * @param expect how many notifications to expect
-     * @return A completable future
-     */
+    @Override
     public CompletableFuture<List<? extends MaestroNote>> waitForNotifications(int expect) {
         return CompletableFuture.supplyAsync(
                 () -> collect(expect, maestroNotificationPredicate())
@@ -849,9 +627,111 @@ public final class Maestro implements MaestroRequester {
         return note -> note instanceof TestSuccessfulNotification || note instanceof InternalError || note instanceof TestFailedNotification;
     }
 
+    public static <T> void set(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, T value, int timeout) {
+        List<? extends MaestroNote> replies;
+        try {
+            replies = function.apply(value).get(timeout, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new MaestroException(e);
+        }
+        catch (TimeoutException e) {
+            throw new NotEnoughRepliesException("Timed out waiting for replies from the test cluster", e);
+        }
+
+        if (replies.size() == 0) {
+            throw new NotEnoughRepliesException("Not enough replies when trying to execute a command on the test cluster");
+        }
+
+        for (MaestroNote reply : replies) {
+            if (reply instanceof InternalError) {
+                InternalError ie = (InternalError) reply;
+                throw new MaestroException("Error applying a setting to the test cluster: %s", ie.getMessage());
+            }
+        }
+    }
 
     public static <T> void set(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, T value) {
+        set(function, value, 2);
+    }
+
+    public static <T, U> void set(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1,
+                                  final U value2, int timeout)
+    {
+        List<? extends MaestroNote> replies;
+        try {
+            replies = function.apply(value1, value2).get(timeout, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new MaestroException(e);
+        }
+        catch (TimeoutException e) {
+            throw new NotEnoughRepliesException("Timed out waiting for replies from the test cluster", e);
+        }
+
+        if (replies.size() == 0) {
+            throw new NotEnoughRepliesException("Not enough replies when trying to execute a command on the test cluster");
+        }
+
+        for (MaestroNote reply : replies) {
+            if (reply instanceof InternalError) {
+                InternalError ie = (InternalError) reply;
+                if (ie.getErrorCode() == ErrorCode.TRY_AGAIN) {
+                    throw new TryAgainException("The request cannot be handled at this moment on %s: %s",
+                            ie.getPeerInfo().prettyName(), ie.getMessage());
+                }
+                else {
+                    throw new MaestroException("Error applying a setting to the test cluster on %s: %s",
+                            ie.getPeerInfo().prettyName(), ie.getMessage());
+                }
+            }
+        }
+    }
+
+
+    public static <T, U> void set(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function,
+                                  final T value1, final U value2)
+    {
+        set(function, value1, value2, 2);
+    }
+
+    public static <T> void exec(Supplier<CompletableFuture<List<? extends MaestroNote>>> function) {
         final int timeout = 2;
+
+        List<? extends MaestroNote> replies;
+        try {
+            replies = function.get().get(timeout, TimeUnit.SECONDS);
+        } catch (InterruptedException | ExecutionException e) {
+            throw new MaestroException(e);
+        }
+        catch (TimeoutException e) {
+            throw new NotEnoughRepliesException("Timed out waiting for replies from the test cluster", e);
+        }
+
+        if (replies.size() == 0) {
+            throw new NotEnoughRepliesException("Not enough replies when trying to execute a command on test cluster");
+        }
+
+        for (MaestroNote reply : replies) {
+            if (reply instanceof InternalError) {
+                InternalError ie = (InternalError) reply;
+                if (ie.getErrorCode() == ErrorCode.TRY_AGAIN) {
+                    throw new TryAgainException("The request cannot be handled at this moment on %s: %s",
+                            ie.getPeerInfo().prettyName(), ie.getMessage());
+                }
+                else {
+                    throw new MaestroException("Error executing a command on the test cluster on %s: %s",
+                            ie.getPeerInfo().prettyName(), ie.getMessage());
+                }
+            }
+        }
+    }
+
+
+    public static <T> void exec(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, final T value) {
+        set(function, value);
+    }
+
+    public static <T> void exec(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, final T value,
+                                int timeout) {
 
         List<? extends MaestroNote> replies;
         try {
@@ -875,59 +755,45 @@ public final class Maestro implements MaestroRequester {
         }
     }
 
-    public static <T, U> void set(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, T value1, U value2) {
-        final int timeout = 2;
+    public static <T, U> void exec(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, final T value1,
+                                   U value2) {
+        set(function, value1, value2);
+    }
+
+    public static <T, U> void exec(BiFunction<T, U, CompletableFuture<List<? extends MaestroNote>>> function, final T value1,
+                                   U value2, int timeout) {
+        set(function, value1, value2, timeout);
+    }
+
+
+    /**
+     * Gets all the peers connected to the test cluster
+     * @return A set of all known peers
+     * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
+     * @throws InterruptedException if interrupted
+     */
+    public PeerSet getPeers() throws MaestroConnectionException, InterruptedException {
+        logger.debug("Sending ping request");
+        final CompletableFuture<List<? extends MaestroNote>> repliesFuture = pingRequest(MaestroTopics.PEER_TOPIC);
 
         List<? extends MaestroNote> replies;
         try {
-            replies = function.apply(value1, value2).get(timeout, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException e) {
-            throw new MaestroException(e);
-        }
-        catch (TimeoutException e) {
-            throw new NotEnoughRepliesException("Timed out waiting for replies from the test cluster", e);
+            replies = repliesFuture.get();
+        } catch (ExecutionException e) {
+            throw new MaestroException("Unable to collect peers", e);
         }
 
-        if (replies.size() == 0) {
-            throw new NotEnoughRepliesException("Not enough replies when trying to execute a command on the test cluster");
-        }
+        Map<String, PeerInfo> knownPeers = new LinkedHashMap<>(replies.size());
 
-        for (MaestroNote reply : replies) {
-            if (reply instanceof InternalError) {
-                InternalError ie = (InternalError) reply;
-                throw new MaestroException("Error applying a setting to the test cluster: %s", ie.getMessage());
+        for (MaestroNote note : replies) {
+            if (note instanceof PingResponse) {
+                logger.debug("Accounting peer: {}/{}", ((PingResponse) note).getPeerInfo().prettyName(),
+                        ((PingResponse) note).getId());
+                knownPeers.put(((PingResponse) note).getId(), ((PingResponse) note).getPeerInfo());
             }
         }
+
+        logger.info("Known peers recorded: {}", knownPeers.size());
+        return new PeerSet(knownPeers);
     }
-
-    public static <T> void exec(Supplier<CompletableFuture<List<? extends MaestroNote>>> function) {
-        final int timeout = 2;
-
-        List<? extends MaestroNote> replies;
-        try {
-            replies = function.get().get(timeout, TimeUnit.SECONDS);
-        } catch (InterruptedException | ExecutionException e) {
-            throw new MaestroException(e);
-        }
-        catch (TimeoutException e) {
-            throw new NotEnoughRepliesException("Timed out waiting for replies from the test cluster", e);
-        }
-
-        if (replies.size() == 0) {
-            throw new NotEnoughRepliesException("Not enough replies when trying to execute a command on test cluster");
-        }
-
-        for (MaestroNote reply : replies) {
-            if (reply instanceof InternalError) {
-                InternalError ie = (InternalError) reply;
-                throw new MaestroException("Error executing a command on the test cluster: %s", ie.getMessage());
-            }
-        }
-    }
-
-
-    public static <T> void exec(Function<T, CompletableFuture<List<? extends MaestroNote>>> function, T value) {
-        set(function, value);
-    }
-
 }

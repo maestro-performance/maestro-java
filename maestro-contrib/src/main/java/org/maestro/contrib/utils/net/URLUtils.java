@@ -28,7 +28,7 @@ import java.net.URL;
  */
 public final class URLUtils {
 
-	public static final String URL_SEPARATOR = "/";
+	private static final String URL_SEPARATOR = "/";
 	private static final String PARAMETERS_START = "?";
 
 	/**

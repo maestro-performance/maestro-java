@@ -16,9 +16,10 @@
 
 package org.maestro.worker.common;
 
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.evaluators.Evaluator;
 import org.maestro.common.evaluators.LatencyEvaluator;
-import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.*;
 import org.maestro.worker.common.container.initializers.WorkerInitializer;
 import org.maestro.worker.common.watchdog.WatchdogObserver;
@@ -27,108 +28,163 @@ import org.slf4j.LoggerFactory;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
+import java.util.Collections;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.concurrent.*;
+import java.util.concurrent.atomic.AtomicInteger;
 
 /**
  * This is a container class for multiple workerRuntimeInfos. It is responsible for
  * creating, starting and stopping multiple workerRuntimeInfos at once.
  */
 public final class WorkerContainer {
+    private static final Logger logger = LoggerFactory.getLogger(WorkerContainer.class);
+    private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
-    private final List<WorkerRuntimeInfo> workerRuntimeInfos = new ArrayList<>();
+    private final List<MaestroWorker> workers = new LinkedList<>();
     private final List<WatchdogObserver> observers = new LinkedList<>();
+    private static final long TIMEOUT_STOP_WORKER_MILLIS;
 
-    private WorkerWatchdog workerWatchdog;
-    private Thread watchDogThread;
+    private ExecutorService workerExecutorService;
+
+    private ExecutorService watchdogExecutorService;
+
     private LocalDateTime startTime;
+    private CountDownLatch startSignal;
+    private CountDownLatch endSignal;
 
-    public WorkerContainer() {
+    static {
+        TIMEOUT_STOP_WORKER_MILLIS = config.getLong("worker.stop.timeout", 1000);
     }
 
 
+    /**
+     * Create the worker list
+     * @param initializer the test worker initializer
+     * @param count how many workers to create
+     * @return A list of workers
+     * @throws IllegalAccessException
+     * @throws InstantiationException
+     */
     public List<MaestroWorker> create(final WorkerInitializer initializer, int count) throws IllegalAccessException, InstantiationException {
-        workerRuntimeInfos.clear();
+        workers.clear();
 
-        List<MaestroWorker> workers = new ArrayList<>(count);
-
-        for (int i = 0; i < count; i++) {
-            final MaestroWorker worker = initializer.initialize(i);
-
-            workers.add(worker);
-
-            WorkerRuntimeInfo ri = new WorkerRuntimeInfo();
-
-            ri.worker = worker;
-            ri.thread = new Thread(ri.worker);
-            workerRuntimeInfos.add(ri);
+        if (count > Runtime.getRuntime().availableProcessors()) {
+            logger.warn("Trying the create {} worker threads but there is only {} processors available. This can " +
+                    "result in test instability and variability on the rate of load generation", count,
+                    Runtime.getRuntime().availableProcessors());
         }
 
-        return workers;
+        workerExecutorService = Executors.newFixedThreadPool(count, new ThreadFactory() {
+            final AtomicInteger count = new AtomicInteger();
+
+            @Override
+            public Thread newThread(Runnable runnable) {
+                return new Thread(runnable, String.format("worker-%d", count.incrementAndGet()));
+            }
+        });
+
+        startSignal = new CountDownLatch(count);
+        endSignal = new CountDownLatch(count);
+
+        for (int i = 0; i < count; i++) {
+            final MaestroWorker worker = initializer.initialize(i, startSignal, endSignal);
+
+            workers.add(worker);
+        }
+
+        watchdogExecutorService = Executors.newSingleThreadScheduledExecutor();
+
+        return Collections.unmodifiableList(workers);
     }
 
     /**
      * Start the execution of the workers for a predefined class
-     * @param evaluator The evaluator that is run along w/ the worker watchdog (ie.: to evaluate the FCL/latency)
      */
-    public void start(final Evaluator<?> evaluator) {
+    public void start() {
         try {
-            for (WorkerRuntimeInfo workerRuntimeInfo : workerRuntimeInfos) {
-                workerRuntimeInfo.thread.start();
-            }
+            workers.forEach(w -> workerExecutorService.submit(w));
 
-            workerWatchdog = new WorkerWatchdog(this, workerRuntimeInfos, evaluator);
+            startSignal.await(10, TimeUnit.SECONDS);
 
-            watchDogThread = new Thread(workerWatchdog);
-            watchDogThread.start();
+            final WorkerWatchdog workerWatchdog = new WorkerWatchdog(this, workers, endSignal);
+
+            watchdogExecutorService.submit(workerWatchdog);
 
             startTime = LocalDateTime.now();
-
         }
         catch (Throwable t) {
-            workerRuntimeInfos.clear();
+            workers.clear();
 
-            throw t;
+            try {
+                throw t;
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted", e);
+            }
         }
     }
 
+    private static long getDeadLine(int runningCount) {
+        long deadLineAmount = runningCount * TIMEOUT_STOP_WORKER_MILLIS * 2;
+        long deadLineMax = config.getLong("worker.active.deadline.max", 65000);
+
+        if (deadLineAmount > deadLineMax) {
+            deadLineAmount = deadLineMax;
+        }
+
+        return deadLineAmount;
+    }
+
+    /**
+     * Stops the workers on the container
+     */
+    private void stop(long watchDogTimeout) {
+        workers.forEach(MaestroWorker::stop);
+
+        startTime = null;
+
+        if (workerExecutorService != null) {
+            try {
+                workerExecutorService.shutdown();
+
+                if (!workerExecutorService.awaitTermination(getDeadLine(workers.size()), TimeUnit.MILLISECONDS)) {
+                    workerExecutorService.shutdownNow();
+                    if (!workerExecutorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                        logger.warn("Workers did not terminate cleanly");
+                    }
+                }
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted ... forcing workers shutdown");
+                workerExecutorService.shutdownNow();
+            } finally {
+                workerExecutorService = null;
+            }
+        }
+
+        if (watchdogExecutorService != null) {
+            try {
+                watchdogExecutorService.shutdown();
+                if (!watchdogExecutorService.awaitTermination(watchDogTimeout, TimeUnit.SECONDS)) {
+                    watchdogExecutorService.shutdownNow();
+                    if (watchdogExecutorService.awaitTermination(1, TimeUnit.SECONDS)) {
+                        logger.warn("Worker watchdog did not terminate cleanly");
+                    }
+                }
+            } catch (InterruptedException e) {
+                logger.warn("Interrupted ... forcing watchdog shutdown");
+                watchdogExecutorService.shutdownNow();
+            } finally {
+                watchdogExecutorService = null;
+            }
+        }
+    }
+
+    /**
+     * Stops the workers on the container
+     */
     public void stop() {
-        if (workerWatchdog != null) {
-            if (workerWatchdog.isRunning()) {
-                for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
-                    ri.worker.stop();
-                }
-
-                workerWatchdog.stop();
-            }
-
-            startTime = null;
-        }
-    }
-
-    public void fail(final String message) {
-        if (workerWatchdog != null) {
-            if (workerWatchdog.isRunning()) {
-                MaestroException exception = new MaestroException(message);
-
-                for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
-                    ri.worker.fail(exception);
-                }
-
-                workerWatchdog.stop();
-            }
-
-            startTime = null;
-        }
-    }
-
-    private boolean watchdogRunning() {
-        if (workerWatchdog == null) {
-            return false;
-        }
-
-        return workerWatchdog.isRunning();
+        stop(60);
     }
 
     /**
@@ -136,14 +192,14 @@ public final class WorkerContainer {
      * @return true if a test is in progress or false otherwise
      */
     public boolean isTestInProgress() {
-        if (!watchdogRunning()) {
+        if (workers.isEmpty()) {
             return false;
         }
 
-        for (WorkerRuntimeInfo ri : workerRuntimeInfos) {
+        for (MaestroWorker worker : workers) {
             // A worker should only be in "not running" state if it is being
             // shutdown
-            if (!ri.worker.isRunning()) {
+            if (!worker.isRunning()) {
                 return false;
             }
         }
@@ -156,15 +212,15 @@ public final class WorkerContainer {
      * @return the throughput statistics
      */
     public ThroughputStats throughputStats() {
-        if (!watchdogRunning()) {
+        if (!isTestInProgress()) {
             return null;
         }
 
         ThroughputStats ret = new ThroughputStats();
 
         long messageCount = 0;
-        for (WorkerRuntimeInfo runtimeInfo : workerRuntimeInfos) {
-            messageCount += runtimeInfo.worker.messageCount();
+        for (MaestroWorker worker : workers) {
+            messageCount += worker.messageCount();
         }
         ret.setCount(messageCount);
 
@@ -176,13 +232,13 @@ public final class WorkerContainer {
     }
 
 
-
     /**
      * Gets the latency statistics
+     * @param evaluator the evaluator to use (ie.: Soft or Hard)
      * @return the latency statistics or null if not applicable for the work set in the container
      */
     public LatencyStats latencyStats(final Evaluator<?> evaluator) {
-        if (!watchdogRunning()) {
+        if (!isTestInProgress()) {
             return null;
         }
 
@@ -203,22 +259,22 @@ public final class WorkerContainer {
         return null;
     }
 
+    /**
+     * Gets the observers setup of the workers
+     * @return a list of observers
+     */
     public List<WatchdogObserver> getObservers() {
         return observers;
     }
 
+
+    /**
+     * Waits until the work is complete
+     * @param timeout how much to wait before timing out
+     * @return false if interrupted or true otherwise
+     */
     public boolean waitForComplete(long timeout) {
-        try {
-            watchDogThread.join(timeout);
-            stop();
-
-            return watchDogThread.isAlive();
-        } catch (InterruptedException e) {
-            Logger logger = LoggerFactory.getLogger(WorkerContainer.class);
-
-            logger.debug("Interrupted while waiting for the watchdog to complete running");
-        }
-
-        return false;
+        stop(timeout);
+        return true;
     }
 }

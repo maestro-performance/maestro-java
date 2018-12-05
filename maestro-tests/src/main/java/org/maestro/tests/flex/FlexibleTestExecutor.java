@@ -18,17 +18,22 @@ package org.maestro.tests.flex;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
-import org.maestro.client.notes.GetResponse;
+import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.Role;
 import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.reports.downloaders.ReportsDownloader;
+import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.AbstractTestProfile;
-import org.maestro.tests.DownloadProcessor;
+import org.maestro.tests.cluster.DistributionStrategy;
+import org.maestro.tests.xunit.XUnitGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
 
 
 /**
@@ -40,24 +45,22 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
 
     private final Maestro maestro;
 
-    private final DownloadProcessor downloadProcessor;
     private final AbstractTestProfile testProfile;
+    private final DistributionStrategy distributionStrategy;
 
     /**
      * Constructor
      * @param maestro a Maestro client instance
-     * @param reportsDownloader the reports downloader in use for the test
      * @param testProfile the test profile in use for the test
+     * @param distributionStrategy the distribution strategy to use
      */
-    public FlexibleTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                final AbstractTestProfile testProfile)
+    public FlexibleTestExecutor(final Maestro maestro, final AbstractTestProfile testProfile, final DistributionStrategy distributionStrategy)
     {
-        super(maestro, reportsDownloader);
+        super(maestro);
 
         this.maestro = maestro;
         this.testProfile = testProfile;
-
-        downloadProcessor = new DownloadProcessor(reportsDownloader);
+        this.distributionStrategy = distributionStrategy;
     }
 
 
@@ -87,28 +90,19 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
      * Test execution logic
      * @return true if the test was successful or false otherwise
      */
-    public boolean run(int number) {
+    public boolean run(final TestExecutionInfo testExecutionInfo) {
         try {
+            Instant start = Instant.now();
+
             // Clean up the topic
             getMaestro().clear();
 
-            int numPeers = peerCount(testProfile);
-            if (numPeers == 0) {
-                logger.error("There are not enough peers to run the test");
+            PeerSet peerSet = maestro.getPeers();
 
-                return false;
-            }
-
-            List<? extends MaestroNote> dataServers = getMaestro().getDataServer().get();
-            dataServers.stream()
-                    .filter(note -> note instanceof GetResponse)
-                    .forEach(note -> downloadProcessor.addDataServer((GetResponse) note));
-
-
-            getReportsDownloader().getOrganizer().getTracker().setCurrentTest(number);
+            testStart(testExecutionInfo);
 
             logger.info("Applying the test profile");
-            testProfile.apply(maestro);
+            testProfile.apply(maestro, distributionStrategy);
 
             logger.info("Starting the services");
             startServices();
@@ -116,9 +110,12 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
             logger.info("Processing the replies");
             long timeout = getTimeout();
             logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
+
             List<? extends MaestroNote> results = getMaestro()
-                    .waitForNotifications(numPeers)
-                    .get();
+                    .waitForNotifications((int) peerSet.count(Role.AGENT))
+                    .get(timeout, TimeUnit.SECONDS);
+
+            XUnitGenerator.generate(testExecutionInfo.getTest(), results, start);
 
             logger.info("Processing the notifications");
             long failed = results.stream()
@@ -132,9 +129,17 @@ public abstract class FlexibleTestExecutor extends AbstractTestExecutor {
 
             logger.info("Test {} completed successfully", phaseName());
             return true;
-        } catch (Exception e) {
+        } catch (InterruptedException e) {
             logger.info("Test execution interrupted");
+        }
+        catch (TimeoutException te) {
+            logger.warn("Timed out waiting for the test notifications");
+        }
+        catch (Exception e) {
+            logger.info("Error executing the test: {}", e.getMessage(), e);
         } finally {
+            distributionStrategy.reset();
+
             testStop();
 
             stopServices();

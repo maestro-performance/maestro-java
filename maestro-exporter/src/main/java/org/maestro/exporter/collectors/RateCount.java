@@ -51,8 +51,8 @@ public class RateCount extends Collector {
         logger.trace("Number of values to process: {}", records.values().size());
         for (StatsResponse stats : records.values()) {
 
-            logger.trace("Adding record for {}/{}", stats.getName(), stats.getId());
-            labeledGauge.addMetric(Arrays.asList(stats.getName(), stats.getRole()), stats.getRate());
+            logger.trace("Adding record for {}/{}", stats.getPeerInfo().prettyName(), stats.getId());
+            labeledGauge.addMetric(Arrays.asList(stats.getPeerInfo().peerName(), stats.getPeerInfo().peerHost()), stats.getRate());
         }
 
         mfs.add(labeledGauge);
@@ -61,7 +61,7 @@ public class RateCount extends Collector {
     }
 
     public void record(StatsResponse stats) {
-        logger.trace("Recording rate for {}/{}", stats.getName(), stats.getId());
+        logger.trace("Recording rate for {}/{}", stats.getPeerInfo().prettyName(), stats.getId());
         records.put(stats.getId(), stats);
     }
 }

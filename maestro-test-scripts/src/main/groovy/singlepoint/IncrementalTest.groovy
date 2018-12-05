@@ -16,14 +16,18 @@
 package singlepoint
 
 import org.maestro.client.Maestro
-import org.maestro.reports.downloaders.DownloaderBuilder
-import org.maestro.reports.downloaders.ReportsDownloader
+import org.maestro.common.Role
+import org.maestro.common.client.notes.TestExecutionInfo
+import org.maestro.common.client.notes.TestExecutionInfoBuilder
 import org.maestro.tests.incremental.IncrementalTestExecutor
 import org.maestro.tests.incremental.IncrementalTestProfile
-import org.maestro.tests.incremental.singlepoint.SimpleTestProfile
 import org.maestro.common.LogConfigurator
 import org.maestro.common.duration.TestDurationBuilder
+import org.maestro.tests.support.DefaultTestEndpoint
+import org.maestro.tests.support.TestEndpointResolver
+import org.maestro.tests.support.TestEndpointResolverFactory
 import org.maestro.tests.utils.ManagementInterface
+import org.maestro.tests.cluster.DistributionStrategyFactory
 
 maestroURL = System.getenv("MAESTRO_BROKER")
 if (maestroURL == null) {
@@ -105,18 +109,23 @@ if (maxLatency == null) {
 logLevel = System.getenv("LOG_LEVEL")
 LogConfigurator.configureLogLevel(logLevel)
 
-managementInterface = System.getenv("MANAGEMENT_INTERFACE");
-inspectorName = System.getenv("INSPECTOR_NAME");
-downloaderName = System.getenv("DOWNLOADER_NAME");
+managementInterface = System.getenv("MANAGEMENT_INTERFACE")
+inspectorName = System.getenv("INSPECTOR_NAME")
 
 println "Connecting to " + maestroURL
 maestro = new Maestro(maestroURL)
 
-ReportsDownloader reportsDownloader = DownloaderBuilder.build(downloaderName, maestro, args[0])
+distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
 
-IncrementalTestProfile testProfile = new SimpleTestProfile()
+IncrementalTestProfile testProfile = new IncrementalTestProfile()
 
-testProfile.setSendReceiveURL(sendReceiveURL)
+TestEndpointResolver endpointResolver = TestEndpointResolverFactory.createTestEndpointResolver(System.getenv("ENDPOINT_RESOLVER_NAME"))
+
+endpointResolver.register(Role.SENDER, new DefaultTestEndpoint(sendReceiveURL))
+endpointResolver.register(Role.RECEIVER, new DefaultTestEndpoint(sendReceiveURL))
+
+testProfile.setTestEndpointResolver(endpointResolver)
+
 testProfile.setDuration(TestDurationBuilder.build(duration))
 testProfile.setMessageSize(messageSize)
 testProfile.setMaximumLatency(Integer.parseInt(maxLatency))
@@ -128,13 +137,43 @@ testProfile.setInitialParallelCount(Integer.parseInt(initialParallelCount))
 testProfile.setCeilingParallelCount(Integer.parseInt(ceilingParallelCount))
 
 ManagementInterface.setupInterface(managementInterface, inspectorName, testProfile)
-ManagementInterface.setupResolver(inspectorName, reportsDownloader)
 
-IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, reportsDownloader, testProfile)
+IncrementalTestExecutor testExecutor = new IncrementalTestExecutor(maestro, testProfile, distributionStrategy)
 
-boolean ret = testExecutor.run();
+description = System.getenv("TEST_DESCRIPTION")
+comments = System.getenv("TEST_COMMENTS")
 
-reportsDownloader.waitForComplete();
+testName = System.getenv("TEST_NAME")
+if (testName == null) {
+    testName = "incremental"
+}
+
+testTags = System.getenv("TEST_TAGS")
+labName = System.getenv("LAB_NAME")
+sutId = System.getenv("SUT_ID")
+sutName = System.getenv("SUT_NAME")
+sutVersion = System.getenv("SUT_VERSION")
+sutJvmVersion = System.getenv("SUT_JVM_VERSION")
+sutOtherInfo = System.getenv("SUT_OTHER_INFO")
+sutTags = System.getenv("SUT_TAGS")
+
+TestExecutionInfo testExecutionInfo = TestExecutionInfoBuilder.newBuilder()
+        .withDescription(description)
+        .withComment(comments)
+        .withSutId(sutId)
+        .withSutName(sutName)
+        .withSutVersion(sutVersion)
+        .withSutJvmVersion(sutJvmVersion)
+        .withSutOtherInfo(sutOtherInfo)
+        .withSutTags(sutTags)
+        .withTestName(testName)
+        .withTestTags(testTags)
+        .withLabName(labName)
+        .withScriptName(this.class.getSimpleName())
+        .build()
+
+boolean ret = testExecutor.run(testExecutionInfo)
+
 maestro.stop()
 
 if (!ret) {

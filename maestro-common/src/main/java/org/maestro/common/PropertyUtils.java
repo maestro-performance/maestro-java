@@ -76,8 +76,9 @@ public class PropertyUtils {
                 Map<String, String> params = urlQuery.getParams();
 
                 context.putAll(params);
+                context.put((String) key, value);
             } catch (URISyntaxException e) {
-                e.printStackTrace();
+                logger.warn("Invalid URI: {}", e.getMessage(), e);
             }
 
             if (((String) value).toLowerCase().startsWith("amqps")) {

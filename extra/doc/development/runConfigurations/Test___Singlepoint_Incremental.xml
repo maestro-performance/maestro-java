@@ -18,7 +18,7 @@
       <env name="PARALLEL_COUNT_INCREMENT" value="2" />
       <env name="CEILING_PARALLEL_COUNT" value="10" />
     </envs>
-    <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.Main" />
+    <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.MaestroCliMain" />
     <module name="maestro-cli" />
     <option name="PROGRAM_PARAMETERS" value="exec -d $MODULE_DIR$/target/classes/reports -s $PROJECT_DIR$/maestro-test-scripts/src/main/groovy/singlepoint/IncrementalTest.groovy" />
     <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes" />

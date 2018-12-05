@@ -21,15 +21,14 @@ import org.slf4j.LoggerFactory;
 
 public enum MaestroCommand {
     /** Receiver execution **/
-    MAESTRO_NOTE_START_RECEIVER(0),
-    MAESTRO_NOTE_STOP_RECEIVER(1),
-    /** Sender execution */
-    MAESTRO_NOTE_START_SENDER(2),
-    MAESTRO_NOTE_STOP_SENDER(3),
+    MAESTRO_NOTE_START_WORKER(0),
+    MAESTRO_NOTE_STOP_WORKER(1),
+    /** Test execution */
+    MAESTRO_NOTE_START_TEST(2),
+    MAESTRO_NOTE_STOP_TEST(3),
     /** Inspector execution **/
     MAESTRO_NOTE_START_INSPECTOR(4),
     MAESTRO_NOTE_STOP_INSPECTOR(5),
-    MAESTRO_NOTE_FLUSH(6),
     MAESTRO_NOTE_SET(7),
     MAESTRO_NOTE_STATS(8),
     MAESTRO_NOTE_HALT(9),
@@ -54,7 +53,16 @@ public enum MaestroCommand {
     MAESTRO_NOTE_USER_COMMAND_1(30),
     MAESTRO_NOTE_LOG(40),
     MAESTRO_NOTE_DRAIN(41),
-    MAESTRO_NOTE_NOTIFY_DRAIN_COMPLETE(42);
+    MAESTRO_NOTE_NOTIFY_DRAIN_COMPLETE(42),
+
+    /** Group request */
+    MAESTRO_NOTE_GROUP_JOIN(50),
+    MAESTRO_NOTE_GROUP_LEAVE(51),
+
+    MAESTRO_NOTE_ROLE_ASSIGN(60),
+    MAESTRO_NOTE_ROLE_UNASSIGN(61),
+    MAESTRO_NOTE_NOTIFY_TEST_STARTED(70);
+
 
     private final long value;
 
@@ -68,13 +76,12 @@ public enum MaestroCommand {
 
     public static MaestroCommand from(long value) {
         switch ((int) value) {
-            case 0: return MAESTRO_NOTE_START_RECEIVER;
-            case 1: return MAESTRO_NOTE_STOP_RECEIVER;
-            case 2: return MAESTRO_NOTE_START_SENDER;
-            case 3: return MAESTRO_NOTE_STOP_SENDER;
+            case 0: return MAESTRO_NOTE_START_WORKER;
+            case 1: return MAESTRO_NOTE_STOP_WORKER;
+            case 2: return MAESTRO_NOTE_START_TEST;
+            case 3: return MAESTRO_NOTE_STOP_TEST;
             case 4: return MAESTRO_NOTE_START_INSPECTOR;
             case 5: return MAESTRO_NOTE_STOP_INSPECTOR;
-            case 6: return MAESTRO_NOTE_FLUSH;
             case 7: return MAESTRO_NOTE_SET;
             case 8: return MAESTRO_NOTE_STATS;
             case 9: return MAESTRO_NOTE_HALT;
@@ -93,6 +100,10 @@ public enum MaestroCommand {
             case 40: return MAESTRO_NOTE_LOG;
             case 41: return MAESTRO_NOTE_DRAIN;
             case 42: return MAESTRO_NOTE_NOTIFY_DRAIN_COMPLETE;
+            case 50: return MAESTRO_NOTE_GROUP_JOIN;
+            case 60: return MAESTRO_NOTE_ROLE_ASSIGN;
+            case 61: return MAESTRO_NOTE_ROLE_UNASSIGN;
+            case 70: return MAESTRO_NOTE_NOTIFY_TEST_STARTED;
             default: {
                 Logger logger = LoggerFactory.getLogger(MaestroCommand.class);
                 logger.error("The command {} is not implemented. This is a bug in Maestro", value);

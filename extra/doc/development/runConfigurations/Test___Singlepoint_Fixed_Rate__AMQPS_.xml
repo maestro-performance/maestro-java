@@ -12,7 +12,7 @@
       <env name="DOWNLOADER_NAME" value="broker" />
       <env name="WARM_UP" value="true" />
     </envs>
-    <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.Main" />
+    <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.MaestroCliMain" />
     <module name="maestro-cli" />
     <option name="PROGRAM_PARAMETERS" value="exec -d $MODULE_DIR$/target/classes/reports -s $PROJECT_DIR$/maestro-test-scripts/src/main/groovy/singlepoint/FixedRateTest.groovy" />
     <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes" />

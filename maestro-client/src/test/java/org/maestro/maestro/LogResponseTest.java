@@ -18,20 +18,22 @@ package org.maestro.maestro;
 
 import org.junit.Test;
 import org.maestro.client.exchange.MaestroDeserializer;
-import org.maestro.client.notes.LocationType;
+import org.maestro.client.exchange.support.DefaultGroupInfo;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.exchange.support.WorkerPeer;
+import org.maestro.common.client.notes.*;
 import org.maestro.client.notes.LogResponse;
-import org.maestro.common.client.notes.MaestroCommand;
-import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.common.client.notes.MaestroNoteType;
+import org.maestro.common.Role;
 import org.maestro.contrib.utils.digest.Sha1Digest;
 
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 
 public class LogResponseTest {
+    private static final PeerInfo peerInfo = new WorkerPeer(Role.RECEIVER, "unittest", "localhost",
+            new DefaultGroupInfo("test", "all"));
 
     static class TestLogResponse extends LogResponse {
         private int testChunkSize = LogResponse.LOG_RESPONSE_MAX_PAYLOAD_SIZE;
@@ -51,7 +53,7 @@ public class LogResponseTest {
             super.setTotal(total);
         }
 
-        void setTestChunkSize(int testChunkSize) {
+        private void setTestChunkSize(int testChunkSize) {
             this.testChunkSize = testChunkSize;
         }
 
@@ -65,7 +67,7 @@ public class LogResponseTest {
             return super.getChunkSize(testChunkSize);
         }
 
-        String calculateHash() throws IOException {
+        private String calculateHash() throws IOException {
             try (InputStream inputStream = this.getClass().getResourceAsStream("/logresponse/" + getFileName())) {
                 Sha1Digest digest = new Sha1Digest();
 
@@ -83,20 +85,26 @@ public class LogResponseTest {
     public void serializeLogRequest() throws Exception {
         TestLogResponse logResponse = new TestLogResponse();
 
+        logResponse.setId("testid");
+        logResponse.setPeerInfo(peerInfo);
+
         logResponse.setFileName("test.properties");
-        logResponse.setFileSize(318);
+        logResponse.setFileSize(903);
         logResponse.setTotal(1);
         logResponse.setLocationType(LocationType.ANY);
+
+        LocationTypeInfo locationTypeInfo = new LocationTypeInfo(1);
+        locationTypeInfo.setIndex(0);
+        logResponse.setLocationTypeInfo(locationTypeInfo);
         logResponse.setFileHash(logResponse.calculateHash());
 
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(logResponse));
 
         assertTrue(parsed instanceof LogResponse);
-        assertTrue("Parsed object is not a log response",
-                parsed.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
-        assertTrue(parsed.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_LOG);
+        assertSame("Parsed object is not a log response", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_DATA);
+        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_LOG);
 
-        final String expectedHash = "ab5313aa600dceff855fdbd62917b62952b39179";
+        final String expectedHash = "06dbd6b9a75417b7ab5aef1ad58b03c30a43dd83";
 
         Sha1Digest digest = new Sha1Digest();
         final String logHash = digest.calculate(((LogResponse) parsed).getLogData());
@@ -108,11 +116,17 @@ public class LogResponseTest {
     public void serializeLogRequestLarge() throws Exception {
         TestLogResponse logResponse = new TestLogResponse();
 
+        logResponse.setId("testid");
+        logResponse.setPeerInfo(peerInfo);
+
         logResponse.setFileName("sample.txt");
         logResponse.setFileSize(20);
         logResponse.setTotal(2);
         logResponse.setTestChunkSize(10);
         logResponse.setLocationType(LocationType.ANY);
+        LocationTypeInfo locationTypeInfo = new LocationTypeInfo(1);
+        locationTypeInfo.setIndex(0);
+        logResponse.setLocationTypeInfo(locationTypeInfo);
         logResponse.setFileHash(logResponse.calculateHash());
 
 
@@ -126,9 +140,8 @@ public class LogResponseTest {
 
         assertTrue(note instanceof LogResponse);
 
-        assertTrue("Chunk1 object is not a log response",
-                note.getNoteType() == MaestroNoteType.MAESTRO_TYPE_RESPONSE);
-        assertTrue(note.getMaestroCommand() == MaestroCommand.MAESTRO_NOTE_LOG);
+        assertSame("Chunk1 object is not a log response", note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_DATA);
+        assertSame(note.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_LOG);
 
         final String expectedHash = "f1b27e5c5ede29e941e3d5fb10c3ef275a0f63a8";
 

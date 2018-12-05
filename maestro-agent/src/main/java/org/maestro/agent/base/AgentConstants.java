@@ -48,16 +48,18 @@ class AgentConstants {
 
     static final String START_INSPECTOR = "startinspector";
 
-    static final String START_RECEIVER = "startreceiver";
+    static final String START_WORKER = "startworker";
 
+    @Deprecated
     static final String START_SENDER = "startsender";
 
     static final String STATS = "stats";
 
     static final String STOP_INSPECTOR = "stopinspector";
 
-    static final String STOP_RECEIVER = "stopreceiver";
+    static final String STOP_WORKER = "stopworker";
 
+    @Deprecated
     static final String STOP_SENDER = "stopsender";
 
     static final String START_AGENT = "startagent";
@@ -73,4 +75,10 @@ class AgentConstants {
     static final String INTERNAL_ERROR = "internalerror";
 
     static final String DRAIN = "drain";
+
+    static final String START_TEST = "starttest";
+
+    static final String NOTIFY_TEST_STARTED = "notifyteststarted";
+
+    static final String NOTIFY_DRAIN = "notifydrain";
 }

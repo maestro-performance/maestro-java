@@ -16,24 +16,22 @@
 
 package org.maestro.common.test;
 
+import org.maestro.common.content.MessageSize;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
+import org.maestro.common.test.properties.annotations.PropertyConsumer;
+import org.maestro.common.test.properties.annotations.PropertyName;
+import org.maestro.common.test.properties.annotations.PropertyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
-
 
 /**
  * Test properties used/saved by maestro testing peers
  */
 @SuppressWarnings("unused")
-public class TestProperties extends CommonProperties {
+@PropertyName(name = "")
+public class TestProperties {
     public static String FILENAME = "test.properties";
     
     private static final Logger logger = LoggerFactory.getLogger(TestProperties.class);
@@ -47,81 +45,48 @@ public class TestProperties extends CommonProperties {
     private String apiVersion;
     private String protocol;
 
+    private int parallelCount;
+    private long messageSize;
+    private boolean variableSize;
+    private int rate;
+
+    public TestProperties() {
+    }
+
+    protected TestProperties(String brokerUri, String durationType, long duration, int fcl, String apiName, String apiVersion, String protocol, int parallelCount, long messageSize, boolean variableSize, int rate, int limitDestinations) {
+        this.brokerUri = brokerUri;
+        this.durationType = durationType;
+        this.duration = duration;
+        this.fcl = fcl;
+        this.apiName = apiName;
+        this.apiVersion = apiVersion;
+        this.protocol = protocol;
+        this.parallelCount = parallelCount;
+        this.messageSize = messageSize;
+        this.variableSize = variableSize;
+        this.rate = rate;
+        this.limitDestinations = limitDestinations;
+    }
+
     // 1 = legacy behavior
     private int limitDestinations = 1;
 
-    public void load(final File testProperties) throws IOException {
-        logger.debug("Reading properties from {}", testProperties.getPath());
-
-        Properties prop = new Properties();
-
-        try (FileInputStream in = new FileInputStream(testProperties)) {
-            prop.load(in);
-
-            brokerUri = prop.getProperty("brokerUri");
-            durationType = prop.getProperty("durationType");
-            duration = Long.parseLong(prop.getProperty("duration"));
-
-            // Optional stuff
-            String fclStr = prop.getProperty("fcl");
-
-            if (fclStr != null) {
-                fcl = Integer.parseInt(fclStr);
-            }
-
-            apiName = prop.getProperty("apiName");
-            apiVersion = prop.getProperty("apiVersion");
-            protocol = prop.getProperty("protocol");
-
-            String limitDestinationsStr = prop.getProperty("limitDestinations");
-            if (limitDestinationsStr != null) {
-                limitDestinations = Integer.parseInt(limitDestinationsStr);
-            }
-
-            super.load(prop);
-        } catch (Throwable t) {
-            logger.error("Invalid data when processing file {}", testProperties.getPath(), t);
-            throw t;
-        }
-
-        logger.debug("Read properties: {}", this.toString());
-    }
-
-    public void write(final File testProperties) throws IOException {
-        logger.debug("Writing properties to {}", testProperties.getPath());
-        logger.debug("Wrote properties: {}", this.toString());
-
-        Properties prop = new Properties();
-
-        prop.setProperty("brokerUri", brokerUri);
-        prop.setProperty("durationType", durationType);
-        prop.setProperty("duration", Long.toString(duration));
-
-        prop.setProperty("fcl", Integer.toString(fcl));
-        prop.setProperty("apiName", apiName);
-        prop.setProperty("apiVersion", apiVersion);
-        prop.setProperty("protocol", protocol);
-        prop.setProperty("limitDestinations", Integer.toString(limitDestinations));
-
-        super.write(prop);
-
-        try (FileOutputStream fos = new FileOutputStream(testProperties)) {
-            prop.store(fos, "mpt");
-        }
-    }
-
+    @PropertyProvider(name="brokerUri", join = false)
     public String getBrokerUri() {
         return brokerUri;
     }
 
+    @PropertyConsumer(name="brokerUri", join = false)
     public void setBrokerUri(final String brokerUri) {
         this.brokerUri = brokerUri;
     }
 
+    @PropertyProvider(name="durationType", join = false)
     public String getDurationType() {
         return durationType;
     }
 
+    @PropertyConsumer(name="durationType", join = false)
     public void setDurationType(final String durationType) {
         this.durationType = durationType;
     }
@@ -130,59 +95,146 @@ public class TestProperties extends CommonProperties {
         this.duration = duration;
     }
 
-    public void setDuration(final String durationSpec) throws DurationParseException {
+    @PropertyConsumer(name="duration", join = false)
+    public void setDuration(final String duration) {
+        this.duration = Long.parseLong(duration);
+    }
+
+    public void setDurationFromSpec(final String durationSpec) throws DurationParseException {
         TestDuration td = TestDurationBuilder.build(durationSpec);
 
         this.duration = td.getNumericDuration();
         this.durationType = td.durationTypeName();
     }
 
-    public String getApiName() {
-        return apiName;
-    }
-
-    public void setApiName(final String apiName) {
-        this.apiName = apiName;
-    }
-
-    public String getApiVersion() {
-        return apiVersion;
-    }
-
-    public void setApiVersion(final String apiVersion) {
-        this.apiVersion = apiVersion;
-    }
-
     public long getDuration() {
         return duration;
     }
 
+    @PropertyProvider(name="duration", join = false)
+    public String getDurationAsString() {
+        return Long.toString(getDuration());
+    }
+
+    @PropertyProvider(name="apiName", join = false)
+    public String getApiName() {
+        return apiName;
+    }
+
+    @PropertyConsumer(name="apiName", join = false)
+    public void setApiName(final String apiName) {
+        this.apiName = apiName;
+    }
+
+    @PropertyProvider(name="apiVersion", join = false)
+    public String getApiVersion() {
+        return apiVersion;
+    }
+
+
+    @PropertyConsumer(name="apiVersion", join = false)
+    public void setApiVersion(final String apiVersion) {
+        this.apiVersion = apiVersion;
+    }
+
+
+    @PropertyProvider(name="fcl", join = false)
     public int getFcl() {
         return fcl;
     }
+
 
     public void setFcl(int fcl) {
         this.fcl = fcl;
     }
 
+    @PropertyConsumer(name="fcl", join = false)
     public void setFcl(final String fcl) {
-        this.fcl = Integer.parseInt(fcl);
+        setFcl(Integer.parseInt(fcl));
     }
 
+    @PropertyProvider(name="protocol", join = false)
     public String getProtocol() {
         return protocol;
     }
 
+    @PropertyConsumer(name="protocol", join = false)
     public void setProtocol(final String protocol) {
         this.protocol = protocol;
     }
 
+    @PropertyProvider(name="limitDestinations", join = false)
     public int getLimitDestinations() {
         return limitDestinations;
     }
 
     public void setLimitDestinations(int limitDestinations) {
         this.limitDestinations = limitDestinations;
+    }
+
+    @PropertyConsumer(name="limitDestinations", join = false)
+    public void setLimitDestinations(final String limitDestinationsStr) {
+        setLimitDestinations(Integer.parseInt(limitDestinationsStr));
+    }
+
+    public final void setMessageSize(long messageSize) {
+        this.messageSize = messageSize;
+    }
+
+    @PropertyConsumer(name="messageSize", join = false)
+    public final void setMessageSize(final String messageSize) {
+        if (MessageSize.isVariable(messageSize)) {
+            setVariableSize(true);
+        }
+
+        this.messageSize = MessageSize.toSizeFromSpec(messageSize);
+    }
+
+    @PropertyProvider(name="messageSize", join = false)
+    public final long getMessageSize() {
+        return messageSize;
+    }
+
+    public final void setParallelCount(int parallelCount) {
+        this.parallelCount = parallelCount;
+    }
+
+    @PropertyConsumer(name="parallelCount", join = false)
+    public final void setParallelCount(String parallelCount) {
+        setParallelCount(Integer.parseInt(parallelCount));
+    }
+
+    @PropertyProvider(name="parallelCount", join = false)
+    public final int getParallelCount() {
+        return parallelCount;
+    }
+
+    public final void setVariableSize(boolean variableSize) {
+        this.variableSize = variableSize;
+    }
+
+    @PropertyConsumer(name="variableSize", join = false)
+    public final void setVariableSize(String variableSize) {
+        setVariableSize(Boolean.parseBoolean(variableSize));
+    }
+
+    @PropertyProvider(name="variableSize", join = false)
+    public final boolean isVariableSize() {
+        return variableSize;
+    }
+
+    public void setRate(int rate) {
+        this.rate = rate;
+    }
+
+    @PropertyConsumer(name="rate", join = false)
+    public void setRate(final String rate) {
+        this.rate = Integer.parseInt(rate);
+    }
+
+    @PropertyProvider(name="rate", join = false)
+    public final int getRate() {
+        return rate;
     }
 
     @Override
@@ -195,7 +247,11 @@ public class TestProperties extends CommonProperties {
                 ", apiName='" + apiName + '\'' +
                 ", apiVersion='" + apiVersion + '\'' +
                 ", protocol='" + protocol + '\'' +
+                ", parallelCount=" + parallelCount +
+                ", messageSize=" + messageSize +
+                ", variableSize=" + variableSize +
+                ", rate=" + rate +
                 ", limitDestinations=" + limitDestinations +
-                "} " + super.toString();
+                '}';
     }
 }

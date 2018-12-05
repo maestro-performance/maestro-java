@@ -96,6 +96,11 @@ public class WorkerLatencyWriterSanityTest {
         public void setWorkerNumber(int number) {
             // NO-OP
         }
+
+        @Override
+        public void setupBarriers(CountDownLatch startSignal, CountDownLatch endSignal) {
+            // NO-OP
+        }
     }
 
     private static final class DummyReceiverWorker extends DummyWorker implements MaestroReceiverWorker {

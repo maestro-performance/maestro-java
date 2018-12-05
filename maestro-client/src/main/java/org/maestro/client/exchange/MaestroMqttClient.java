@@ -34,7 +34,6 @@ import java.io.IOException;
 
 public class MaestroMqttClient implements MaestroClient {
     private static final Logger logger = LoggerFactory.getLogger(MaestroClient.class);
-
     private final MqttClient mqttClient;
 
     /**
@@ -100,7 +99,7 @@ public class MaestroMqttClient implements MaestroClient {
      * @throws MaestroConnectionException if failed to publish the message
      * @throws MalformedNoteException     in case of other I/O errors
      */
-    protected synchronized void publish(final String topic, final MaestroNote note, int qos, boolean retained) throws
+    protected void publish(final String topic, final MaestroNote note, int qos, boolean retained) throws
             MalformedNoteException, MaestroConnectionException
     {
         do {
@@ -113,13 +112,15 @@ public class MaestroMqttClient implements MaestroClient {
 
             try {
                 if (!mqttClient.isConnected()) {
-                    logger.warn("The client is disconnected ... reconnecting");
-                    mqttClient.reconnect();
+                    logger.warn("The client is disconnected");
                 }
 
-                MqttTopic mqttTopic = mqttClient.getTopic(topic);
+                synchronized (mqttClient) {
+                    MqttTopic mqttTopic = mqttClient.getTopic(topic);
 
-                mqttTopic.publish(bytes, qos, retained);
+                    mqttTopic.publish(bytes, qos, retained);
+                }
+
                 note.next();
             } catch (MqttException e) {
                 throw new MaestroConnectionException("Unable to publish message: " + e.getMessage(), e);
@@ -139,7 +140,7 @@ public class MaestroMqttClient implements MaestroClient {
      * @throws MaestroConnectionException if failed to publish the message
      * @throws MalformedNoteException     in case of other I/O errors
      */
-    protected synchronized void publish(final String topic, final MaestroNote note, int qos, boolean retained,
+    protected void publish(final String topic, final MaestroNote note, int qos, boolean retained,
                            final MaestroNoteCallback postProcessCallback) throws
             MalformedNoteException, MaestroConnectionException
     {
@@ -153,13 +154,15 @@ public class MaestroMqttClient implements MaestroClient {
 
             try {
                 if (!mqttClient.isConnected()) {
-                    logger.warn("The client is disconnected ... reconnecting");
-                    mqttClient.reconnect();
+                    logger.warn("The client is disconnected");
                 }
 
-                MqttTopic mqttTopic = mqttClient.getTopic(topic);
+                synchronized (mqttClient) {
+                    MqttTopic mqttTopic = mqttClient.getTopic(topic);
 
-                mqttTopic.publish(bytes, qos, retained);
+                    mqttTopic.publish(bytes, qos, retained);
+                }
+
                 if (postProcessCallback != null) {
                     postProcessCallback.call(note);
                 }
@@ -179,7 +182,34 @@ public class MaestroMqttClient implements MaestroClient {
      * @throws MaestroConnectionException if failed to publish the message
      * @throws MalformedNoteException     in case of other I/O errors
      */
-    public synchronized void publish(final String topic, final MaestroNote note) throws MalformedNoteException, MaestroConnectionException {
-        publish(topic, note, 0, false);
+    public void publish(final String topic, final MaestroNote note) throws MalformedNoteException, MaestroConnectionException {
+        publish(topic, note, MqttServiceLevel.AT_LEAST_ONCE, false);
+    }
+
+    /**
+     * Subscribe to a topic
+     *
+     * @param topic the topic to subscribe
+     * @param qos   the QOS for the topic
+     */
+    public void subscribe(final String topic, int qos) {
+        try {
+            mqttClient.subscribe(topic, qos);
+        } catch (MqttException e) {
+            throw new MaestroConnectionException("Unable to subscribe to topic %s : %s", topic, e.getMessage(), e);
+        }
+    }
+
+    /**
+     * Unsubscribe from a topic
+     *
+     * @param topic the topic to unsubscribe from
+     */
+    public void unsubscribe(final String topic) {
+        try {
+            mqttClient.unsubscribe(topic);
+        } catch (MqttException e) {
+            throw new MaestroConnectionException("Unable to unsubscribe to topic %s : %s", topic, e.getMessage(), e);
+        }
     }
 }

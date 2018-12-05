@@ -16,6 +16,7 @@
 
 package org.maestro.common.worker;
 
+import org.maestro.common.exceptions.MaestroException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -28,10 +29,8 @@ public class WorkerOptions {
 
     private String brokerURL;
     private String duration;
-    private String logLevel;
     private String parallelCount;
     private String messageSize;
-    private String throttle;
     private String rate;
     private String fcl;
 
@@ -39,20 +38,16 @@ public class WorkerOptions {
     }
 
     public WorkerOptions(final WorkerOptions workerOptions) {
-        this(workerOptions.getBrokerURL(), workerOptions.getDuration(), workerOptions.getLogLevel(),
-                workerOptions.getParallelCount(), workerOptions.getMessageSize(), workerOptions.getThrottle(),
-                workerOptions.getRate(), workerOptions.getFcl());
+        this(workerOptions.getBrokerURL(), workerOptions.getDuration(), workerOptions.getParallelCount(),
+                workerOptions.getMessageSize(), workerOptions.getRate(), workerOptions.getFcl());
     }
 
-    public WorkerOptions(final String brokerURL, final String duration, final String logLevel,
-                         final String parallelCount, final String messageSize, final String throttle,
-                         final String rate, final String fcl) {
+    public WorkerOptions(final String brokerURL, final String duration, final String parallelCount,
+                         final String messageSize, final String rate, final String fcl) {
         this.brokerURL = brokerURL;
         this.duration = duration;
-        this.logLevel = logLevel;
         this.parallelCount = parallelCount;
         this.messageSize = messageSize;
-        this.throttle = throttle;
         this.rate = rate;
         this.fcl = fcl;
     }
@@ -93,23 +88,6 @@ public class WorkerOptions {
 
 
     /**
-     * Gets the log level
-     * @return the log level
-     */
-    public String getLogLevel() {
-        return logLevel;
-    }
-
-
-    /**
-     * Set the log level
-     * @param logLevel the log level
-     */
-    public void setLogLevel(String logLevel) {
-        this.logLevel = logLevel;
-    }
-
-    /**
      * Gets the parallel count
      * @return the parallel count
      */
@@ -117,15 +95,15 @@ public class WorkerOptions {
         return parallelCount;
     }
 
-    public Integer getParallelCountAsInt() {
+    public int getParallelCountAsInt() {
         try {
             return Integer.parseInt(getParallelCount());
         }
         catch (NumberFormatException e) {
             logger.warn("Unable to parse the provided parallel count {}", getParallelCount());
+            throw new MaestroException("Unable to parse the provided parallel count %s",
+                    getParallelCount());
         }
-
-        return null;
     }
 
     /**
@@ -152,23 +130,6 @@ public class WorkerOptions {
      */
     public void setMessageSize(String messageSize) {
         this.messageSize = messageSize;
-    }
-
-
-    /**
-     * Gets the throttling
-     * @return the throttling value
-     */
-    public String getThrottle() {
-        return throttle;
-    }
-
-    /**
-     * Sets the throttling value
-     * @param throttle throttle value
-     */
-    public void setThrottle(String throttle) {
-        this.throttle = throttle;
     }
 
 
@@ -200,20 +161,21 @@ public class WorkerOptions {
 
 
     /**
-     * Gets the FCL value as a double
-     * @return the FCL value as a double (or null if unset or invalid)
+     * Gets the FCL value as a long
+     * @return the FCL value as a long (or null if unset or invalid)
      */
-    public Double getFclAsDouble() {
+    public long getFclAsLong() {
         if (fcl != null && !fcl.equals("0")) {
             try {
-                return Double.parseDouble(fcl);
+                return Long.parseLong(fcl);
             }
             catch (Exception e) {
                 logger.warn("Unable to parse the provided FCL {}", fcl);
+                throw new MaestroException("Unable to parse the provided FCL: %s", fcl);
             }
         }
 
-        return null;
+        return -1;
     }
 
 

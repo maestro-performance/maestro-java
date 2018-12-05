@@ -16,19 +16,30 @@
 
 package org.maestro.agent.base;
 
+import org.maestro.common.URLQuery;
 import org.maestro.common.agent.AgentEndpoint;
 import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.Test;
+import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerOptions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import java.io.*;
+import java.net.URISyntaxException;
 
 /**
  * Abstract handler class for external points scripts
  */
 public abstract class AbstractHandler implements AgentEndpoint {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractHandler.class);
 
     private MaestroClient client;
     private MaestroNote note;
     private WorkerOptions workerOptions;
+    private Test currentTest;
 
     /**
      * Sets the content of the note associated with the external endpoint
@@ -74,9 +85,132 @@ public abstract class AbstractHandler implements AgentEndpoint {
 
     /**
      * Gets the worker options
-     * @return
+     * @return the worker options
      */
     public WorkerOptions getWorkerOptions() {
         return workerOptions;
     }
+
+
+    /**
+     * Gets the current test (if any)
+     * @return the current test
+     */
+    public Test getCurrentTest() {
+        return currentTest;
+    }
+
+
+    /**
+     * Sets the current test
+     * @param currentTest the current test
+     */
+    public void setCurrentTest(Test currentTest) {
+        this.currentTest = currentTest;
+    }
+
+    /**
+     * Adds the shell prefix for command execution
+     * @param command the command to execute
+     * @return the command with the shell prefix
+     */
+    protected static String[] addShellPrefix(final String command) {
+        return new String[] {"sh", "-c", command};
+    }
+
+
+    /**
+     * Execute a command using the shell
+     * @param command the command to execute
+     * @return the process exit code
+     * @throws IOException in case of I/O errors
+     */
+    protected static int executeOnShell(final String command) throws IOException {
+        return executeOnShell(command, new File(System.getProperty("user.dir")));
+    }
+
+
+    /**
+     * Execute a command using the shell
+     * @param command the command to execute
+     * @param workingDir the working directory
+     * @return the process exit code
+     * @throws IOException in case of I/O errors
+     */
+    protected static int executeOnShell(final String command, final File workingDir) throws IOException {
+        logger.debug("Executing {}", command);
+
+        Process process = new ProcessBuilder(addShellPrefix(command))
+                .directory(workingDir)
+                .redirectErrorStream(true)
+                .start();
+
+
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                logger.info("Subprocess output: {}", line);
+            }
+
+            try {
+                process.waitFor();
+            } catch (InterruptedException e) {
+                logger.info("Interrupted while waiting for the command to finish");
+            }
+        }
+
+        return process.exitValue();
+    }
+
+    /**
+     * Returns whether the test URL has parameters
+     * @return true if it has parameters or false otherwise
+     * @throws URISyntaxException if the URI syntax is invalid
+     */
+    protected boolean hasParams() throws URISyntaxException {
+        URLQuery urlQuery = new URLQuery(workerOptions.getBrokerURL());
+
+        return urlQuery.count() > 0;
+    }
+
+
+    /**
+     * Gets the test log directory (the location where the reports will be saved)
+     * @return the test log directory
+     */
+    protected static File getTestLogDir() {
+        File baseLogDir = getBaseLogDir();
+
+        return TestLogUtils.nextTestLogDir(baseLogDir);
+    }
+
+    /**
+     * Gets the base log directory
+     * @return the base log directory
+     */
+    private static File getBaseLogDir() {
+        final String baseLogDirStr = System.getProperty("maestro.log.dir");
+
+        if (baseLogDirStr == null) {
+            throw new MaestroException("The log directory is not set on the agent");
+        }
+
+        return new File(baseLogDirStr);
+    }
+
+    /**
+     * Creates the sym links for a failed test
+     */
+    protected static void createTestFailSymlinks() {
+        TestLogUtils.createSymlinks(getBaseLogDir(), true);
+    }
+
+
+    /**
+     * Creates the sym links for a successful test
+     */
+    protected static void createTestSuccessSymlinks() {
+        TestLogUtils.createSymlinks(getBaseLogDir(), false);
+    }
+
 }

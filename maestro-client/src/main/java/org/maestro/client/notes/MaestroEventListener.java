@@ -27,8 +27,6 @@ public interface MaestroEventListener {
 
     void handle(StatsRequest note);
 
-    void handle(FlushRequest note);
-
     void handle(Halt note);
 
     void handle(SetRequest note);
@@ -45,4 +43,21 @@ public interface MaestroEventListener {
 
     void handle(DrainCompleteNotification note);
 
+    void handle(GroupJoinRequest note);
+
+    void handle(GroupLeaveRequest note);
+
+    void handle(StartWorker note);
+
+    void handle(StopWorker note);
+
+    void handle(RoleAssign note);
+
+    void handle(RoleUnassign note);
+
+    void handle(StartTestRequest note);
+
+    void handle(StopTestRequest note);
+
+    void handle(TestStartedNotification note);
 }

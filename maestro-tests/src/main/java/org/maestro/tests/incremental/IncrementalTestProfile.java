@@ -17,13 +17,19 @@
 package org.maestro.tests.incremental;
 
 import org.maestro.client.Maestro;
+import org.maestro.client.exchange.support.PeerEndpoint;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.tests.AbstractTestProfile;
+import org.maestro.tests.cluster.DistributionStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Set;
+
+import static org.maestro.client.Maestro.set;
+
 @SuppressWarnings("unused")
-public abstract class IncrementalTestProfile extends AbstractTestProfile {
+public class IncrementalTestProfile extends AbstractTestProfile {
     private static final Logger logger = LoggerFactory.getLogger(IncrementalTestProfile.class);
 
     private int initialRate = 100;
@@ -128,8 +134,6 @@ public abstract class IncrementalTestProfile extends AbstractTestProfile {
         this.parallelCountIncrement = parallelCountIncrement;
     }
 
-    abstract public void apply(Maestro maestro);
-
     public boolean isOverCeiling() {
         return (rate > ceilingRate && parallelCount >= ceilingParallelCount);
     }
@@ -157,6 +161,41 @@ public abstract class IncrementalTestProfile extends AbstractTestProfile {
     @Override
     public long getEstimatedCompletionTime() {
         return getEstimatedCompletionTime(duration, getRate());
+    }
+
+    public void apply(final Maestro maestro, final DistributionStrategy distributionStrategy) {
+        Set<PeerEndpoint> endpoints = distributionStrategy.endpoints();
+
+        for (PeerEndpoint endpoint : endpoints) {
+            final String destination = endpoint.getDestination();
+            setSendReceiveURL(maestro, endpoint);
+
+            logger.info("Setting rate to {}", getRate());
+            set(maestro::setRate, destination, rate);
+
+            logger.info("Rate increment value is {}", getRateIncrement());
+
+            logger.info("Setting parallel count to {}", this.parallelCount);
+            set(maestro::setParallelCount, destination, this.parallelCount);
+
+            logger.info("Parallel count increment value is {}", getParallelCountIncrement());
+
+            logger.info("Setting duration to {}", getDuration());
+            set(maestro::setDuration, destination, this.getDuration().toString());
+
+            logger.info("Setting fail-condition-latency to {}", getMaximumLatency());
+            set(maestro::setFCL, destination, getMaximumLatency());
+
+            // Variable message messageSize
+            logger.info("Setting message size to: {}", getMessageSize());
+            set(maestro::setMessageSize, destination, getMessageSize());
+
+            applyInspector(maestro, endpoint, destination);
+
+            applyAgent(maestro, endpoint, destination);
+
+            logger.info("Estimated time for test completion: {} seconds", getEstimatedCompletionTime());
+        }
     }
 
 

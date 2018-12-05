@@ -17,8 +17,8 @@
 package org.maestro.worker.common.watchdog;
 
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.worker.MaestroWorker;
 import org.maestro.worker.common.WorkerRateWriter;
-import org.maestro.worker.common.WorkerRuntimeInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,6 +42,8 @@ public class RateWriterObserver implements WatchdogObserver {
     }
 
     private void shutdown() {
+        workerRateWriter.setRunning(false);
+
         if (this.rateWriterThread != null) {
             try {
                 this.rateWriterThread.join();
@@ -65,7 +67,7 @@ public class RateWriterObserver implements WatchdogObserver {
     }
 
     @Override
-    public boolean onStop(final List<WorkerRuntimeInfo> workerRuntimeInfos) {
+    public boolean onStop(final List<MaestroWorker> workers) {
         workerRateWriter.setRunning(false);
         try {
             this.rateWriterThread.join(1500);

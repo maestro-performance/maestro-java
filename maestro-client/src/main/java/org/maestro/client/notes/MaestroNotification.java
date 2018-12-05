@@ -16,6 +16,10 @@
 
 package org.maestro.client.notes;
 
+import org.maestro.client.exchange.support.DefaultGroupInfo;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.exchange.support.WorkerPeer;
+import org.maestro.common.Role;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.client.notes.MaestroNoteType;
 import org.msgpack.core.MessageBufferPacker;
@@ -25,7 +29,7 @@ import java.io.IOException;
 
 public abstract class MaestroNotification extends MaestroEvent<MaestroEventListener> {
     private String id;
-    private String name;
+    private PeerInfo peerInfo;
 
     public MaestroNotification(final MaestroCommand maestroCommand) {
         super(MaestroNoteType.MAESTRO_TYPE_NOTIFICATION, maestroCommand);
@@ -35,7 +39,15 @@ public abstract class MaestroNotification extends MaestroEvent<MaestroEventListe
         super(MaestroNoteType.MAESTRO_TYPE_NOTIFICATION, maestroCommand, unpacker);
 
         id = unpacker.unpackString();
-        name = unpacker.unpackString();
+        final String memberName = unpacker.unpackString();
+        final String groupName = unpacker.unpackString();
+
+        final int role = unpacker.unpackInt();
+        final String name = unpacker.unpackString();
+        final String host = unpacker.unpackString();
+
+        this.peerInfo = new WorkerPeer(Role.from(role), name, host,
+                new DefaultGroupInfo(memberName, groupName));
     }
 
     public String getId() {
@@ -46,12 +58,12 @@ public abstract class MaestroNotification extends MaestroEvent<MaestroEventListe
         this.id = id;
     }
 
-    public String getName() {
-        return name;
+    public PeerInfo getPeerInfo() {
+        return peerInfo;
     }
 
-    public void setName(String name) {
-        this.name = name;
+    public void setPeerInfo(PeerInfo peerInfo) {
+        this.peerInfo = peerInfo;
     }
 
     @Override
@@ -59,7 +71,11 @@ public abstract class MaestroNotification extends MaestroEvent<MaestroEventListe
         MessageBufferPacker packer = super.pack();
 
         packer.packString(this.id);
-        packer.packString(this.name);
+        packer.packString(peerInfo.groupInfo().memberName());
+        packer.packString(peerInfo.groupInfo().groupName());
+        packer.packInt(peerInfo.getRole().getCode());
+        packer.packString(peerInfo.peerName());
+        packer.packString(peerInfo.peerHost());
 
         return packer;
     }
@@ -68,7 +84,7 @@ public abstract class MaestroNotification extends MaestroEvent<MaestroEventListe
     public String toString() {
         return "MaestroNotification{" +
                 "id='" + id + '\'' +
-                ", name='" + name + '\'' +
+                ", peerInfo=" + peerInfo +
                 "} " + super.toString();
     }
 }

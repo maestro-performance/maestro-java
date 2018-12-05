@@ -1,3 +1,19 @@
+/*
+ * Copyright 2018 Otavio Rodolfo Piske
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.maestro.plotter.amqp.inspector.generalinfo;
 
 import org.maestro.plotter.common.InstantRecord;
@@ -18,7 +34,7 @@ public class GeneralInfoRecord implements Comparable<GeneralInfoRecord>, Instant
     private long linksCount;
     private long nodesCount;
     private long addressCount;
-    private long connetionsCount;
+    private long connectionsCount;
     private long presettledCount;
     private long droppedPresettledCount;
     private long acceptedCount;
@@ -104,12 +120,12 @@ public class GeneralInfoRecord implements Comparable<GeneralInfoRecord>, Instant
         this.addressCount = addressCount;
     }
 
-    public long getConnetionsCount() {
-        return connetionsCount;
+    public long getConnectionsCount() {
+        return connectionsCount;
     }
 
-    public void setConnetionsCount(long connetionsCount) {
-        this.connetionsCount = connetionsCount;
+    public void setConnectionsCount(long connectionsCount) {
+        this.connectionsCount = connectionsCount;
     }
 
     public long getPresettledCount() {
@@ -210,18 +226,17 @@ public class GeneralInfoRecord implements Comparable<GeneralInfoRecord>, Instant
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         GeneralInfoRecord that = (GeneralInfoRecord) o;
-        return version == that.version &&
-                mode == that.mode &&
-                linkRoutersCount == that.linkRoutersCount &&
+        return linkRoutersCount == that.linkRoutersCount &&
                 autoLinksCount == that.autoLinksCount &&
                 linksCount == that.linksCount &&
                 nodesCount == that.nodesCount &&
                 addressCount == that.addressCount &&
-                connetionsCount == that.connetionsCount &&
+                connectionsCount == that.connectionsCount &&
                 presettledCount == that.presettledCount &&
                 droppedPresettledCount == that.droppedPresettledCount &&
                 acceptedCount == that.acceptedCount &&
                 rejectedCount == that.rejectedCount &&
+                releasedCount == that.releasedCount &&
                 modifiedCount == that.modifiedCount &&
                 ingressCount == that.ingressCount &&
                 engressCount == that.engressCount &&
@@ -229,13 +244,15 @@ public class GeneralInfoRecord implements Comparable<GeneralInfoRecord>, Instant
                 deliveryFromRouterCount == that.deliveryFromRouterCount &&
                 deliveryToRouterCount == that.deliveryToRouterCount &&
                 Objects.equals(timestamp, that.timestamp) &&
-                Objects.equals(name, that.name);
+                Objects.equals(name, that.name) &&
+                Objects.equals(version, that.version) &&
+                Objects.equals(mode, that.mode);
     }
 
     @Override
     public int hashCode() {
         return Objects.hash(timestamp, name, version, mode, linkRoutersCount, autoLinksCount,
-                linksCount, nodesCount, addressCount, connetionsCount, presettledCount, droppedPresettledCount,
+                linksCount, nodesCount, addressCount, connectionsCount, presettledCount, droppedPresettledCount,
                 acceptedCount, rejectedCount, modifiedCount, ingressCount, engressCount, transitCount,
                 deliveryFromRouterCount, deliveryToRouterCount);
     }
@@ -252,7 +269,7 @@ public class GeneralInfoRecord implements Comparable<GeneralInfoRecord>, Instant
                 ", linksCount=" + linksCount +
                 ", nodesCount=" + nodesCount +
                 ", addressCount=" + addressCount +
-                ", connetionsCount=" + connetionsCount +
+                ", connectionsCount=" + connectionsCount +
                 ", presettledCount=" + presettledCount +
                 ", droppedPresettledCount=" + droppedPresettledCount +
                 ", acceptedCount=" + acceptedCount +

@@ -18,6 +18,7 @@ package org.maestro.client.exchange;
 
 import org.eclipse.paho.client.mqttv3.*;
 import org.maestro.client.exchange.mqtt.MqttClientInstance;
+import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
@@ -26,6 +27,11 @@ import org.slf4j.LoggerFactory;
 
 import java.io.IOException;
 import java.util.Arrays;
+import java.util.LinkedHashSet;
+import java.util.Set;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.TimeUnit;
 
 
 /**
@@ -39,17 +45,20 @@ import java.util.Arrays;
  */
 public abstract class AbstractMaestroPeer<T extends MaestroNote> implements MqttCallbackExtended {
     private static final Logger logger = LoggerFactory.getLogger(AbstractMaestroPeer.class);
+    private static final Set<Subscription> subscriptions = new LinkedHashSet<>();
 
     private final MqttClient inboundEndPoint;
-    protected String clientName;
     private final MaestroNoteDeserializer<? extends T> deserializer;
+    private final PeerInfo peerInfo;
 
-    public AbstractMaestroPeer(final String url, final String clientName, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
-        this(MqttClientInstance.getInstance(url).getClient(), clientName, deserializer);
+    private final ExecutorService messageHandlerService = Executors.newSingleThreadExecutor();
+
+    protected AbstractMaestroPeer(final String url, final PeerInfo peerInfo, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
+        this(MqttClientInstance.getInstance(url).getClient(), peerInfo, deserializer);
     }
 
-    protected AbstractMaestroPeer(final MqttClient inboundEndPoint, final String clientName, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
-        this.clientName = clientName;
+    protected AbstractMaestroPeer(final MqttClient inboundEndPoint, final PeerInfo peerInfo, MaestroNoteDeserializer<? extends T> deserializer) throws MaestroConnectionException {
+        this.peerInfo = peerInfo;
 
         this.inboundEndPoint = inboundEndPoint;
         this.inboundEndPoint.setCallback(this);
@@ -57,12 +66,9 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
         this.deserializer = deserializer;
     }
 
-    public String getClientName() {
-        return clientName;
-    }
 
-    public void setClientName(String clientName) {
-        this.clientName = clientName;
+    protected PeerInfo getPeerInfo() {
+        return peerInfo;
     }
 
     public String getId() {
@@ -109,49 +115,66 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     }
 
     public void disconnect() throws MaestroConnectionException {
-        logger.debug("Disconnecting from Maestro Broker");
+        logger.info("Disconnecting from Maestro Broker");
+        messageHandlerService.shutdown();
 
         try {
-            if (inboundEndPoint.isConnected()) {
-                inboundEndPoint.disconnect();
+            if (!messageHandlerService.awaitTermination(1, TimeUnit.SECONDS)) {
+                messageHandlerService.shutdownNow();
+                if (!messageHandlerService.awaitTermination(1, TimeUnit.SECONDS)) {
+                    logger.warn("Message handler service did not stop cleanly");
+                }
             }
         }
-        catch (MqttException e) {
-            throw new MaestroConnectionException("Unable to disconnect cleanly from Maestro: " + e.getMessage(), e);
+        catch (InterruptedException e) {
+           logger.trace("Interrupted while waiting for the message handler service to shutdown");
+        }
+        finally {
+            try {
+                if (inboundEndPoint.isConnected()) {
+                    inboundEndPoint.disconnect();
+                }
+            }
+            catch (MqttException e) {
+                throw new MaestroConnectionException("Unable to disconnect cleanly from Maestro: " + e.getMessage(), e);
+            }
         }
     }
 
     public void subscribe(final String topic, int qos) {
         try {
             inboundEndPoint.subscribe(topic, qos);
+
+            subscriptions.add(new Subscription(topic, qos));
         } catch (MqttException e) {
+            subscriptions.remove(new Subscription(topic, qos));
             throw new MaestroConnectionException("Unable to subscribe to Maestro topics: " + e.getMessage(), e);
         }
     }
 
     public void subscribe(final String[] topics) throws MaestroConnectionException {
+        subscribe(topics, MqttServiceLevel.AT_LEAST_ONCE);
+    }
+
+    public void subscribe(final String[] topics, int allQos) throws MaestroConnectionException {
         logger.debug("Subscribing to maestro topics {}", Arrays.toString(topics));
 
-        int qos[] = new int[topics.length];
-
-        for (int i = 0; i < topics.length; i++) {
-            qos[i] = 0;
-        }
-
-        try {
-            inboundEndPoint.subscribe(topics, qos);
-        }
-        catch (MqttException e) {
-            throw new MaestroConnectionException("Unable to subscribe to Maestro topics: " + e.getMessage(), e);
+        for (String topic : topics) {
+            subscribe(topic, allQos);
         }
     }
 
-    public void messageArrived(String s, MqttMessage mqttMessage) {
+
+    public void messageArrived(final String s, final MqttMessage mqttMessage) {
+        messageHandlerService.submit(() -> handleMessage(s, mqttMessage));
+    }
+
+    private void handleMessage(String s, MqttMessage mqttMessage) {
         logger.trace("Message arrived on topic {}", s);
 
-        byte[] payload = mqttMessage.getPayload();
-
         try {
+            final byte[] payload = mqttMessage.getPayload();
+
             final T note = deserializer.deserialize(payload);
             logger.trace("Message type: {}", note.getClass());
 
@@ -170,7 +193,14 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
 
     @Override
     public void connectComplete(boolean reconnect, final String serverUri) {
-        logger.warn("Connection to {} completed (reconnect = {})", serverUri, reconnect);
+        logger.info("Connection to {} completed (reconnect = {})", serverUri, reconnect);
+
+        if (reconnect) {
+            logger.info("Resubscribing to topics that were previously subscribed");
+            for (Subscription subscription : subscriptions) {
+                subscribe(subscription.getTopic(), subscription.getQos());
+            }
+        }
     }
 
     /**

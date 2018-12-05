@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -110,7 +109,7 @@ public final class WorkerLatencyWriter implements Runnable {
 
     public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers) {
         this.reportFolder = reportFolder;
-        this.workers = new ArrayList<>(workers);
+        this.workers = workers;
         //the first sleep will be a very long one :)
         this.reportingIntervalMs = TimeUnit.DAYS.toMillis(365);
         this.reportIntervalLatencies = false;
@@ -119,7 +118,7 @@ public final class WorkerLatencyWriter implements Runnable {
     public WorkerLatencyWriter(File reportFolder, List<? extends MaestroWorker> workers,
                                final LatencyEvaluator latencyEvaluator, long reportingIntervalMs) {
         this.reportFolder = reportFolder;
-        this.workers = new ArrayList<>(workers);
+        this.workers = workers;
         this.latencyEvaluator = latencyEvaluator;
         this.reportingIntervalMs = reportingIntervalMs;
         this.reportIntervalLatencies = true;
@@ -139,44 +138,47 @@ public final class WorkerLatencyWriter implements Runnable {
         final long anyWorkers = this.workers.stream()
                 .filter(w -> w instanceof MaestroReceiverWorker).count();
         //avoid creating any file if there aren't  any MaestroReceiverWorker
-        if (anyWorkers > 0) {
-            try (LatencyWriter latencyWriter = new LatencyWriter(new File(reportFolder, "receiverd-latency.hdr"))) {
-                final long globalStartReportingTime = System.currentTimeMillis();
-                latencyWriter.outputLegend(globalStartReportingTime);
-                //TODO collect only receiver worker latencies: make it configurable or available on the MaestroWorker API
-                final List<WorkerIntervalReport> workerReports = this.workers.stream()
-                        .filter(w -> w instanceof MaestroReceiverWorker).map(w ->
-                                new WorkerIntervalReport(latencyWriter, w, reportIntervalLatencies, globalStartReportingTime, latencyEvaluator))
-                        .collect(Collectors.toList());
-                final Thread currentThread = Thread.currentThread();
-                long startTime = System.currentTimeMillis();
-                long nextReportingTime = startTime + reportingIntervalMs;
+        if (anyWorkers == 0) {
+            return;
+        }
 
-                try {
-                    while (!currentThread.isInterrupted()) {
-                        final long now = getCurrentTimeMsecWithDelay(nextReportingTime);
-                        if (now >= nextReportingTime) {
-                            //the overall update + output process could take more than the reportingIntervalMs
-                            //sample
-                            workerReports.forEach(WorkerIntervalReport::updateReport);
-                            //output sample
-                            workerReports.forEach(WorkerIntervalReport::outputReport);
-                            //move the new reporting time n reportingIntervalMs > now
-                            while (now >= nextReportingTime) {
-                                nextReportingTime += reportingIntervalMs;
-                            }
+        try (LatencyWriter latencyWriter = new LatencyWriter(new File(reportFolder, "receiverd-latency.hdr"))) {
+            final long globalStartReportingTime = System.currentTimeMillis();
+            latencyWriter.outputLegend(globalStartReportingTime);
+            //TODO collect only receiver worker latencies: make it configurable or available on the MaestroWorker API
+            final List<WorkerIntervalReport> workerReports = this.workers.stream()
+                    .filter(w -> w instanceof MaestroReceiverWorker).map(w ->
+                            new WorkerIntervalReport(latencyWriter, w, reportIntervalLatencies, globalStartReportingTime, latencyEvaluator))
+                    .collect(Collectors.toList());
+            final Thread currentThread = Thread.currentThread();
+            long startTime = System.currentTimeMillis();
+            long nextReportingTime = startTime + reportingIntervalMs;
+
+            try {
+                while (!currentThread.isInterrupted()) {
+                    final long now = getCurrentTimeMsecWithDelay(nextReportingTime);
+
+                    if (now >= nextReportingTime) {
+                        //the overall update + output process could take more than the reportingIntervalMs
+                        //sample
+                        workerReports.forEach(WorkerIntervalReport::updateReport);
+                        //output sample
+                        workerReports.forEach(WorkerIntervalReport::outputReport);
+                        //move the new reporting time n reportingIntervalMs > now
+                        while (now >= nextReportingTime) {
+                            nextReportingTime += reportingIntervalMs;
                         }
                     }
-                } catch (InterruptedException i) {
-                    //it is legal
-                } finally {
-                    //force a final snapshot of the latencies
-                    workerReports.forEach(r -> r.updateReport(true));
-                    workerReports.forEach(WorkerIntervalReport::outputReport);
                 }
-            } catch (IOException ex) {
-                ex.printStackTrace();
+            } catch (InterruptedException i) {
+                //it is legal
+            } finally {
+                //force a final snapshot of the latencies
+                workerReports.forEach(r -> r.updateReport(true));
+                workerReports.forEach(WorkerIntervalReport::outputReport);
             }
+        } catch (IOException ex) {
+            ex.printStackTrace();
         }
     }
 }

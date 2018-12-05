@@ -18,8 +18,10 @@ package org.maestro.worker.common.container.initializers;
 
 import org.maestro.common.worker.MaestroWorker;
 
+import java.util.concurrent.CountDownLatch;
+
 
 public interface WorkerInitializer {
 
-    MaestroWorker initialize(int number) throws IllegalAccessException, InstantiationException;
+    MaestroWorker initialize(int number, final CountDownLatch startSignal, final CountDownLatch endSignal) throws IllegalAccessException, InstantiationException;
 }

@@ -23,6 +23,7 @@ import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.NullProgressMonitor;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.client.notes.InternalError;
 import org.maestro.common.ConfigurationWrapper;
@@ -32,7 +33,6 @@ import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.common.MaestroWorkerManager;
-import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -49,12 +49,9 @@ import java.util.UUID;
 public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEventListener, MaestroSenderEventListener,
         MaestroReceiverEventListener, MaestroInspectorEventListener
 {
-
     private static final Logger logger = LoggerFactory.getLogger(MaestroAgent.class);
     private final GroovyHandler groovyHandler;
-    private final AbstractConfiguration config = ConfigurationWrapper.getConfig();
     private final List<ExtensionPoint> extensionPoints = new LinkedList<>();
-    private Thread thread;
 
     private final String sourceRoot;
 
@@ -62,15 +59,14 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     /**
      * Constructor
      * @param maestroURL maestro_broker URL
-     * @param role agent
-     * @param host host address
-     * @param dataServer data server object
+     * @param peerInfo maestro peer information
      * @throws MaestroException if unable to create agent instance
      */
-    public MaestroAgent(String maestroURL, String role, String host, MaestroDataServer dataServer) throws MaestroException {
-        super(maestroURL, role, host, dataServer);
+    public MaestroAgent(final String maestroURL, final PeerInfo peerInfo) throws MaestroException {
+        super(maestroURL, peerInfo);
 
-        String pathStr = config.getString("maestro.agent.ext.path.override", null);
+        final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+        String pathStr = config.getString("agent.ext.path.override", null);
 
         if (pathStr == null){
             pathStr = Constants.HOME_DIR + "ext" + File.separator + "requests";
@@ -84,7 +80,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
             logger.warn("The extension point at {} does not exist", defaultExtPointFile.getPath());
         }
 
-        String defaultSourceDir = FileUtils.getTempDirectoryPath() + File.separator + "maestro-agent-work";
+        final String defaultSourceDir = FileUtils.getTempDirectoryPath() + File.separator + "maestro-agent-work";
 
         sourceRoot = config.getString("maestro.agent.source.root", defaultSourceDir);
         groovyHandler = new GroovyHandler(super.getClient());
@@ -95,26 +91,10 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param note StartInspector note
      */
     @Override
-    public void handle(StartInspector note) {
+    public void handle(final StartInspector note) {
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.START_INSPECTOR, note));
-    }
 
-    /**
-     * Start receiver handler
-     * @param note StartReceiver note
-     */
-    @Override
-    public void handle(StartReceiver note) {
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.START_RECEIVER, note));
-    }
-
-    /**
-     * Start sender handler
-     * @param note StartSender note
-     */
-    @Override
-    public void handle(StartSender note) {
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.START_SENDER, note));
+        getClient().replyOk(note);
     }
 
     /**
@@ -122,25 +102,10 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param note StopInspector note
      */
     @Override
-    public void handle(StopInspector note) {
+    public void handle(final StopInspector note) {
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_INSPECTOR, note));
-    }
 
-    /**
-     * Stop receiver handler
-     * @param note StopReceiver note
-     */
-    @Override
-    public void handle(StopReceiver note) {
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_RECEIVER, note));
-    }
-
-    /**
-     * Stop sender handler
-     * @param note StopSender note
-     */
-    public void handle(StopSender note) {
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_SENDER, note));
+        getClient().replyOk(note);
     }
 
     /**
@@ -148,21 +113,10 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param note Stats note
      */
     @Override
-    public void handle(StatsRequest note) {
+    public void handle(final StatsRequest note) {
         super.handle(note);
 
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STATS, note));
-    }
-
-    /**
-     * Flush request handler
-     * @param note Flush note
-     */
-    @Override
-    public void handle(FlushRequest note) {
-        super.handle(note);
-
-        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.FLUSH, note));
     }
 
     /**
@@ -170,10 +124,10 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param note Halt note
      */
     @Override
-    public void handle(Halt note) {
-        super.handle(note);
-
+    public void handle(final Halt note) {
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.HALT, note));
+
+        super.handle(note);
     }
 
     /**
@@ -181,10 +135,12 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param note Set note
      */
     @Override
-    public void handle(SetRequest note) {
+    public void handle(final SetRequest note) {
         super.handle(note);
 
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.SET, note));
+
+        getClient().replyOk(note);
     }
 
     /**
@@ -192,7 +148,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param note NotifyFail note
      */
     @Override
-    public void handle(TestFailedNotification note) {
+    public void handle(final TestFailedNotification note) {
         super.handle(note);
 
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.NOTIFY_FAIL, note));
@@ -203,7 +159,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param note NotifySuccess note
      */
     @Override
-    public void handle(TestSuccessfulNotification note) {
+    public void handle(final TestSuccessfulNotification note) {
         super.handle(note);
 
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.NOTIFY_SUCCESS, note));
@@ -214,7 +170,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param note AbnormalDisconnect note
      */
     @Override
-    public void handle(AbnormalDisconnect note) {
+    public void handle(final AbnormalDisconnect note) {
         super.handle(note);
 
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.ABNORMAL_DISCONNECT, note));
@@ -227,7 +183,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @throws MalformedNoteException if note is malformed
      */
     @Override
-    public void handle(PingRequest note) throws MaestroConnectionException, MalformedNoteException {
+    public void handle(final PingRequest note) throws MaestroConnectionException, MalformedNoteException {
         super.handle(note);
 
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.PING, note));
@@ -238,7 +194,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param note Get note
      */
     @Override
-    public void handle(GetRequest note) {
+    public void handle(final GetRequest note) {
         super.handle(note);
 
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.GET, note));
@@ -256,20 +212,18 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
             groovyHandler.setInitialPath(entryPointDir);
             groovyHandler.setWorkerOptions(getWorkerOptions());
             groovyHandler.setMaestroNote(note);
-            thread = new Thread(new Runnable() {
-                @Override
-                public void run() {
-                    try{
-                        if (logger.isTraceEnabled()) {
-                            logger.trace("Executing groovyHandler on thread: {}", Thread.currentThread().getId());
-                        }
+            groovyHandler.setCurrentTest(getCurrentTest());
 
-                        groovyHandler.runCallbacks();
+            Thread thread = new Thread(() -> {
+                try {
+                    if (logger.isTraceEnabled()) {
+                        logger.trace("Executing groovyHandler on thread: {}", Thread.currentThread().getId());
+                    }
 
-                    }
-                    catch (Exception e) {
-                        groovyHandler.getClient().notifyFailure(e.getMessage());
-                    }
+                    groovyHandler.runCallbacks();
+                } catch (Exception e) {
+                    logger.error("Failing to run the groovy callback: {}", e.getMessage(), e);
+                    groovyHandler.getClient().replyInternalError(note, e.getMessage());
                 }
             });
 
@@ -289,8 +243,8 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param note Start Agent note
      */
     @Override
-    public void handle(StartAgent note) {
-
+    public void handle(final StartAgent note) {
+        getClient().replyOk(note);
     }
 
     private void cleanExtensionPoints(final ExtensionPoint extensionPoint) {
@@ -316,17 +270,20 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
      * @param note Stop Agent note
      */
     @Override
-    public void handle(StopAgent note) {
-        extensionPoints.stream().filter(ep -> ep.isTransient()).forEach(this::cleanExtensionPoints);
-        extensionPoints.removeIf(ep -> ep.isTransient());
+    public void handle(final StopAgent note) {
+        extensionPoints.stream().filter(ExtensionPoint::isTransient).forEach(this::cleanExtensionPoints);
+        extensionPoints.removeIf(ExtensionPoint::isTransient);
+
+        getClient().replyOk(note);
     }
 
-    // @TODO jstejska: move this into agent somehow?
     @Override
-    public void handle(UserCommand1Request note) {
+    public void handle(final UserCommand1Request note) {
         logger.info("User command request arrived");
 
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.USER_COMMAND_1, note));
+
+        // Note: user commands should make sure to reply the ok/err themselves
     }
 
     @Override
@@ -344,7 +301,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
         }
         final String projectDir = UUID.randomUUID().toString();
 
-        File repositoryDir = new File(sourceRoot + File.separator + projectDir + File.separator);
+        final File repositoryDir = new File(sourceRoot + File.separator + projectDir + File.separator);
 
         if (!repositoryDir.exists()) {
             if (!repositoryDir.mkdirs()) {
@@ -379,10 +336,17 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     public void handle(final LogRequest note) {
         final String logDir = System.getProperty("maestro.log.dir");
 
+        if (logDir == null) {
+            logger.error("The log directory is not set on the agent");
+
+            getClient().replyInternalError(note,"The log directory is not set on the agent");
+            return;
+        }
+
         // It might or might not exist. The agent is very loose in this regard
         File logDirFile = new File(logDir);
         if (logDirFile.exists()) {
-            super.handle(note, logDirFile);
+            super.handle(note, logDirFile, getPeerInfo());
         }
         else {
             logger.warn("The log directory for the agent does not exist");
@@ -390,7 +354,50 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
     }
 
     @Override
-    public void handle(DrainRequest note) {
+    public void handle(final DrainRequest note) {
         extensionPoints.forEach(point -> callbacksWrapper(point.getPath(), AgentConstants.DRAIN, note));
+    }
+
+    @Override
+    public void handle(final StartWorker note) {
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.START_WORKER, note));
+
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(final StopWorker note) {
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.STOP_WORKER, note));
+
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(final RoleAssign note) {
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(final RoleUnassign note) {
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(final StartTestRequest note) {
+        setCurrentTest(note.getTestExecutionInfo().getTest());
+
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.START_TEST, note));
+
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(final TestStartedNotification note) {
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.NOTIFY_TEST_STARTED, note));
+    }
+
+    @Override
+    public void handle(final DrainCompleteNotification note) {
+        extensionPoints.forEach(point -> callbacksWrapper(point.getPath(),  AgentConstants.DRAIN, note));
     }
 }

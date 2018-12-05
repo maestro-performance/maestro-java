@@ -18,96 +18,83 @@ package org.maestro.tests.rate;
 
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
-import org.maestro.client.notes.GetResponse;
+import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.common.exceptions.MaestroException;
-import org.maestro.reports.downloaders.ReportsDownloader;
 import org.maestro.tests.AbstractTestExecutor;
-import org.maestro.tests.DownloadProcessor;
-import org.maestro.tests.callbacks.LogRequesterCallback;
-import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
+import org.maestro.tests.cluster.DistributionStrategy;
+import org.maestro.tests.xunit.XUnitGenerator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.time.Instant;
 import java.util.List;
 import java.util.concurrent.*;
-import java.util.function.Consumer;
+import java.util.function.BiConsumer;
 
 public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestExecutor.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
     private final FixedRateTestProfile testProfile;
+    private final DistributionStrategy distributionStrategy;
+
 
     private static final long coolDownPeriod;
-    private final DownloadProcessor downloadProcessor;
 
     static {
         coolDownPeriod = config.getLong("test.fixedrate.cooldown.period", 1) * 1000;
     }
 
-    AbstractFixedRateExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                              final FixedRateTestProfile testProfile) {
-        super(maestro, reportsDownloader);
+    AbstractFixedRateExecutor(final Maestro maestro,
+                              final FixedRateTestProfile testProfile, final DistributionStrategy distributionStrategy) {
+        super(maestro);
 
         this.testProfile = testProfile;
 
-        downloadProcessor = new DownloadProcessor(reportsDownloader);
-        getMaestro().getCollector().addCallback(new LogRequesterCallback(this, downloadProcessor));
+        this.distributionStrategy = distributionStrategy;
     }
 
     protected abstract void reset();
 
-    protected boolean runTest(int number, final Consumer<Maestro> apply) {
+    protected abstract void onInit();
+
+    protected abstract void onTestStarted();
+
+    protected abstract void onComplete();
+
+    protected boolean runTest(final TestExecutionInfo testExecutionInfo, final BiConsumer<Maestro, DistributionStrategy> apply) {
         try {
             // Clean up the topic
             getMaestro().clear();
 
-            int numPeers = peerCount(testProfile);
-            if (numPeers == 0) {
-                logger.error("There are not enough peers to run the test");
+            PeerSet peerSet = distributionStrategy.distribute(getMaestro().getPeers());
+            long numPeers = peerSet.workers();
 
-                return false;
-            }
-
-            List<? extends MaestroNote> dataServers = getMaestro().getDataServer().get();
-            dataServers.stream()
-                    .filter(note -> note instanceof GetResponse)
-                    .forEach(note -> downloadProcessor.addDataServer((GetResponse) note));
-
-            getReportsDownloader().getOrganizer().getTracker().setCurrentTest(number);
-            apply.accept(getMaestro());
+            apply.accept(getMaestro(), distributionStrategy);
 
             try {
-                startServices(testProfile);
+                Instant start = Instant.now();
 
-                testStart();
+                CompletableFuture<List<? extends MaestroNote>> notificationsFuture =
+                        doTestStart(testExecutionInfo, (int) numPeers);
 
-                ScheduledExecutorService executorService = Executors.newSingleThreadScheduledExecutor();
+                CompletableFuture<Boolean> failures = notificationsFuture.thenApply(this::onNotified);
 
-                Runnable task = () -> getMaestro().statsRequest();
-                executorService.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
+                onTestStarted();
 
-                long timeout = getTimeout();
-                logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
-                List<? extends MaestroNote> results = getMaestro()
-                        .waitForNotifications(numPeers)
-                        .get(timeout, TimeUnit.SECONDS);
+                final long timeout = getTimeout();
+                List<? extends MaestroNote> results = notificationsFuture.get(timeout, TimeUnit.SECONDS);
 
-                long failed = results.stream()
-                        .filter(this::isTestFailed)
-                        .count();
+                XUnitGenerator.generate(testExecutionInfo.getTest(), results, start);
 
-                if (failed > 0) {
-                    logger.info("Test {} completed unsuccessfully", phaseName());
-                    return false;
-                }
-
-                logger.info("Test {} completed successfully", phaseName());
-                return true;
+                return failures.get();
             }
             finally {
-                drain();
+                onComplete();
+
+                drain(peerSet);
             }
         }
         catch (TimeoutException te) {
@@ -119,22 +106,63 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
         finally {
             reset();
 
-            testStop();
-
-            try {
-                stopServices();
-            }
-            catch (MaestroException e) {
-                if (e.getCause() instanceof TimeoutException) {
-                    logger.warn("Timed out waiting for a stop response");
-                }
-                else {
-                    logger.warn(e.getMessage());
-                }
-            }
+            stopServices();
         }
 
         return false;
+    }
+
+    private CompletableFuture<List<? extends MaestroNote>> doTestStart(final TestExecutionInfo testExecutionInfo, int numPeers) {
+        final long timeout = getTimeout();
+        testStart(testExecutionInfo);
+
+        startServices(testProfile, distributionStrategy);
+
+        onInit();
+
+        logger.info("The test {} has started and will timeout after {} seconds", phaseName(), timeout);
+
+        return getMaestro().waitForNotifications(numPeers);
+    }
+
+    protected boolean onNotified(final List<? extends MaestroNote> results) {
+        long failed = results.stream()
+                .filter(this::isTestFailed)
+                .count();
+
+        if (failed > 0) {
+            logger.info("Test {} completed unsuccessfully", phaseName());
+            return false;
+        }
+
+        logger.info("Test {} completed successfully", phaseName());
+        return true;
+    }
+
+    public void stopServices() {
+        if (!isRunning()) {
+            logger.trace("Not stopping the services because the test is not running");
+
+            return;
+        }
+
+        testStop();
+
+        logger.info("Stopping Maestro services");
+        try {
+            stopServices(distributionStrategy);
+        }
+        catch (MaestroException e) {
+            if (e.getCause() instanceof TimeoutException) {
+                logger.warn("Timed out waiting for a stop response");
+            }
+            else {
+                logger.warn(e.getMessage(), e);
+            }
+        }
+        finally {
+            distributionStrategy.reset();
+        }
     }
 
     protected abstract String phaseName();

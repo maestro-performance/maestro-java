@@ -17,6 +17,9 @@ package org.maestro.cli.main.actions;
 
 import org.apache.commons.cli.*;
 import org.maestro.client.Maestro;
+import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.notes.MaestroResponse;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroException;
 
@@ -43,7 +46,8 @@ public class MaestroAction extends Action {
 
         options.addOption("h", "help", false, "prints the help");
         options.addOption("m", "maestro-url", true, "maestro URL to connect to");
-        options.addOption("c", "command", true, "maestro command [ping, flush, stats, stop]");
+        options.addOption("c", "command", true,
+                "maestro command [ping, stats, halt, stop, unassign]");
 
         try {
             cmdLine = parser.parse(options, args);
@@ -71,15 +75,11 @@ public class MaestroAction extends Action {
         try {
             maestro = new Maestro(maestroUrl);
 
-            CompletableFuture<List<? extends MaestroNote>> completableFuture = null;
+            CompletableFuture<List<? extends MaestroNote>> completableFuture;
 
             switch (command) {
                 case "ping": {
-                    completableFuture = maestro.pingRequest();
-                    break;
-                }
-                case "flush": {
-                    completableFuture = maestro.flushRequest();
+                    completableFuture = maestro.pingRequest(MaestroTopics.PEER_TOPIC);
                     break;
                 }
                 case "stats": {
@@ -94,6 +94,10 @@ public class MaestroAction extends Action {
                     completableFuture = maestro.stopAll();
                     break;
                 }
+                case "unassign": {
+                    completableFuture = maestro.roleUnassign(MaestroTopics.PEER_TOPIC);
+                    break;
+                }
                 default: {
                     System.err.println("Invalid command: " + command);
                     return 2;
@@ -103,8 +107,21 @@ public class MaestroAction extends Action {
 
             List<? extends MaestroNote> replies = completableFuture.get(5, TimeUnit.SECONDS);
 
+            System.out.printf("%-20s    %-15s    %-30s    %-10s    %-10s%n",
+                    "Command", "Name", "Host", "Group Name", "Member Name");
+
             for (MaestroNote note : replies) {
-                System.out.println("Reply: " + note);
+                if (note instanceof MaestroResponse) {
+                    MaestroResponse response = (MaestroResponse) note;
+                    PeerInfo peerInfo = response.getPeerInfo();
+
+                    System.out.printf("%-20s    %-15s    %-30s    %-10s    %-10s%n",
+                            response.getMaestroCommand(), peerInfo.peerName(), peerInfo.peerHost(),
+                            peerInfo.groupInfo().groupName(), peerInfo.groupInfo().memberName());
+
+                }
+
+
             }
 
             return 0;

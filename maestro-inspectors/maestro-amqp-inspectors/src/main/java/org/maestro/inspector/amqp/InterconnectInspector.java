@@ -18,11 +18,13 @@ package org.maestro.inspector.amqp;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.client.MaestroReceiver;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.duration.TestDuration;
 import org.maestro.common.duration.TestDurationBuilder;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.common.test.InspectorProperties;
+import org.maestro.common.test.properties.PropertyWriter;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.inspector.amqp.writers.ConnectionsInfoWriter;
@@ -43,15 +45,16 @@ import java.time.LocalDateTime;
 public class InterconnectInspector implements MaestroInspector {
     private static final Logger logger = LoggerFactory.getLogger(InterconnectInspector.class);
     private long startedEpochMillis = Long.MIN_VALUE;
-    private boolean running = false;
+    private volatile boolean running = false;
     private String url;
+    @SuppressWarnings("FieldCanBeLocal")
     private String user;
+    @SuppressWarnings("FieldCanBeLocal")
     private String password;
     private File baseLogDir;
     private TestDuration duration;
     private MaestroReceiver endpoint;
 
-    private ConnectionFactory connectionFactory;
     private Connection connection;
     private Session session;
     private MessageProducer messageProducer;
@@ -60,6 +63,7 @@ public class InterconnectInspector implements MaestroInspector {
 
     private WorkerOptions workerOptions;
     private InterconnectReadData interconnectReadData;
+    private Test test;
 
     private final int interval;
 
@@ -70,17 +74,17 @@ public class InterconnectInspector implements MaestroInspector {
     }
 
     @Override
-    public void setUrl(String url) {
+    public void setUrl(final String url) {
         this.url = url;
     }
 
     @Override
-    public void setUser(String user) {
+    public void setUser(final String user) {
         this.user = user;
     }
 
     @Override
-    public void setPassword(String password) {
+    public void setPassword(final String password) {
         this.password = password;
     }
 
@@ -92,21 +96,26 @@ public class InterconnectInspector implements MaestroInspector {
     }
 
     @Override
-    public void setBaseLogDir(File baseLogDir) {
+    public void setBaseLogDir(final File baseLogDir) {
         this.baseLogDir = baseLogDir;
     }
 
     @Override
-    public void setEndpoint(MaestroReceiver endpoint) {
+    public void setEndpoint(final MaestroReceiver endpoint) {
         this.endpoint = endpoint;
     }
 
+    @Override
+    public void setTest(final Test test) {
+        this.test = test;
+    }
+
     public boolean isRunning() {
-        return running;
+        return running && !Thread.currentThread().isInterrupted();
     }
 
     private void connect() throws JMSException {
-        connectionFactory = new org.apache.qpid.jms.JmsConnectionFactory(url);
+        ConnectionFactory connectionFactory = new org.apache.qpid.jms.JmsConnectionFactory(url);
         Destination queue = new org.apache.qpid.jms.JmsQueue("$management");
 
         connection = connectionFactory.createConnection();
@@ -131,7 +140,9 @@ public class InterconnectInspector implements MaestroInspector {
 
     private void closeConnection() throws JMSException {
         try {
-            session.close();
+            if (session != null) {
+                session.close();
+            }
         }
         catch (JMSException e) {
             logger.warn("Error closing the JMS session: {}", e.getMessage(), e);
@@ -139,7 +150,9 @@ public class InterconnectInspector implements MaestroInspector {
         }
 
         try {
-            connection.close();
+            if (connection != null) {
+                connection.close();
+            }
         }
         catch (JMSException e) {
             logger.warn("Error closing the JMS connection: {}", e.getMessage(), e);
@@ -157,12 +170,13 @@ public class InterconnectInspector implements MaestroInspector {
         File logDir = TestLogUtils.nextTestLogDir(this.baseLogDir);
         InspectorProperties inspectorProperties = new InspectorProperties();
 
-        RouteLinkInfoWriter routerLinkInfoWriter = new RouteLinkInfoWriter(logDir, "routerLink");
-        ConnectionsInfoWriter connectionsInfoWriter = new ConnectionsInfoWriter(logDir, "connections");
-        QDMemoryInfoWriter qdMemoryInfoWriter = new QDMemoryInfoWriter(logDir, "qdmemory");
-        GeneralInfoWriter generalInfoWriter = new GeneralInfoWriter(logDir, "general");
 
-        try {
+        try (RouteLinkInfoWriter routerLinkInfoWriter = new RouteLinkInfoWriter(logDir, "routerLink");
+             ConnectionsInfoWriter connectionsInfoWriter = new ConnectionsInfoWriter(logDir, "connections");
+             QDMemoryInfoWriter qdMemoryInfoWriter = new QDMemoryInfoWriter(logDir, "qdmemory");
+             GeneralInfoWriter generalInfoWriter = new GeneralInfoWriter(logDir, "general")
+        )
+        {
             startedEpochMillis = System.currentTimeMillis();
             running = true;
 
@@ -195,36 +209,33 @@ public class InterconnectInspector implements MaestroInspector {
             }
 
             TestLogUtils.createSymlinks(this.baseLogDir, false);
-            endpoint.notifySuccess("Inspector finished successfully");
-            logger.debug("The test has finished and the Artemis inspector is terminating");
+            endpoint.notifySuccess(test, "Inspector finished successfully");
+            logger.debug("The test has finished and the Interconnect inspector is terminating");
 
             return 0;
         } catch (InterruptedException eie) {
             TestLogUtils.createSymlinks(this.baseLogDir, false);
-            endpoint.notifySuccess("Inspector finished successfully");
+            endpoint.notifySuccess(test, "Inspector finished successfully");
             return 0;
         } catch (Exception e) {
             TestLogUtils.createSymlinks(this.baseLogDir, true);
-            endpoint.notifyFailure("Inspector failed");
+            endpoint.notifyFailure(test, "Inspector failed");
             throw e;
         } finally {
             startedEpochMillis = Long.MIN_VALUE;
             closeConnection();
-            routerLinkInfoWriter.close();
-            connectionsInfoWriter.close();
-            qdMemoryInfoWriter.close();
-            generalInfoWriter.close();
         }
     }
 
     private void writeInspectorProperties(File logDir, InspectorProperties inspectorProperties,
                                           GeneralInfoWriter generalInfoWriter) throws IOException, JMSException {
-        setCommonProperties(inspectorProperties, workerOptions);
 
         generalInfoWriter.write(inspectorProperties, interconnectReadData.collectGeneralInfo());
 
         File propertiesFile = new File(logDir, InspectorProperties.FILENAME);
-        inspectorProperties.write(propertiesFile);
+
+        PropertyWriter writer = new PropertyWriter();
+        writer.write(inspectorProperties, propertiesFile);
     }
 
     @Override

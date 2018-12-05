@@ -19,17 +19,24 @@ package org.maestro.worker.common;
 import org.maestro.client.MaestroReceiverClient;
 import org.maestro.client.exchange.AbstractMaestroPeer;
 import org.maestro.client.exchange.MaestroDeserializer;
+import org.maestro.client.exchange.MaestroNoteDeserializer;
+import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.support.GroupInfo;
+import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
+import org.maestro.common.Role;
 import org.maestro.common.URLQuery;
 import org.maestro.common.client.exceptions.MalformedNoteException;
-import org.maestro.common.client.notes.GetOption;
+import org.maestro.common.client.notes.LocationTypeInfo;
+import org.maestro.common.client.notes.Test;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.test.TestProperties;
+import org.maestro.common.test.SystemProperties;
+import org.maestro.common.test.properties.PropertyWriter;
 import org.maestro.common.worker.TestLogUtils;
 import org.maestro.common.worker.WorkerOptions;
 import org.maestro.contrib.utils.digest.Sha1Digest;
-import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,29 +47,37 @@ import java.net.URISyntaxException;
 /**
  * A base worker class that implements the most basic worker functionality
  */
-public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent> implements MaestroEventListener {
+public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEvent<MaestroEventListener>> implements MaestroEventListener {
     private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerManager.class);
 
     private final MaestroReceiverClient client;
     private final WorkerOptions workerOptions;
-    private boolean running = true;
-    private final MaestroDataServer dataServer;
+    private volatile boolean running = true;
+    private GroupInfo groupInfo;
+    private Test currentTest;
 
     /**
      * Constructor
      * @param maestroURL Maestro broker URL
-     * @param role Worker role
-     * @param host hostname
-     * @param dataServer the data server instance
+     * @param peerInfo Information about this peer
      */
-    public MaestroWorkerManager(final String maestroURL, final String role, final String host, final MaestroDataServer dataServer) {
-        super(maestroURL, role, MaestroDeserializer::deserializeEvent);
+    public MaestroWorkerManager(final String maestroURL, final PeerInfo peerInfo) {
+        this(maestroURL, peerInfo, MaestroDeserializer::deserializeEvent);
+    }
+
+    /**
+     * Constructor
+     * @param maestroURL Maestro broker URL
+     * @param peerInfo Information about this peer
+     * @param deserializer the deserializer to use
+     */
+    protected MaestroWorkerManager(final String maestroURL, final PeerInfo peerInfo, MaestroNoteDeserializer<MaestroEvent<MaestroEventListener>> deserializer) {
+        super(maestroURL, peerInfo, deserializer);
 
         logger.debug("Creating the receiver client");
-        client = new MaestroReceiverClient(maestroURL, clientName, host, getId());
+        client = new MaestroReceiverClient(maestroURL, peerInfo, getId());
 
         workerOptions = new WorkerOptions();
-        this.dataServer = dataServer;
     }
 
 
@@ -96,7 +111,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
 
     @Override
-    protected final void noteArrived(MaestroEvent note) throws MaestroConnectionException {
+    protected final void noteArrived(MaestroEvent<MaestroEventListener> note) throws MaestroConnectionException {
         if (logger.isTraceEnabled()) {
             logger.trace("Some message arrived: {}", note.toString());
         }
@@ -123,8 +138,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
             statsResponse.setChildCount(Integer.parseInt(parallelCount));
         }
 
-        // Explanation: the role is the name as the role (ie: clientName@host)
-        statsResponse.setRole(getClientName());
+        statsResponse.setPeerInfo(getPeerInfo());
         statsResponse.setLatency(0);
         statsResponse.setRate(0);
         statsResponse.setRoleInfo("");
@@ -135,16 +149,9 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         client.statsResponse(statsResponse);
     }
 
-
-    @Override
-    public void handle(FlushRequest note) {
-        logger.trace("Flush request received");
-    }
-
-
     @Override
     public void handle(Halt note) {
-        logger.trace("Halt request received");
+        logger.info("Halt request received");
 
         setRunning(false);
     }
@@ -163,20 +170,12 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
                 workerOptions.setDuration(note.getValue());
                 break;
             }
-            case MAESTRO_NOTE_OPT_SET_LOG_LEVEL: {
-                workerOptions.setLogLevel(note.getValue());
-                break;
-            }
             case MAESTRO_NOTE_OPT_SET_PARALLEL_COUNT: {
                 workerOptions.setParallelCount(note.getValue());
                 break;
             }
             case MAESTRO_NOTE_OPT_SET_MESSAGE_SIZE: {
                 workerOptions.setMessageSize(note.getValue());
-                break;
-            }
-            case MAESTRO_NOTE_OPT_SET_THROTTLE: {
-                workerOptions.setThrottle(note.getValue());
                 break;
             }
             case MAESTRO_NOTE_OPT_SET_RATE: {
@@ -191,10 +190,8 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     }
 
 
-    void writeTestProperties(final File testLogDir) throws IOException, DurationParseException {
+    protected TestProperties getTestProperties(final String testNumber) throws DurationParseException {
         TestProperties testProperties = new TestProperties();
-
-        final String testNumber = testLogDir.getName();
 
         final String brokerURL = workerOptions.getBrokerURL();
         logger.info("Broker URL for test {}: {}", testNumber, brokerURL);
@@ -202,7 +199,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
         final String duration = workerOptions.getDuration();
         logger.info("Test duration for test {}: {}", testNumber, duration);
-        testProperties.setDuration(duration);
+        testProperties.setDurationFromSpec(duration);
 
         final String parallelCount = workerOptions.getParallelCount();
         logger.info("Parallel count for test {}: {}", testNumber, parallelCount);
@@ -238,22 +235,82 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         testProperties.setApiName("JMS");
         testProperties.setApiVersion("1.1");
 
-        testProperties.write(new File(testLogDir, TestProperties.FILENAME));
+        return testProperties;
+    }
+
+
+    protected void writeTestProperties(final File testLogDir) throws IOException, DurationParseException {
+        final String testNumber = testLogDir.getName();
+        final TestProperties testProperties = getTestProperties(testNumber);
+
+        logger.info("Test properties for test {}: {}", testNumber, testProperties.toString());
+
+        final PropertyWriter writer = new PropertyWriter();
+        writer.write(testProperties, new File(testLogDir, TestProperties.FILENAME));
+    }
+
+
+    protected SystemProperties getSystemProperties() {
+        SystemProperties systemProperties = new SystemProperties();
+
+        Runtime runtime = Runtime.getRuntime();
+
+        systemProperties.setWorkerSystemCpuCount(runtime.availableProcessors());
+        logger.info("System CPU count: {}", systemProperties.getWorkerSystemCpuCount());
+
+        systemProperties.setWorkerJVMMaxMemory(runtime.maxMemory());
+        logger.info("JVM Max Memory: {}", systemProperties.getWorkerSystemMemory());
+
+        systemProperties.setWorkerOperatingSystemName(System.getProperty("os.name"));
+        logger.info("System Name: {}", systemProperties.getWorkerOperatingSystemName());
+
+        systemProperties.setWorkerOperatingSystemArch(System.getProperty("os.arch"));
+        logger.info("System Arch: {}", systemProperties.getWorkerOperatingSystemArch());
+
+        systemProperties.setWorkerOperatingSystemVersion(System.getProperty("os.version"));
+        logger.info("System Version: {}", systemProperties.getWorkerOperatingSystemVersion());
+
+        systemProperties.setWorkerJavaVersion(System.getProperty("java.version"));
+        logger.info("Java Version: {}", systemProperties.getWorkerJavaVersion());
+
+        systemProperties.setWorkerJavaHome(System.getProperty("java.home"));
+        logger.info("Java Home: {}", systemProperties.getWorkerJavaHome());
+
+        systemProperties.setWorkerJvmName(System.getProperty("java.vm.name"));
+        logger.info("JVM Name: {}", systemProperties.getWorkerJvmName());
+
+        systemProperties.setWorkerJvmVersion(System.getProperty("java.vm.version"));
+        logger.info("JVM Version: {}", systemProperties.getWorkerJvmVersion());
+
+        return systemProperties;
+    }
+
+
+    /***
+     * Method for write system properties into the file for the reporter.
+     * @param testLogDir test log directory
+     * @throws IOException Input/Output exception
+     */
+    protected void writeSystemProperties(final File testLogDir) throws  IOException {
+        final SystemProperties systemProperties = getSystemProperties();
+
+        final PropertyWriter writer = new PropertyWriter();
+        writer.write(systemProperties, new File(testLogDir, SystemProperties.FILENAME));
     }
 
     @Override
     public void handle(TestFailedNotification note) {
-        logger.info("Test failed notification received from {}: {}", note.getName(), note.getMessage());
+        logger.info("Test failed notification received from {}: {}", note.getPeerInfo().prettyName(), note.getMessage());
     }
 
     @Override
     public void handle(TestSuccessfulNotification note) {
-        logger.info("Test successful notification received from {}: {}", note.getName(), note.getMessage());
+        logger.info("Test successful notification received from {}: {}", note.getPeerInfo().prettyName(), note.getMessage());
     }
 
     @Override
     public void handle(AbnormalDisconnect note) {
-        logger.info("Abnormal disconnect notification received from {}: {}", note.getName(), note.getMessage());
+        logger.info("Abnormal disconnect notification received from {}: {}", note.getPeerInfo().prettyName(), note.getMessage());
     }
 
     @Override
@@ -267,14 +324,8 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         logger.trace("A get request has arrived");
         switch (note.getOption()) {
             case MAESTRO_NOTE_OPT_GET_DS: {
-                String dataServerAddress = dataServer.getServerURL();
-
-                GetResponse response = new GetResponse();
-
-                response.setOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
-                response.setValue(dataServerAddress);
-
-                client.getResponse(response);
+                client.replyInternalError(note, "Data server is deprecated");
+                break;
             }
         }
     }
@@ -288,8 +339,9 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
      * Handle a log request note
      * @param note the note to handle
      * @param logDir the log directory
+     * @param peerInfo the peer information
      */
-    protected void handle(final LogRequest note, final File logDir) {
+    protected void handle(final LogRequest note, final File logDir, final PeerInfo peerInfo) {
         logger.debug("Log request received");
         File logSubDir;
 
@@ -302,7 +354,6 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
                 logSubDir = TestLogUtils.lastSuccessfulTestLogDir(logDir);
                 break;
             }
-
             case ANY: {
                 String name = note.getTypeName();
                 logSubDir = TestLogUtils.anyTestLogDir(logDir, name);
@@ -324,8 +375,8 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
             return;
         }
 
-        File[] files = logSubDir.listFiles();
-        if (files == null) {
+        final File[] files = logSubDir.listFiles();
+        if (files == null || files.length == 0) {
             logger.error("The client request log files, but the location does not contain any");
 
             getClient().replyInternalError(note,"The client requested the log files for location %s but there's no files there",
@@ -333,6 +384,9 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
             return;
         }
+
+        int index = 0;
+        final LocationTypeInfo locationTypeInfo = new LocationTypeInfo(files.length);
 
         for (File file : files) {
             logger.debug("Sending log file {} with location type {}", file.getName(),
@@ -348,10 +402,115 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
                 hash = "";
             }
 
-            getClient().logResponse(file, note.getLocationType(), hash);
+            locationTypeInfo.setIndex(index);
+            MaestroReceiverClient.logResponse(file, note, hash, locationTypeInfo, peerInfo, getId(), getClient());
+            index++;
         }
+    }
+
+
+    @Override
+    public void handle(final GroupJoinRequest note) {
+        GroupInfo requested = note.getGroupInfo();
+
+        if (groupInfo != null) {
+            getClient().replyInternalError(note, "Cannot join group %s as %s: the worker is already part of the worker group %s as %s",
+                requested.groupName(), requested.memberName(), groupInfo.groupName(), groupInfo.memberName());
+
+            return;
+        }
+
+        final String topicName = MaestroTopics.peerTopic(requested);
+        getClient().subscribe(topicName, 0);
+        this.groupInfo = requested;
+
+        logger.info("Successfully joined group {} as {}", groupInfo.groupName(), groupInfo.memberName());
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(final GroupLeaveRequest note) {
+        if (groupInfo == null) {
+            logger.warn("Ignoring a group leave request because not a member of any group");
+
+            getClient().replyOk(note);
+
+            return;
+        }
+
+        final String peerTopics = MaestroTopics.peerTopic(groupInfo);
+        getClient().unsubscribe(peerTopics);
+
+        final  GroupInfo old = groupInfo;
+        groupInfo = null;
+        getClient().replyOk(note);
+
+        logger.info("Successfully left group {} as {}", old.groupName(), old.memberName());
+    }
+
+    @Override
+    public void handle(final RoleAssign note) {
+        Role role = note.getRole();
+
+        if (getPeerInfo().getRole() != Role.OTHER ) {
+            getClient().replyInternalError(note, "The node is already assigned the %s role",
+                    getPeerInfo().getRole().toString());
+
+            return;
+        }
+
+        String roleTopic = MaestroTopics.peerTopic(role);
+        getClient().subscribe(roleTopic, 0);
+        logger.debug("Subscribed to the role topic at {}", roleTopic);
+
+        logger.info("The worker was assigned the {} role", role);
+        getPeerInfo().setRole(role);
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(final RoleUnassign note) {
+        try {
+            if (getPeerInfo().getRole() != Role.OTHER) {
+                final String roleTopic = MaestroTopics.peerTopic(getPeerInfo().getRole());
+                getClient().unsubscribe(roleTopic);
+                logger.debug("Unsubscribed to the role topic at {}", roleTopic);
+            }
+        } finally {
+            getPeerInfo().setRole(Role.OTHER);
+        }
+
+        getClient().replyOk(note);
     }
 
     @Override
     abstract public void handle(final LogRequest note);
+
+    protected void setCurrentTest(final Test test) {
+        currentTest = test;
+    }
+
+    @Override
+    public void handle(final StartTestRequest note) {
+        logger.info("Starting a new test: {}", note.getTestExecutionInfo().getTest());
+
+        setCurrentTest(note.getTestExecutionInfo().getTest());
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(final StopTestRequest note) {
+        logger.info("Stopping a test: {}", currentTest);
+        currentTest = null;
+    }
+
+    protected Test getCurrentTest() {
+        return currentTest;
+    }
+
+    @Override
+    public void handle(final TestStartedNotification note) {
+        logger.info("Test started notification received from {} {}", note.getPeerInfo().prettyName(),
+                note.getMessage());
+    }
 }

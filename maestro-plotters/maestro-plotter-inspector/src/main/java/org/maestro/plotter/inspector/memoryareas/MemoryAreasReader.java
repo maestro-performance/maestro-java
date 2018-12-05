@@ -58,7 +58,6 @@ public class MemoryAreasReader extends StreamReader<MemoryAreasDataSet> {
                         record.get(5));
             } catch (Throwable t) {
                 logger.warn("Unable to parse record: {}", t.getMessage(), t);
-                continue;
             }
         }
 

@@ -29,15 +29,20 @@ Artemis 2.5.0 (configurable via ARTEMIS_VERSION and ARTEMIS_JOURNAL). The files 
 You can build the containers with:
 
 ```
- docker-compose -f docker-compose.yml -f docker-artemis-compose.yml build
+ docker-compose -f docker-compose.yml -f suts/docker-artemis-compose.yml build
 ```
 
 or
 
 ```
- docker-compose -f docker-compose.yml -f docker-activemq-compose.yml build
+ docker-compose -f docker-compose.yml -f suts/docker-activemq-compose.yml build
 ```
 
+Optionally, you can also build different versions and branches.
+
+```
+docker-compose -f docker-compose.yml -f suts/docker-artemis-compose.yml build --build-arg MAESTRO_VERSION=1.5.0 --build-arg MAESTRO_BRANCH=dynamic-worker-execution
+```
 
 Launching
 ----
@@ -45,7 +50,7 @@ Launching
 Run:
 
 ```
- docker-compose -f docker-compose.yml -f docker-artemis-compose.yml up -d
+ docker-compose -f docker-compose.yml -f suts/docker-artemis-compose.yml up --scale worker=2 -d
 ```
 
 **Note**: on some rare occasions, the containers for the workers does not start correct. 
@@ -58,7 +63,7 @@ Running The Tests
 To run the tests, first start the client container:
 
 ```
-docker run -it -h maestro_client -v maestro:/maestro --network=maestro_cluster -p 8000:8000 maestro_client /bin/bash
+docker run -it -h maestro_client -v maestro:/maestro --network=maestro_cluster maestro_client /bin/bash
 ```
 
 Once you attach to the container, the console MOTD will display useful information about 
@@ -91,7 +96,16 @@ You can use ```docker exec``` command to attach to a running container. For exam
 to maestro sender container: 
 
 ```
-docker exec -it maestro_sender_1 /bin/bash 
+docker exec -it maestro_worker_1 /bin/bash 
+```
+
+Watching the worker logs
+----
+
+To watch the worker logs:
+
+```
+docker exec -it maestro_worker_1 tail -f /maestro/worker/logs/worker.log
 ```
 
 Customizing The Tests
@@ -124,6 +138,5 @@ Recreating only the client and using a custom volume:
 Supposing a volume named `maestro` is already created. You can just run: 
 
 ```
-docker rm -f maestro_client
-docker run -it -h maestro-client -v maestro:/maestro --network=maestro_cluster -p 8000:8000 maestro_client
+docker run -it -h maestro-client -v maestro:/maestro --network=maestro_cluster maestro_client
 ```

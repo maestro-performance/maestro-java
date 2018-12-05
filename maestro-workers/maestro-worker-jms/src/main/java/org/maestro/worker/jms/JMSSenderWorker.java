@@ -33,6 +33,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.jms.Session;
+import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Supplier;
 
@@ -53,6 +54,8 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     private final Supplier<? extends SenderClient> clientFactory;
     private final WorkerStateInfo workerStateInfo = new WorkerStateInfo();
+    private CountDownLatch startSignal;
+    private CountDownLatch endSignal;
 
     public JMSSenderWorker() {
         this(JMSSenderClient::new);
@@ -62,6 +65,11 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         this.clientFactory = clientFactory;
     }
 
+    @Override
+    public synchronized void setupBarriers(final CountDownLatch startSignal, final CountDownLatch endSignal) {
+        this.startSignal = startSignal;
+        this.endSignal = endSignal;
+    }
 
     @Override
     public long startedEpochMillis() {
@@ -115,7 +123,6 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
 
-
     public void start() {
         startedEpochMillis = System.currentTimeMillis();
         logger.info("Starting the JMS sender worker");
@@ -123,28 +130,38 @@ public class JMSSenderWorker implements MaestroSenderWorker {
         final SenderClient client = this.clientFactory.get();
         final long id = Thread.currentThread().getId();
         try {
-            doClientStartup(client);
+            logger.debug("JMS sender worker {} is now running the client startup", id);
+            try {
+                doClientStartup(client);
+            }
+            catch (Exception e) {
+                logger.error("Unable to start the sender worker: {}", e.getMessage(), e);
+                throw e;
+            }
 
+            logger.debug("JMS sender worker {} is signaling as started", id);
+            startSignal.countDown();
+
+            logger.debug("JMS sender worker {} has started running the load loop", id);
             runLoadLoop(client);
+            logger.debug("JMS sender worker {} has completed running the load loop", id);
         } catch (InterruptedException e) {
-            logger.error("JMS sender worker {} interrupted while sending messages: {}", id,
+            logger.warn("JMS sender worker {} interrupted while sending messages: {}", id,
                     e.getMessage());
 
-            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
+            stop();
         } catch (Exception e) {
-            if (!workerStateInfo.isRunning()) {
-                logger.error("Unable to start the sender worker: {}", e.getMessage(), e);
-            }
-            else {
-                logger.error("Unexpected error while running the sender worker: {}", e.getMessage(), e);
-            }
+            logger.error("Unexpected error while running the sender worker: {}", e.getMessage(), e);
 
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
         } finally {
+            endSignal.countDown();
+
             exitStateCheck(id);
 
             //the test could be considered already stopped here, but cleaning up JMS resources could take some time anyway
             client.stop();
+
             logger.info("Finalized worker {} after sending {} messages", id, messageCount);
         }
     }
@@ -229,7 +246,7 @@ public class JMSSenderWorker implements MaestroSenderWorker {
 
     @Override
     public boolean isRunning() {
-        return workerStateInfo.isRunning();
+        return workerStateInfo.isRunning() && !Thread.currentThread().isInterrupted();
     }
 
     @Override

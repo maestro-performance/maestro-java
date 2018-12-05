@@ -17,8 +17,8 @@
 package org.maestro.tests.rate;
 
 import org.maestro.client.Maestro;
-import org.maestro.reports.downloaders.ReportsDownloader;
-import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
+import org.maestro.common.client.notes.TestExecutionInfo;
+import org.maestro.tests.cluster.DistributionStrategy;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,12 +29,28 @@ import org.slf4j.LoggerFactory;
 public class StraightFixedRateTestExecutor extends AbstractFixedRateExecutor {
     private static final Logger logger = LoggerFactory.getLogger(StraightFixedRateTestExecutor.class);
 
-    public StraightFixedRateTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                         final FixedRateTestProfile testProfile) {
-        super(maestro, reportsDownloader, testProfile);
+    public StraightFixedRateTestExecutor(final Maestro maestro, final FixedRateTestProfile testProfile,
+                                         final DistributionStrategy distributionStrategy)
+    {
+        super(maestro, testProfile, distributionStrategy);
     }
 
     protected void reset() { }
+
+    @Override
+    protected void onInit() {
+
+    }
+
+    @Override
+    protected void onComplete() {
+
+    }
+
+    @Override
+    protected void onTestStarted() {
+
+    }
 
     protected String phaseName() {
         return "run";
@@ -45,10 +61,10 @@ public class StraightFixedRateTestExecutor extends AbstractFixedRateExecutor {
     }
 
 
-    public boolean run() {
+    @Override
+    public boolean run(final TestExecutionInfo testExecutionInfo) {
         logger.info("Starting the test execution");
 
-
-        return runTest(0, getTestProfile()::apply);
+        return runTest(testExecutionInfo, getTestProfile()::apply);
     }
 }

@@ -1,0 +1,60 @@
+version: '3.4'
+networks:
+    cluster:
+      driver: bridge
+    test:
+          driver: bridge
+services:
+  broker:
+    image: maestroperf/maestro-broker:1.5.0
+    networks:
+      - cluster
+    ports:
+      - "18161:8161"
+  worker:
+    image: maestroperf/maestro-worker:1.5.0
+    volumes:
+      - ${HOME}/tmp/maestro:/maestro
+    networks:
+      - cluster
+      - test
+    depends_on:
+      - broker
+  inspector:
+      image: maestroperf/maestro-inspector:1.5.0
+      volumes:
+        - ${HOME}/tmp/maestro:/maestro
+      networks:
+        - cluster
+        - test
+      depends_on:
+        - worker
+  agent:
+      image: maestroperf/maestro-agent:1.5.0
+      volumes:
+        - ${HOME}/tmp/maestro:/maestro
+      networks:
+        - cluster
+        - test
+      depends_on:
+        - broker
+  exporter:
+      image: maestroperf/maestro-exporter:1.5.0
+      volumes:
+        - ${HOME}/tmp/maestro:/maestro
+      networks:
+        - cluster
+      ports:
+        - "9120:9120"
+      depends_on:
+        - broker
+  reports:
+    image: maestroperf/maestro-reports:1.5.0
+    volumes:
+      - ${HOME}/tmp/maestro:/maestro
+    networks:
+      - cluster
+    ports:
+      - "6500:6500"
+    depends_on:
+      - broker

@@ -5,10 +5,9 @@ metadata:
 spec:
   type: NodePort
   ports:
-    - name: mqtt
-      port: 1883
-      targetPort: mqtt
+  - name: mqtt
+    port: 1883
+    nodePort: 31883
   selector:
     app: maestro
     component: broker
-

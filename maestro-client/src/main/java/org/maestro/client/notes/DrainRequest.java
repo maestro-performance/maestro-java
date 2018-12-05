@@ -27,6 +27,7 @@ public class DrainRequest extends MaestroRequest<MaestroReceiverEventListener> {
     private String duration;
     private String url;
     private String parallelCount;
+    private String workerName;
 
     public DrainRequest() {
         super(MaestroCommand.MAESTRO_NOTE_DRAIN);
@@ -38,6 +39,7 @@ public class DrainRequest extends MaestroRequest<MaestroReceiverEventListener> {
         this.duration = unpacker.unpackString();
         this.url = unpacker.unpackString();
         this.parallelCount = unpacker.unpackString();
+        this.workerName = unpacker.unpackString();
     }
 
     public String getDuration() {
@@ -64,6 +66,14 @@ public class DrainRequest extends MaestroRequest<MaestroReceiverEventListener> {
         this.parallelCount = parallelCount;
     }
 
+    public String getWorkerName() {
+        return workerName;
+    }
+
+    public void setWorkerName(String workerName) {
+        this.workerName = workerName;
+    }
+
     @Override
     public void notify(MaestroReceiverEventListener visitor) {
         visitor.handle(this);
@@ -76,6 +86,7 @@ public class DrainRequest extends MaestroRequest<MaestroReceiverEventListener> {
         packer.packString(this.duration);
         packer.packString(this.url);
         packer.packString(this.parallelCount);
+        packer.packString(this.workerName);
 
         return packer;
     }

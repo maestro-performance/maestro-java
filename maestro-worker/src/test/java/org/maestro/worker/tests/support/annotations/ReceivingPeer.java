@@ -32,26 +32,26 @@ public @interface ReceivingPeer {
 
     /**
      * The maestro URL
-     * @return
+     * @return The maestro URL
      */
     String maestroUrl() default "mqtt://localhost:1883";
 
     /**
      * Peer role
-     * @return
+     * @return the peer role
      */
     String role() default "receiver";
 
     /**
      * Test hostname
-     * @return
+     * @return the test hostname
      */
     String host() default "localhost";
 
 
     /**
      * The worker class
-     * @return
+     * @return the worker class
      */
     String worker() default "org.maestro.worker.jms.JMSReceiverWorker";
 }

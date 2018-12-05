@@ -16,17 +16,21 @@
 
 package org.maestro.tests.rate;
 
-import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
-import org.maestro.common.ConfigurationWrapper;
-import org.maestro.reports.downloaders.ReportsDownloader;
+import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.common.Monitor;
+import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.tests.callbacks.StatsCallBack;
-import org.maestro.tests.rate.singlepoint.FixedRateTestProfile;
+import org.maestro.tests.cluster.DistributionStrategy;
 import org.maestro.tests.utils.CompletionTime;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.concurrent.*;
+import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 /**
  * A test executor that uses fixed rates and warms-up before the test
@@ -34,13 +38,18 @@ import java.util.concurrent.*;
 public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
     private static final Logger logger = LoggerFactory.getLogger(FixedRateTestExecutor.class);
 
+    private final ScheduledExecutorService statsExecutor = Executors.newSingleThreadScheduledExecutor();
+    private final StatsCallBack statsCallBack;
+    private final Monitor<Object> monitor;
+
     private volatile boolean warmUp = false;
 
-    public FixedRateTestExecutor(final Maestro maestro, final ReportsDownloader reportsDownloader,
-                                 final FixedRateTestProfile testProfile) {
-        super(maestro, reportsDownloader, testProfile);
+    public FixedRateTestExecutor(final Maestro maestro, final FixedRateTestProfile testProfile,
+                                 final DistributionStrategy distributionStrategy) {
+        super(maestro, testProfile, distributionStrategy);
 
-        getMaestro().getCollector().addCallback(new StatsCallBack(this));
+        monitor = new Monitor(this);
+        statsCallBack = new StatsCallBack(this, monitor);
     }
 
     protected void reset() {
@@ -64,18 +73,71 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
         return repeat + CompletionTime.getDeadline();
     }
 
+    @Override
+    protected void onInit() {
+        if (warmUp) {
+            logger.debug("Registering the callback");
+            getMaestro().getCollector().addCallback(statsCallBack);
 
-    public boolean run() {
+            Runnable task = () -> getMaestro().statsRequest(MaestroTopics.WORKERS_TOPIC);
+            statsExecutor.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
+        }
+    }
+
+    public synchronized void stopStatsCollection() {
+        if (!statsExecutor.isShutdown()) {
+            getMaestro().getCollector().removeCallback(statsCallBack);
+            statsExecutor.shutdown();
+        }
+    }
+
+    @Override
+    protected void onComplete() {
+        if (warmUp) {
+            stopStatsCollection();
+        }
+    }
+
+    @Override
+    protected void onTestStarted() {
+        if (warmUp) {
+            logger.info("Waiting for the warm up to complete");
+            try {
+                monitor.doLock();
+            } catch (InterruptedException e) {
+                logger.trace("Interrupted while waiting for the warm-up condition");
+            }
+
+            logger.info("Warm-up completed. Stopping the test.");
+
+            this.stopServices();
+        }
+    }
+
+    @Override
+    protected boolean onNotified(List<? extends MaestroNote> results) {
+        if (warmUp) {
+            monitor.doUnlock();
+        }
+
+        return super.onNotified(results);
+    }
+
+    @Override
+    public boolean run(final TestExecutionInfo testExecutionInfo) {
         logger.info("Starting the warm up execution");
 
         warmUp = true;
-        if (runTest(0, getTestProfile()::warmUp)) {
+
+        if (runTest(testExecutionInfo, getTestProfile()::warmUp)) {
             try {
                 Thread.sleep(getCoolDownPeriod());
                 logger.info("Starting the test");
 
                 warmUp = false;
-                return runTest(1, getTestProfile()::apply);
+
+                testExecutionInfo.iterate();
+                return runTest(testExecutionInfo, getTestProfile()::apply);
             } catch (InterruptedException e) {
                 logger.warn("The test execution was interrupted");
             }

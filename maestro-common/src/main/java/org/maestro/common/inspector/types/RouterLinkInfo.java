@@ -31,7 +31,7 @@ public class RouterLinkInfo implements InspectorType, RouterLinkInfoType {
         this.routerLinkProperties = Collections.unmodifiableList(queueProperties);
     }
 
-    public List getRouterLinkProperties() {
+    public List<Map<String, Object>> getRouterLinkProperties() {
         return routerLinkProperties;
     }
 

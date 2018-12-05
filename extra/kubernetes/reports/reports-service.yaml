@@ -1,0 +1,17 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: reports-external
+  labels:
+    app: maestro
+# Optional, if you have multiple environments
+#    env: staging
+spec:
+  type: NodePort
+  ports:
+    - name: http
+      port: 6500
+      nodePort: 30002
+  selector:
+    app: maestro
+    component: reports

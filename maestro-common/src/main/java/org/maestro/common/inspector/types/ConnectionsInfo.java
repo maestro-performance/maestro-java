@@ -31,7 +31,7 @@ public class ConnectionsInfo implements InspectorType, ConnectionsInfoType {
         this.connectionProperties = Collections.unmodifiableList(queueProperties);
     }
 
-    public List getConnectionProperties() {
+    public List<Map<String, Object>> getConnectionProperties() {
         return connectionProperties;
     }
 

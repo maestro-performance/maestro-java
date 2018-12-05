@@ -16,20 +16,18 @@
 
 package org.maestro.common.test;
 
+import org.maestro.common.test.properties.annotations.PropertyConsumer;
+import org.maestro.common.test.properties.annotations.PropertyName;
+import org.maestro.common.test.properties.annotations.PropertyProvider;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.util.Properties;
 
 /**
  * Test properties used/saved by inspectors
  */
 @SuppressWarnings("ALL")
-public class InspectorProperties extends CommonProperties {
+@PropertyName(name = "")
+public class InspectorProperties {
     public static String FILENAME = "inspector.properties";
     public static int UNSET_INT = 0;
 
@@ -47,134 +45,68 @@ public class InspectorProperties extends CommonProperties {
     private String productName;
     private String productVersion;
 
-    public void load(final File testProperties) throws IOException {
-        logger.trace("Reading properties from {}", testProperties.getPath());
-
-        String loadedSwap;
-
-        Properties prop = new Properties();
-
-        try (FileInputStream in = new FileInputStream(testProperties)) {
-            prop.load(in);
-
-            jvmName = prop.getProperty("jvmName");
-            jvmVersion = prop.getProperty("jvmVersion");
-            jvmPackageVersion = prop.getProperty("jvmPackageVersion");
-            operatingSystemName = prop.getProperty("operatingSystemName");
-            operatingSystemArch = prop.getProperty("operatingSystemArch");
-            operatingSystemVersion = prop.getProperty("operatingSystemVersion");
-
-            String systemCpuCountStr = prop.getProperty("systemCpuCount");
-            if (systemCpuCountStr != null) {
-                systemCpuCount = Integer.parseInt(systemCpuCountStr);
-            }
-            else {
-                systemCpuCount = UNSET_INT;
-            }
-
-            String systemMemoryStr = prop.getProperty("systemMemory");
-            if (systemMemoryStr != null) {
-                systemMemory = Long.parseLong(systemMemoryStr);
-            }
-            else {
-                systemMemory = UNSET_INT;
-            }
-
-            loadedSwap = prop.getProperty("systemSwap");
-            systemSwap = (loadedSwap != null) ? Long.parseLong(loadedSwap) : UNSET_INT;
-
-            productName = prop.getProperty("productName");
-            productVersion = prop.getProperty("productVersion");
-
-            super.load(prop);
-        }
-
-    }
-
-    public void write(final File testProperties) throws IOException {
-        logger.trace("Writing properties to {}", testProperties.getPath());
-
-        Properties prop = new Properties();
-
-        prop.setProperty("jvmName", jvmName);
-        prop.setProperty("jvmVersion", jvmVersion);
-
-        if (jvmPackageVersion != null) {
-            prop.setProperty("jvmPackageVersion", jvmPackageVersion);
-        }
-
-        prop.setProperty("operatingSystemName", operatingSystemName);
-        prop.setProperty("operatingSystemArch", operatingSystemArch);
-        prop.setProperty("operatingSystemVersion", operatingSystemVersion);
-        prop.setProperty("systemCpuCount", Long.toString(systemCpuCount));
-        prop.setProperty("systemMemory", Long.toString(systemMemory));
-        if (systemSwap != UNSET_INT) {
-            prop.setProperty("systemSwap", Long.toString(systemSwap));
-        }
-
-        if (productName != null) {
-            prop.setProperty("productName", productName);
-        }
-
-        if (productVersion != null) {
-            prop.setProperty("productVersion", productVersion);
-        }
-
-        super.write(prop);
-
-        try (FileOutputStream fos = new FileOutputStream(testProperties)) {
-            prop.store(fos, "maestro");
-        }
-    }
-
+    @PropertyProvider(name="jvmName", join = false)
     public String getJvmName() {
         return jvmName;
     }
 
+    @PropertyConsumer(name="jvmName", join = false)
     public void setJvmName(String jvmName) {
         this.jvmName = jvmName;
     }
 
+
+    @PropertyProvider(name="jvmVersion", join = false)
     public String getJvmVersion() {
         return jvmVersion;
     }
 
+    @PropertyConsumer(name="jvmVersion", join = false)
     public void setJvmVersion(String jvmVersion) {
         this.jvmVersion = jvmVersion;
     }
 
+    @PropertyProvider(name="jvmPackageVersion", join = false)
     public String getJvmPackageVersion() {
         return jvmPackageVersion;
     }
 
+    @PropertyConsumer(name="jvmPackageVersion", join = false)
     public void setJvmPackageVersion(String jvmPackageVersion) {
         this.jvmPackageVersion = jvmPackageVersion;
     }
 
+    @PropertyProvider(name="operatingSystemName", join = false)
     public String getOperatingSystemName() {
         return operatingSystemName;
     }
 
+    @PropertyConsumer(name="operatingSystemName", join = false)
     public void setOperatingSystemName(String operatingSystemName) {
         this.operatingSystemName = operatingSystemName;
     }
 
+    @PropertyProvider(name="operatingSystemArch", join = false)
     public String getOperatingSystemArch() {
         return operatingSystemArch;
     }
 
+    @PropertyConsumer(name="operatingSystemArch", join = false)
     public void setOperatingSystemArch(String operatingSystemArch) {
         this.operatingSystemArch = operatingSystemArch;
     }
 
+    @PropertyProvider(name="operatingSystemVersion", join = false)
     public String getOperatingSystemVersion() {
         return operatingSystemVersion;
     }
 
+    @PropertyConsumer(name="operatingSystemVersion", join = false)
     public void setOperatingSystemVersion(String operatingSystemVersion) {
         this.operatingSystemVersion = operatingSystemVersion;
     }
 
+    @PropertyProvider(name="systemCpuCount", join = false)
     public long getSystemCpuCount() {
         return systemCpuCount;
     }
@@ -183,6 +115,12 @@ public class InspectorProperties extends CommonProperties {
         this.systemCpuCount = systemCpuCount;
     }
 
+    @PropertyConsumer(name="systemCpuCount", join = false)
+    public void setSystemCpuCount(String systemCpuCount) {
+        setSystemCpuCount(Long.parseLong(systemCpuCount));
+    }
+
+    @PropertyProvider(name="systemMemory", join = false)
     public long getSystemMemory() {
         return systemMemory;
     }
@@ -191,6 +129,12 @@ public class InspectorProperties extends CommonProperties {
         this.systemMemory = systemMemory;
     }
 
+    @PropertyConsumer(name="systemMemory", join = false)
+    public void setSystemMemory(final String systemMemory) {
+        setSystemMemory(Long.parseLong(systemMemory));
+    }
+
+    @PropertyProvider(name="systemSwap", join = false)
     public long getSystemSwap() {
         return systemSwap;
     }
@@ -199,19 +143,30 @@ public class InspectorProperties extends CommonProperties {
         this.systemSwap = systemSwap;
     }
 
+    @PropertyConsumer(name="systemSwap", join = false)
+    public void setSystemSwap(String systemSwap) {
+        setSystemSwap(Long.parseLong(systemSwap));
+    }
+
+    @PropertyProvider(name="productName", join = false)
     public String getProductName() {
         return productName;
     }
 
+    @PropertyConsumer(name="productName", join = false)
     public void setProductName(String productName) {
         this.productName = productName;
     }
 
+    @PropertyProvider(name="productVersion", join = false)
     public String getProductVersion() {
         return productVersion;
     }
 
+    @PropertyConsumer(name="productVersion", join = false)
     public void setProductVersion(String productVersion) {
         this.productVersion = productVersion;
     }
+
+
 }

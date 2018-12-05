@@ -10,7 +10,7 @@
       <env name="RATE" value="0" />
       <env name="TEST_DURATION" value="90s" />
     </envs>
-    <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.Main" />
+    <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.MaestroCliMain" />
     <module name="maestro-cli" />
     <option name="PROGRAM_PARAMETERS" value="exec -d $MODULE_DIR$/target/classes/reports -s $PROJECT_DIR$/maestro-test-scripts/src/main/groovy/multipoint/FixedRateTest.groovy" />
     <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes" />

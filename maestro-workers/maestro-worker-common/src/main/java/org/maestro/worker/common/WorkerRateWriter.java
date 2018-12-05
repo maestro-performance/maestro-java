@@ -1,8 +1,25 @@
+/*
+ * Copyright 2018 Otavio Rodolfo Piske
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.maestro.worker.common;
 
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
 import org.maestro.common.exceptions.MaestroException;
+import org.maestro.common.io.data.common.exceptions.InvalidRecordException;
 import org.maestro.common.io.data.writers.BinaryRateWriter;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.worker.WorkerUtils;
@@ -50,7 +67,6 @@ public class WorkerRateWriter implements Runnable {
     private void updateForWorker(Class<?> clazz, WriterCache cache) {
         long currentCount = 0;
         boolean stopped = false;
-        long currentTime = microClock.microTime();
 
         for (MaestroWorker worker : workers) {
             if (worker.getClass() == clazz) {
@@ -64,17 +80,24 @@ public class WorkerRateWriter implements Runnable {
         }
 
         if (!stopped) {
-            writeRecord(clazz, cache, currentCount, currentTime);
+            try {
+                writeRecord(clazz, cache, currentCount);
+            }
+            catch (InvalidRecordException e) {
+                logger.error("{}: now = {}, last = {}", e.getNow(), e.getLast());
+            }
         }
     }
 
-    private void writeRecord(Class<?> clazz, WriterCache cache, long currentCount, long currentTime) {
+    private void writeRecord(Class<?> clazz, WriterCache cache, long currentCount) {
         BinaryRateWriter writer = cache.writer;
 
         try {
             long delta = currentCount - cache.count;
 
+            final long currentTime = microClock.microTime();
             writer.write(0, delta, currentTime);
+
             cache.count = currentCount;
         } catch (IOException e) {
             logger.error("Unable to record the rate entry for worker class {}: {}", clazz, e.getMessage(), e);

@@ -16,7 +16,9 @@
 
 package org.maestro.common.io.data.writers;
 
+import org.apache.commons.io.FileUtils;
 import org.maestro.common.Constants;
+import org.maestro.common.Role;
 import org.maestro.common.io.data.common.FileHeader;
 import org.maestro.common.io.data.common.RateEntry;
 import org.maestro.common.io.data.common.exceptions.InvalidHeaderValueException;
@@ -113,7 +115,7 @@ public class BinaryRateUpdater implements AutoCloseable {
         int maestroVersion = byteBuffer.getInt();
         logger.trace("Maestro version: '{}'", maestroVersion);
 
-        FileHeader.Role role = FileHeader.Role.from(byteBuffer.getInt());
+        Role role = Role.from(byteBuffer.getInt());
         logger.trace("Role: '{}'", role.getCode());
 
         return new FileHeader(new String(name), fileVersion, maestroVersion, role);
@@ -173,7 +175,7 @@ public class BinaryRateUpdater implements AutoCloseable {
 
         if (olderTs != newerTs) {
             logger.error("Cannot update records that are not within the same second slot: {} == {}", olderTs, newerTs);
-            throw new InvalidRecordException("Cannot save multiple records for within the same second slot");
+            throw new InvalidRecordException(olderTs, newerTs, "Cannot save multiple records for within the same second slot");
         }
 
         byteBuffer.putInt(older.getMetadata());
@@ -294,5 +296,26 @@ public class BinaryRateUpdater implements AutoCloseable {
                 index++;
             }
         }
+    }
+
+    /**
+     * Gets a BinaryRateUpdater instance suitable for updating files of a given role type. Parent
+     * directores are created
+     * @param role the role for the files to be updated
+     * @param path the location for the file
+     * @return A new updater instance
+     * @throws IOException if unable to create the parent directories
+     */
+    public static BinaryRateUpdater get(Role role, File path) throws IOException {
+        File output;
+
+        if (role == Role.RECEIVER) {
+            output = new File(path, "receiver.dat");
+        } else {
+            output = new File(path, "sender.dat");
+        }
+
+        FileUtils.forceMkdirParent(output);
+        return new BinaryRateUpdater(output, false);
     }
 }

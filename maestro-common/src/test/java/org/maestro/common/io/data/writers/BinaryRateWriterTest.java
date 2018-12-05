@@ -1,9 +1,26 @@
+/*
+ * Copyright 2018 Otavio Rodolfo Piske
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.maestro.common.io.data.writers;
 
 import org.junit.Test;
 import static org.junit.Assert.assertEquals;
 
 import org.maestro.common.Constants;
+import org.maestro.common.Role;
 import org.maestro.common.duration.EpochClocks;
 import org.maestro.common.duration.EpochMicroClock;
 import org.maestro.common.io.data.common.FileHeader;
@@ -33,13 +50,14 @@ public class BinaryRateWriterTest {
 
             binaryRateWriter.close();
 
-            BinaryRateReader reader = new BinaryRateReader(reportFile);
+            try (BinaryRateReader reader = new BinaryRateReader(reportFile)) {
 
-            FileHeader fileHeader = reader.getHeader();
-            assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
-            assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
-            assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
-            assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+                FileHeader fileHeader = reader.getHeader();
+                assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
+                assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
+                assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
+                assertEquals(Role.SENDER, fileHeader.getRole());
+            }
         }
         finally {
             clean(reportFile);
@@ -54,13 +72,14 @@ public class BinaryRateWriterTest {
         try {
             generateDataFileRandom(reportFile);
 
-            BinaryRateReader reader = new BinaryRateReader(reportFile);
+            try (BinaryRateReader reader = new BinaryRateReader(reportFile)) {
 
-            FileHeader fileHeader = reader.getHeader();
-            assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
-            assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
-            assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
-            assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+                FileHeader fileHeader = reader.getHeader();
+                assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
+                assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
+                assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
+                assertEquals(Role.SENDER, fileHeader.getRole());
+            }
         }
         finally {
             clean(reportFile);
@@ -68,18 +87,17 @@ public class BinaryRateWriterTest {
     }
 
     private void generateDataFileRandom(File reportFile) throws IOException {
-        BinaryRateWriter binaryRateWriter = new BinaryRateWriter(reportFile, FileHeader.WRITER_DEFAULT_SENDER);
+        try (BinaryRateWriter binaryRateWriter = new BinaryRateWriter(reportFile, FileHeader.WRITER_DEFAULT_SENDER)) {
 
-        EpochMicroClock clock = EpochClocks.exclusiveMicro();
-        long now = clock.microTime();
+            EpochMicroClock clock = EpochClocks.exclusiveMicro();
+            long now = clock.microTime();
 
-        for (int i = 0; i < TimeUnit.DAYS.toSeconds(1); i++) {
-            binaryRateWriter.write(1, Double.valueOf(Math.random()).longValue(), now);
+            for (int i = 0; i < TimeUnit.DAYS.toSeconds(1); i++) {
+                binaryRateWriter.write(1, Double.valueOf(Math.random()).longValue(), now);
 
-            now += TimeUnit.SECONDS.toMicros(1);
+                now += TimeUnit.SECONDS.toMicros(1);
+            }
         }
-
-        binaryRateWriter.close();
     }
 
     @Test
@@ -90,23 +108,24 @@ public class BinaryRateWriterTest {
         try {
             long total = generateDataFilePredictable(reportFile);
 
-            BinaryRateReader reader = new BinaryRateReader(reportFile);
+            try (BinaryRateReader reader = new BinaryRateReader(reportFile)) {
 
-            FileHeader fileHeader = reader.getHeader();
-            assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
-            assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
-            assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
-            assertEquals(FileHeader.Role.SENDER, fileHeader.getRole());
+                FileHeader fileHeader = reader.getHeader();
+                assertEquals(FileHeader.MAESTRO_FORMAT_NAME, fileHeader.getFormatName().trim());
+                assertEquals(FileHeader.CURRENT_FILE_VERSION, fileHeader.getFileVersion());
+                assertEquals(Constants.VERSION_NUMERIC, fileHeader.getMaestroVersion());
+                assertEquals(Role.SENDER, fileHeader.getRole());
 
-            long count = 0;
-            RateEntry entry = reader.readRecord();
-            while (entry != null) {
-                count++;
-                entry = reader.readRecord();
+                long count = 0;
+                RateEntry entry = reader.readRecord();
+                while (entry != null) {
+                    count++;
+                    entry = reader.readRecord();
+                }
+
+                assertEquals("The number of records don't match",
+                        total, count);
             }
-
-            assertEquals("The number of records don't match",
-                    total, count);
         }
         finally {
             clean(reportFile);
@@ -114,22 +133,22 @@ public class BinaryRateWriterTest {
     }
 
     private long generateDataFilePredictable(File reportFile) throws IOException {
-        BinaryRateWriter binaryRateWriter = new BinaryRateWriter(reportFile, FileHeader.WRITER_DEFAULT_SENDER);
+        try (BinaryRateWriter binaryRateWriter = new BinaryRateWriter(reportFile, FileHeader.WRITER_DEFAULT_SENDER)) {
 
-        EpochMicroClock clock = EpochClocks.exclusiveMicro();
+            EpochMicroClock clock = EpochClocks.exclusiveMicro();
 
-        long total = TimeUnit.DAYS.toSeconds(1);
+            long total = TimeUnit.DAYS.toSeconds(1);
 
-        long now = clock.microTime();
+            long now = clock.microTime();
 
-        for (int i = 0; i < total; i++) {
-            binaryRateWriter.write(0, i + 1, now);
+            for (int i = 0; i < total; i++) {
+                binaryRateWriter.write(0, i + 1, now);
 
-            now += TimeUnit.SECONDS.toMicros(1);
+                now += TimeUnit.SECONDS.toMicros(1);
+            }
+
+            return total;
         }
-
-        binaryRateWriter.close();
-        return total;
     }
 
     @Test(expected = InvalidRecordException.class)
@@ -137,9 +156,7 @@ public class BinaryRateWriterTest {
         String path = this.getClass().getResource(".").getPath();
         File reportFile = new File(path, "testHeaderWriteRecordsNonSequential.dat");
 
-        try {
-            BinaryRateWriter binaryRateWriter = new BinaryRateWriter(reportFile, FileHeader.WRITER_DEFAULT_SENDER);
-
+        try (BinaryRateWriter binaryRateWriter = new BinaryRateWriter(reportFile, FileHeader.WRITER_DEFAULT_SENDER)) {
             EpochMicroClock clock = EpochClocks.exclusiveMicro();
 
             long total = TimeUnit.DAYS.toSeconds(1);
@@ -151,8 +168,6 @@ public class BinaryRateWriterTest {
 
                 now -= TimeUnit.SECONDS.toMicros(1);
             }
-
-            binaryRateWriter.close();
         }
         finally {
             clean(reportFile);

@@ -18,6 +18,9 @@ package org.maestro.worker.tests.support.runner;
 
 import org.apache.commons.io.FileUtils;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.exchange.support.WorkerPeer;
+import org.maestro.common.Role;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
@@ -27,7 +30,13 @@ import java.net.URL;
 /**
  * A small, but complete, maestro peer to be used for testing
  */
+@SuppressWarnings("FieldCanBeLocal")
 public class MiniPeer {
+    private static final String MINIPEERS_TOPIC =  "/mpt/minipeer";
+    public static final String SENDER_TOPIC =  MINIPEERS_TOPIC + "/sender";
+    public static final String RECEIVER_TOPIC =  MINIPEERS_TOPIC + "/receiver";
+
+
     private MaestroWorkerExecutor executor;
 
     private final String worker;
@@ -43,11 +52,6 @@ public class MiniPeer {
         this.host = host;
     }
 
-    /**
-     * Starts the peer
-     *
-     * @throws Exception
-     */
     public void start() throws Exception {
         @SuppressWarnings("unchecked")
         Class<MaestroWorker> clazz = (Class<MaestroWorker>) Class.forName(worker);
@@ -64,14 +68,21 @@ public class MiniPeer {
         }
         logDir = new File(logPath);
 
+        final PeerInfo peerInfo = new WorkerPeer("test", "localhost");
 
-        executor = new MaestroWorkerExecutor(maestroUrl, role, host, logDir, clazz, null);
+        executor = new MaestroWorkerExecutor(maestroUrl, peerInfo, logDir);
 
         if (role.equals("sender")) {
-            executor.start(MaestroTopics.MAESTRO_SENDER_TOPICS);
+            String[] topics = {MaestroTopics.WORKERS_TOPIC, MaestroTopics.NOTIFICATION_TOPIC, SENDER_TOPIC};
+
+            peerInfo.setRole(Role.SENDER);
+            executor.start(topics);
         }
         else {
-            executor.start(MaestroTopics.MAESTRO_RECEIVER_TOPICS);
+            String[] topics = {MaestroTopics.WORKERS_TOPIC, MaestroTopics.NOTIFICATION_TOPIC, RECEIVER_TOPIC};
+
+            peerInfo.setRole(Role.RECEIVER);
+            executor.start(topics);
         }
 
         Thread thread = new Thread(executor);
@@ -79,9 +90,6 @@ public class MiniPeer {
     }
 
 
-    /**
-     * Stops the peer
-     */
     public void stop() {
         if (executor != null) {
             executor.stop();

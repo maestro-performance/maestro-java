@@ -31,7 +31,6 @@ Overall, the base set of variables for the tests are:
 | `LOG_LEVEL` | `null` | Optional log level (see below) |
 | `MANAGEMENT_INTERFACE` | `null` | The URL for the [management interface](Inspectors.md) |
 | `INSPECTOR_NAME` | `null` | The name of the [inspector](Inspectors.md) |
-| `DOWNLOADER_NAME` | `null` | The report download method (see below) |
 
 
 **Multipoint Test Variables**: 
@@ -46,8 +45,8 @@ Overall, the base set of variables for the tests are:
 | `LOG_LEVEL` | `null` | Optional log level (see below) |
 | `MANAGEMENT_INTERFACE` | `null` | The URL for the [management interface](Inspectors.md) |
 | `INSPECTOR_NAME` | `null` | The name of the [inspector](Inspectors.md) |
-| `DOWNLOADER_NAME` | `null` | The report download method (see below) |
-
+| `DISTRIBUTION_STRATEGY` | `balanced` | Determines how to distribute the worker pool (see below) |
+| `ENDPOINT_RESOLVER_NAME` | `role` | Determines how to distribute the test endpoints among the worker pool (see below) |
 
 Default Tests
 ----
@@ -81,38 +80,42 @@ Log level can be adjusted by setting the LOG_LEVEL variable to one of the follow
 
 The default log level is "info".
 
-**Report Downloaders**
+**Distribution Strategy**
 
-After the test is complete, Maestro Client downloads the files for processing them and creating the reports. There are
-two possible ways for the client to do this: 
+Starting with Maestro 1.5, there is no more dedicated roles to the workers. As a result, the code launches a "worker"
+daemon that can act either as a receiver or as a sender, according to the test needs. In order to distribute the worker
+pool, it is necessary to set a distribution strategy. This behavior is manipulated via the DISTRIBUTION_STRATEGY environment
+variable.
 
-* Direct method via HTTP: in this method, the client downloads the files directly from every single peer on the cluster. The client does
-not need to know the peer addresses prior to the test. During the initial phases of the test, the client uses the Get 
-command from the Maestro protocol to request the Data Server address of every peer on the test cluster.
-* Broker method via MQTT: in this method, the client requests the peers on the test cluster to push the logs into the 
-Maestro broker into a specific topic for logs. Then, the client downloads those files one at a time. 
+Currently, the following distribution strategies are available:
 
-Choosing the correct method depends on the topology and specifics of your test network. Overall:
+* [legacy](http://www.orpiske.net/files/javadoc/maestro-java-1.5/apidocs/org/maestro/tests/cluster/LegacyStrategy.html): a distribution strategy the retains the legacy behavior. Useful for Maestro development and debugging.
+* balanced: this strategy a balanced worker pool where half of the workers will be senders and the other half will be 
+receivers 
+* balanced-exclusive: the same as the `balanced` one, but forces the usage of peer-specific topics for communication, 
+thus allowing the tests to manage the nodes individually instead of as a group. This requires a longer test startup time, 
+since the test front-end will send the test parameters individually to each node, but allows a finer grained control over
+each node behavior.  
 
-* Direct method via HTTP
-  * Is ideal if the client and the peers are on the same network
-  * The peers have valid addresses that can be accessed via the client
-  * The tests are high scale running for a very long time (ie: several hours), thus, generating files that are several 
-  gigabytes in size 
-  * Is ideal if the Maestro Broker is JVM-based and runs on a constrained memory environment (ie.: < 1Gb)
-* Broker method via MQTT
-  * Is ideal if the client and the peers are on different networks with the broker on the edge
-  * Is ideal if the addresses of the peers are unknown
+**Test Endpoint Resolvers**
 
-Configuring the Report Download Method
+Test endpoint resolvers are used to dynamically assign test endpoints per worker. For example, it makes possible to 
+assign different test endpoints based on the worker role. This behavior is manipulated via the ENDPOINT_RESOLVER_NAME environment
+variable.
 
-* Direct method via HTTP
-  * No configuration needed. It is the default method
-  * Used whenever the environment variable DOWNLOADER_NAME is null or "default"
-* Broker method via MQTT
-  * Used whenever the environment variable DOWNLOADER_NAME is set to "broker"
-  * Optional client configuration is available on ```maestro-cli.properties```.
-  * Optional worker configuration is available on ```maestro-worker.properties```.
+The following resolvers are available:
+
+* role: this test endpoint resolver assigns a test endpoint (ie.: the broker URL, address, etc) based on the worker role. 
+For example, if you are testing multi node scenarios (ie.: clustered broker, multi node QPid Dispatch, etc) and wants to
+ use a different address for the senders than for the receivers.
+* one-to-one: this resolver handles the test endpoint on a per worker+role basis ensuring that each sender/receiver 
+instance will have a dedicated queue/topic/address for the test data exchange.  For example, if you have a balanced pool
+ of 4 workers (2 senders and 2 receivers) and the test uses `amqp://sut:5672/test.performance.queue` as the send/receive 
+ URL, then each sender/receiver pair will use `amqp://sut:5672/test.performance.queue.[N]` as the send/receiver URL 
+ (ie.: `amqp://sut:5672/test.performance.queue.1` for the first pair,  `amqp://sut:5672/test.performance.queue.2` for 
+ the second pair, etc). This test **must** use the `balanced-exclusive` distribution strategy.
+
+ 
 
 Fixed Rate Test Variables
 ----
@@ -175,28 +178,28 @@ Once the test parameters have been adequately set by exporting the test variable
 run with one of the following commands:
 
 ```
-maestro-cli exec -s ../scripts/singlepoint/IncrementalTest.groovy -d /path/to/save/reports
+maestro-cli exec -s ../scripts/singlepoint/IncrementalTest.groovy
 ```
 
-Some test might need to be run directly via Groovy. This is the case for the tests
-that require specific dependencies for processing their data. For example, to run
-the Quiver test:
+Some test might need to be run directly via Groovy. This is the case for the tests that require specific dependencies 
+for processing their data. None of the default tests require that.  
 
-```
-cd /path/to/scripts/singlepoint/ && groovy QuiverTest.groovy /path/to/save/reports
-```
 
-Generating the Reports
+The test Reports
 ----
 
-After a test is completed, performance reports can be generated using the following command line:
+If you had used Maestro before or if you ran one of the sample commands straight ahead, you may have noticed the absence
+of local test reports.
 
-```
-maestro-cli report -l info -d /path/to/save/reports
-```
+The test reports are collected automatically by a separate component, the Maestro Reports Tool. Continue to the 
+[Maestro Reports Guide](extra/doc/Reports.md) to learn about the reports.
 
-Please consider checking the help with the --help option, since some test behaviors and parameters can
-be adjusted (ie.: warm-up).
+
+Writing Tests
+----
+
+Continue to the [Writing Tests Guide](extra/doc/WritingTests.md).
+
 
 Using as Library
 ----
@@ -237,10 +240,11 @@ There are multiple components and it is possible to choose only the desired one:
 * maestro-worker: backend code that executes the tests (using the one of the workers in maestro-workers)
 * maestro-inspector: backend code that inspects the SUTs (using the one of the inspectors in maestro-inspectors)
 
-The API documentation (javadoc) is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.3/apidocs/index.html). 
-Additional project documentation is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.3/). 
+The API documentation (javadoc) is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.5/apidocs/index.html). 
+Additional project documentation is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.5/). 
 
 **Note**: replace version with the latest available version you wish to use.
+
 
 
 

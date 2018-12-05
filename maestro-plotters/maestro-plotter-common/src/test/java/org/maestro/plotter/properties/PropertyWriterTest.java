@@ -19,7 +19,7 @@ package org.maestro.plotter.properties;
 import org.junit.Test;
 import org.maestro.plotter.common.InstantRecord;
 import org.maestro.plotter.common.ReportData;
-import org.maestro.plotter.common.properties.PropertyWriter;
+import org.maestro.common.test.properties.PropertyWriter;
 
 import java.io.File;
 import java.io.IOException;

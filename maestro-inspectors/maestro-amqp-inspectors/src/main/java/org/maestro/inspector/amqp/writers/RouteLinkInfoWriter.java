@@ -1,8 +1,23 @@
+/*
+ * Copyright 2018 Otavio Rodolfo Piske
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ */
+
 package org.maestro.inspector.amqp.writers;
 
 import org.apache.commons.csv.CSVFormat;
 import org.apache.commons.csv.CSVPrinter;
-import org.apache.commons.io.IOUtils;
 import org.maestro.common.inspector.types.RouterLinkInfo;
 import org.maestro.common.io.data.writers.InspectorDataWriter;
 import org.slf4j.Logger;
@@ -18,6 +33,8 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Map;
+
+import static org.maestro.common.LangUtils.closeQuietly;
 
 /**
  * A router link information writer for AMQP Inspector.
@@ -43,8 +60,8 @@ public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>,
      */
     @Override
     public void close() {
-        IOUtils.closeQuietly(csvPrinter);
-        IOUtils.closeQuietly(writer);
+        closeQuietly(csvPrinter);
+        closeQuietly(writer);
     }
 
     /**
@@ -91,7 +108,7 @@ public class RouteLinkInfoWriter implements InspectorDataWriter<RouterLinkInfo>,
     public void write(final LocalDateTime now, final RouterLinkInfo data) {
         logger.trace("Router link information: {}", data);
 
-        List queueProperties = data.getRouterLinkProperties();
+        List<Map<String, Object>> queueProperties = data.getRouterLinkProperties();
 
         queueProperties.forEach(map -> write(now, map));
     }

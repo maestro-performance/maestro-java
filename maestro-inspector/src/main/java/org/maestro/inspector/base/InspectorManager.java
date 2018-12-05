@@ -16,30 +16,43 @@
 
 package org.maestro.inspector.base;
 
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
+import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.inspector.MaestroInspector;
 import org.maestro.worker.common.MaestroWorkerManager;
-import org.maestro.worker.common.ds.MaestroDataServer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.HashMap;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 
 public class InspectorManager extends MaestroWorkerManager implements MaestroInspectorEventListener {
     private static final Logger logger = LoggerFactory.getLogger(InspectorManager.class);
-    private static final String INSPECTOR_ROLE = "inspector";
-    private Thread inspectorThread;
+    private ExecutorService inspectorExecutor;
     private InspectorContainer inspectorContainer;
-    private MaestroInspector inspector;
+
     private final File logDir;
     private final HashMap<String, String> inspectorMap = new HashMap<>();
     private String url;
 
-    public InspectorManager(final String maestroURL, final String host, final MaestroDataServer dataServer, final File logDir) throws MaestroException
+    private class InspectorThreadFactory implements ThreadFactory {
+        @Override
+        public Thread newThread(Runnable runnable) {
+            return new Thread(runnable, "InspectorThread");
+        }
+    }
+
+    public InspectorManager(final String maestroURL, final PeerInfo peerInfo, final File logDir) throws MaestroException
     {
-        super(maestroURL, INSPECTOR_ROLE, host, dataServer);
+        super(maestroURL, peerInfo);
 
         this.logDir = logDir;
 
@@ -51,21 +64,30 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         this.url = url;
     }
 
-    private void createInspector(final StartInspector note, final String inspectorType) throws IllegalAccessException, InstantiationException, ClassNotFoundException {
-        @SuppressWarnings("unchecked")
-        Class<MaestroInspector> clazz = (Class<MaestroInspector>) Class.forName(inspectorType);
+    private MaestroInspector createInspector(final StartInspector note, final String inspectorType) throws IllegalAccessException,
+            InstantiationException, ClassNotFoundException
+    {
+        logger.info("Creating a {} inspector", inspectorType);
 
-        inspector = clazz.newInstance();
+        @SuppressWarnings("unchecked")
+        final Class<MaestroInspector> clazz = (Class<MaestroInspector>) Class.forName(inspectorType);
+
+        if (clazz == null) {
+            throw new MaestroException("There is no inspector recorded for %s", inspectorType);
+        }
+
+        MaestroInspector inspector = clazz.newInstance();
+        logger.debug("A {} inspector was created successfully", inspectorType);
+
+        return inspector;
+    }
+
+    private void setInspectorParameters(MaestroInspector inspector) throws DurationParseException {
         inspector.setEndpoint(getClient());
         inspector.setBaseLogDir(logDir);
-
-        try {
-            inspector.setUrl(url);
-        } catch (MaestroException e) {
-            logger.error("Unable to set the management interface URL {}: {}", url, e.getMessage(), e);
-            getClient().replyInternalError(note,"Unable to set the management interface URL %s: %s", url,
-                    e.getMessage());
-        }
+        inspector.setUrl(url);
+        inspector.setWorkerOptions(getWorkerOptions());
+        inspector.setTest(getCurrentTest());
     }
 
     @Override
@@ -73,14 +95,15 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         logger.debug("Start inspector request received");
 
         try {
-            createInspector(note, inspectorMap.get(note.getPayload()));
+            inspectorExecutor = Executors.newSingleThreadExecutor(new InspectorThreadFactory());
 
-            inspector.setWorkerOptions(getWorkerOptions());
+            MaestroInspector inspector = createInspector(note, inspectorMap.get(note.getPayload()));
+
+            setInspectorParameters(inspector);
 
             inspectorContainer = new InspectorContainer(inspector);
 
-            inspectorThread = new Thread(inspectorContainer);
-            inspectorThread.start();
+            inspectorExecutor.execute(inspectorContainer);
 
             getClient().replyOk(note);
         }
@@ -96,89 +119,115 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         super.handle(note);
 
         if (note.getOption() == SetRequest.Option.MAESTRO_NOTE_OPT_SET_MI) {
-            String value = note.getValue();
+            final String value = note.getValue();
 
             if (value != null) {
                 setUrl(value);
-
-                getClient().replyOk(note);
             }
             else {
-                logger.error("Unable to set management interface URL {}", value);
-                getClient().replyInternalError(note,"Unable to set management interface URL: %s", value);
+                logger.error("Unable to set management interface URL: null URL");
+                getClient().replyInternalError(note,"Unable to set management interface URL: null URL");
             }
         }
+
+        getClient().replyOk(note);
 
     }
 
     @Override
     public void handle(final StopInspector note) {
         logger.debug("Stop inspector request received");
+        getClient().replyOk(note);
 
-        if (inspectorThread != null) {
+        doInspectorStop();
+        logger.info("Completed stopping the inspector");
+    }
+
+    private void doInspectorStop() {
+        if (inspectorContainer ==  null) {
+            return;
+        }
+
+        inspectorContainer.stop();
+
+        if (inspectorExecutor != null) {
+
+            final AbstractConfiguration config = ConfigurationWrapper.getConfig();
+            int interval = config.getInteger("inspector.sleep.interval", 5000) + 1000;
+
             try {
-                inspector.stop();
+                inspectorExecutor.shutdown();
+
+                if (!inspectorExecutor.awaitTermination(interval, TimeUnit.MILLISECONDS)) {
+                    logger.warn("Inspector did not terminate within the maximum allowed time");
+                    inspectorExecutor.shutdownNow();
+                    if (!inspectorExecutor.awaitTermination(10, TimeUnit.SECONDS)) {
+                        logger.warn("Inspector did not terminate cleanly");
+                    }
+                }
             } catch (Exception e) {
                 logger.warn("Unable to stop the inspector in a clean way: {}", e.getMessage(), e);
             }
-
-            inspectorThread.interrupt();
-            inspectorThread = null;
+            finally {
+                inspectorContainer.stop();
+            }
         }
         else {
-            logger.warn("Inspector received a stop request but it is not running");
+            logger.warn("Ignoring a stop request for the inspector because it is already stopped");
         }
-
-        getClient().replyOk(note);
     }
 
     @Override
-    public void handle(TestFailedNotification note) {
+    public void handle(final TestFailedNotification note) {
         super.handle(note);
 
-        if (inspectorThread != null) {
+        if (inspectorExecutor != null) {
             logger.debug("Stopping the inspection as a result of a test failure notification by one of the peers");
-            stopInspectorThread();
+            doInspectorStop();
         }
     }
-
 
 
     @Override
-    public void handle(TestSuccessfulNotification note) {
+    public void handle(final TestSuccessfulNotification note) {
         super.handle(note);
 
-        if (inspectorThread != null) {
+        if (inspectorExecutor != null) {
             logger.debug("Stopping the inspection as a result of a test success notification by one of the peers");
-            stopInspectorThread();
+            doInspectorStop();
         }
-    }
-
-    private void stopInspectorThread() {
-        try {
-            inspector.stop();
-        } catch (Exception e) {
-            logger.warn("Unable to stop the inspector in a clean way: {}", e.getMessage(), e);
-        }
-
-        try {
-            inspectorThread.join(1000);
-        } catch (InterruptedException e) {
-            logger.debug("Interrupted the inspector thread", e);
-        }
-
-        if (inspectorThread.isAlive()) {
-            logger.warn("The inspector thread is still alive. Forcing it to stop");
-
-            inspectorThread.interrupt();
-        }
-
-        inspectorThread = null;
     }
 
     @Override
     public void handle(final LogRequest note) {
-        super.handle(note, logDir);
+        super.handle(note, logDir, getPeerInfo());
+    }
+
+    @Override
+    public void handle(final RoleAssign note) {
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(final RoleUnassign note) {
+        getClient().replyOk(note);
+    }
+
+    @Override
+    public void handle(final StartWorker note) {
+        // NO-OP for now
+    }
+
+    @Override
+    public void handle(final StopWorker note) {
+        // NO-OP for now
+    }
+
+    @Override
+    public void handle(StartTestRequest note) {
+        super.handle(note);
+
+        getClient().notifyStarted(getCurrentTest(), "");
     }
 }
 

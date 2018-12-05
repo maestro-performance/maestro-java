@@ -69,8 +69,8 @@ public class MapConverter implements JolokiaConverter {
             return;
         }
 
-        throw new IllegalArgumentException("The input object of type " + (object == null ? "'null'" : object.getClass())
-                + " for property " +  propertyName + " cannot be converted to a JSONObject");
+        throw new IllegalArgumentException("The input object of type " + object.getClass() + " for property " +
+                propertyName + " cannot be converted to a JSONObject");
     }
 
     @Override

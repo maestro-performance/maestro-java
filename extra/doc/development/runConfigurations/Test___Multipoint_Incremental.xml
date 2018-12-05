@@ -19,7 +19,7 @@
       <env name="CEILING_PARALLEL_COUNT" value="10" />
       <env name="RECEIVE_URL" value="amqp://localhost:5672/test.performance.queue?protocol=AMQP&amp;limitDestinations=5" />
     </envs>
-    <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.Main" />
+    <option name="MAIN_CLASS_NAME" value="org.maestro.cli.main.MaestroCliMain" />
     <module name="maestro-cli" />
     <option name="PROGRAM_PARAMETERS" value="exec -d $MODULE_DIR$/target/classes/reports -s $PROJECT_DIR$/maestro-test-scripts/src/main/groovy/multipoint/IncrementalTest.groovy" />
     <option name="VM_PARAMETERS" value="-Dorg.maestro.home=$MODULE_DIR$/target/classes" />

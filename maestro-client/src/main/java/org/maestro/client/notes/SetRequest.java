@@ -29,12 +29,14 @@ public class SetRequest extends MaestroRequest<MaestroEventListener> {
         /** Duration type (count or duration) */
         MAESTRO_NOTE_OPT_SET_DURATION_TYPE(1),
         /** Set the log level */
+        @Deprecated
         MAESTRO_NOTE_OPT_SET_LOG_LEVEL(2),
         /** Set the parallel count */
         MAESTRO_NOTE_OPT_SET_PARALLEL_COUNT(3),
         /** Set message size */
         MAESTRO_NOTE_OPT_SET_MESSAGE_SIZE(4),
         /** Set throttle */
+        @Deprecated
         MAESTRO_NOTE_OPT_SET_THROTTLE(5),
         /** Set rate */
         MAESTRO_NOTE_OPT_SET_RATE(6),
@@ -43,7 +45,7 @@ public class SetRequest extends MaestroRequest<MaestroEventListener> {
         /** Sets the management interface */
         MAESTRO_NOTE_OPT_SET_MI(8);
 
-        private long value;
+        private final long value;
 
         Option(long value) {
             this.value = value;
@@ -51,10 +53,6 @@ public class SetRequest extends MaestroRequest<MaestroEventListener> {
 
         public long getValue() {
             return value;
-        }
-
-        public void setValue(long value) {
-            this.value = value;
         }
 
         static public Option from(long value) {
@@ -101,20 +99,12 @@ public class SetRequest extends MaestroRequest<MaestroEventListener> {
         set(Option.MAESTRO_NOTE_OPT_SET_DURATION_TYPE, value);
     }
 
-    public void setLogLevel(final String value) {
-        set(Option.MAESTRO_NOTE_OPT_SET_LOG_LEVEL, value);
-    }
-
     public void setParallelCount(final String value) {
         set(Option.MAESTRO_NOTE_OPT_SET_PARALLEL_COUNT, value);
     }
 
     public void setMessageSize(final String value) {
         set(Option.MAESTRO_NOTE_OPT_SET_MESSAGE_SIZE, value);
-    }
-
-    public void setThrottle(final String value) {
-        set(Option.MAESTRO_NOTE_OPT_SET_THROTTLE, value);
     }
 
     public void setRate(final String value) {

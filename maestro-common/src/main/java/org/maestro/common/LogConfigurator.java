@@ -159,6 +159,10 @@ public class LogConfigurator {
                 LogConfigurator.silent();
                 break;
             }
+            case "custom": {
+                LogConfigurator.defaultForDaemons();
+                break;
+            }
             case "info":
             default: {
                 LogConfigurator.verbose();

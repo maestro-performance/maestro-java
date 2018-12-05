@@ -16,14 +16,17 @@
 
 package org.maestro.worker.common.container.initializers;
 
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.worker.WorkerOptions;
 
+import java.util.concurrent.CountDownLatch;
+
 public class TestWorkerInitializer implements WorkerInitializer {
-    private final Class<MaestroWorker> clazz;
+    private final Class<?> clazz;
     private final WorkerOptions workerOptions;
 
-    public TestWorkerInitializer(final Class<MaestroWorker> clazz, final WorkerOptions workerOptions) {
+    public TestWorkerInitializer(final Class<?> clazz, final WorkerOptions workerOptions) {
         this.clazz = clazz;
         this.workerOptions = workerOptions;
     }
@@ -34,12 +37,20 @@ public class TestWorkerInitializer implements WorkerInitializer {
 
 
     @Override
-    public MaestroWorker initialize(int number) throws IllegalAccessException, InstantiationException {
-        final MaestroWorker worker = clazz.newInstance();
+    public MaestroWorker initialize(int number, final CountDownLatch startSignal, final CountDownLatch endSignal) throws IllegalAccessException, InstantiationException {
+        final Object object = clazz.newInstance();
 
-        worker.setWorkerOptions(workerOptions);
-        worker.setWorkerNumber(number);
+        if (object instanceof MaestroWorker) {
+            MaestroWorker worker = (MaestroWorker) object;
 
-        return worker;
+            worker.setupBarriers(startSignal, endSignal);
+            worker.setWorkerOptions(workerOptions);
+            worker.setWorkerNumber(number);
+
+            return worker;
+        }
+        else {
+            throw new MaestroException("Invalid class type %s", (object == null ? "null" : object.getClass()));
+        }
     }
 }

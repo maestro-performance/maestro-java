@@ -1,4 +1,4 @@
-version: '3'
+version: '3.4'
 networks:
     cluster:
       driver: bridge
@@ -12,19 +12,3 @@ services:
     ports:
       - "18161:8161"
       - "1884:1883"
-  sut:
-    build: suts/apache-artemis-tls
-#    build: suts/apache-artemis
-# Comment the line above and uncomment the 4 lines below
-# to use QPid Dispatch as the SUT
-#    build:
-#      context: suts/qpid-dispatch
-#      args:
-#        - QPID_DISPATCH_VERSION=1.0.0
-    networks:
-      - test
-    ports:
-      - "5672:5672"
-      - "8161:8161"
-      - "61613:61613"
-      - "61616:61616"

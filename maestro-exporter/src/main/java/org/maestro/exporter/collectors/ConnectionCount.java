@@ -49,7 +49,7 @@ public class ConnectionCount extends Collector {
         logger.trace("Number of values to process: {}", records.values().size());
 
         for (StatsResponse stats : records.values()) {
-            labeledGauge.addMetric(Arrays.asList(stats.getName(), stats.getRole()), stats.getChildCount());
+            labeledGauge.addMetric(Arrays.asList(stats.getPeerInfo().peerName(), stats.getPeerInfo().peerHost()), stats.getChildCount());
 
         }
 
@@ -59,7 +59,7 @@ public class ConnectionCount extends Collector {
     }
 
     public void record(StatsResponse stats) {
-        logger.trace("Recording connection count for {}/{}", stats.getName(), stats.getId());
+        logger.trace("Recording connection count for {}/{}", stats.getPeerInfo().prettyName(), stats.getId());
         records.put(stats.getId(), stats);
     }
 }

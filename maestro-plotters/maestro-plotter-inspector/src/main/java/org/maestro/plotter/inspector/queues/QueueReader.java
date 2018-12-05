@@ -60,7 +60,6 @@ public class QueueReader extends StreamReader<QueueDataSet> {
                         record.get(5), record.get(6));
             } catch (Throwable t) {
                 logger.warn("Unable to parse record: {}", t.getMessage(), t);
-                continue;
             }
         }
 

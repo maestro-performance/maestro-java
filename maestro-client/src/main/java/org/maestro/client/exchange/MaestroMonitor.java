@@ -16,13 +16,8 @@
 
 package org.maestro.client.exchange;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.locks.Condition;
-import java.util.concurrent.locks.Lock;
-import java.util.concurrent.locks.ReentrantLock;
+import org.maestro.common.Monitor;
+import org.maestro.common.client.notes.MaestroNote;
 import java.util.function.Predicate;
 
 /**
@@ -31,74 +26,22 @@ import java.util.function.Predicate;
  * matching the predicate have arrived. The responsibility of notifying them relies on
  * the MaestroCollector which receives the messages.
  */
-public class MaestroMonitor {
-    private static final Logger logger = LoggerFactory.getLogger(MaestroMonitor.class);
-    private final Lock lock = new ReentrantLock();
-    private final Condition condition = lock.newCondition();
-
-    private final Predicate object;
-
+public class MaestroMonitor extends Monitor<Predicate<? super MaestroNote>> {
     /**
      * Constructs a Monitor using the given predicate (ie.: note instanceof TestSuccessfulNotification)
      * @param object the monitoring predicate
      */
-    public MaestroMonitor(Predicate object) {
-        this.object = object;
+    public MaestroMonitor(final Predicate<? super MaestroNote> object) {
+        super(object);
     }
-
-    /**
-     * Lock the execution
-     * @throws InterruptedException if interrupted
-     */
-    public void doLock() throws InterruptedException {
-        lock.lock();
-        try {
-            logger.trace("Not enough messages satisfying the condition are available. Waiting ...");
-            condition.await();
-        }
-        finally {
-            lock.unlock();
-        }
-    }
-
-    /**
-     * Lock the execution
-     * @throws InterruptedException if interrupted
-     */
-    public void doLock(long timeout) throws InterruptedException {
-        lock.lock();
-        try {
-            logger.trace("Not enough messages satisfying the condition are available. Waiting ...");
-            condition.await(timeout, TimeUnit.MILLISECONDS);
-        }
-        finally {
-            lock.unlock();
-        }
-    }
-
-
-    /**
-     * Unlock the execution
-     */
-    public void doUnlock() {
-        lock.lock();
-        try {
-            logger.trace("Some messages arrived ... unlocking for check");
-            condition.signal();
-        }
-        finally {
-            lock.unlock();
-        }
-    }
-
 
     /**
      * Tests if a subject matches the predicate
      * @param subject the subject to test (ie.: a new note arriving on the collector)
      * @return true if it matches or false otherwise
      */
-    public boolean shouldAwake(Object subject) {
-        return object.test(subject);
+    public boolean shouldAwake(final MaestroNote subject) {
+        return getObject().test(subject);
     }
 
 

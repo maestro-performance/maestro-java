@@ -17,6 +17,7 @@
 package org.maestro.common.inspector.types;
 
 import java.util.List;
+import java.util.Map;
 
 
 /**
@@ -27,5 +28,5 @@ public interface RouterLinkInfoType {
      * Get the router link properties
      * @return the router link properties
      */
-    List getRouterLinkProperties();
+    List<Map<String, Object>> getRouterLinkProperties();
 }

@@ -18,7 +18,7 @@ package org.maestro.plotter.inspector.heap;
 
 import org.junit.Before;
 import org.junit.Test;
-import org.maestro.plotter.common.properties.PropertyWriter;
+import org.maestro.common.test.properties.PropertyWriter;
 import org.maestro.plotter.common.statistics.Statistics;
 
 import java.io.File;

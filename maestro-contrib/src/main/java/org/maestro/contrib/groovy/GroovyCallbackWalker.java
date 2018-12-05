@@ -22,8 +22,8 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.io.IOException;
-import java.util.ArrayList;
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 
 
@@ -31,9 +31,7 @@ import java.util.List;
  * Recursively adds jars or files to the groovy classpath
  */
 public class GroovyCallbackWalker extends DirectoryWalker<File> {
-
     private static final Logger logger = LoggerFactory.getLogger(GroovyCallbackWalker.class);
-    private List<File> fileList;
 
     public GroovyCallbackWalker() {
 
@@ -41,13 +39,13 @@ public class GroovyCallbackWalker extends DirectoryWalker<File> {
 
     @SuppressWarnings("RedundantThrows")
     @Override
-    protected boolean handleDirectory(File directory, int depth, Collection<File> results) throws IOException {
+    protected boolean handleDirectory(final File directory, int depth, Collection<File> results) throws IOException {
         return true;
     }
 
     @SuppressWarnings("RedundantThrows")
     @Override
-    protected void handleFile(File file, int depth, Collection<File> results)
+    protected void handleFile(final File file, int depth, Collection<File> results)
             throws IOException
 
     {
@@ -68,19 +66,20 @@ public class GroovyCallbackWalker extends DirectoryWalker<File> {
     /**
      * The starting directory
      * @param file A file object pointing to the directory
-     * @throws IOException for all sorts of I/O errors
+     * @return A list of all groovy files in the start directory
      */
     @SuppressWarnings("unchecked")
-    public List<File> load(final File file) throws IOException {
+    public List<File> load(final File file) {
+        final List<File> fileList = new LinkedList<>();
         logger.debug("Loading classes from directory {}", file.getPath());
 
         if (!file.exists()) {
-            throw new IOException("The input directory " + file.getPath() + " does not exist");
+            logger.warn("Ignoring directory {} because it does not exist", file);
+
+            return fileList;
         }
 
         try {
-            fileList = new ArrayList<>();
-
             walk(file, fileList);
         } catch (IOException e) {
             logger.error("Unable to walk the whole directory: " + e.getMessage(), e);
