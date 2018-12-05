@@ -27,7 +27,6 @@ import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Role;
 import org.maestro.common.client.exceptions.NotEnoughRepliesException;
 import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.common.client.notes.Test;
 import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.common.client.notes.WorkerStartOptions;
 import org.maestro.common.exceptions.MaestroConnectionException;

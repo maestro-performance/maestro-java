@@ -17,8 +17,6 @@
 package org.maestro.tests.rate;
 
 import org.maestro.client.Maestro;
-import org.maestro.common.client.notes.Test;
-import org.maestro.common.client.notes.TestDetails;
 import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.tests.cluster.DistributionStrategy;
 import org.slf4j.Logger;

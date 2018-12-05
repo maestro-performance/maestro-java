@@ -22,7 +22,6 @@ import org.maestro.client.exchange.support.PeerSet;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Role;
 import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.common.client.notes.Test;
 import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.tests.AbstractTestExecutor;
 import org.maestro.tests.AbstractTestProfile;
