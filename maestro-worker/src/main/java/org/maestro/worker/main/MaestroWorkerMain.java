@@ -99,7 +99,7 @@ public class MaestroWorkerMain {
         logDir = new File(logDirVal);
     }
 
-    /**
+    /*
      * Running this as a debug is something like:
      * java -m mqtt://maestro-broker:1883
      *      -l /storage/tmp/maestro-java/sender

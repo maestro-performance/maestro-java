@@ -62,6 +62,7 @@ public class Monitor<T> {
 
     /**
      * Lock the execution
+     * @param timeout maximum time in milliseconds to wait for the condition
      * @throws InterruptedException if interrupted
      */
     public void doLock(long timeout) throws InterruptedException {

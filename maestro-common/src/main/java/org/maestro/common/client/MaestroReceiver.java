@@ -61,18 +61,21 @@ public interface MaestroReceiver {
 
     /**
      * Publishes a test success notification message in the broker
+     * @param test the test currently in execution
      * @param message payload message
      */
     void notifySuccess(final Test test, final String message);
 
     /**
      * Publishes a test failure notification message in the broker
+     * @param test the test currently in execution
      * @param message payload message
      */
     void notifyFailure(final Test test, final String message);
 
     /**
      * Publishes a test started notification message in the broker
+     * @param test the test currently in execution
      * @param message payload message
      */
     void notifyStarted(final Test test, final String message);

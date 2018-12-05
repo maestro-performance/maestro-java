@@ -38,10 +38,10 @@ public class ReportDirectoryWalker extends DirectoryWalker<Report> {
 
     /**
      * Loads report data in a directory with format like this: maestro/baseline/id/$id/number/$number/$role/$result/$number/$host
-     * @param file
-     * @param depth
-     * @param results
-     * @throws IOException
+     * @param file the file being handled
+     * @param depth the directory depth
+     * @param results a collection to hold the results
+     * @throws IOException in case of I/O errors
      */
 
     @Override

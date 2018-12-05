@@ -61,11 +61,19 @@ public abstract class AbstractTestExecutor implements TestExecutor {
     private volatile boolean running = false;
     private Instant startTime;
 
+    /**
+     * Constructor
+     * @param maestro the maestro client instance
+     */
     protected AbstractTestExecutor(final Maestro maestro) {
         this.maestro = maestro;
         logger.trace("Creating an abstract test executor");
     }
 
+    /**
+     * Gets the Maestro client instance
+     * @return the Maestro client instance
+     */
     protected Maestro getMaestro() {
         return maestro;
     }
@@ -186,6 +194,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     /**
      * Stop connected peers
+     * @param distributionStrategy the distribution strategy to use for the peers of the test
      * @throws MaestroConnectionException if there's a connection error while communicating w/ the Maestro broker
      */
     protected final void stopServices(final DistributionStrategy distributionStrategy) throws MaestroConnectionException {

@@ -26,8 +26,8 @@ public class IgnoredErrorUtils {
 
     /**
      * Wrapper for checking whether an error is ignored
-     * @param testFailedNotification
-     * @return
+     * @param testFailedNotification the notification containing the error to check if is ignored
+     * @return true if is ignored or false otherwise
      */
     public static boolean isIgnored(final TestFailedNotification testFailedNotification) {
         return ErrorUtils.isIgnored(testFailedNotification.getPeerInfo().prettyName(), testFailedNotification.getMessage());

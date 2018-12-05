@@ -37,6 +37,7 @@ public class WorkerEvaluatorChecker {
     /**
      * Constructor
      * @param workers group of workers to check
+     * @param evaluator the evaluator in use
      */
     public WorkerEvaluatorChecker(List<? extends MaestroWorker> workers, final Evaluator<?> evaluator) {
         this.workers = workers;

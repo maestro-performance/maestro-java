@@ -38,7 +38,14 @@ import org.slf4j.LoggerFactory;
 import java.io.File;
 import java.util.concurrent.TimeUnit;
 
+/**
+ * A maestro client that receives data
+ */
 public class MaestroReceiverClient extends MaestroMqttClient implements MaestroReceiver {
+    /**
+     * A callback object for throttling the sending of the log data (to prevent flooding
+     * or abusing the Maestro Broker resources)
+     */
     private static class ThrottleCallback implements MaestroNoteCallback {
         private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
         private static final Logger logger = LoggerFactory.getLogger(ThrottleCallback.class);
@@ -67,6 +74,12 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     private final PeerInfo peerInfo;
     private final String id;
 
+    /**
+     * Constructor
+     * @param url the broker URL
+     * @param peerInfo the peer information
+     * @param id the client ID
+     */
     public MaestroReceiverClient(final String url, final PeerInfo peerInfo, final String id) {
         super(url);
 
@@ -76,10 +89,17 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         this.epochMicroClock = EpochClocks.exclusiveMicro();
     }
 
+
+    /**
+     * Gets the client id
+     * @return the client id
+     */
     public String getId() {
         return id;
     }
 
+
+    @Override
     public void replyOk(final MaestroNote note) {
         logger.trace("Sending the OK response from {}", this.toString());
         OkResponse okResponse = new OkResponse();
@@ -95,10 +115,14 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         }
     }
 
+
+    @Override
     public void replyInternalError(final MaestroNote note, final String message, final Object...args) {
         replyInternalError(note, ErrorCode.UNSPECIFIED, message, args);
     }
 
+
+    @Override
     public void replyInternalError(final MaestroNote note, final ErrorCode errorCode, final String message,
                                    final Object...args)
     {
@@ -116,6 +140,7 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
         }
     }
 
+    @Override
     public void pingResponse(final MaestroNote note, long sec, long uSec) {
         logger.trace("Creation seconds.micro: {}.{}", sec, uSec);
 
@@ -230,6 +255,10 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
      * @param logFile the log file to send
      * @param note the requesting note
      * @param hash the hash for the file being sent
+     * @param locationTypeInfo information about the location of the log files
+     * @param peerInfo information about the peer sending the files
+     * @param id peer ID
+     * @param client the MaestroReceiverClient instance to use to send the log data
      */
     public static void logResponse(final File logFile, final LogRequest note, final String hash,
                                    final LocationTypeInfo locationTypeInfo, final PeerInfo peerInfo,
@@ -252,6 +281,11 @@ public class MaestroReceiverClient extends MaestroMqttClient implements MaestroR
     }
 
 
+    /**
+     * Notifies that the drain operation is finished
+     * @param status whether the drain was successful (true) or not (false)
+     * @param message Any message related to the drain completion status
+     */
     public void notifyDrainComplete(boolean status, final String message) {
         logger.trace("Sending the drain complete notification from {}", this.toString());
         DrainCompleteNotification notification = new DrainCompleteNotification();

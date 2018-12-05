@@ -150,7 +150,7 @@ public class ReportsTool {
         return run(new DefaultToolLauncher(dataDir, offline, maestroUrl, host));
     }
 
-    /**
+    /*
      * Running this as a debug is something like:
      * java -m mqtt://maestro-broker:1883
      *      -d /storage/data

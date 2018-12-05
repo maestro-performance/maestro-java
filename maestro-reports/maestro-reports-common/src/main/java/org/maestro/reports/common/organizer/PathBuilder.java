@@ -26,10 +26,10 @@ public class PathBuilder {
 
     /**
      * Builds a report path
-     * @param baseDir
-     * @param testId
-     * @param testNumber
-     * @return
+     * @param baseDir base directory
+     * @param testId test ID
+     * @param testNumber test number
+     * @return the path built with the input parameters
      */
     public static String build(final String baseDir, int testId, int testNumber) {
         return baseDir + File.separator + "id" + File.separator + testId + File.separator + "number" + File.separator +
@@ -38,11 +38,11 @@ public class PathBuilder {
 
     /**
      * Builds a report path
-     * @param baseDir
-     * @param testId
-     * @param testNumber
-     * @param reportDir
-     * @return
+     * @param baseDir base directory
+     * @param testId test ID
+     * @param testNumber test number
+     * @param reportDir the report directory
+     * @return the path built with the input parameters
      */
     public static String build(final String baseDir, int testId, int testNumber, final String reportDir) {
         return baseDir + File.separator + "id" + File.separator + testId + File.separator + "number" + File.separator +

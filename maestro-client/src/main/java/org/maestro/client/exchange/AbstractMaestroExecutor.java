@@ -73,6 +73,8 @@ public class AbstractMaestroExecutor implements Runnable {
     /**
      * Start running the executor
      * @param topics the list of topics associated with this executor
+     * @param connectionRetries the number of times to retry connecting in case of errors
+     * @param retryDelay the amount of time to wait between each connection retry
      * @throws MaestroConnectionException if unable to connect to the broker and subscribe to the topics
      */
     public void start(final String[] topics, int connectionRetries, long retryDelay) throws MaestroConnectionException {

@@ -53,6 +53,7 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
      * Constructor
      * @param maestro a Maestro client instance
      * @param testProfile the test profile in use for the test
+     * @param distributionStrategy the distribution strategy to use for the peers of the test
      */
     public IncrementalTestExecutor(final Maestro maestro, final IncrementalTestProfile testProfile,
                                    final DistributionStrategy distributionStrategy)

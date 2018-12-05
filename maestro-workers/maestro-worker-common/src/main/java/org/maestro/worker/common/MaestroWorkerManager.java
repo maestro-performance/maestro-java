@@ -69,6 +69,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
      * Constructor
      * @param maestroURL Maestro broker URL
      * @param peerInfo Information about this peer
+     * @param deserializer the deserializer to use
      */
     protected MaestroWorkerManager(final String maestroURL, final PeerInfo peerInfo, MaestroNoteDeserializer<MaestroEvent<MaestroEventListener>> deserializer) {
         super(maestroURL, peerInfo, deserializer);
@@ -338,6 +339,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
      * Handle a log request note
      * @param note the note to handle
      * @param logDir the log directory
+     * @param peerInfo the peer information
      */
     protected void handle(final LogRequest note, final File logDir, final PeerInfo peerInfo) {
         logger.debug("Log request received");

@@ -66,6 +66,7 @@ public class GroovyCallbackWalker extends DirectoryWalker<File> {
     /**
      * The starting directory
      * @param file A file object pointing to the directory
+     * @return A list of all groovy files in the start directory
      */
     @SuppressWarnings("unchecked")
     public List<File> load(final File file) {

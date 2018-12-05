@@ -26,6 +26,7 @@ import java.io.File;
 public interface HistogramHandler {
     /**
      * Post process the histogram file
+     * @param histogram the histogram
      * @param histogramFile the histogram file
      * @throws Exception Implementation specific
      */

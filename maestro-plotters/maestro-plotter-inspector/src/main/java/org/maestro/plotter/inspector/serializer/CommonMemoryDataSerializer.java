@@ -25,8 +25,8 @@ import java.io.IOException;
 
 /**
  * Base serializer for memory data
- * @param <T>
- * @param <Y>
+ * @param <T> A sub-type of CommonMemoryData that can be serialized by the report reader
+ * @param <Y> A report reader that can serialize the data of the expected type
  */
 abstract class CommonMemoryDataSerializer<T extends CommonMemoryData<?>, Y extends ReportReader<T>> implements MaestroSerializer<MemoryData> {
     private final Y reader;

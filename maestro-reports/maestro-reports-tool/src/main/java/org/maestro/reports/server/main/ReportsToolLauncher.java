@@ -24,7 +24,7 @@ public interface ReportsToolLauncher {
 
     /**
      * Launch the report services
-     * @return
+     * @return 0 if successful or any other integer otherwise
      */
     int launchServices();
 }

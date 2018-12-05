@@ -234,6 +234,7 @@ public final class WorkerContainer {
 
     /**
      * Gets the latency statistics
+     * @param evaluator the evaluator to use (ie.: Soft or Hard)
      * @return the latency statistics or null if not applicable for the work set in the container
      */
     public LatencyStats latencyStats(final Evaluator<?> evaluator) {

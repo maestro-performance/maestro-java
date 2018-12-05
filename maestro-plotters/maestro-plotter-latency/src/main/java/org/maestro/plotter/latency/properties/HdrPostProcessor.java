@@ -29,6 +29,7 @@ public interface HdrPostProcessor {
 
     /**
      * Post process an HDR file
+     * @param histogram the histogram
      * @param histogramFile the file to post-process
      * @param handler An histogram handler to read/save/etc the histogram data
      * @throws Exception implementation-specific
@@ -39,6 +40,7 @@ public interface HdrPostProcessor {
 
     /**
      * Post process an HDR file
+     * @param histogram the histogram
      * @param histogramFile the file to post-process
      * @param handler An histogram handler to read/save/etc the histogram data
      * @throws Exception implementation-specific
@@ -50,6 +52,7 @@ public interface HdrPostProcessor {
 
     /**
      * Save a summary of the analyzed rate data to a properties file named "latency.properties"
+     * @param histogram the histogram
      * @param histogramFile the file to post-process
      * @throws IOException implementation-specific
      */
@@ -57,6 +60,7 @@ public interface HdrPostProcessor {
 
     /**
      * Save a summary of the analyzed rate data to a properties file named "latency.properties"
+     * @param histogram the histogram
      * @param histogramFile the file to post-process
      * @throws IOException implementation-specific
      */

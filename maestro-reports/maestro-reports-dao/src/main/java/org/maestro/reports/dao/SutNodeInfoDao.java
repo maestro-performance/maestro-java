@@ -72,6 +72,7 @@ public class SutNodeInfoDao extends AbstractDao {
 
     /**
      * Fetch a sut node info records matching the given SUT node ID
+     * @param sutNodeId SUT node id
      * @return A list of records
      * @throws DataNotFoundException if no records are found that match the query
      */
@@ -84,6 +85,7 @@ public class SutNodeInfoDao extends AbstractDao {
 
     /**
      * Fetch a sut node info records matching the given test ID
+     * @param testId the test ID
      * @return A list of records
      * @throws DataNotFoundException if no records are found that match the query
      */
