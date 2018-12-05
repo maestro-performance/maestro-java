@@ -46,7 +46,7 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
     private class InspectorThreadFactory implements ThreadFactory {
         @Override
         public Thread newThread(Runnable runnable) {
-            return new Thread(runnable, String.format("InspectorThread"));
+            return new Thread(runnable, "InspectorThread");
         }
     }
 
