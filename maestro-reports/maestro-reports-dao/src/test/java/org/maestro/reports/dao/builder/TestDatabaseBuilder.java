@@ -16,9 +16,7 @@
 
 package org.maestro.reports.dao.builder;
 
-import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.dbcp2.BasicDataSource;
-import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.dao.TemplateBuilder;
 import org.springframework.core.io.InputStreamResource;
