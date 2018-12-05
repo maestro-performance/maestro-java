@@ -48,3 +48,13 @@ services:
         - "9120:9120"
       depends_on:
         - broker
+  reports:
+    image: maestroperf/maestro-reports:1.5.0-SNAPSHOT
+    volumes:
+      - ${HOME}/tmp/maestro:/maestro
+    networks:
+      - cluster
+    ports:
+      - "6500:6500"
+    depends_on:
+      - broker
