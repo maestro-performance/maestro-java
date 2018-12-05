@@ -13,8 +13,6 @@ services:
       - "18161:8161"
   worker:
     image: maestroperf/maestro-worker:1.5.0-SNAPSHOT
-    ports:
-      - "18000:8000"
     volumes:
       - ${HOME}/tmp/maestro:/maestro
     networks:
@@ -24,8 +22,6 @@ services:
       - broker
   inspector:
       image: maestroperf/maestro-inspector:1.5.0-SNAPSHOT
-      ports:
-        - "38000:8000"
       volumes:
         - ${HOME}/tmp/maestro:/maestro
       networks:
@@ -35,8 +31,6 @@ services:
         - worker
   agent:
       image: maestroperf/maestro-agent:1.5.0-SNAPSHOT
-      ports:
-        - "48000:8000"
       volumes:
         - ${HOME}/tmp/maestro:/maestro
       networks:
