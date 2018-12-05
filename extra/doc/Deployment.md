@@ -20,6 +20,58 @@ small performance penalty cost of ~10% in the max throughput).
 The backends generate the load on the SUT using the Protocol Under Test (PUT), which can be any of the supported
 protocols.
 
+
+Get Maestro
+----
+
+You can find official Maestro packages on the [Docker Hub](https://hub.docker.com/r/maestroperf/). Maestro tarballs 
+can also be found [here](http://www.orpiske.net/files/maestro-java/), although the tarballs are not guaranteed to be the
+latest.
+
+**Note**: It is very easy to build Maestro. Check the [Development Guide](Development.md) for details about how to build 
+Maestro and have the latest tarballs if that is what you need.
+
+Maestro Deployment: Quick Start Using Docker Compose 
+----
+
+This quick start brings up a small Maestro test cluster with 2 workers and a reports collector. You can find the 
+deployment templates in the deploy directory within the maestro-cli installation directory.   
+
+  
+Make sure that you have [Docker Compose](https://docs.docker.com/compose/) installed.  
+
+```
+cd /path/to/maestro-cli/deploy/docker-compose/
+docker-compose -f docker-compose-sample.yml -f suts/docker-artemis-compose.yml up --scale worker=2 --scale agent=0 --scale exporter=0 --scale inspector=0
+```
+
+Please take note of the networks created by Docker Compose. For this exercise, the important one is `maestro_cluster` 
+(or one named very similar in the unlikely case you already have a network named like that). 
+
+You should see a mix of different outputs from the containers launched. You can access the reports server on 
+http://localhost:6500.
+
+With the cluster up, we can launch the client container:
+
+```
+docker run -it -h maestro-client --network=maestro_cluster maestroperf/maestro-client:edge
+```
+
+Inside the client container, check that you have the worker nodes up and running:
+
+```
+[root@maestro-client reports]# maestro-cli maestro -m $MAESTRO_BROKER -c ping
+11:07:45,616 Connecting to Maestro Broker
+11:07:45,629 Connection to tcp://broker:1883 completed (reconnect = false)
+Command                 Name               Host                              Group Name    Member Name
+MAESTRO_NOTE_PING       worker             ca5f29c782aa                      all                     
+MAESTRO_NOTE_PING       worker             b123d2f6ef14                      all                     
+11:07:46,181 Finalizing Maestro peer connection
+```
+
+And if you have a similar output, it means that everything is working as expected and you can run Maestro tests from 
+the client container. You can find additional details about using Maestro with Docker Compose [here](../docker-compose/maestro).
+
 Maestro Deployment: Using Kubernetes
 ----
 
@@ -39,32 +91,11 @@ For example:
 * [ansible-broker-clusters](https://github.com/msgqe/ansible-broker-clusters): : to deploy JBoss A-MQ 7 or Apache Artemis clustered brokers
 * [ansible-qpid-dispatch](https://github.com/rh-messaging-qe/ansible-qpid-dispatch): to deploy QPid Dispatch Router
 
-This is a much more complex deployment model, but usually desired as it can be made to 
-represent real messaging use case scenarios involving multiple hosts.
+This is a much more complex deployment model, but usually desired as it can be made to represent real messaging use case 
+scenarios involving multiple hosts.
 
 ![Maestro Deployment Overview](figures/maestro_deployment.png)
 
-Maestro Deployment: Single-host deployment via Docker Compose
-----
-
-This method is targeted towards development of Maestro and aims to make it simpler to 
-deploy and develop local Maestro test clusters. This deployment model is really simple and
-it is possible to get started with Maestro testing by running just 3 or 4 commands.
-
-**Note**: although it would be possible to use this model for production testing, this is 
-a new feature that needs to be matured.  
-
-This deployment method is documented in greater detail [here](../docker-compose/maestro).
-
-
-Maestro Libraries: Deploying in Self-Maintained Maven Repository
-----
-
-If you maintain your own Maven repository, you can deploy this library using:
-
-```
-mvn deploy -DaltDeploymentRepository=libs-snapshot::default::http://hostname:8081/path/to/libs-snapshot-local
-```
 
 Maestro Deployment: Verifying the Test Cluster
 ---- 

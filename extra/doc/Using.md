@@ -178,28 +178,28 @@ Once the test parameters have been adequately set by exporting the test variable
 run with one of the following commands:
 
 ```
-maestro-cli exec -s ../scripts/singlepoint/IncrementalTest.groovy -d /path/to/save/reports
+maestro-cli exec -s ../scripts/singlepoint/IncrementalTest.groovy
 ```
 
-Some test might need to be run directly via Groovy. This is the case for the tests
-that require specific dependencies for processing their data. For example, to run
-the Quiver test:
+Some test might need to be run directly via Groovy. This is the case for the tests that require specific dependencies 
+for processing their data. None of the default tests require that.  
 
-```
-cd /path/to/scripts/singlepoint/ && groovy QuiverTest.groovy /path/to/save/reports
-```
 
-Generating the Reports
+The test Reports
 ----
 
-After a test is completed, performance reports can be generated using the following command line:
+If you had used Maestro before or if you ran one of the sample commands straight ahead, you may have noticed the absence
+of local test reports.
 
-```
-maestro-cli report -l info -d /path/to/save/reports
-```
+The test reports are collected automatically by a separate component, the Maestro Reports Tool. Continue to the 
+[Maestro Reports Guide](extra/doc/Reports.md) to learn about the reports.
 
-Please consider checking the help with the --help option, since some test behaviors and parameters can
-be adjusted (ie.: warm-up).
+
+Writing Tests
+----
+
+Continue to the [Writing Tests Guide](extra/doc/WritingTests.md).
+
 
 Using as Library
 ----
@@ -240,20 +240,12 @@ There are multiple components and it is possible to choose only the desired one:
 * maestro-worker: backend code that executes the tests (using the one of the workers in maestro-workers)
 * maestro-inspector: backend code that inspects the SUTs (using the one of the inspectors in maestro-inspectors)
 
-The API documentation (javadoc) is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.3/apidocs/index.html). 
-Additional project documentation is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.3/). 
+The API documentation (javadoc) is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.5/apidocs/index.html). 
+Additional project documentation is available [here](http://www.orpiske.net/files/javadoc/maestro-java-1.5/). 
 
 **Note**: replace version with the latest available version you wish to use.
 
-Writing Tests
-----
 
-Continue to the [Writing Tests Guide](extra/doc/WritingTests.md).
-
-Maestro Reports
-----
-
-Continue to the [Maestro Reports Guide](extra/doc/Reports.md) to learn about the reports and how to customize them.
 
 
 

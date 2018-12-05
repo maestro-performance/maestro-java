@@ -4,6 +4,26 @@ Maestro: Development
 A sample development workflow for Maestro looks like this: launch the basic infrastructure for running Maestro and 
 launching the peers/nodes that you need to execute your development.
 
+
+Building
+----
+
+Use the following command to build Maestro:
+ 
+```./mvnw -PPackage clean package```.
+ 
+This should generate the following tarball files:
+
+```
+./maestro-agent/target/maestro-agent-1.5.0-SNAPSHOT-bin.tar.gz
+./maestro-worker/target/maestro-worker-1.5.0-SNAPSHOT-bin.tar.gz
+./maestro-inspector/target/maestro-inspector-1.5.0-SNAPSHOT-bin.tar.gz
+./maestro-reports/maestro-reports-tool/target/maestro-reports-tool-1.5.0-SNAPSHOT-bin.tar.gz
+./maestro-test-scripts/target/maestro-test-scripts-1.5.0-SNAPSHOT-bin.tar.gz
+./maestro-exporter/target/maestro-exporter-1.5.0-SNAPSHOT-bin.tar.gz
+./maestro-cli/target/maestro-cli-1.5.0-SNAPSHOT-bin.tar.gz
+```
+
 Running the Infrastructure Locally
 ----
 
@@ -131,3 +151,12 @@ make compile
 References: 
 * [Patternfly Setup](https://www.patternfly.org/get-started/setup/)
 * [How to use Patternfly](http://andresgalante.com/howto/2016/05/06/how-to-use-patternfly.html)
+
+Maestro Libraries: Deploying in Self-Maintained Maven Repository
+----
+
+If you maintain your own Maven repository, you can deploy this library using:
+
+```
+mvn deploy -DaltDeploymentRepository=libs-snapshot::default::http://hostname:8081/path/to/libs-snapshot-local
+```

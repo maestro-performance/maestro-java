@@ -6,7 +6,7 @@ Introduction
 ----
 
 
-Building
+Build Status
 ----
 Build Status (devel): [![Build Status](https://travis-ci.org/maestro-performance/maestro-java.svg?branch=devel)](https://travis-ci.org/maestro-performance/maestro-java)
 
@@ -30,15 +30,18 @@ mvn -PDelivery clean package
 Deploying Maestro
 ----
 
-Maestro focuses on multi-node deployments by default and deploying it can be a bit tricky
-on the first time. However, there are a couple of alternatives to simplify the process, 
-including Ansible playbooks as docker containers. Please read the 
-[Deployment Documentation](extra/doc/Deployment.md) for details about how to deploy Maestro.
+Being a distributed performance testing tool that is opinionated towards large scale performance test execution and 
+automation, Maestro focuses on multi-node deployments by default. Nonetheless, is entirely possible to run Maestro on a 
+single node and utilities to simplify that are provided by default with the code. 
+
+There are a couple of alternatives to simplify the process or getting a Maestro deployment in place, including Ansible 
+playbooks and templates for running Maestro on container orchestration systems such as kubernetes. Please read the 
+[Deployment Documentation](extra/doc/Deployment.md) for details about how to deploy Maestro or run it locally.
 
 Using Maestro
 ---- 
 
-Basic Maestro documentation is available [here](extra/doc/Using.md).
+Documentation about using Maestro is available [here](extra/doc/Using.md).
 
 
 Components: Inspectors
@@ -65,7 +68,7 @@ Development
 Some tips and tricks for developing and debugging Maestro are available [here](extra/doc/Development.md).
 
 
-Another information source
+Another Information Source
 ----
 An additional information about Maestro, Maestro Agent, Maestro Inspector and the usage of Maestro for 
 the performance testing and analysis can be found in this [thesis](http://www.fit.vutbr.cz/study/DP/DP.php.cs?id=21191&file=t).
