@@ -22,7 +22,7 @@ spec:
         - -c
         - sleep 1800
     - name: client
-      image: maestroperf/maestro-client:1.5.0-SNAPSHOT
+      image: maestroperf/maestro-client:1.5.0
       command:
         - /bin/bash
         - -c
