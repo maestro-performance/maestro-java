@@ -15,12 +15,6 @@ spec:
                 values:
                   - maestroperf
   containers:
-    - name: idle
-      image: centos:7
-      command:
-        - /bin/bash
-        - -c
-        - sleep 1800
     - name: client
       image: maestroperf/maestro-client:1.5.0
       command:
