@@ -1,7 +1,7 @@
 Writing Tests With Maestro: Using
 ============
 
-This guide extends the [Using](extra/doc/Using.md) guide and focuses on the Maestro API used for testing. 
+This guide extends the [Using](Using.md) guide and focuses on the Maestro API used for testing.
 
 Introduction
 ----

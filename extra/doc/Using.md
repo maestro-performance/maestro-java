@@ -192,13 +192,13 @@ If you had used Maestro before or if you ran one of the sample commands straight
 of local test reports.
 
 The test reports are collected automatically by a separate component, the Maestro Reports Tool. Continue to the 
-[Maestro Reports Guide](extra/doc/Reports.md) to learn about the reports.
+[Maestro Reports Guide](Reports.md) to learn about the reports.
 
 
 Writing Tests
 ----
 
-Continue to the [Writing Tests Guide](extra/doc/WritingTests.md).
+Continue to the [Writing Tests Guide](WritingTests.md).
 
 
 Using as Library
