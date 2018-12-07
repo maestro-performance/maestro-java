@@ -41,7 +41,7 @@ or
 Optionally, you can also build different versions and branches.
 
 ```
-docker-compose -f docker-compose.yml -f suts/docker-artemis-compose.yml build --build-arg MAESTRO_VERSION=1.5.1-SNAPSHOT --build-arg MAESTRO_BRANCH=dynamic-worker-execution
+docker-compose -f docker-compose.yml -f suts/docker-artemis-compose.yml build --build-arg MAESTRO_VERSION=1.5.1 --build-arg MAESTRO_BRANCH=dynamic-worker-execution
 ```
 
 Launching
