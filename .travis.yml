@@ -24,12 +24,12 @@ after_success:
 deploy:
   # push edge to docker hub
   - provider: script
-    script: bash docker_push edge
+    script: bash docker_push edge devel
     on:
       branch: devel
   # push stable to docker hub
   - provider: script
-    script: bash docker_push stable
+    script: bash docker_push stable maestro-java-1.5.0
     on:
       branch: master
 
