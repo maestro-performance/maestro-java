@@ -16,7 +16,7 @@ spec:
                   - maestroperf
   containers:
     - name: client
-      image: maestroperf/maestro-client:1.5.1
+      image: maestroperf/maestro-client:1.5.2-SNAPSHOT
       command:
         - /bin/bash
         - -c
