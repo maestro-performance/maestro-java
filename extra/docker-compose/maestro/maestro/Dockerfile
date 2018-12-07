@@ -37,7 +37,7 @@ ENV MAESTRO_APP_ROOT /opt/maestro
 ENV JAVA_HOME /etc/alternatives/jre
 RUN mkdir -p ${MAESTRO_APP_ROOT} && mkdir -p /maestro
 WORKDIR ${MAESTRO_APP_ROOT}
-RUN yum install -y java-1.8.0-openjdk-headless unzip which ntp rsync && yum clean all
+RUN yum install -y java-1.8.0-openjdk-headless unzip which ntp rsync openssl && yum clean all
 
 ## Worker ##
 FROM maestro-base AS maestro-worker
