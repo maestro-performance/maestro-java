@@ -60,6 +60,18 @@ spec:
               name: client-config
               key: testDuration
               optional: true
+        - name: TEST_DESCRIPTION
+          valueFrom:
+            configMapKeyRef:
+              name: client-config
+              key: testDescription
+              optional: true
+        - name: TEST_COMMENT
+          valueFrom:
+            configMapKeyRef:
+              name: client-config
+              key: testComment
+              optional: true
         - name: PARALLEL_COUNT
           valueFrom:
             configMapKeyRef:
