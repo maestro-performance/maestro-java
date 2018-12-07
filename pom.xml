@@ -21,7 +21,7 @@
     <groupId>org.maestro</groupId>
     <artifactId>maestro-java</artifactId>
     <packaging>pom</packaging>
-    <version>1.5.1-SNAPSHOT</version>
+    <version>1.5.1</version>
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <api.version.site>1.5</api.version.site>
@@ -43,7 +43,7 @@
     <scm>
         <developerConnection>scm:git:git@github.com:maestro-performance/maestro-java.git</developerConnection>
         <url>https://github.com/maestro-performance/maestro-java</url>
-        <tag>HEAD</tag>
+        <tag>maestro-java-1.5.1</tag>
     </scm>
 
     <licenses>
