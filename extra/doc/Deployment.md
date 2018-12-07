@@ -73,7 +73,7 @@ And if you have a similar output, it means that everything is working as expecte
 the client container. You can find additional details about using Maestro with Docker Compose [here](../docker-compose/maestro).
 
 Maestro Deployment: Using Kubernetes
-----
+============
 
 This deployment method is documented in greater detail [here](../kubernetes).
 

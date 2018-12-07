@@ -1,4 +1,4 @@
-Maestro: Using
+Maestro: Reports
 ============
 
 In older versions, prior to 1.5, Maestro reports would be downloaded and managed by the test front-end. Starting with 1.5
