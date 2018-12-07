@@ -29,6 +29,16 @@ spec:
             configMapKeyRef:
               name: client-config
               key: sendReceiveUrl
+        - name: SEND_URL
+          valueFrom:
+            configMapKeyRef:
+              name: client-config
+              key: sendUrl
+        - name: RECEIVE_URL
+          valueFrom:
+            configMapKeyRef:
+              name: client-config
+              key: receiveUrl
         - name: MESSAGE_SIZE
           valueFrom:
             configMapKeyRef:
@@ -52,6 +62,36 @@ spec:
             configMapKeyRef:
               name: client-config
               key: parallelCount
+              optional: true
+        - name: DISTRIBUTION_STRATEGY
+          valueFrom:
+            configMapKeyRef:
+              name: client-config
+              key: distributionStrategy
+              optional: true
+        - name: LOG_LEVEL
+          valueFrom:
+            configMapKeyRef:
+              name: client-config
+              key: logLevel
+              optional: true
+        - name: INSPECTOR_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: client-config
+              key: inspectorName
+              optional: true
+        - name: MANAGEMENT_INTERFACE
+          valueFrom:
+            configMapKeyRef:
+              name: client-config
+              key: managementInterface
+              optional: true
+        - name: ENDPOINT_RESOLVER_NAME
+          valueFrom:
+            configMapKeyRef:
+              name: client-config
+              key: endpointResolverName
               optional: true
         - name: TEST_CASE
           valueFrom:
