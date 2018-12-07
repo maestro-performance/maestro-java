@@ -29,16 +29,19 @@ spec:
             configMapKeyRef:
               name: client-config
               key: sendReceiveUrl
+              optional: true
         - name: SEND_URL
           valueFrom:
             configMapKeyRef:
               name: client-config
               key: sendUrl
+              optional: true
         - name: RECEIVE_URL
           valueFrom:
             configMapKeyRef:
               name: client-config
               key: receiveUrl
+              optional: true
         - name: MESSAGE_SIZE
           valueFrom:
             configMapKeyRef:
