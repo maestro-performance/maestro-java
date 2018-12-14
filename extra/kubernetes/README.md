@@ -1,4 +1,4 @@
-Maestro Java: an implementation of the Maestro orchestration API in Java
+Maestro: Kubernetes Deployment Guide
 ============
 
 Introduction
