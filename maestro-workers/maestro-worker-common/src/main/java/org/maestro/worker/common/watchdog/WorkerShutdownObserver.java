@@ -26,7 +26,6 @@ import org.slf4j.LoggerFactory;
 
 import java.io.File;
 import java.util.List;
-import java.util.Objects;
 
 import static org.maestro.worker.common.WorkerStateInfoUtil.isCleanExit;
 
@@ -48,13 +47,27 @@ public class WorkerShutdownObserver implements WatchdogObserver {
         this.test = test;
     }
 
-    private void sendTestNotification(boolean failed, String exceptionMessage) {
+    private void sendTestNotification(boolean failed, final Exception exception) {
         if (failed) {
-            if (exceptionMessage != null) {
-                client.notifyFailure(test, exceptionMessage);
+            String exceptionMessage;
+            if (exception == null) {
+                logger.warn("Worker failed but no exception was provided: it is likely that the worker shutdown " +
+                        "time out expired before the client library finalized its work or that it was hang");
+                exceptionMessage = "Worker failed but no exception was provided: it is likely that the worker shutdown"
+                        + " time out expired before the client library finalized its work or that it was hang";
             }
             else {
-                client.notifyFailure(test,"Unhandled worker error");
+                exceptionMessage = exception.getMessage();
+                if (exceptionMessage == null) {
+                    logger.warn("The worked supposedly with {}, but no message was provided", exception.getClass(),
+                            exception);
+                    exceptionMessage = String.format("Worker failed with %s but no exception was provided",
+                            exception.getClass());
+                }
+            }
+
+            if (exceptionMessage != null) {
+                client.notifyFailure(test, exceptionMessage);
             }
         }
         else {
@@ -65,7 +78,7 @@ public class WorkerShutdownObserver implements WatchdogObserver {
     @Override
     public boolean onStop(final List<MaestroWorker> workers) {
         boolean failed = false;
-        String exceptionMessage = null;
+        Exception exception = null;
 
         try {
             for (MaestroWorker worker : workers) {
@@ -77,7 +90,7 @@ public class WorkerShutdownObserver implements WatchdogObserver {
                     } else {
                         if (!isCleanExit(wsi)) {
                             failed = true;
-                            exceptionMessage = Objects.requireNonNull(wsi.getException()).getMessage();
+                            exception = wsi.getException();
 
                             break;
                         }
@@ -90,7 +103,7 @@ public class WorkerShutdownObserver implements WatchdogObserver {
                 TestLogUtils.createSymlinks(logDir, failed);
             }
 
-            sendTestNotification(failed, exceptionMessage);
+            sendTestNotification(failed, exception);
         }
 
         return true;
