@@ -62,7 +62,7 @@ public class InternalDatabaseBuilder implements TemplateBuilder {
 
                             ScriptUtils.executeSqlScript(ds.getConnection(), resource);
                         } catch (SQLException e) {
-                            throw new MaestroException("Unable to create the Maestro reports table");
+                            throw new MaestroException("Unable to create the Maestro reports database");
                         }
 
 
