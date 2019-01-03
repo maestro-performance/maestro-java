@@ -27,7 +27,9 @@ import org.maestro.worker.common.container.initializers.WorkerInitializer;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.Calendar;
 import java.util.List;
+import java.util.concurrent.*;
 
 public class DrainObserver implements WatchdogObserver {
     private static final Logger logger = LoggerFactory.getLogger(DrainObserver.class);
@@ -52,20 +54,30 @@ public class DrainObserver implements WatchdogObserver {
     public boolean onStop(List<MaestroWorker> workers) {
         long drainDeadline = config.getLong("worker.observer.deadline.secs", 45);
 
-        int count = workerOptions.getParallelCountAsInt();
+        ScheduledExecutorService service = Executors.newSingleThreadScheduledExecutor();
+
         try {
-            workerContainer.create(workerInitializer, count);
+            int count = workerOptions.getParallelCountAsInt();
+            try {
+                workerContainer.create(workerInitializer, count);
 
-            logger.info("Drain the queues for up to {} seconds after the test was executed", drainDeadline);
-            workerContainer.start();
+                logger.info("Drain the queues for up to {} seconds after the test was executed", drainDeadline);
+                workerContainer.start();
 
-            workerContainer.waitForComplete(drainDeadline);
-            logger.info("Drain completed successfully");
+                service.schedule(() -> {
+                    workerContainer.waitForComplete(drainDeadline);
+                    logger.info("Drain completed successfully");
 
-            client.notifyDrainComplete(true, "Drain completed successfully");
-        } catch (Throwable t) {
-            logger.error("Unable to start drain workers: {}", t.getMessage(), t);
-            client.notifyDrainComplete(false, "Drain completed with warnings");
+                    client.notifyDrainComplete(true, "Drain completed successfully");
+                    return null;
+                }, drainDeadline, TimeUnit.SECONDS).get();
+
+            } catch (Throwable t) {
+                logger.error("Unable to start drain workers: {}", t.getMessage(), t);
+                client.notifyDrainComplete(false, "Drain completed with warnings");
+            }
+        } finally {
+            service.shutdown();
         }
 
         return true;
