@@ -39,6 +39,11 @@ import java.util.concurrent.atomic.AtomicInteger;
  * creating, starting and stopping multiple workerRuntimeInfos at once.
  */
 public final class WorkerContainer {
+    public enum WorkerContainerState {
+        STOPPED,
+        STARTED,
+        STOPPING,
+    }
     private static final Logger logger = LoggerFactory.getLogger(WorkerContainer.class);
     private static final AbstractConfiguration config = ConfigurationWrapper.getConfig();
 
@@ -53,6 +58,7 @@ public final class WorkerContainer {
     private LocalDateTime startTime;
     private CountDownLatch startSignal;
     private CountDownLatch endSignal;
+    private WorkerContainerState workerContainerState = WorkerContainerState.STOPPED;
 
     static {
         TIMEOUT_STOP_WORKER_MILLIS = config.getLong("worker.stop.timeout", 1000);
@@ -113,6 +119,7 @@ public final class WorkerContainer {
             watchdogExecutorService.submit(workerWatchdog);
 
             startTime = LocalDateTime.now();
+            workerContainerState = WorkerContainerState.STARTED;
         }
         catch (Throwable t) {
             workers.clear();
@@ -140,6 +147,7 @@ public final class WorkerContainer {
      * Stops the workers on the container
      */
     private void stop(long watchDogTimeout) {
+        workerContainerState = WorkerContainerState.STOPPING;
         workers.forEach(MaestroWorker::stop);
 
         startTime = null;
@@ -178,6 +186,8 @@ public final class WorkerContainer {
                 watchdogExecutorService = null;
             }
         }
+
+        workerContainerState = WorkerContainerState.STOPPED;
     }
 
     /**
@@ -276,5 +286,9 @@ public final class WorkerContainer {
     public boolean waitForComplete(long timeout) {
         stop(timeout);
         return true;
+    }
+
+    public WorkerContainerState getWorkerContainerState() {
+        return workerContainerState;
     }
 }
