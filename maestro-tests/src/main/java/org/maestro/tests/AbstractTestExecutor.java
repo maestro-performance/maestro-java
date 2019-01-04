@@ -59,6 +59,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     private volatile boolean running = false;
     private Instant startTime;
+    private boolean hasInspector = false;
 
     /**
      * Constructor
@@ -161,6 +162,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
             final String inspectorName = testProfile.getInspectorName();
 
             if (inspectorName != null && !inspectorName.isEmpty()) {
+                hasInspector = true;
                 exec(maestro::startInspector, inspectorName);
             }
             else {
@@ -223,13 +225,15 @@ public abstract class AbstractTestExecutor implements TestExecutor {
             }
         }
 
-        CompletableFuture<List<? extends MaestroNote>> stopWorkerFuture = getMaestro()
-                .stopWorker(MaestroTopics.peerTopic(Role.INSPECTOR));
-        stopWorkerFuture.thenAccept(this::checkReplies);
+        if (hasInspector) {
+            CompletableFuture<List<? extends MaestroNote>> stopWorkerFuture = getMaestro()
+                    .stopWorker(MaestroTopics.peerTopic(Role.INSPECTOR));
+            stopWorkerFuture.thenAccept(this::checkReplies);
 
-        futures.add(stopWorkerFuture);
+            futures.add(stopWorkerFuture);
 
-        futures.forEach(this::verifyStopCommand);
+            futures.forEach(this::verifyStopCommand);
+        }
     }
 
 
