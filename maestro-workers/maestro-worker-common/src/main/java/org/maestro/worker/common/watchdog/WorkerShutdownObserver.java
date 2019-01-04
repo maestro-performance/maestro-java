@@ -59,8 +59,8 @@ public class WorkerShutdownObserver implements WatchdogObserver {
             else {
                 exceptionMessage = exception.getMessage();
                 if (exceptionMessage == null) {
-                    logger.warn("The worked supposedly with {}, but no message was provided", exception.getClass(),
-                            exception);
+                    logger.warn("The worked supposedly failed with {}, but no message was provided",
+                            exception.getClass(), exception);
                     exceptionMessage = String.format("Worker failed with %s but no exception was provided",
                             exception.getClass());
                 }
