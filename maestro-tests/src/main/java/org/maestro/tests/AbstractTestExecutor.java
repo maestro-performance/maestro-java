@@ -176,7 +176,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     private void checkReplies(List<? extends MaestroNote> replies) {
         if (replies.size() == 0) {
-            logger.error("Not enough replies when trying to execute a command on the test cluster");
+            logger.warn("Not enough replies for the stop command requests on the test cluster");
         }
 
         for (MaestroNote reply : replies) {
@@ -231,9 +231,10 @@ public abstract class AbstractTestExecutor implements TestExecutor {
             stopWorkerFuture.thenAccept(this::checkReplies);
 
             futures.add(stopWorkerFuture);
-
-            futures.forEach(this::verifyStopCommand);
         }
+
+        // This is only used for logging when level == trace
+        futures.forEach(this::verifyStopCommand);
     }
 
 
@@ -249,11 +250,13 @@ public abstract class AbstractTestExecutor implements TestExecutor {
             logger.warn("While stopping the peers: {}", e.getMessage(), e);
         }
 
-        try {
-            exec(maestro::stopInspector, MaestroTopics.peerTopic(Role.INSPECTOR));
-        }
-        catch (NotEnoughRepliesException e) {
-            logger.warn("While stopping the inspector: {}", e.getMessage());
+
+        if (hasInspector) {
+            try {
+                exec(maestro::stopInspector, MaestroTopics.peerTopic(Role.INSPECTOR));
+            } catch (NotEnoughRepliesException e) {
+                logger.warn("While stopping the inspector: {}", e.getMessage());
+            }
         }
     }
 
