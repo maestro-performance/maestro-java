@@ -139,6 +139,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
         return true;
     }
 
+    @Override
     public void stopServices() {
         if (!isRunning()) {
             logger.trace("Not stopping the services because the test is not running");
