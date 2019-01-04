@@ -160,7 +160,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
         try {
             final String inspectorName = testProfile.getInspectorName();
 
-            if (inspectorName != null) {
+            if (inspectorName != null && !inspectorName.isEmpty()) {
                 exec(maestro::startInspector, inspectorName);
             }
             else {
