@@ -35,8 +35,7 @@ import java.io.File;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.Executors;
-import java.util.concurrent.TimeUnit;
+import java.util.concurrent.*;
 
 
 /**
@@ -50,6 +49,8 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     private final File logDir;
     private LatencyEvaluator latencyEvaluator;
     private final Map<String, String> workersMap = new HashMap<>();
+    private ExecutorService stopExecutor = Executors.newSingleThreadExecutor();
+    private Future<Boolean> stopped;
 
     /**
      * Constructor
@@ -200,7 +201,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     public void handle(Halt note) {
         logger.debug("Halt request received");
 
-        container.stop();
+        asyncStop(note);
         setRunning(false);
     }
 
@@ -251,7 +252,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         super.handle(note);
 
         logger.debug("Stopping test execution after a peer reported a test failure");
-        container.stop();
+        asyncStop(note);
     }
 
     @Override
@@ -259,7 +260,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         super.handle(note);
 
         logger.debug("Stopping test execution after a peer reported a test success");
-        container.stop();
+        asyncStop(note);
     }
 
     @Override
@@ -359,11 +360,21 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     @Override
     public void handle(final StopWorker note) {
         logger.info("Stop worker request received");
-        getClient().replyOk(note);
 
-        container.stop();
-        logger.info("Completed stopping the workers");
+        getClient().replyOk(note);
+        asyncStop(note);
     }
+
+    private void asyncStop(final MaestroNote note) {
+        if (container.getWorkerContainerState() == WorkerContainer.WorkerContainerState.STARTED) {
+            stopped = stopExecutor.submit(() -> { container.stop(); return true; });
+            logger.info("Completed stopping the workers");
+        }
+        else {
+            logger.info("The worker container is not running at the moment therefore the stop call is ignored");
+        }
+    }
+
 
     @Override
     public void handle(final StartTestRequest note) {
