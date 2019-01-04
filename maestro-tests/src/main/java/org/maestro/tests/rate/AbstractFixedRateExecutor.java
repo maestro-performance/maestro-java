@@ -89,6 +89,10 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
 
                 XUnitGenerator.generate(testExecutionInfo.getTest(), results, start);
 
+                if (results.size() != numPeers) {
+                    forceStop(distributionStrategy);
+                }
+
                 return failures.get();
             }
             finally {
@@ -99,9 +103,11 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
         }
         catch (TimeoutException te) {
             logger.warn("Timed out waiting for the test notifications");
+            forceStop(distributionStrategy);
         }
         catch (Exception e) {
             logger.error("Error: {}", e.getMessage(), e);
+            forceStop(distributionStrategy);
         }
         finally {
             reset();
@@ -149,21 +155,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
 
         testStop();
 
-        logger.info("Stopping Maestro services");
-        try {
-            stopServices(distributionStrategy);
-        }
-        catch (MaestroException e) {
-            if (e.getCause() instanceof TimeoutException) {
-                logger.warn("Timed out waiting for a stop response");
-            }
-            else {
-                logger.warn(e.getMessage(), e);
-            }
-        }
-        finally {
-            distributionStrategy.reset();
-        }
+        distributionStrategy.reset();
     }
 
     protected abstract String phaseName();
@@ -179,4 +171,7 @@ public abstract class AbstractFixedRateExecutor extends AbstractTestExecutor {
     public FixedRateTestProfile getTestProfile() {
         return testProfile;
     }
+
+
+
 }

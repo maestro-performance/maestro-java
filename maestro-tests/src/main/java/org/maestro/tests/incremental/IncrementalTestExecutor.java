@@ -99,6 +99,10 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
 
                 XUnitGenerator.generate(testExecutionInfo.getTest(), results, start);
 
+                if (results.size() != numPeers) {
+                    forceStop(distributionStrategy);
+                }
+
                 long failed = results.stream()
                         .filter(this::isTestFailed)
                         .count();
@@ -117,31 +121,23 @@ public class IncrementalTestExecutor extends AbstractTestExecutor {
         }
         catch (TimeoutException te) {
             logger.warn("Timed out waiting for the test notifications");
+            forceStop(distributionStrategy);
         }
         catch (Exception e) {
             logger.error("Error: {}", e.getMessage(), e);
+            forceStop(distributionStrategy);
         }
         finally {
             testStop();
 
-            try {
-                stopServices(distributionStrategy);
-            }
-            catch (MaestroException e) {
-                if (e.getCause() instanceof TimeoutException) {
-                    logger.warn("Timed out waiting for a stop response");
-                }
-                else {
-                    logger.warn(e.getMessage());
-                }
-            }
-            finally {
-                distributionStrategy.reset();
-            }
+            distributionStrategy.reset();
+
+
         }
 
         return false;
     }
+
 
     @Override
     public boolean run(final TestExecutionInfo testExecutionInfo) {
