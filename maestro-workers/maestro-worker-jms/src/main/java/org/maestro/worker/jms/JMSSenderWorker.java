@@ -16,6 +16,8 @@
 
 package org.maestro.worker.jms;
 
+import org.apache.commons.configuration.AbstractConfiguration;
+import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.content.ContentStrategy;
 import org.maestro.common.content.ContentStrategyFactory;
 import org.maestro.common.duration.EpochClocks;
@@ -32,6 +34,7 @@ import org.maestro.common.worker.WorkerUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.jms.JMSException;
 import javax.jms.Session;
 import java.util.concurrent.CountDownLatch;
 import java.util.concurrent.atomic.AtomicLong;
@@ -150,7 +153,13 @@ public class JMSSenderWorker implements MaestroSenderWorker {
                     e.getMessage());
 
             stop();
-        } catch (Exception e) {
+        } catch (JMSException e) {
+            JMSSenderClient jmsSenderClient = (JMSSenderClient) client;
+            JmsOptions options = jmsSenderClient.getOpts();
+
+            handleProtocolSpecificConditions(e, options);
+        }
+        catch (Exception e) {
             logger.error("Unexpected error while running the sender worker: {}", e.getMessage(), e);
 
             workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
@@ -163,6 +172,42 @@ public class JMSSenderWorker implements MaestroSenderWorker {
             client.stop();
 
             logger.info("Finalized worker {} after sending {} messages", id, messageCount);
+        }
+    }
+
+    private void handleProtocolSpecificConditions(JMSException e, JmsOptions options) {
+        AbstractConfiguration config = ConfigurationWrapper.getConfig();
+
+        /*
+         * This handles a special condition when using AMQP 1.0 with QPid JMS. As explained by Keith on
+         * issue #141, "... this corresponds to the condition where the sending link is blocked awaiting credit.
+         * When the peer is the Artemis Broker, this can correspond to a queue/disk full situation ..." as well
+         * as serving as a work-around for some SUT issues like https://issues.apache.org/jira/browse/ARTEMIS-1898
+         *
+         * In the future, this behavior should be driven by the front end, so we still have the ability to mark as fail
+         * situations when the clients or the SUTs failed to cleanup/terminate/shutdown correctly.
+         *
+         * The previous behavior can be changed by the option worker.protocol.amqp10.block.is.failure
+         */
+        boolean amqpBlockIsFailure = config.getBoolean("worker.protocol.amqp10.block.is.failure",
+                false);
+
+        if (amqpBlockIsFailure) {
+            logger.error("JMS error while running the sender worker: {}", e.getMessage(), e);
+
+            workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
+        }
+        else {
+            if (options.getProtocol() == JMSProtocol.AMQP && e.getCause() instanceof InterruptedException) {
+                logger.warn("Ignoring JMS error while running the sender worker: {}", e.getMessage(), e);
+
+                workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_SUCCESS, e);
+            }
+            else {
+                logger.error("JMS error while running the sender worker: {}", e.getMessage(), e);
+
+                workerStateInfo.setState(false, WorkerStateInfo.WorkerExitStatus.WORKER_EXIT_FAILURE, e);
+            }
         }
     }
 
