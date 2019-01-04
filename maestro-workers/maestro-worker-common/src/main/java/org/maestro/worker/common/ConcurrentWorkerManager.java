@@ -201,7 +201,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
     public void handle(Halt note) {
         logger.debug("Halt request received");
 
-        asyncStop(note);
+        asyncStop();
         setRunning(false);
     }
 
@@ -252,7 +252,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         super.handle(note);
 
         logger.debug("Stopping test execution after a peer reported a test failure");
-        asyncStop(note);
+        asyncStop();
     }
 
     @Override
@@ -260,7 +260,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         super.handle(note);
 
         logger.debug("Stopping test execution after a peer reported a test success");
-        asyncStop(note);
+        asyncStop();
     }
 
     @Override
@@ -362,17 +362,22 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
         logger.info("Stop worker request received");
 
         getClient().replyOk(note);
-        asyncStop(note);
+        asyncStop();
     }
 
-    private void asyncStop(final MaestroNote note) {
+    private void asyncStop() {
         if (container.getWorkerContainerState() == WorkerContainer.WorkerContainerState.STARTED) {
-            stopped = stopExecutor.submit(() -> { container.stop(); return true; });
-            logger.info("Completed stopping the workers");
+            stopped = stopExecutor.submit(() -> doWorkerContainerStop());
         }
         else {
             logger.info("The worker container is not running at the moment therefore the stop call is ignored");
         }
+    }
+
+    private Boolean doWorkerContainerStop() {
+        container.stop();
+        logger.info("Completed stopping the workers");
+        return true;
     }
 
 
