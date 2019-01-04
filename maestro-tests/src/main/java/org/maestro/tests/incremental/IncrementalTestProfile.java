@@ -155,7 +155,7 @@ public class IncrementalTestProfile extends AbstractTestProfile {
             }
         }
 
-        logger.info("Set target rate to {}", rate);
+        logger.info("Increased target rate to {}", rate);
     }
 
     @Override
