@@ -30,6 +30,7 @@ import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.common.client.notes.WorkerStartOptions;
 import org.maestro.common.exceptions.MaestroConnectionException;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.exceptions.TryAgainException;
 import org.maestro.tests.cluster.DistributionStrategy;
 import org.maestro.tests.utils.CompletionTime;
@@ -176,7 +177,7 @@ public abstract class AbstractTestExecutor implements TestExecutor {
 
     private void checkReplies(List<? extends MaestroNote> replies) {
         if (replies.size() == 0) {
-            logger.warn("Not enough replies for the stop command requests on the test cluster");
+            logger.warn("Not enough replies for the stop command request on the test cluster (can be ignored)");
         }
 
         for (MaestroNote reply : replies) {
@@ -326,6 +327,22 @@ public abstract class AbstractTestExecutor implements TestExecutor {
             logger.error("Error checking the draining status: {}", e.getMessage(), e);
         } catch (TimeoutException e) {
             logger.warn("Did not receive a drain response within {} seconds", drainDeadline);
+        }
+    }
+
+
+    protected void forceStop(final DistributionStrategy distributionStrategy) {
+        logger.info("Force stopping Maestro services");
+        try {
+            stopServices(distributionStrategy);
+        }
+        catch (MaestroException e) {
+            if (e.getCause() instanceof TimeoutException) {
+                logger.warn("Timed out waiting for a stop response");
+            }
+            else {
+                logger.warn(e.getMessage());
+            }
         }
     }
 }
