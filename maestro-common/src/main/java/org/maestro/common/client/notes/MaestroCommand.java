@@ -20,7 +20,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public enum MaestroCommand {
-    /** Receiver execution **/
+    /** Worker execution **/
     MAESTRO_NOTE_START_WORKER(0),
     MAESTRO_NOTE_STOP_WORKER(1),
     /** Test execution */
