@@ -19,6 +19,7 @@ package org.maestro.tests.rate;
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.common.Monitor;
+import org.maestro.common.Role;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.TestExecutionInfo;
 import org.maestro.tests.callbacks.StatsCallBack;
@@ -79,7 +80,7 @@ public class FixedRateTestExecutor extends AbstractFixedRateExecutor {
             logger.debug("Registering the callback");
             getMaestro().getCollector().addCallback(statsCallBack);
 
-            Runnable task = () -> getMaestro().statsRequest(MaestroTopics.WORKERS_TOPIC);
+            Runnable task = () -> getMaestro().statsRequest(MaestroTopics.peerTopic(Role.SENDER));
             statsExecutor.scheduleAtFixedRate(task, 0, 1, TimeUnit.SECONDS);
         }
     }

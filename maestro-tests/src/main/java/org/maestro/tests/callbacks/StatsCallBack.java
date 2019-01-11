@@ -67,16 +67,17 @@ public class StatsCallBack implements MaestroNoteCallback {
                 logger.trace("Received stats {}", statsResponse);
             }
 
-
             if (isSlow(statsResponse, targetRate)) {
                 logger.debug("The warm-up duration might expire of time instead of count because the current " +
                                 "rate {} is much lower than the target rate {}", statsResponse.getRate(),
                         targetRate);
             }
 
-            updateCounters(statsResponse);
+            if (statsResponse.getPeerInfo().getRole() == Role.SENDER) {
+                updateCounters(statsResponse);
 
-            completeCheck();
+                completeCheck();
+            }
 
             return false;
         }
@@ -86,7 +87,7 @@ public class StatsCallBack implements MaestroNoteCallback {
 
     private void completeCheck() {
         final long messageCount = counters.values().stream().mapToLong(Number::longValue).sum();
-        logger.debug("Current message count: {}", messageCount);
+        logger.debug("Number of messages sent so far: {}", messageCount);
 
         if ((messageCount >= DurationCount.WARM_UP_COUNT) && !warmUpReached) {
             logger.info("The warm-up count has been reached: {} of {}",
