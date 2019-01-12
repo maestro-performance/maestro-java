@@ -131,7 +131,7 @@ public enum Role {
 
         }
 
-        return HostTypes.OTHER_HOST_TYPE;
+
     }
 
     public boolean isWorker() {
@@ -163,6 +163,9 @@ public enum Role {
             }
             case HostTypes.EXPORTER_HOST_TYPE: {
                 return EXPORTER;
+            }
+            case HostTypes.REPORTS_SERVER_HOST_TYPE: {
+                return REPORTS_SERVER;
             }
             default: {
                 return OTHER;
