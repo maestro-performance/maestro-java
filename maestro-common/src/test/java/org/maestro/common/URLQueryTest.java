@@ -19,6 +19,7 @@ package org.maestro.common;
 import org.junit.Test;
 
 import java.net.URI;
+import java.util.Map;
 
 import static org.junit.Assert.*;
 
@@ -30,7 +31,7 @@ public class URLQueryTest {
         URLQuery urlQuery = new URLQuery(new URI(url));
 
         assertTrue(urlQuery.getBoolean("durable", false));
-        assertEquals("Value for 'somethingElse' does not match", new Integer(123),
+        assertEquals("Value for 'somethingElse' does not match", Integer.valueOf(123),
                 urlQuery.getInteger("somethingElse", 123));
         assertEquals("Value for 'otherSomething' does not match",
                 "abc",
@@ -44,7 +45,7 @@ public class URLQueryTest {
         URLQuery urlQuery = new URLQuery(new URI(url));
 
         assertFalse(urlQuery.getBoolean("none1", false));
-        assertEquals("Value for 'none2' does not match", new Integer(0),
+        assertEquals("Value for 'none2' does not match", Integer.valueOf(0),
                 urlQuery.getInteger("none2", 0));
 
         assertNull("Value for 'none3' does not match", urlQuery.getString("none3", null));
@@ -55,12 +56,43 @@ public class URLQueryTest {
     public void testQueryEmpty() throws Exception {
         String url = "amqp://host/queue.name";
 
-        URLQuery urlQuery = new URLQuery(new URI(url));
+        URLQuery urlQuery = new URLQuery(url);
 
         assertFalse(urlQuery.getBoolean("none1", false));
-        assertEquals("Value for 'none2' does not match", new Integer(0),
+        assertEquals("Value for 'none2' does not match", Integer.valueOf(0),
                 urlQuery.getInteger("none2", 0));
 
         assertNull("Value for 'none3' does not match", urlQuery.getString("none3", null));
+    }
+
+    @Test
+    public void testQueryWithFalse() throws Exception {
+        String url = "amqp://host/queue.name?value1=false&value2=true";
+
+        URLQuery urlQuery = new URLQuery(new URI(url));
+
+        assertFalse(urlQuery.getBoolean("value1", true));
+        assertTrue(urlQuery.getBoolean("value2", false));
+    }
+
+    @Test
+    public void testQueryWithLong() throws Exception {
+        String url = "amqp://host/queue.name?value1=1234";
+
+        URLQuery urlQuery = new URLQuery(new URI(url));
+
+        assertEquals(1234L, (long) urlQuery.getLong("value1", 0L));
+    }
+
+    @Test
+    public void testQueryWitMaps() throws Exception {
+        String url = "amqp://host/queue.name?value1=1234&value2=true";
+
+        URLQuery urlQuery = new URLQuery(new URI(url));
+
+        Map<String, String> map = urlQuery.getParams();
+
+        assertTrue(map.size() == 2);
+        assertTrue(urlQuery.count() == 2);
     }
 }

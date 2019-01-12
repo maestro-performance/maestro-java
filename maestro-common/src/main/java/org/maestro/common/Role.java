@@ -128,7 +128,8 @@ public enum Role {
                 return HostTypes.EXPORTER_HOST_TYPE;
             case 6:
                 return HostTypes.REPORTS_SERVER_HOST_TYPE;
-
+            default:
+                return HostTypes.OTHER_HOST_TYPE;
         }
 
 
