@@ -35,6 +35,12 @@ public class PropertyUtils {
 
 
     /**
+     * Private constructor
+     */
+    private PropertyUtils() {}
+
+
+    /**
      * Loads the contents of test/broker/etc properties file into a map
      * @param testProperties the properties file to load
      * @param context the map that will receive the properties content
