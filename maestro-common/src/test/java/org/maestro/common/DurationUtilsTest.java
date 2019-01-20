@@ -39,4 +39,20 @@ public class DurationUtilsTest {
         parseAndCheck("2d1m1s", 172861);
         parseAndCheck("1", 1);
     }
+
+    @Test(expected = DurationParseException.class)
+    public void testInvalidDuration() throws Exception {
+        DurationUtils.parse("invalid");
+    }
+
+    @Test(expected = DurationParseException.class)
+    public void testInvalidDurationWithSpace() throws Exception {
+        DurationUtils.parse(" 1");
+    }
+
+    @Test(expected = DurationParseException.class)
+    public void testInvalidDurationWithDuplicate() throws Exception {
+        DurationUtils.parse("1dd");
+    }
+
 }

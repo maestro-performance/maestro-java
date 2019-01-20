@@ -25,12 +25,23 @@ public class DurationUtils {
 
     private DurationUtils() {}
 
+    private static int convertPartToNumber(final String part) throws DurationParseException {
+        try {
+            return Integer.parseInt(part);
+        }
+        catch (NumberFormatException e) {
+            throw new DurationParseException("Unable to partial string '" + part + "'to numeric form ", e);
+        }
+    }
+
     public static long parse(CharSequence sequence) throws DurationParseException {
         Duration d = Duration.ZERO;
         int last = 0;
 
         for (int i = 0; i < sequence.length(); i++) {
-            switch (sequence.charAt(i)) {
+            char current = sequence.charAt(i);
+
+            switch (current) {
                 case 's': {
                     CharSequence tmp = sequence.subSequence(last, i);
                     if (tmp == null) {
@@ -38,7 +49,7 @@ public class DurationUtils {
                     }
 
 
-                    int number = Integer.parseInt(tmp.toString());
+                    int number = convertPartToNumber(tmp.toString());
                     Duration tmpSeconds = Duration.ofSeconds(number);
 
                     d = d.plus(tmpSeconds);
@@ -53,7 +64,7 @@ public class DurationUtils {
                     }
 
 
-                    int number = Integer.parseInt(tmp.toString());
+                    int number = convertPartToNumber(tmp.toString());
                     d = d.plusMinutes(number);
                     last = i + 1;
 
@@ -66,7 +77,7 @@ public class DurationUtils {
                     }
 
 
-                    int number = Integer.parseInt(tmp.toString());
+                    int number = convertPartToNumber(tmp.toString());
                     d = d.plusHours(number);
                     last = i + 1;
 
@@ -79,7 +90,7 @@ public class DurationUtils {
                     }
 
 
-                    int number = Integer.parseInt(tmp.toString());
+                    int number = convertPartToNumber(tmp.toString());
                     d = d.plusDays(number);
                     last = i + 1;
 
@@ -87,10 +98,15 @@ public class DurationUtils {
                 }
                 default: {
                     if (last == 0 && i == (sequence.length() - 1)) {
-                        int number = Integer.parseInt(sequence.toString());
+                        int number = convertPartToNumber(sequence.toString());
 
                         d = d.plusSeconds(number);
                         last = i + 1;
+                    }
+                    else {
+                        if (i == 0 && Character.isAlphabetic(current)) {
+                            throw new DurationParseException("Unable to parse the sequence " + sequence);
+                        }
                     }
                 }
             }
