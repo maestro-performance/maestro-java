@@ -38,7 +38,7 @@ public class TestLogUtils {
         return new File(baseDir, String.valueOf(number));
     }
 
-    public static File findLastLogDir(final File logDir) {
+    public static synchronized File findLastLogDir(final File logDir) {
         File currentLogDir = new File(logDir, "0");
         File lastLogDir = currentLogDir;
         int count = 0;
@@ -73,7 +73,7 @@ public class TestLogUtils {
         return Integer.parseInt(testLogDir.getName());
     }
 
-    public static File nextTestLogDir(final File logDir) {
+    public static synchronized File nextTestLogDir(final File logDir) {
         File testLogDir = new File(logDir, "0");
         int count = 0;
 
@@ -87,7 +87,7 @@ public class TestLogUtils {
         return testLogDir;
     }
 
-    private static void deleteLinkQuietly(final File lastLink) {
+    private static synchronized void deleteLinkQuietly(final File lastLink) {
         logger.debug("Deleting link {} after completing the test", lastLink.getName());
 
         try {
@@ -97,42 +97,33 @@ public class TestLogUtils {
         }
     }
 
-    public static void createSymlinks(final File logDir, boolean failed) {
+    public static synchronized void createSymlinks(final File logDir, boolean failed) {
         logger.trace("Creating the symlinks");
         File lastLogDir = findLastLogDir(logDir);
         Path target = Paths.get(lastLogDir.getAbsolutePath());
 
-        Path lastLink = Paths.get(lastLogDir.getParent() + File.separator + "last");
-        deleteLinkQuietly(lastLink.toFile());
-
-        try {
-            logger.trace("Updating the 'last' link");
-            Files.createSymbolicLink(lastLink, target);
-        } catch (IOException e) {
-            logger.trace("Symbolic link creation error: {}", e.getMessage(), e);
-        }
+        doCreateLink(lastLogDir, target, "last", "Updating the 'last' link");
 
         if (failed) {
-            Path lastFailedLink = Paths.get(lastLogDir.getParent() + File.separator + "lastFailed");
-            deleteLinkQuietly(lastFailedLink.toFile());
-
-            try {
-                logger.trace("Updating the 'lastFailed' link");
-                Files.createSymbolicLink(lastFailedLink, target);
-            } catch (IOException e) {
-                logger.trace("Symbolic link creation error: {}", e.getMessage(), e);
-            }
+            doCreateLink(lastLogDir, target, "lastFailed", "Updating the 'lastFailed' link");
         }
         else {
-            Path lastSuccessfulLink = Paths.get(lastLogDir.getParent() + File.separator + "lastSuccessful");
-            deleteLinkQuietly(lastSuccessfulLink.toFile());
+            doCreateLink(lastLogDir, target, "lastSuccessful", "Updating the 'lastSuccessful' link");
+        }
+    }
 
-            try {
-                logger.trace("Updating the 'lastSuccessful' link");
-                Files.createSymbolicLink(lastSuccessfulLink, target);
-            } catch (IOException e) {
-                logger.trace("Symbolic link creation error: {}", e.getMessage(), e);
+    private static void doCreateLink(File lastLogDir, Path target, String lastFailed, String s) {
+        Path path = Paths.get(lastLogDir.getParent() + File.separator + lastFailed);
+        deleteLinkQuietly(path.toFile());
+
+        try {
+
+            if (logger.isTraceEnabled()) {
+                logger.trace(s);
             }
+            Files.createSymbolicLink(path, target);
+        } catch (IOException e) {
+            logger.trace("Symbolic link creation error: {}", e.getMessage(), e);
         }
     }
 }
