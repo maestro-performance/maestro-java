@@ -36,12 +36,6 @@ public class DurationTime implements TestDuration {
         this.outputTimeUnit = TimeUnit.SECONDS;
     }
 
-    private DurationTime(final long seconds) {
-        this.expectedDuration = seconds;
-        this.timeSpec = seconds + "s";
-        this.outputTimeUnit = TimeUnit.SECONDS;
-    }
-
     @Override
     public boolean canContinue(final TestProgress snapshot) {
         final long currentDuration = snapshot.elapsedTime(outputTimeUnit);
