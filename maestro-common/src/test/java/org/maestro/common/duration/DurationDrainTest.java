@@ -35,10 +35,9 @@ public class DurationDrainTest {
             progress.increment();
         }
 
-
         for (int i = 0; i < 9; i++) {
-            System.out.println("Current count " + i + " = " + progress.messageCount());
-            assertTrue("Cannot continue", durationDrain.canContinue(progress));
+            assertTrue("Cannot continue with current count of " + progress.messageCount(),
+                    durationDrain.canContinue(progress));
         }
 
         assertFalse(durationDrain.canContinue(progress));
