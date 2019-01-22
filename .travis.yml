@@ -29,7 +29,7 @@ deploy:
       branch: devel
   # push stable to docker hub
   - provider: script
-    script: bash docker_push stable maestro-java-1.5.3
+    script: bash docker_push stable maestro-java-1.5.4
     on:
       branch: master
 
