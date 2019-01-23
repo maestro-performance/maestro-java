@@ -20,7 +20,7 @@ package utils.commands
 @Grab(group='org.eclipse.paho', module='org.eclipse.paho.client.mqttv3', version='1.1.1')
 
 @GrabResolver(name='orpiske-bintray', root='https://dl.bintray.com/orpiske/libs-release')
-@Grab(group='org.maestro', module='maestro-client', version='1.5.3')
+@Grab(group='org.maestro', module='maestro-client', version='1.5.4-SNAPSHOT')
 
 import org.maestro.client.Maestro
 import org.maestro.common.client.notes.MaestroNote
