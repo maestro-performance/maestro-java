@@ -22,7 +22,7 @@
     <parent>
         <groupId>org.maestro</groupId>
         <artifactId>maestro-java</artifactId>
-        <version>1.5.4-SNAPSHOT</version>
+        <version>1.6.0-SNAPSHOT</version>
     </parent>
 
     <artifactId>maestro-common</artifactId>
