@@ -30,6 +30,7 @@ import java.util.Collection;
 /**
  * Recursively adds jars or files to the groovy classpath
  */
+@Deprecated
 public class GroovyClasspathWalker extends DirectoryWalker<File> {
 
     private static final Logger logger = LoggerFactory.getLogger(GroovyClasspathWalker.class);
