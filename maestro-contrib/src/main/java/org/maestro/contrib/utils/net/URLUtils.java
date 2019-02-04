@@ -70,7 +70,7 @@ public final class URLUtils {
 		URL url;
 
 		if (uri == null) {
-			throw new MalformedURLException("The input URL 'null' is not valid");
+			throw new MalformedURLException("The input URI 'null' is not valid");
 		}
 
 		url = uri.toURL();
@@ -94,6 +94,10 @@ public final class URLUtils {
 	 */
 	public static String getFilename(String uri) throws MalformedURLException,
 			URISyntaxException {
+		if (uri == null) {
+			throw new MalformedURLException("The input URI 'null' is not valid");
+		}
+
 		return getFilename(new URI(uri));
 	}
 
