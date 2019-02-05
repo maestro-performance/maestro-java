@@ -95,7 +95,7 @@ public class MaestroDeserializer {
                 return new InternalError(unpacker);
             }
             case MAESTRO_NOTE_PROTOCOL_ERROR: {
-                return new ProtocolError();
+                return new ProtocolError(unpacker);
             }
             case MAESTRO_NOTE_STATS: {
                 return new StatsResponse(unpacker);
