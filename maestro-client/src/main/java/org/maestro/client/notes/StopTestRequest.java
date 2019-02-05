@@ -35,4 +35,9 @@ public class StopTestRequest extends MaestroRequest<MaestroEventListener> {
     public void notify(final MaestroEventListener visitor) {
         visitor.handle(this);
     }
+
+    @Override
+    public String toString() {
+        return "StopTestRequest{} " + super.toString();
+    }
 }
