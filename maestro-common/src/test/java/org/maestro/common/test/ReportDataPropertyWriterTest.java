@@ -14,11 +14,9 @@
  * limitations under the License.
  */
 
-package org.maestro.plotter.properties;
+package org.maestro.common.test;
 
 import org.junit.Test;
-import org.maestro.plotter.common.InstantRecord;
-import org.maestro.plotter.common.ReportData;
 import org.maestro.common.test.properties.PropertyWriter;
 
 import java.io.File;
@@ -27,7 +25,16 @@ import java.util.Date;
 import java.util.List;
 import java.util.Set;
 
-public class PropertyWriterTest {
+public class ReportDataPropertyWriterTest {
+    private static class ReportData {
+        public List<Date> getPeriods() {
+            return null;
+        }
+
+        public Set<Object> getRecordSet() {
+            return null;
+        }
+    }
 
     private final File dummy = new File(this.getClass().getResource("/").getFile());
 
@@ -37,23 +44,19 @@ public class PropertyWriterTest {
 
         propertyWriter.write(new Object(), dummy);
 
-        // no-throw == success
     }
 
     @Test
     public void testLocalEmptyBean() throws IOException  {
         PropertyWriter propertyWriter = new PropertyWriter();
 
-        propertyWriter.write(new ReportData() {
-            @Override
-            public List<Date> getPeriods() {
-                return null;
-            }
+        propertyWriter.write(new ReportData(), dummy);
+    }
 
-            @Override
-            public Set<? extends InstantRecord> getRecordSet() {
-                return null;
-            }
-        }, dummy);
+    @Test
+    public void testNull() throws IOException  {
+        PropertyWriter propertyWriter = new PropertyWriter();
+
+        propertyWriter.write(null, dummy);
     }
 }
