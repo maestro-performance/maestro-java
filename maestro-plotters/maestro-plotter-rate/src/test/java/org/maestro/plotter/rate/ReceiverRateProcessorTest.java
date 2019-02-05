@@ -28,6 +28,12 @@ public class ReceiverRateProcessorTest extends CommonRateProcessorTest {
         final int periodCount = 86400;
         super.testRecordCount(periodCount, rateData);
 
+        assertNotNull(rateData.getRateValues());
+        assertEquals("Rate values size does not match", 86400, rateData.getRateValues().size());
+
+        assertNotNull(rateData.getRecordSet());
+        assertEquals("Record set size does not match", 86400, rateData.getRecordSet().size());
+
         assertEquals("Maximum value does not match", 86400, rateData.rateStatistics().getMax(), 0.1);
         assertEquals("Minimum value does not match", 1, rateData.rateStatistics().getMin(), 0.1);
     }
