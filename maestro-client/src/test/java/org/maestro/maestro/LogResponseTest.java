@@ -101,8 +101,9 @@ public class LogResponseTest {
         MaestroNote parsed = MaestroDeserializer.deserialize(doSerialize(logResponse));
 
         assertTrue(parsed instanceof LogResponse);
-        assertSame("Parsed object is not a log response", parsed.getNoteType(), MaestroNoteType.MAESTRO_TYPE_DATA);
-        assertSame(parsed.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_LOG);
+        assertSame("Parsed object is not a log response", MaestroNoteType.MAESTRO_TYPE_DATA, parsed.getNoteType());
+        assertSame(MaestroCommand.MAESTRO_NOTE_LOG, parsed.getMaestroCommand());
+        assertNotNull(((LogResponse)parsed).getPeerInfo());
 
         final String expectedHash = "06dbd6b9a75417b7ab5aef1ad58b03c30a43dd83";
 
@@ -140,8 +141,8 @@ public class LogResponseTest {
 
         assertTrue(note instanceof LogResponse);
 
-        assertSame("Chunk1 object is not a log response", note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_DATA);
-        assertSame(note.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_LOG);
+        assertSame("Chunk1 object is not a log response", MaestroNoteType.MAESTRO_TYPE_DATA, note.getNoteType());
+        assertSame(MaestroCommand.MAESTRO_NOTE_LOG, note.getMaestroCommand());
 
         final String expectedHash = "f1b27e5c5ede29e941e3d5fb10c3ef275a0f63a8";
 
