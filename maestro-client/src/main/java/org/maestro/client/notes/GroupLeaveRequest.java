@@ -34,4 +34,9 @@ public class GroupLeaveRequest extends MaestroRequest<MaestroEventListener> {
     public void notify(MaestroEventListener visitor) {
         visitor.handle(this);
     }
+
+    @Override
+    public String toString() {
+        return "GroupLeaveRequest{} " + super.toString();
+    }
 }

@@ -19,6 +19,7 @@ package org.maestro.client.notes;
 import org.maestro.client.exchange.support.DefaultGroupInfo;
 import org.maestro.client.exchange.support.GroupInfo;
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
@@ -48,7 +49,30 @@ public class GroupJoinRequest extends MaestroRequest<MaestroEventListener> {
     }
 
     @Override
+    protected MessageBufferPacker pack() throws IOException {
+        MessageBufferPacker packer = super.pack();
+
+        packer.packString(groupInfo.memberName());
+        packer.packString(groupInfo.groupName());
+
+        return packer;
+    }
+
+    @Override
     public void notify(MaestroEventListener visitor) {
         visitor.handle(this);
+    }
+
+
+    protected static String toString(GroupInfo groupInfo) {
+        return "memberName=" + groupInfo.memberName() + ", groupName=" + groupInfo.groupName();
+    }
+
+
+    @Override
+    public String toString() {
+        return "GroupJoinRequest{" +
+                "groupInfo=" + toString(groupInfo) +
+                "} " + super.toString();
     }
 }
