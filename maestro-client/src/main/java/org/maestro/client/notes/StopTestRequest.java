@@ -24,11 +24,11 @@ import java.io.IOException;
 public class StopTestRequest extends MaestroRequest<MaestroEventListener> {
 
     public StopTestRequest() {
-        super(MaestroCommand.MAESTRO_NOTE_START_TEST);
+        super(MaestroCommand.MAESTRO_NOTE_STOP_TEST);
     }
 
     public StopTestRequest(final MessageUnpacker unpacker) throws IOException {
-        super(MaestroCommand.MAESTRO_NOTE_START_TEST, unpacker);
+        super(MaestroCommand.MAESTRO_NOTE_STOP_TEST, unpacker);
     }
 
     @Override
