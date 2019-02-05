@@ -49,7 +49,7 @@ public class MaestroProtocolTest {
         assertEquals("Parsed class do not match", note.getClass(), parsed.getClass());
         assertSame("Unexpected note type", noteType, parsed.getNoteType());
         assertSame("Unexpected command", command, parsed.getMaestroCommand());
-        assertTrue("Messages do not correlated", note.correlatesTo(note));
+        assertTrue("Messages do not correlate", note.correlatesTo(note));
         assertNotNull("toString must not be null", note.toString());
 
         String value = note.toString();
@@ -74,6 +74,16 @@ public class MaestroProtocolTest {
         assertTrue(note.getUsec() != 0);
     }
 
+    private void setup(MaestroNotification tsn) {
+        tsn.setId("asfas45");
+        tsn.setPeerInfo(peerInfo);
+    }
+
+    private void setup(MaestroResponse note) {
+        note.setId("asfas45");
+        note.setPeerInfo(peerInfo);
+    }
+
 
     @Test
     public void serializePingRequest() throws Exception {
@@ -86,8 +96,7 @@ public class MaestroProtocolTest {
     public void serializeOkResponse() throws Exception {
         OkResponse okResponse = new OkResponse();
 
-        okResponse.setId("testid");
-        okResponse.setPeerInfo(peerInfo);
+        setup(okResponse);
 
         serializeTest(okResponse, MaestroNoteType.MAESTRO_TYPE_RESPONSE, MaestroCommand.MAESTRO_NOTE_OK);
     }
@@ -113,7 +122,7 @@ public class MaestroProtocolTest {
     public void serializeTestSuccessfulNotification() throws Exception {
         TestSuccessfulNotification tsn = new TestSuccessfulNotification();
 
-        setupNotification(tsn);
+        setup(tsn);
 
         org.maestro.common.client.notes.Test test = mockTest();
         tsn.setTest(test);
@@ -131,16 +140,13 @@ public class MaestroProtocolTest {
         verifyMockTest(note.getTest());
     }
 
-    private void setupNotification(MaestroNotification tsn) {
-        tsn.setId("asfas45");
-        tsn.setPeerInfo(peerInfo);
-    }
+
 
     @Test
     public void serializeTestFailedNotification() throws Exception {
         TestFailedNotification tsn = new TestFailedNotification();
 
-        setupNotification(tsn);
+        setup(tsn);
 
         org.maestro.common.client.notes.Test test = mockTest();
         tsn.setTest(test);
@@ -176,8 +182,7 @@ public class MaestroProtocolTest {
         final String url = "http://0.0.0.0:8101/";
         GetResponse getResponse = new GetResponse();
 
-        getResponse.setId("testid");
-        getResponse.setPeerInfo(peerInfo);
+        setup(getResponse);
 
         getResponse.setOption(GetOption.MAESTRO_NOTE_OPT_GET_DS);
         getResponse.setValue(url);
@@ -208,8 +213,7 @@ public class MaestroProtocolTest {
 
         statsResponse.setChildCount(0);
 
-        statsResponse.setId("testid");
-        statsResponse.setPeerInfo(peerInfo);
+        setup(statsResponse);
 
         statsResponse.setLatency(1.123);
         statsResponse.setRate(1122);
@@ -229,8 +233,7 @@ public class MaestroProtocolTest {
     public void serializeDrainCompleteNotification() throws Exception {
         DrainCompleteNotification note = new DrainCompleteNotification();
 
-        note.setId("asfas45");
-        note.setPeerInfo(peerInfo);
+        setup(note);
         note.setMessage("Test failed");
 
         serializeTest(note, MaestroNoteType.MAESTRO_TYPE_NOTIFICATION, MaestroCommand.MAESTRO_NOTE_NOTIFY_DRAIN_COMPLETE,
@@ -247,8 +250,7 @@ public class MaestroProtocolTest {
     public void serializeInternalError() throws Exception {
         InternalError note = new InternalError(ErrorCode.TRY_AGAIN, "Something bad happened");
 
-        note.setId("asfas45");
-        note.setPeerInfo(peerInfo);
+        setup(note);
 
         serializeTest(note, MaestroNoteType.MAESTRO_TYPE_RESPONSE, MaestroCommand.MAESTRO_NOTE_INTERNAL_ERROR,
                 this::verifyInternalErrorPayload);
@@ -351,8 +353,7 @@ public class MaestroProtocolTest {
     public void serializeProtocolError() throws Exception {
         ProtocolError note = new ProtocolError();
 
-        note.setId("asfas45");
-        note.setPeerInfo(peerInfo);
+        setup(note);
 
         serializeTest(note, MaestroNoteType.MAESTRO_TYPE_RESPONSE,
                 MaestroCommand.MAESTRO_NOTE_PROTOCOL_ERROR);
@@ -431,7 +432,7 @@ public class MaestroProtocolTest {
         AbnormalDisconnect abnormalDisconnect = new AbnormalDisconnect();
 
         abnormalDisconnect.setMessage("Disconnected abruptly");
-        setupNotification(abnormalDisconnect);
+        setup(abnormalDisconnect);
 
         serializeTest(abnormalDisconnect, MaestroNoteType.MAESTRO_TYPE_NOTIFICATION,
                 MaestroCommand.MAESTRO_NOTE_ABNORMAL_DISCONNECT);
@@ -448,7 +449,7 @@ public class MaestroProtocolTest {
     public void serializeTestStartedNotification() throws Exception {
         TestStartedNotification tsn = new TestStartedNotification();
 
-        setupNotification(tsn);
+        setup(tsn);
 
         org.maestro.common.client.notes.Test test = mockTest();
 
@@ -459,4 +460,146 @@ public class MaestroProtocolTest {
                 MaestroCommand.MAESTRO_NOTE_NOTIFY_TEST_STARTED, this::verifyTestStartedNotificationPayload);
     }
 
+    private void verifyUserCommand1RequestPayload(UserCommand1Request note) {
+        assertEquals("Unexpected option", 1, note.getOption());
+        assertEquals("Unexpected value", "abc", note.getPayload());
+    }
+
+    @Test
+    public void serializeUserCommand1Request() throws Exception {
+        UserCommand1Request note = new UserCommand1Request();
+
+        note.set(1, "abc");
+
+        serializeTest(note, MaestroNoteType.MAESTRO_TYPE_REQUEST,
+                MaestroCommand.MAESTRO_NOTE_USER_COMMAND_1, this::verifyUserCommand1RequestPayload);
+    }
+
+    private void verifyUserCommand1ResponsePayload(UserCommand1Response note) {
+        assertEquals("Unexpected status", "ok", note.getStatus());
+    }
+
+    @Test
+    public void serializeUserCommand1Response() throws Exception {
+        UserCommand1Response note = new UserCommand1Response();
+
+        setup(note);
+        note.setStatus("ok");
+
+        serializeTest(note, MaestroNoteType.MAESTRO_TYPE_RESPONSE,
+                MaestroCommand.MAESTRO_NOTE_USER_COMMAND_1, this::verifyUserCommand1ResponsePayload);
+    }
+
+    private void verifyPingResponsePayload(PingResponse note) {
+        assertEquals("Unexpected elapsed time", 1234, note.getElapsed());
+    }
+
+
+    @Test
+    public void serializePingResponse() throws Exception {
+        PingResponse pingResponse = new PingResponse();
+
+        setup(pingResponse);
+        pingResponse.setElapsed(1234);
+
+        serializeTest(pingResponse, MaestroNoteType.MAESTRO_TYPE_RESPONSE,
+                MaestroCommand.MAESTRO_NOTE_PING, this::verifyPingResponsePayload);
+    }
+
+    private void verifyPingResponsePayload(AgentSourceRequest note) {
+        assertEquals("Unexpected git URL", "git://localhost/git", note.getSourceUrl());
+    }
+
+
+    @Test
+    public void serializeAgentSourceRequest() throws Exception {
+        AgentSourceRequest note = new AgentSourceRequest();
+
+        note.setSourceUrl("git://localhost/git");
+
+        serializeTest(note, MaestroNoteType.MAESTRO_TYPE_REQUEST,
+                MaestroCommand.MAESTRO_NOTE_AGENT_SOURCE, this::verifyPingResponsePayload);
+    }
+
+    private void verifyLogRequestPayload(LogRequest note) {
+        assertEquals("Unexpected location type", LocationType.LAST, note.getLocationType());
+    }
+
+
+    private void verifyLogRequestPayloadWithLog(LogRequest note) {
+        assertEquals("Unexpected location type", LocationType.ANY, note.getLocationType());
+        assertEquals("Unexpected type name", "10", note.getTypeName());
+    }
+
+    @Test
+    public void serializeLogRequest() throws Exception {
+        LogRequest note = new LogRequest();
+
+        note.setLocationType(LocationType.LAST);
+
+        serializeTest(note, MaestroNoteType.MAESTRO_TYPE_REQUEST,
+                MaestroCommand.MAESTRO_NOTE_LOG, this::verifyLogRequestPayload);
+
+        note.setLocationType(LocationType.ANY);
+        note.setTypeName("10");
+
+        serializeTest(note, MaestroNoteType.MAESTRO_TYPE_REQUEST,
+                MaestroCommand.MAESTRO_NOTE_LOG, this::verifyLogRequestPayloadWithLog);
+    }
+
+    private void verifySetRequestPayloadWithLog(SetRequest note, SetRequest.Option option, String value) {
+        assertEquals("Unexpected option", option, note.getOption());
+        assertEquals("Unexpected type name", value, note.getValue());
+    }
+
+    private void serializeSetRequest(SetRequest note, Consumer<String> func, SetRequest.Option option, String value) throws Exception {
+        func.accept(value);
+
+        serializeTest(note, MaestroNoteType.MAESTRO_TYPE_REQUEST,
+                MaestroCommand.MAESTRO_NOTE_SET, f -> verifySetRequestPayloadWithLog(f, option, value));
+    }
+
+    @Test
+    public void serializeSetRequest() throws Exception {
+        SetRequest note1 = new SetRequest();
+        serializeSetRequest(note1, note1::setDurationType, SetRequest.Option.MAESTRO_NOTE_OPT_SET_DURATION_TYPE, "abc");
+
+        SetRequest note2 = new SetRequest();
+        serializeSetRequest(note2, note2::setBroker, SetRequest.Option.MAESTRO_NOTE_OPT_SET_BROKER, "abc://lala");
+
+        SetRequest note3 = new SetRequest();
+        serializeSetRequest(note3, note3::setMessageSize, SetRequest.Option.MAESTRO_NOTE_OPT_SET_MESSAGE_SIZE, "~120");
+
+        SetRequest note4 = new SetRequest();
+        serializeSetRequest(note4, note4::setRate, SetRequest.Option.MAESTRO_NOTE_OPT_SET_RATE, "0");
+
+        SetRequest note5 = new SetRequest();
+        serializeSetRequest(note5, note5::setParallelCount, SetRequest.Option.MAESTRO_NOTE_OPT_SET_PARALLEL_COUNT, "5");
+
+        SetRequest note6 = new SetRequest();
+        serializeSetRequest(note6, note6::setFCL, SetRequest.Option.MAESTRO_NOTE_OPT_FCL, "250");
+
+        SetRequest note7 = new SetRequest();
+        serializeSetRequest(note7, note7::setManagementInterface, SetRequest.Option.MAESTRO_NOTE_OPT_SET_MI, "mgn://host");
+    }
+
+    private void verifyDrainRequestPayload(DrainRequest note) {
+        assertEquals("Unexpected duration", "5m", note.getDuration());
+        assertEquals("Unexpected URL", "amqp://url", note.getUrl());
+        assertEquals("Unexpected parallel count", "5", note.getParallelCount());
+        assertEquals("Unexpected worker name", "jms", note.getWorkerName());
+    }
+
+    @Test
+    public void serializeDrainRequest() throws Exception {
+        DrainRequest note = new DrainRequest();
+
+        note.setDuration("5m");
+        note.setUrl("amqp://url");
+        note.setParallelCount("5");
+        note.setWorkerName("jms");
+
+        serializeTest(note, MaestroNoteType.MAESTRO_TYPE_REQUEST,
+                MaestroCommand.MAESTRO_NOTE_DRAIN, this::verifyDrainRequestPayload);
+    }
 }
