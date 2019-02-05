@@ -55,4 +55,11 @@ public class StartTestRequest extends MaestroRequest<MaestroEventListener> {
     public void notify(final MaestroEventListener visitor) {
         visitor.handle(this);
     }
+
+    @Override
+    public String toString() {
+        return "StartTestRequest{" +
+                "testExecutionInfo=" + testExecutionInfo +
+                "} " + super.toString();
+    }
 }
