@@ -32,6 +32,7 @@ import java.util.function.Consumer;
 import static org.junit.Assert.*;
 
 public class MaestroProtocolTest {
+
     private final PeerInfo peerInfo = new WorkerPeer(Role.OTHER, "unittest", "localhost",
             new DefaultGroupInfo("test", "all"));
 
@@ -57,6 +58,15 @@ public class MaestroProtocolTest {
 
         assertTrue("toString must contain the class name", value.contains(simpleName));
         assertFalse("toString must not be auto-generated the class name", value.contains("@"));
+
+        if (note instanceof MaestroEvent) {
+            DummyEventListener dummyEventListener = new DummyEventListener();
+
+            ((MaestroEvent) note).notify(dummyEventListener);
+
+            assertTrue("The note is not passing the notification to the event listener",
+                    dummyEventListener.isHandled());
+        }
 
         return parsed;
     }
