@@ -93,4 +93,18 @@ public class SutDetails {
     public String getTestTags() {
         return testTags;
     }
+
+    @Override
+    public String toString() {
+        return "SutDetails{" +
+                "sutId=" + sutId +
+                ", sutName='" + sutName + '\'' +
+                ", sutVersion='" + sutVersion + '\'' +
+                ", sutJvmVersion='" + sutJvmVersion + '\'' +
+                ", sutOtherInfo='" + sutOtherInfo + '\'' +
+                ", sutTags='" + sutTags + '\'' +
+                ", labName='" + labName + '\'' +
+                ", testTags='" + testTags + '\'' +
+                '}';
+    }
 }

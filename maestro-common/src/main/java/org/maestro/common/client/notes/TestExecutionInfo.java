@@ -53,4 +53,12 @@ public class TestExecutionInfo {
     public void iterate() {
         test = test.iterate();
     }
+
+    @Override
+    public String toString() {
+        return "TestExecutionInfo{" +
+                "test=" + test +
+                ", sutDetails=" + sutDetails +
+                '}';
+    }
 }
