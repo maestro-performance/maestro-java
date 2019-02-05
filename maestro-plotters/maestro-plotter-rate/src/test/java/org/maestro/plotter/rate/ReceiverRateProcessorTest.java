@@ -17,6 +17,7 @@
 package org.maestro.plotter.rate;
 
 import org.junit.Test;
+import static org.junit.Assert.*;
 
 public class ReceiverRateProcessorTest extends CommonRateProcessorTest {
 
@@ -26,5 +27,8 @@ public class ReceiverRateProcessorTest extends CommonRateProcessorTest {
 
         final int periodCount = 86400;
         super.testRecordCount(periodCount, rateData);
+
+        assertEquals("Maximum value does not match", 86400, rateData.rateStatistics().getMax(), 0.1);
+        assertEquals("Minimum value does not match", 1, rateData.rateStatistics().getMin(), 0.1);
     }
 }
