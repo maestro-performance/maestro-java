@@ -17,6 +17,7 @@
 package org.maestro.client.notes;
 
 import org.maestro.common.client.notes.MaestroCommand;
+import org.msgpack.core.MessageBufferPacker;
 import org.msgpack.core.MessageUnpacker;
 
 import java.io.IOException;
@@ -40,6 +41,15 @@ public class AbnormalDisconnect extends MaestroNotification {
 
     public void setMessage(String message) {
         this.message = message;
+    }
+
+    @Override
+    protected MessageBufferPacker pack() throws IOException {
+        MessageBufferPacker packer = super.pack();
+
+        packer.packString(message);
+
+        return packer;
     }
 
     @Override
