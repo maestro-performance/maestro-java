@@ -64,6 +64,10 @@ public class MaestroMqttClient implements MaestroClient {
                 final MqttConnectOptions connOpts = MqttClientInstance.getConnectionOptions();
 
                 mqttClient.connect(connOpts);
+
+                if (!mqttClient.isConnected()) {
+                    logger.warn("The maestro MQTT client has not yet connected");
+                }
             }
         }
         catch (MqttException e) {
