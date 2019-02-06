@@ -42,7 +42,7 @@ public class MaestroMqttClient implements MaestroClient {
      * @throws MaestroException if unable to create the client
      */
     public MaestroMqttClient(final String url) throws MaestroException {
-        mqttClient = MqttClientInstance.getInstance(url).getClient();
+        this(MqttClientInstance.getInstance(url).getClient());
     }
 
     /**
