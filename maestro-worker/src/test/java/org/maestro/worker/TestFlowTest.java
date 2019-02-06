@@ -18,13 +18,11 @@ package org.maestro.worker;
 
 import net.orpiske.jms.provider.activemq.ActiveMqProvider;
 import net.orpiske.jms.test.annotations.Provider;
+import org.junit.Test;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.common.LogConfigurator;
 import org.maestro.client.Maestro;
-import org.maestro.common.client.notes.MaestroCommand;
-import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.common.client.notes.MaestroNoteType;
-import org.maestro.common.client.notes.WorkerStartOptions;
+import org.maestro.common.client.notes.*;
 import org.maestro.worker.tests.support.annotations.MaestroPeer;
 import org.maestro.worker.tests.support.annotations.ReceivingPeer;
 import org.maestro.worker.tests.support.annotations.SendingPeer;
@@ -40,7 +38,6 @@ import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
 
-@Ignore
 @RunWith(WorkerTestRunner.class)
 @Provider(
         value = ActiveMqProvider.class,
@@ -63,6 +60,7 @@ public class TestFlowTest extends EndToEndTest {
 
         miniSendingPeer.start();
         miniReceivingPeer.start();
+        System.out.println("Mini peers have started");
     }
 
     @After
@@ -71,7 +69,7 @@ public class TestFlowTest extends EndToEndTest {
         miniReceivingPeer.stop();
     }
 
-    @Test
+    @Test(timeout = 300000)
     public void testSimpleTest() throws Exception {
         System.out.println("Running a short-lived test");
 
@@ -96,18 +94,49 @@ public class TestFlowTest extends EndToEndTest {
         assertEquals("Set broker replies don't match: " + set6.size(), 2, set6.size());
 
 
+        System.out.println("Sending the test start command");
+        TestExecutionInfo testExecutionInfo = TestExecutionInfoBuilder.newBuilder()
+                .withDescription("some description")
+                .withComment("test comments")
+                .withSutId(SutDetails.UNSPECIFIED)
+                .withSutName("unit test sut")
+                .withSutVersion("1.0.1")
+                .withSutJvmVersion("1.7.0")
+                .withSutOtherInfo("")
+                .withSutTags("maestro,devel,test")
+                .withTestName("unit test")
+                .withTestTags("unit,java,junit")
+                .withLabName("local")
+                .withScriptName("junit")
+                .build();
+
+        List<? extends MaestroNote> testStarted = maestro.startTest(MaestroTopics.WORKERS_TOPIC, testExecutionInfo).get();
+        assertEquals("Test started replies don't match: " + testStarted.size(), 2, testStarted.size());
+
+        System.out.println("Sending the worker start commands");
         // 12 = 6 commands * 2 peers (sending and receiving peers)
 
-        maestro.startWorker(MiniPeer.RECEIVER_TOPIC, new WorkerStartOptions("JmsReceiver"));
-        maestro.startWorker(MiniPeer.SENDER_TOPIC, new WorkerStartOptions("JmsSender"));
+        List<? extends MaestroNote> receiverStarted = maestro
+                .startWorker(MiniPeer.RECEIVER_TOPIC, new WorkerStartOptions("JmsReceiver")).get();
+        assertEquals("Receiver start replies don't match: " + receiverStarted.size(), 1,
+                receiverStarted.size());
 
+        List<? extends MaestroNote> senderStarted = maestro
+                .startWorker(MiniPeer.SENDER_TOPIC, new WorkerStartOptions("JmsSender")).get();
+        assertEquals("Sender start replies don't match: " + senderStarted.size(), 1,
+                senderStarted.size());
 
+        System.out.println("Waiting for notifications ...");
         // Get the test result notification
         List<? extends MaestroNote> replies = maestro
                 .waitForNotifications(2)
-                .get(3, TimeUnit.SECONDS);
+                .get(180, TimeUnit.SECONDS);
 
         assertEquals("Replies don't match: " + replies.size(), 2, replies.size());
+
+        System.out.println("Shutting down workers");
+        maestro.halt(MaestroTopics.WORKERS_TOPIC);
+
 
         MaestroNote firstNote = replies.get(0);
         assertEquals(firstNote.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
