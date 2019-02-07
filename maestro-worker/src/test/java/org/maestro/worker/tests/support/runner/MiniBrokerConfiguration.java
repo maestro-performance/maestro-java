@@ -38,6 +38,16 @@ public class MiniBrokerConfiguration implements
 
     public static final String CONNECTOR = "tcp://localhost:61616";
 
+    private void addConnector(final BrokerService brokerService, final String uri, final String name) throws Exception {
+        logger.info("Adding {} connector", name);
+
+        TransportConnector connector = new TransportConnector();
+        connector.setUri(new URI(uri));
+        connector.setName(name.toLowerCase());
+
+        brokerService.addConnector(connector);
+    }
+
     /**
      * Configure the provider
      * @param provider the provider to configure
@@ -76,24 +86,15 @@ public class MiniBrokerConfiguration implements
         brokerService.setPersistent(false);
 
         try {
-            logger.info("Adding MQTT connector");
-            TransportConnector mqttConnector = new TransportConnector();
+            addConnector(brokerService, "mqtt://localhost:1883", "MQTT");
+            addConnector(brokerService, "amqp://localhost:5672", "AMQP");
 
-            mqttConnector.setUri(new URI("mqtt://localhost:1883"));
-            mqttConnector.setName("mqtt");
-            brokerService.addConnector(mqttConnector);
-
-
-            logger.info("Adding AMQP connector");
-            TransportConnector amqpConnector = new TransportConnector();
-            amqpConnector.setUri(new URI("amqp://localhost:5672"));
-            amqpConnector.setName("amqp");
-            brokerService.addConnector(amqpConnector);
 
             TransportConnector defaultConnector = new TransportConnector();
 
             defaultConnector.setUri(new URI(CONNECTOR));
             defaultConnector.setName("default");
+
             brokerService.addConnector(defaultConnector);
         } catch (Exception e) {
             throw new RuntimeException("Unable to add a connector for the "
