@@ -30,7 +30,7 @@ import org.maestro.worker.tests.support.annotations.MaestroPeer;
 import org.maestro.worker.tests.support.annotations.ReceivingPeer;
 import org.maestro.worker.tests.support.annotations.SendingPeer;
 import org.maestro.worker.tests.support.common.EndToEndTest;
-import org.maestro.worker.tests.support.runner.MiniBrokerConfiguration;
+import org.maestro.worker.tests.support.runner.AMQPBrokerConfiguration;
 import org.maestro.worker.tests.support.runner.MiniPeer;
 import org.maestro.worker.tests.support.runner.WorkerTestRunner;
 import org.junit.*;
@@ -47,7 +47,7 @@ import static org.junit.Assert.assertEquals;
 @RunWith(WorkerTestRunner.class)
 @Provider(
         value = ActiveMqProvider.class,
-        configuration = MiniBrokerConfiguration.class)
+        configuration = AMQPBrokerConfiguration.class)
 public class ScriptTest extends EndToEndTest {
 
     @ReceivingPeer

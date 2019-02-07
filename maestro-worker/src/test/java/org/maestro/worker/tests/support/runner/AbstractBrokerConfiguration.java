@@ -1,23 +1,23 @@
 /*
- *  Copyright 2017 Otavio R. Piske <angusyoung@gmail.com>
+ * Copyright 2018 Otavio R. Piske <angusyoung@gmail.com>
  *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
  *
- *  http://www.apache.org/licenses/LICENSE-2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
  *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
  */
+
 package org.maestro.worker.tests.support.runner;
 
 import net.orpiske.jms.provider.ProviderConfiguration;
 import net.orpiske.jms.provider.activemq.ActiveMqProvider;
-import net.orpiske.jms.provider.configuration.ActiveMqConfiguration;
 import org.apache.activemq.broker.BrokerService;
 import org.apache.activemq.broker.TransportConnector;
 import org.apache.commons.io.FileUtils;
@@ -27,18 +27,11 @@ import org.slf4j.LoggerFactory;
 import java.net.URI;
 import java.net.URL;
 
-/**
- * This class configures the provider once it has been initialized
- */
-public class MiniBrokerConfiguration implements
-        ProviderConfiguration<ActiveMqProvider>
-{
-    private static final Logger logger = LoggerFactory.getLogger
-            (ActiveMqConfiguration.class);
+public abstract class AbstractBrokerConfiguration implements ProviderConfiguration<ActiveMqProvider> {
+    private static final Logger logger = LoggerFactory.getLogger(AbstractBrokerConfiguration.class);
 
-    public static final String CONNECTOR = "tcp://localhost:61616";
 
-    private void addConnector(final BrokerService brokerService, final String uri, final String name) throws Exception {
+    protected void addConnector(final BrokerService brokerService, final String uri, final String name) throws Exception {
         logger.info("Adding {} connector", name);
 
         TransportConnector connector = new TransportConnector();
@@ -48,13 +41,17 @@ public class MiniBrokerConfiguration implements
         brokerService.addConnector(connector);
     }
 
+    protected abstract void configureConnectors(final BrokerService brokerService) throws Exception;
+
+    protected abstract String getConnector();
+
     /**
      * Configure the provider
      * @param provider the provider to configure
      */
     public void configure(ActiveMqProvider provider) {
-        logger.info("Configuring the provider");
-        provider.setUri(CONNECTOR);
+        logger.info("Configuring the provider on {}", getConnector());
+        provider.setUri(getConnector());
 
 
         /*
@@ -86,16 +83,12 @@ public class MiniBrokerConfiguration implements
         brokerService.setPersistent(false);
 
         try {
-            addConnector(brokerService, "mqtt://localhost:1883", "MQTT");
-            addConnector(brokerService, "amqp://localhost:5672", "AMQP");
+            addConnector(brokerService, "tcp://localhost:61616", "OPENWIRE");
+
+            configureConnectors(brokerService);
 
 
-            TransportConnector defaultConnector = new TransportConnector();
 
-            defaultConnector.setUri(new URI(CONNECTOR));
-            defaultConnector.setName("default");
-
-            brokerService.addConnector(defaultConnector);
         } catch (Exception e) {
             throw new RuntimeException("Unable to add a connector for the "
                     + "service: " + e.getMessage(), e);
