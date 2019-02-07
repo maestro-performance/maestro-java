@@ -67,6 +67,11 @@ public class TestFlowTest extends EndToEndTest {
 
     @After
     public void tearDown() {
+        System.out.println("Shutting down workers");
+        maestro.halt(MaestroTopics.WORKERS_TOPIC);
+
+        waitForWorkerShutdown();
+
         miniSendingPeer.stop();
         miniReceivingPeer.stop();
     }
