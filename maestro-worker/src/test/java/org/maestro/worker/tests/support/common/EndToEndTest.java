@@ -16,9 +16,25 @@
 
 package org.maestro.worker.tests.support.common;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * Base class for JMS-based, end-to-end tests.
  */
 public abstract class EndToEndTest {
+    private static final Logger logger = LoggerFactory.getLogger(EndToEndTest.class);
+
+    protected void waitForWorkerShutdown(long time) {
+        try {
+            Thread.sleep(time);
+        } catch (InterruptedException e) {
+            logger.trace("Interrupted. Aborting ...");
+        }
+    }
+
+    protected void waitForWorkerShutdown() {
+        waitForWorkerShutdown(3000);
+    }
 
 }

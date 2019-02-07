@@ -20,6 +20,8 @@ import net.orpiske.jms.provider.activemq.ActiveMqProvider;
 import net.orpiske.jms.test.annotations.Provider;
 import org.junit.Test;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.notes.DrainCompleteNotification;
+import org.maestro.client.notes.TestSuccessfulNotification;
 import org.maestro.common.LogConfigurator;
 import org.maestro.client.Maestro;
 import org.maestro.common.client.notes.*;
@@ -130,13 +132,10 @@ public class TestFlowTest extends EndToEndTest {
         // Get the test result notification
         List<? extends MaestroNote> replies = maestro
                 .waitForNotifications(2)
-                .get(180, TimeUnit.SECONDS);
+                .get(90, TimeUnit.SECONDS);
 
         assertEquals("Replies don't match: " + replies.size(), 2, replies.size());
-
-        System.out.println("Shutting down workers");
-        maestro.halt(MaestroTopics.WORKERS_TOPIC);
-
+        assertEquals(2, replies.stream().filter(n -> n instanceof TestSuccessfulNotification).count());
 
         MaestroNote firstNote = replies.get(0);
         assertEquals(firstNote.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
@@ -145,5 +144,12 @@ public class TestFlowTest extends EndToEndTest {
         MaestroNote secondNote = replies.get(1);
         assertEquals(secondNote.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
         assertEquals(secondNote.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_SUCCESS);
+
+        System.out.println("Waiting for drain ...");
+        List<? extends MaestroNote> drainNotification = maestro
+                .waitForDrain(1)
+                .get(180, TimeUnit.SECONDS);
+        assertEquals("Replies don't match: " + drainNotification.size(), 1, drainNotification.size());
+        assertEquals(1, drainNotification.stream().filter(n -> n instanceof DrainCompleteNotification).count());
     }
 }
