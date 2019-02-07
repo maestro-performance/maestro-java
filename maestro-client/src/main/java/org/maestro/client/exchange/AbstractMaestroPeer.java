@@ -76,7 +76,9 @@ public abstract class AbstractMaestroPeer<T extends MaestroNote> implements Mqtt
     }
 
     public void connectionLost(Throwable throwable) {
-        logger.warn("Connection lost");
+        if (isRunning()) {
+            logger.warn("Connection lost");
+        }
     }
 
     public boolean isConnected() {
