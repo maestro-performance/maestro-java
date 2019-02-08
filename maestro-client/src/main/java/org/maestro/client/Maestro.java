@@ -279,7 +279,7 @@ public final class Maestro implements MaestroRequester {
         final MessageCorrelation correlation = maestroNote.correlate();
 
         return CompletableFuture.supplyAsync(
-                () -> collect(note -> isCorrelated(note, correlation), 30, 50)
+                () -> collect(note -> isCorrelated(note, correlation), 100, 150)
         );
     }
 
