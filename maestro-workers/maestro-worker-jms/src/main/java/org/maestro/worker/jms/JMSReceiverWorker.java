@@ -144,7 +144,7 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
                 doClientStartup(client);
             }
             catch (Exception e) {
-                logger.error("Unable to start the receiver worker: {}", e.getMessage(), e);
+                logger.trace("Unable to start the receiver worker: {}", e.getMessage(), e);
                 throw e;
             }
 
