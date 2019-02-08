@@ -144,8 +144,8 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             getClient().replyOk(note);
             return true;
         } catch (Exception e) {
-            logger.error("Unable to start workers from the container: {}", e.getMessage(), e);
-            getClient().replyInternalError(note, "Unable to start workers from the container: %s", e.getMessage());
+            logger.error("The worker container was unable to start the workers: {}", e.getMessage(), e);
+            getClient().replyInternalError(note, "The worker container was unable to start the workers: %s", e.getMessage());
         }
 
         return false;
@@ -349,7 +349,7 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             Class<?> clazz = (Class) Class.forName(className);
 
             if (!doWorkerStart(note, clazz)) {
-                logger.warn("::handle {} can't start worker", note);
+                logger.error("Failed to start the workers");
             }
         } catch (ClassNotFoundException e) {
             getClient().replyInternalError(note, "Unable to create an worker for %s", workerName);
