@@ -20,6 +20,7 @@ import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.evaluators.Evaluator;
 import org.maestro.common.evaluators.LatencyEvaluator;
+import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.worker.*;
 import org.maestro.worker.common.container.initializers.WorkerInitializer;
 import org.maestro.worker.common.watchdog.WatchdogObserver;
@@ -124,11 +125,7 @@ public final class WorkerContainer {
         catch (Throwable t) {
             workers.clear();
 
-            try {
-                throw t;
-            } catch (InterruptedException e) {
-                logger.warn("Interrupted", e);
-            }
+            throw new MaestroException(t);
         }
     }
 
