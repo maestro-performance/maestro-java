@@ -145,7 +145,8 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
             return true;
         } catch (Exception e) {
             logger.error("The worker container was unable to start the workers: {}", e.getMessage(), e);
-            getClient().replyInternalError(note, "The worker container was unable to start the workers: %s", e.getMessage());
+            getClient().replyInternalError(note, "The worker container was unable to start the workers: %s",
+                    e.getMessage());
         }
 
         return false;
