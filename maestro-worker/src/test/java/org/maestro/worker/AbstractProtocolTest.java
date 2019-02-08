@@ -16,10 +16,10 @@
 
 package org.maestro.worker;
 
-import org.junit.Test;
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.notes.DrainCompleteNotification;
+import org.maestro.client.notes.TestFailedNotification;
 import org.maestro.client.notes.TestSuccessfulNotification;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.client.notes.*;
@@ -106,6 +106,21 @@ public class AbstractProtocolTest extends EndToEndTest {
                 .waitForNotifications(2)
                 .get(90, TimeUnit.SECONDS);
 
+        validateTestResults(replies);
+
+        validateDrain(maestro);
+    }
+
+    protected void validateDrain(Maestro maestro) throws InterruptedException, java.util.concurrent.ExecutionException, java.util.concurrent.TimeoutException {
+        System.out.println("Waiting for drain ...");
+        List<? extends MaestroNote> drainNotification = maestro
+                .waitForDrain(1)
+                .get(180, TimeUnit.SECONDS);
+        assertEquals("Replies don't match: " + drainNotification.size(), 1, drainNotification.size());
+        assertEquals(1, drainNotification.stream().filter(n -> n instanceof DrainCompleteNotification).count());
+    }
+
+    public static void validateTestResultsSuccess(List<? extends MaestroNote> replies) {
         assertEquals("Replies don't match: " + replies.size(), 2, replies.size());
         assertEquals(2, replies.stream().filter(n -> n instanceof TestSuccessfulNotification).count());
 
@@ -116,12 +131,22 @@ public class AbstractProtocolTest extends EndToEndTest {
         MaestroNote secondNote = replies.get(1);
         assertEquals(secondNote.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
         assertEquals(secondNote.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_SUCCESS);
+    }
 
-        System.out.println("Waiting for drain ...");
-        List<? extends MaestroNote> drainNotification = maestro
-                .waitForDrain(1)
-                .get(180, TimeUnit.SECONDS);
-        assertEquals("Replies don't match: " + drainNotification.size(), 1, drainNotification.size());
-        assertEquals(1, drainNotification.stream().filter(n -> n instanceof DrainCompleteNotification).count());
+    public static void validateTestResultsFailure(List<? extends MaestroNote> replies) {
+        assertEquals("Replies don't match: " + replies.size(), 2, replies.size());
+        assertEquals(2, replies.stream().filter(n -> n instanceof TestFailedNotification).count());
+
+        MaestroNote firstNote = replies.get(0);
+        assertEquals(firstNote.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
+        assertEquals(firstNote.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_FAIL);
+
+        MaestroNote secondNote = replies.get(1);
+        assertEquals(secondNote.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
+        assertEquals(secondNote.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_FAIL);
+    }
+
+    protected void validateTestResults(List<? extends MaestroNote> replies) {
+        validateTestResultsSuccess(replies);
     }
 }
