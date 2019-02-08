@@ -71,8 +71,8 @@ public class AMQPConnectionFailureTest extends AbstractProtocolTest {
     }
 
     @Override
-    protected void validateDrain(Maestro maestro) throws InterruptedException, ExecutionException, TimeoutException {
-//        super.validateDrain(maestro);
+    protected void validateDrain(Maestro maestro) {
+        // NO-OP
     }
 
     @Override
