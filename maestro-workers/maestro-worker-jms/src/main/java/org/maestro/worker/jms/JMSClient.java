@@ -83,7 +83,7 @@ class JMSClient implements Client {
             connection = factory.createConnection();
             logger.debug("Connection created successfully");
         } catch (Throwable t) {
-            logger.warn("Something wrong happened while initializing the JMS client: {}", t.getMessage(), t);
+            logger.trace("Something wrong happened while initializing the JMS client: {}", t.getMessage(), t);
 
             JMSResourceUtil.capturingClose(connection);
             throw t;
