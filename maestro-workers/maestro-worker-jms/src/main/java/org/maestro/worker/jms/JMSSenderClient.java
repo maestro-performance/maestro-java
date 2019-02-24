@@ -18,11 +18,14 @@ package org.maestro.worker.jms;
 
 import org.maestro.common.content.ContentStrategy;
 import org.maestro.common.jms.SenderClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import java.nio.ByteBuffer;
 
 final class JMSSenderClient extends JMSClient implements SenderClient {
+    private static final Logger logger = LoggerFactory.getLogger(JMSSenderClient.class);
 
     private ContentStrategy contentStrategy;
     private Session session;
@@ -106,6 +109,7 @@ final class JMSSenderClient extends JMSClient implements SenderClient {
         message.writeBytes(bytes, offset, length);
         producer.send(message);
         if (commitTransaction) {
+            logger.debug("Committing the transaction");
             session.commit();
         }
     }
