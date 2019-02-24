@@ -235,14 +235,16 @@ public class JMSReceiverWorker implements MaestroReceiverWorker {
      * @return number of session mode, else -1
      */
     private int isAcknowledge(long count, JmsOptions opts, boolean isClientAck) {
-        int ret = (isClientAck && isCommitAckTime(count, opts)) ? opts.getSessionMode() : -1;
+        if (isClientAck) {
+            if (isCommitAckTime(count, opts)) {
+                logger.warn("About time to acknowledge the transaction: count = {} / isTransacted = {}", count,
+                        isClientAck);
 
-        if (isCommitAckTime(count, opts)) {
-            logger.warn("About time to acknowledge the transaction: count = {} / isTransacted = {}", count,
-                    isClientAck);
+                return opts.getSessionMode();
+            }
         }
 
-        return ret;
+        return -1;
     }
 
     private void doClientStartup(final ReceiverClient client) throws Exception {
