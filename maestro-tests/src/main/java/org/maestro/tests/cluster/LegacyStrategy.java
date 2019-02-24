@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
 /**
  * The legacy strategy retain the fixed assignment strategy that was used
  * prior to Maestro 1.5. In this strategy, the workers have predefined roles
- * (determined by starting them with -Dmaestro.worker.role=sender).
+ * (determined by starting them with -Dmaestro.worker.name=sender).
  *
  * Likely more useful for development testing.
  */
