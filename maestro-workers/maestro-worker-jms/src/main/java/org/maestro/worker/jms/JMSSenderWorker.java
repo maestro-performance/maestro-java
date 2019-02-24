@@ -253,7 +253,25 @@ public class JMSSenderWorker implements MaestroSenderWorker {
     }
 
     private boolean commitTransaction(long count, JmsOptions opts, boolean isSessionTransacted) {
-        return isSessionTransacted && count % opts.getBatchAcknowledge() == 0;
+        if (isSessionTransacted) {
+            if (isCommitAckTime(count, opts)) {
+                logger.debug("About time to commit the transaction: count = {} / isTransacted = {}", count,
+                        isSessionTransacted);
+
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    private boolean isCommitAckTime(long count, JmsOptions opts) {
+        /*
+         * The message has not been sent YET. That's why we increase
+         * +1 here to check that, if sent successfully, we should also
+         * send the commit.
+         */
+        return ((count + 1) % opts.getBatchAcknowledge()) == 0;
     }
 
     private boolean isSessionTransacted(JmsOptions opts) {
