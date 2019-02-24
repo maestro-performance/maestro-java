@@ -27,6 +27,11 @@ deploy:
     script: bash docker_push edge devel
     on:
       branch: devel
+  # push 1.5.x fixes to docker hub
+  - provider: script
+    script: bash docker_push testing-1.5 1.5.x
+    on:
+      branch: 1.5.x
   # push stable to docker hub
   - provider: script
     script: bash docker_push stable maestro-java-1.5.4
