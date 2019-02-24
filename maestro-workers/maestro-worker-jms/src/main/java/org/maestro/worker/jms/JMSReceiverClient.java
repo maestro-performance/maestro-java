@@ -18,12 +18,16 @@ package org.maestro.worker.jms;
 
 import org.maestro.common.content.ContentStrategy;
 import org.maestro.common.jms.ReceiverClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.jms.*;
 import java.lang.IllegalStateException;
 import java.nio.ByteBuffer;
 
 final class JMSReceiverClient extends JMSClient implements ReceiverClient {
+    private static final Logger logger = LoggerFactory.getLogger(JMSReceiverClient.class);
+
     private static final long RECEIVE_TIMEOUT_MILLIS = 1000L;
     private static final int PAYLOAD_SIZE = Long.BYTES;
     private Session session;
@@ -62,6 +66,7 @@ final class JMSReceiverClient extends JMSClient implements ReceiverClient {
         } else if (sessionMode == Session.CLIENT_ACKNOWLEDGE) {
             message.acknowledge();
         } else if (sessionMode == Session.SESSION_TRANSACTED) {
+            logger.warn("Acknowledging the transaction");
             session.commit();
         }
 
