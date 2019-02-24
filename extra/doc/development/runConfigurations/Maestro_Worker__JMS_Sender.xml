@@ -4,7 +4,7 @@
     <option name="MAIN_CLASS_NAME" value="org.maestro.worker.main.MaestroWorkerMain" />
     <module name="maestro-worker" />
     <option name="PROGRAM_PARAMETERS" value="-m mqtt://localhost:1884 -H localhost -l $MODULE_DIR$/target/classes/sender-logs" />
-    <option name="VM_PARAMETERS" value="-Xmx2g -Dorg.maestro.home=$MODULE_DIR$/target/classes -Dmaestro.worker.role=sender" />
+    <option name="VM_PARAMETERS" value="-Xmx2g -Dorg.maestro.home=$MODULE_DIR$/target/classes -Dmaestro.worker.name=sender" />
     <option name="WORKING_DIRECTORY" value="$MODULE_DIR$" />
     <extension name="coverage">
       <pattern>
