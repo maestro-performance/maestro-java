@@ -89,7 +89,7 @@ These can be used along with other roles to deploy the desired Software Under Te
 For example:
 * [ansible-amq-broker](https://github.com/msgqe/ansible-amq-broker): to deploy JBoss A-MQ 7 or Apache Artemis single host brokers
 * [ansible-broker-clusters](https://github.com/msgqe/ansible-broker-clusters): : to deploy JBoss A-MQ 7 or Apache Artemis clustered brokers
-* [ansible-qpid-dispatch](https://github.com/rh-messaging-qe/ansible-qpid-dispatch): to deploy QPid Dispatch Router
+* [ansible-qpid-dispatch](https://github.com/rh-messaging-qe/ansible-qpid-dispatch): to deploy Qpid Dispatch Router
 
 This is a much more complex deployment model, but usually desired as it can be made to represent real messaging use case 
 scenarios involving multiple hosts.
