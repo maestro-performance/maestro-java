@@ -53,7 +53,6 @@ class Executor extends FlexibleTestExecutor {
         maestro.userCommand(MaestroTopics.peerTopic(Role.AGENT), userCommandData)
     }
 
-    @Override
     boolean run(final String scriptName, final String description, final String comments) {
         final TestDetails testDetails = new TestDetails(description, comments);
 
