@@ -15,7 +15,7 @@ services:
     build:
       context: maestro
       args:
-        - MAESTRO_VERSION=1.5.4-SNAPSHOT
+        - MAESTRO_VERSION=1.5.5
       target: maestro-worker
     networks:
       - cluster
@@ -27,7 +27,7 @@ services:
       build:
         context: maestro
         args:
-          - MAESTRO_VERSION=1.5.4-SNAPSHOT
+          - MAESTRO_VERSION=1.5.5
         target: maestro-inspector
       networks:
         - cluster
@@ -39,7 +39,7 @@ services:
       build:
         context: maestro
         args:
-          - MAESTRO_VERSION=1.5.4-SNAPSHOT
+          - MAESTRO_VERSION=1.5.5
         target: maestro-agent
       networks:
         - cluster
@@ -50,7 +50,7 @@ services:
       build:
         context: maestro
         args:
-          - MAESTRO_VERSION=1.5.4-SNAPSHOT
+          - MAESTRO_VERSION=1.5.5
         target: maestro-client
       networks:
         - cluster
@@ -61,7 +61,7 @@ services:
     build:
       context: maestro
       args:
-      - MAESTRO_VERSION=1.5.4-SNAPSHOT
+      - MAESTRO_VERSION=1.5.5
       target: maestro-reports
     networks:
       - cluster
@@ -75,7 +75,7 @@ services:
     build:
       context: maestro
       args:
-      - MAESTRO_VERSION=1.5.4-SNAPSHOT
+      - MAESTRO_VERSION=1.5.5
       target: maestro-exporter
     networks:
       - cluster
