@@ -25,8 +25,8 @@ Get Maestro
 ----
 
 You can find official Maestro packages on the [Docker Hub](https://hub.docker.com/r/maestroperf/). Maestro tarballs 
-can also be found [here](http://www.orpiske.net/files/maestro-java/), although the tarballs are not guaranteed to be the
-latest.
+can also be found [here](http://www.orpiske.net/files/maestro-java/) or [here](https://bintray.com/orpiske/libs-release/maestro-java#files/archive), 
+although the tarballs are not guaranteed to be the latest.
 
 **Note**: It is very easy to build Maestro. Check the [Development Guide](Development.md) for details about how to build 
 Maestro and have the latest tarballs if that is what you need.
