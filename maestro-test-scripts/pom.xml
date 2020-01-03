@@ -27,46 +27,36 @@
 
     <artifactId>maestro-test-scripts</artifactId>
 
-    <properties>
-        <jms.test.util.version>1.1.0</jms.test.util.version>
-    </properties>
-
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.25</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.8</version>
         </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.6</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.ivy</groupId>
             <artifactId>ivy</artifactId>
-            <version>2.4.0</version>
         </dependency>
 
         <dependency>
             <groupId>org.codehaus.groovy</groupId>
             <artifactId>groovy</artifactId>
             <classifier>indy</classifier>
-            <version>2.4.14</version>
         </dependency>
 
         <dependency>
@@ -91,7 +81,6 @@
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>jms-test-provider-activemq</artifactId>
-            <version>${jms.test.util.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -99,7 +88,6 @@
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>jms-test-provider-activemq</artifactId>
-            <version>${jms.test.util.version}</version>
             <scope>test</scope>
         </dependency>
 
@@ -110,7 +98,6 @@
             <version>${project.version}</version>
             <scope>test</scope>
         </dependency>
-
 
         <dependency>
             <groupId>org.maestro</groupId>

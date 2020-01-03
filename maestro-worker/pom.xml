@@ -27,47 +27,35 @@
 
     <artifactId>maestro-worker</artifactId>
 
-    <properties>
-        <!-- Only for major libraries -->
-        <jms.test.util.version>1.2.0</jms.test.util.version>
-    </properties>
-
-
     <dependencies>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
-            <version>1.7.25</version>
         </dependency>
 
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-log4j12</artifactId>
-            <version>1.7.25</version>
         </dependency>
 
         <dependency>
             <groupId>commons-cli</groupId>
             <artifactId>commons-cli</artifactId>
-            <version>1.4</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
-            <version>3.6</version>
         </dependency>
 
         <dependency>
             <groupId>commons-io</groupId>
             <artifactId>commons-io</artifactId>
-            <version>2.5</version>
         </dependency>
 
         <dependency>
             <groupId>org.eclipse.paho</groupId>
             <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-            <version>1.1.1</version>
         </dependency>
 
         <dependency>
@@ -98,14 +86,12 @@
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>jms-test-util</artifactId>
-            <version>${jms.test.util.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>jms-test-util</artifactId>
-            <version>${jms.test.util.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -113,7 +99,6 @@
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>jms-test-provider-activemq</artifactId>
-            <version>${jms.test.util.version}</version>
             <type>test-jar</type>
             <scope>test</scope>
         </dependency>
@@ -121,14 +106,12 @@
         <dependency>
             <groupId>net.orpiske</groupId>
             <artifactId>jms-test-provider-activemq</artifactId>
-            <version>${jms.test.util.version}</version>
             <scope>test</scope>
         </dependency>
 
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
             <scope>test</scope>
         </dependency>
 
@@ -139,7 +122,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
-                <version>3.0.2</version>
+                <version>${version.plugin.maven-jar}</version>
                 <executions>
                     <execution>
                         <goals>
