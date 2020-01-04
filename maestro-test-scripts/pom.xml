@@ -78,6 +78,19 @@
         </dependency>
 
         <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-client-mqtt</artifactId>
+            <version>${project.version}</version>
+            <scope>test</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-peers</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.testcontainers</groupId>
             <artifactId>testcontainers</artifactId>
         </dependency>

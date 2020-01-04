@@ -14,7 +14,7 @@
  * limitations under the License.
  */
 
-package org.maestro.client.exchange;
+package org.maestro.client.exchange.mqtt;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttException;

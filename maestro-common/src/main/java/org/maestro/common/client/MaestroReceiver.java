@@ -84,4 +84,28 @@ public interface MaestroReceiver {
      * Publishes an abnormal disconnect notification message in the broker
      */
     void abnormalDisconnect();
+
+    /**
+     * Publish a request to the given topic. This is usually used for requesting data for
+     * collection purposes (ie.: log request)
+     * @param topic the topic to publish to
+     * @param note the note to publish
+     */
+    void publish(String topic, MaestroNote note);
+
+
+    /**
+     * Subscribe to topics
+     * @param topic the topic to subscribe too the service level (when applicable)
+     * @param serviceLevel
+     */
+    void subscribe(String topic, ServiceLevel serviceLevel);
+
+    /**
+     * Unsubscribe to topics
+     * @param topic the topic to unsubscribe too
+     */
+    void unsubscribe(String topic);
+
+
 }

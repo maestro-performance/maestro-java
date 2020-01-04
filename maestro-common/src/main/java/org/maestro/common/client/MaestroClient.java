@@ -17,6 +17,7 @@
 package org.maestro.common.client;
 
 
+import org.maestro.common.client.callback.MaestroNoteCallback;
 import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
@@ -49,6 +50,29 @@ public interface MaestroClient {
      */
     void publish(final String topic, final MaestroNote note) throws MalformedNoteException, MaestroConnectionException;
 
+    /**
+     * Publishes a message in the broker
+     *
+     * @param topic the topic to publish the message
+     * @param note  the maestro note to publish
+     * @param serviceLevel the service level (when applicable)
+     * @throws MaestroConnectionException if failed to publish the message
+     * @throws MalformedNoteException     in case of other I/O errors
+     */
+    void publish(final String topic, final MaestroNote note, ServiceLevel serviceLevel) throws MalformedNoteException, MaestroConnectionException;
 
+    void publish(final String topic, final MaestroNote note, ServiceLevel serviceLevel, MaestroNoteCallback postProcessCallback);
 
+    /**
+     * Subscribe to topics
+     * @param topic the topic to subscribe too the service level (when applicable)
+     * @param serviceLevel
+     */
+    void subscribe(String topic, ServiceLevel serviceLevel);
+
+    /**
+     * Unsubscribe to topics
+     * @param topic the topic to unsubscribe too
+     */
+    void unsubscribe(String topic);
 }

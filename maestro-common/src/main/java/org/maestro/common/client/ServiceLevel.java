@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Otavio Rodolfo Piske
+ * Copyright 2018 Otavio R. Piske <angusyoung@gmail.com>
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,21 +12,26 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
+ *
  */
 
-package org.maestro.client.callback;
-
-import org.maestro.common.client.notes.MaestroNote;
+package org.maestro.common.client;
 
 /**
- * A callback executed when a note is received
+ * Service levels
  */
-public interface MaestroNoteCallback {
+public enum ServiceLevel {
+    AT_MOST_ONCE(0),
+    AT_LEAST_ONCE(1),
+    EXACTLY_ONCE(2);
 
-    /**
-     * Executes the call back
-     * @param note the related note
-     * @return true if the message should continue to be processed or false otherwise
-     */
-    boolean call(MaestroNote note);
+    private final int level;
+
+    ServiceLevel(int level) {
+        this.level = level;
+    }
+
+    public int getLevel() {
+        return level;
+    }
 }

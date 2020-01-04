@@ -18,12 +18,18 @@ package org.maestro.agent.main;
 
 import org.apache.commons.cli.*;
 import org.maestro.agent.base.MaestroAgent;
+import org.maestro.client.Maestro;
+import org.maestro.client.exchange.MaestroDeserializer;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.collector.MaestroCollector;
+import org.maestro.client.exchange.mqtt.MaestroMqttClient;
+import org.maestro.client.exchange.mqtt.MqttConsumerEndpoint;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.NetworkUtils;
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 
@@ -121,8 +127,15 @@ public class MaestroAgentMain {
         try {
             MaestroWorkerExecutor executor;
 
+            MaestroMqttClient client = new MaestroMqttClient(maestroUrl);
+            client.connect();
+
+            MqttConsumerEndpoint<MaestroNote> consumerEndpoint = new MqttConsumerEndpoint<>(maestroUrl, MaestroDeserializer::deserialize);
+            consumerEndpoint.connect();
+            consumerEndpoint.subscribe(MaestroTopics.MAESTRO_TOPICS);
+
             final PeerInfo peerInfo = new AgentPeer(host);
-            MaestroAgent maestroPeer = new MaestroAgent(maestroUrl, peerInfo);
+            MaestroAgent maestroPeer = new MaestroAgent(client, consumerEndpoint, peerInfo);
 
             executor = new MaestroWorkerExecutor(maestroPeer);
 

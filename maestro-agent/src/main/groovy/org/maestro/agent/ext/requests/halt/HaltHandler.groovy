@@ -17,7 +17,7 @@
 package org.maestro.agent.ext.requests.halt
 
 import org.maestro.agent.base.AbstractHandler
-import org.maestro.client.MaestroReceiverClient
+import MaestroReceiverClient
 
 class HaltHandler extends AbstractHandler {
 

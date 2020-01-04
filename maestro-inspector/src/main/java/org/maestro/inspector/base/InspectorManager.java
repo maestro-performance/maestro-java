@@ -17,9 +17,11 @@
 package org.maestro.inspector.base;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.maestro.client.exchange.ConsumerEndpoint;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.client.MaestroClient;
 import org.maestro.common.exceptions.DurationParseException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.common.inspector.MaestroInspector;
@@ -50,9 +52,9 @@ public class InspectorManager extends MaestroWorkerManager implements MaestroIns
         }
     }
 
-    public InspectorManager(final String maestroURL, final PeerInfo peerInfo, final File logDir) throws MaestroException
+    public InspectorManager(MaestroClient maestroClient, ConsumerEndpoint consumerEndpoint, PeerInfo peerInfo, final File logDir) throws MaestroException
     {
-        super(maestroURL, peerInfo);
+        super(maestroClient, consumerEndpoint, peerInfo);
 
         this.logDir = logDir;
 

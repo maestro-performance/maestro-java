@@ -19,7 +19,7 @@ package org.maestro.agent.base;
 import groovy.lang.GroovyClassLoader;
 import groovy.lang.GroovyObject;
 import org.codehaus.groovy.control.CompilationFailedException;
-import org.maestro.client.MaestroReceiverClient;
+import org.maestro.client.exchange.receiver.MaestroReceiverClient;
 import org.maestro.common.agent.AgentHandler;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.Test;

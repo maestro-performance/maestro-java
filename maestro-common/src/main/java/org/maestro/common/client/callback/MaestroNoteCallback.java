@@ -1,5 +1,5 @@
 /*
- * Copyright 2018 Otavio R. Piske <angusyoung@gmail.com>
+ * Copyright 2018 Otavio Rodolfo Piske
  *
  * Licensed under the Apache License, Version 2.0 (the "License");
  * you may not use this file except in compliance with the License.
@@ -12,16 +12,21 @@
  * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
  * See the License for the specific language governing permissions and
  * limitations under the License.
- *
  */
 
-package org.maestro.client.exchange;
+package org.maestro.common.client.callback;
+
+import org.maestro.common.client.notes.MaestroNote;
 
 /**
- * Service levels for MQTT
+ * A callback executed when a note is received
  */
-public class MqttServiceLevel {
-    public static final int AT_MOST_ONCE = 0;
-    public static final int AT_LEAST_ONCE = 1;
-    public static final int EXACTLY_ONCE = 2;
+public interface MaestroNoteCallback {
+
+    /**
+     * Executes the call back
+     * @param note the related note
+     * @return true if the message should continue to be processed or false otherwise
+     */
+    boolean call(MaestroNote note);
 }

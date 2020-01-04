@@ -45,6 +45,13 @@
             <version>${project.version}</version>
         </dependency>
 
+
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-peers</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>

@@ -16,31 +16,58 @@
 
 package org.maestro.agent.base;
 
+import java.io.File;
+import java.io.IOException;
+import java.util.LinkedList;
+import java.util.List;
+import java.util.UUID;
+
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.apache.commons.io.FileUtils;
 import org.eclipse.jgit.api.CloneCommand;
 import org.eclipse.jgit.api.Git;
 import org.eclipse.jgit.api.errors.GitAPIException;
 import org.eclipse.jgit.lib.NullProgressMonitor;
-import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.ConsumerEndpoint;
 import org.maestro.client.exchange.support.PeerInfo;
-import org.maestro.client.notes.*;
-import org.maestro.client.notes.InternalError;
+import org.maestro.client.notes.AbnormalDisconnect;
+import org.maestro.client.notes.AgentSourceRequest;
+import org.maestro.client.notes.DrainCompleteNotification;
+import org.maestro.client.notes.DrainRequest;
+import org.maestro.client.notes.GetRequest;
+import org.maestro.client.notes.Halt;
+import org.maestro.client.notes.LogRequest;
+import org.maestro.client.notes.MaestroAgentEventListener;
+import org.maestro.client.notes.MaestroInspectorEventListener;
+import org.maestro.client.notes.MaestroReceiverEventListener;
+import org.maestro.client.notes.MaestroSenderEventListener;
+import org.maestro.client.notes.PingRequest;
+import org.maestro.client.notes.RoleAssign;
+import org.maestro.client.notes.RoleUnassign;
+import org.maestro.client.notes.SetRequest;
+import org.maestro.client.notes.StartAgent;
+import org.maestro.client.notes.StartInspector;
+import org.maestro.client.notes.StartTestRequest;
+import org.maestro.client.notes.StartWorker;
+import org.maestro.client.notes.StatsRequest;
+import org.maestro.client.notes.StopAgent;
+import org.maestro.client.notes.StopInspector;
+import org.maestro.client.notes.StopWorker;
+import org.maestro.client.notes.TestFailedNotification;
+import org.maestro.client.notes.TestStartedNotification;
+import org.maestro.client.notes.TestSuccessfulNotification;
+import org.maestro.client.notes.UserCommand1Request;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
+import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.exceptions.MalformedNoteException;
+import org.maestro.common.client.notes.ErrorCode;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.common.MaestroWorkerManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import java.io.File;
-import java.io.IOException;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.UUID;
 
 /**
  * Agent for handle extension points. It implements everything that there is because it servers as a scriptable
@@ -58,12 +85,13 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
 
     /**
      * Constructor
-     * @param maestroURL maestro_broker URL
+     * @param maestroClient maestro client
+     * @param consumerEndpoint the consumer endpoint instance
      * @param peerInfo maestro peer information
      * @throws MaestroException if unable to create agent instance
      */
-    public MaestroAgent(final String maestroURL, final PeerInfo peerInfo) throws MaestroException {
-        super(maestroURL, peerInfo);
+    public MaestroAgent(MaestroClient maestroClient, ConsumerEndpoint consumerEndpoint, PeerInfo peerInfo) throws MaestroException {
+        super(maestroClient, consumerEndpoint, peerInfo);
 
         final AbstractConfiguration config = ConfigurationWrapper.getConfig();
         String pathStr = config.getString("agent.ext.path.override", null);
@@ -234,7 +262,7 @@ public class MaestroAgent extends MaestroWorkerManager implements MaestroAgentEv
         } catch (Exception e) {
             e.printStackTrace();
             logger.error("Error during callback execution: {}", e.getMessage(), e);
-            this.getClient().publish(MaestroTopics.MAESTRO_TOPIC, new InternalError(e.getMessage()));
+            this.getClient().replyInternalError(note, ErrorCode.UNSPECIFIED, e.getMessage());
         }
     }
 

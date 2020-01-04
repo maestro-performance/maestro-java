@@ -17,7 +17,7 @@
 package org.maestro.worker.common.watchdog;
 
 import org.apache.commons.configuration.AbstractConfiguration;
-import org.maestro.client.MaestroReceiverClient;
+import org.maestro.client.exchange.receiver.MaestroReceiverClient;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.duration.DurationDrain;
 import org.maestro.common.worker.MaestroWorker;

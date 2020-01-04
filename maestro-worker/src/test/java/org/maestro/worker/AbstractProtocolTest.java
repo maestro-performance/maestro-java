@@ -42,7 +42,7 @@ public abstract class AbstractProtocolTest extends EndToEndTest {
 
     protected void setupMaestroConnectionProperties() {
         System.out.println("This test will take some time to run");
-        LogConfigurator.silent();
+        LogConfigurator.verbose();
         System.setProperty("maestro.mqtt.no.reuse", "true");
     }
 
@@ -74,26 +74,26 @@ public abstract class AbstractProtocolTest extends EndToEndTest {
     }
 
     protected void testFixedCountTest(final Maestro maestro, final String uri) throws Exception {
-        System.out.println("Running a short-lived test");
+        TestExecutionInfo testExecutionInfo = runTest(maestro, uri);
 
-        setupFixedCountTest(maestro, uri);
+        List<? extends MaestroNote> replies = validateTestRun(maestro, testExecutionInfo);
 
-        System.out.println("Sending the test start command");
-        TestExecutionInfo testExecutionInfo = TestExecutionInfoBuilder.newBuilder()
-                .withDescription("some description")
-                .withComment("test comments")
-                .withSutId(SutDetails.UNSPECIFIED)
-                .withSutName("unit test sut")
-                .withSutVersion("1.0.1")
-                .withSutJvmVersion("1.7.0")
-                .withSutOtherInfo("")
-                .withSutTags("maestro,devel,test")
-                .withTestName("integration test")
-                .withTestTags("integration,java,junit")
-                .withLabName("local")
-                .withScriptName("junit")
-                .build();
+        validateTestResults(replies);
 
+        validateDrain(maestro);
+    }
+
+    protected void testFixedCountTestNoValidate(final Maestro maestro, final String uri) throws Exception {
+        List<? extends MaestroNote> replies = maestro
+                .waitForNotifications(numWorkers())
+                .get(90, TimeUnit.SECONDS);
+
+        validateTestResults(replies);
+
+        validateDrain(maestro);
+    }
+
+    private List<? extends MaestroNote> validateTestRun(Maestro maestro, TestExecutionInfo testExecutionInfo) throws InterruptedException, java.util.concurrent.ExecutionException, java.util.concurrent.TimeoutException {
         List<? extends MaestroNote> testStarted = maestro.startTest(MaestroTopics.PEER_TOPIC, testExecutionInfo).get(2, TimeUnit.SECONDS);
         assertEquals("Test started replies don't match: " + testStarted.size(), numPeers(), testStarted.size());
 
@@ -115,10 +115,30 @@ public abstract class AbstractProtocolTest extends EndToEndTest {
         List<? extends MaestroNote> replies = maestro
                 .waitForNotifications(numWorkers())
                 .get(90, TimeUnit.SECONDS);
+        return replies;
+    }
 
-        validateTestResults(replies);
+    private TestExecutionInfo runTest(Maestro maestro, String uri) throws Exception {
+        System.out.println("Running a short-lived test");
 
-        validateDrain(maestro);
+        setupFixedCountTest(maestro, uri);
+
+        System.out.println("Sending the test start command");
+        TestExecutionInfo testExecutionInfo = TestExecutionInfoBuilder.newBuilder()
+                .withDescription("some description")
+                .withComment("test comments")
+                .withSutId(SutDetails.UNSPECIFIED)
+                .withSutName("unit test sut")
+                .withSutVersion("1.0.1")
+                .withSutJvmVersion("1.7.0")
+                .withSutOtherInfo("")
+                .withSutTags("maestro,devel,test")
+                .withTestName("integration test")
+                .withTestTags("integration,java,junit")
+                .withLabName("local")
+                .withScriptName("junit")
+                .build();
+        return testExecutionInfo;
     }
 
     protected void validateDrain(Maestro maestro) throws InterruptedException, java.util.concurrent.ExecutionException, java.util.concurrent.TimeoutException {

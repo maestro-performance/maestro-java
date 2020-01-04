@@ -17,10 +17,12 @@
 package org.maestro.worker.common;
 
 import org.apache.commons.configuration.AbstractConfiguration;
+import org.maestro.client.exchange.ConsumerEndpoint;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Role;
+import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.evaluators.HardLatencyEvaluator;
 import org.maestro.common.evaluators.LatencyEvaluator;
@@ -54,12 +56,13 @@ public class ConcurrentWorkerManager extends MaestroWorkerManager implements Mae
 
     /**
      * Constructor
-     * @param maestroURL Maestro URL
+     * @param maestroClient Maestro client
+     * @param consumerEndpoint consumer endpoint
      * @param peerInfo Peer information
      * @param logDir test log directory
      */
-    public ConcurrentWorkerManager(final String maestroURL, final PeerInfo peerInfo, final File logDir) {
-        super(maestroURL, peerInfo);
+    public ConcurrentWorkerManager(MaestroClient maestroClient, ConsumerEndpoint consumerEndpoint, final PeerInfo peerInfo, final File logDir) {
+        super(maestroClient, consumerEndpoint, peerInfo);
 
         this.container = new WorkerContainer();
         this.logDir = logDir;

@@ -471,6 +471,7 @@
         <module>maestro-contrib</module>
         <module>maestro-plotters</module>
         <module>maestro-client</module>
+        <module>maestro-clients</module>
         <module>maestro-tests</module>
         <module>maestro-exporter</module>
         <module>maestro-workers</module>

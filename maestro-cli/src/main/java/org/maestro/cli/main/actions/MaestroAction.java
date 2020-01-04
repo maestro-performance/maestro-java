@@ -73,7 +73,8 @@ public class MaestroAction extends Action {
     public int run() {
         Maestro maestro;
         try {
-            maestro = new Maestro(maestroUrl);
+//            maestro = new Maestro(maestroUrl);
+            maestro = null;
 
             CompletableFuture<List<? extends MaestroNote>> completableFuture;
 

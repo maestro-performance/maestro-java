@@ -14,8 +14,12 @@
  *  limitations under the License.
  */
 
-package org.maestro.client.exchange;
+package org.maestro.client.exchange.collector;
 
+import org.maestro.client.exchange.ConsumerEndpoint;
+import org.maestro.common.client.exchange.AbstractMaestroExecutor;
+import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,11 +33,11 @@ public class MaestroCollectorExecutor extends AbstractMaestroExecutor {
 
     /**
      * Constructor
-     * @param url Maestro broker URL
+     * @param endpoint consumer endpoint
      * @throws MaestroConnectionException if unable to connect to the Maestro broker
      */
-    public MaestroCollectorExecutor(final String url) throws MaestroConnectionException {
-        super(new MaestroCollector(url));
+    public MaestroCollectorExecutor(ConsumerEndpoint<MaestroNote> endpoint) throws MaestroConnectionException {
+        super(new MaestroCollector(endpoint));
 
         logger.trace("Created a new maestro collector executor");
 

@@ -15,7 +15,7 @@
  *
  */
 
-package org.maestro.client.exchange;
+package org.maestro.client.exchange.mqtt;
 
 import java.util.Objects;
 

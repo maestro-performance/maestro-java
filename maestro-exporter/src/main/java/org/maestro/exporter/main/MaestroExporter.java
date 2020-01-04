@@ -76,7 +76,7 @@ public class MaestroExporter {
     }
 
     public MaestroExporter(final String maestroUrl) throws MaestroException {
-        maestro = new Maestro(maestroUrl);
+        maestro = new Maestro(maestroUrl, null, null);
 
         messageCounter.register();
         rateCounter.register();

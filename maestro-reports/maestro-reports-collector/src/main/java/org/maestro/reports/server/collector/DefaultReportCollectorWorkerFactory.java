@@ -17,7 +17,7 @@
 
 package org.maestro.reports.server.collector;
 
-import org.maestro.client.MaestroReceiverClient;
+import org.maestro.client.exchange.receiver.MaestroReceiverClient;
 import org.maestro.common.client.notes.TestExecutionInfo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

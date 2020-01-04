@@ -30,6 +30,12 @@
     <dependencies>
         <dependency>
             <groupId>org.maestro</groupId>
+            <artifactId>maestro-peers</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
             <artifactId>maestro-worker-common</artifactId>
             <version>${project.version}</version>
         </dependency>

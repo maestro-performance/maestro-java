@@ -14,14 +14,7 @@
  *  limitations under the License.
  */
 
-package org.maestro.client.exchange;
-
-import org.maestro.client.callback.MaestroNoteCallback;
-import org.maestro.client.exchange.support.CollectorPeer;
-import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.common.exceptions.MaestroConnectionException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package org.maestro.client.exchange.collector;
 
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -31,11 +24,23 @@ import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.function.Predicate;
 
+import org.maestro.client.Collector;
+import org.maestro.common.client.callback.MaestroNoteCallback;
+import org.maestro.client.exchange.ConsumerEndpoint;
+import org.maestro.client.exchange.IgnoreCallback;
+import org.maestro.client.exchange.MaestroMonitor;
+import org.maestro.client.exchange.peer.AbstractMaestroPeer;
+import org.maestro.client.exchange.support.CollectorPeer;
+import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.common.exceptions.MaestroConnectionException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 /**
  * An specialized peer that is used on the front-end side of the code
  * to collect messages published on front-end related topics
  */
-public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
+public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> implements Collector {
     private static final Logger logger = LoggerFactory.getLogger(MaestroCollector.class);
     private volatile boolean running = true;
 
@@ -47,11 +52,11 @@ public class MaestroCollector extends AbstractMaestroPeer<MaestroNote> {
 
     /**
      * Constructor
-     * @param url the URL to the Maestro broker
+     * @param endpoint the consumer endpoint
      * @throws MaestroConnectionException if unable to connect
      */
-    public MaestroCollector(final String url) throws MaestroConnectionException {
-        super(url, new CollectorPeer(), MaestroDeserializer::deserialize);
+    public MaestroCollector(ConsumerEndpoint<MaestroNote> endpoint) throws MaestroConnectionException {
+        super(endpoint, new CollectorPeer());
 
         addCallback(new IgnoreCallback());
     }

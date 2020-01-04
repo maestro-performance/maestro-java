@@ -17,8 +17,10 @@
 
 package org.maestro.reports.server.collector;
 
+import org.maestro.client.exchange.ConsumerEndpoint;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
+import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.client.notes.TestExecutionInfo;
@@ -39,14 +41,13 @@ public class DefaultReportsCollector extends MaestroWorkerManager implements Mae
     private final Map<String, Test> testMap = new HashMap<>();
     private final ReportCollectorWorkerFactory reportCollectorWorkerFactory;
 
-    public DefaultReportsCollector(final String maestroURL, final PeerInfo peerInfo, final File dataDir) {
-        this(maestroURL, peerInfo, dataDir, new DefaultReportCollectorWorkerFactory());
-
+    public DefaultReportsCollector(MaestroClient maestroClient, ConsumerEndpoint consumerEndpoint, PeerInfo peerInfo, final File dataDir) {
+        this(maestroClient, consumerEndpoint, peerInfo, dataDir, new DefaultReportCollectorWorkerFactory());
     }
 
-    protected DefaultReportsCollector(final String maestroURL, final PeerInfo peerInfo, final File dataDir,
+    protected DefaultReportsCollector(MaestroClient maestroClient, ConsumerEndpoint consumerEndpoint, PeerInfo peerInfo, final File dataDir,
                                       final ReportCollectorWorkerFactory reportCollectorWorkerFactory) {
-        super(maestroURL, peerInfo);
+        super(maestroClient, consumerEndpoint, peerInfo);
 
         this.dataDir = dataDir;
         this.reportCollectorWorkerFactory = reportCollectorWorkerFactory;

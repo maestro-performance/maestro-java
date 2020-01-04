@@ -16,7 +16,7 @@
 
 package org.maestro.tests.callbacks;
 
-import org.maestro.client.callback.MaestroNoteCallback;
+import org.maestro.common.client.callback.MaestroNoteCallback;
 import org.maestro.client.notes.StatsResponse;
 import org.maestro.common.Monitor;
 import org.maestro.common.Role;

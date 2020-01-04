@@ -17,8 +17,17 @@
 
 package org.maestro.reports.server.main;
 
+import java.io.File;
+import java.util.concurrent.CountDownLatch;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+
+import org.maestro.client.exchange.ConsumerEndpoint;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.common.client.MaestroClient;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.server.DefaultReportsServer;
 import org.maestro.reports.server.ReportsServer;
@@ -28,21 +37,20 @@ import org.maestro.worker.common.executor.MaestroWorkerExecutor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.File;
-import java.util.concurrent.*;
-
 public class DefaultToolLauncher implements ReportsToolLauncher {
     private static final Logger logger = LoggerFactory.getLogger(DefaultToolLauncher.class);
 
     private final File dataDir;
     private final boolean offline;
-    private final String maestroUrl;
     private final PeerInfo peerInfo;
+    private final MaestroClient maestroClient;
+    private final ConsumerEndpoint consumerEndpoint;
 
-    public DefaultToolLauncher(File dataDir, boolean offline, String maestroUrl, String host) {
+    public DefaultToolLauncher(MaestroClient maestroClient, ConsumerEndpoint consumerEndpoint, File dataDir, boolean offline, String host) {
+        this.maestroClient = maestroClient;
+        this.consumerEndpoint = consumerEndpoint;
         this.dataDir = dataDir;
         this.offline = offline;
-        this.maestroUrl = maestroUrl;
 
         peerInfo = new ReportsServerPeer(host);
     }
@@ -108,7 +116,7 @@ public class DefaultToolLauncher implements ReportsToolLauncher {
     }
 
     protected void startCollector(final CountDownLatch latch) {
-        startCollector(latch, new DefaultReportsCollector(maestroUrl, peerInfo, dataDir));
+        startCollector(latch, new DefaultReportsCollector(maestroClient, consumerEndpoint, peerInfo, dataDir));
     }
 
     protected void startServer(final CountDownLatch latch, final ReportsServer reportsServer) {
@@ -143,10 +151,6 @@ public class DefaultToolLauncher implements ReportsToolLauncher {
 
     protected boolean isOffline() {
         return offline;
-    }
-
-    protected String getMaestroUrl() {
-        return maestroUrl;
     }
 
     protected PeerInfo getPeerInfo() {

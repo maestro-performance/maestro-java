@@ -16,16 +16,19 @@
 
 package org.maestro.worker.common;
 
-import org.maestro.client.MaestroReceiverClient;
-import org.maestro.client.exchange.AbstractMaestroPeer;
+import org.maestro.client.exchange.ConsumerEndpoint;
 import org.maestro.client.exchange.MaestroDeserializer;
 import org.maestro.client.exchange.MaestroNoteDeserializer;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.peer.AbstractMaestroPeer;
+import org.maestro.client.exchange.receiver.MaestroReceiverClient;
 import org.maestro.client.exchange.support.GroupInfo;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.*;
 import org.maestro.common.Role;
 import org.maestro.common.URLQuery;
+import org.maestro.common.client.MaestroClient;
+import org.maestro.common.client.ServiceLevel;
 import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.LocationTypeInfo;
 import org.maestro.common.client.notes.Test;
@@ -58,24 +61,25 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
 
     /**
      * Constructor
-     * @param maestroURL Maestro broker URL
+     * @param maestroClient Maestro client
+     * @param consumerEndpoint consumer endpoint
      * @param peerInfo Information about this peer
      */
-    public MaestroWorkerManager(final String maestroURL, final PeerInfo peerInfo) {
-        this(maestroURL, peerInfo, MaestroDeserializer::deserializeEvent);
+    public MaestroWorkerManager(MaestroClient maestroClient, ConsumerEndpoint consumerEndpoint, PeerInfo peerInfo) {
+        this(maestroClient, consumerEndpoint, peerInfo, MaestroDeserializer::deserializeEvent);
     }
 
     /**
      * Constructor
-     * @param maestroURL Maestro broker URL
+     * @param maestroClient Maestro client
      * @param peerInfo Information about this peer
      * @param deserializer the deserializer to use
      */
-    protected MaestroWorkerManager(final String maestroURL, final PeerInfo peerInfo, MaestroNoteDeserializer<MaestroEvent<MaestroEventListener>> deserializer) {
-        super(maestroURL, peerInfo, deserializer);
+    protected MaestroWorkerManager(MaestroClient maestroClient, ConsumerEndpoint consumerEndpoint, PeerInfo peerInfo, MaestroNoteDeserializer<MaestroEvent<MaestroEventListener>> deserializer) {
+        super(consumerEndpoint, peerInfo);
 
         logger.debug("Creating the receiver client");
-        client = new MaestroReceiverClient(maestroURL, peerInfo, getId());
+        client = new MaestroReceiverClient(maestroClient, peerInfo, getId());
 
         workerOptions = new WorkerOptions();
     }
@@ -89,15 +93,6 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
     protected MaestroReceiverClient getClient() {
         return client;
     }
-
-
-    @Override
-    public void connect() throws MaestroConnectionException {
-        super.connect();
-
-        client.connect();
-    }
-
 
     void setRunning(boolean running) {
         this.running = running;
@@ -403,12 +398,14 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
             }
 
             locationTypeInfo.setIndex(index);
-            MaestroReceiverClient.logResponse(file, note, hash, locationTypeInfo, peerInfo, getId(), getClient());
+            MaestroReceiverClient.logResponse(file, note, hash, locationTypeInfo, peerInfo, getId(),
+                    (MaestroClient) getClient());
             index++;
         }
     }
 
 
+    @Deprecated
     @Override
     public void handle(final GroupJoinRequest note) {
         GroupInfo requested = note.getGroupInfo();
@@ -421,13 +418,15 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         }
 
         final String topicName = MaestroTopics.peerTopic(requested);
-        getClient().subscribe(topicName, 0);
+        getClient().subscribe(topicName, ServiceLevel.AT_MOST_ONCE);
+
         this.groupInfo = requested;
 
         logger.info("Successfully joined group {} as {}", groupInfo.groupName(), groupInfo.memberName());
         getClient().replyOk(note);
     }
 
+    @Deprecated
     @Override
     public void handle(final GroupLeaveRequest note) {
         if (groupInfo == null) {
@@ -460,7 +459,7 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         }
 
         String roleTopic = MaestroTopics.peerTopic(role);
-        getClient().subscribe(roleTopic, 0);
+        getClient().subscribe(roleTopic, ServiceLevel.AT_MOST_ONCE);
         logger.debug("Subscribed to the role topic at {}", roleTopic);
 
         logger.info("The worker was assigned the {} role", role);

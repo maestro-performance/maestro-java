@@ -17,12 +17,16 @@
 package org.maestro.inspector.main;
 
 import org.apache.commons.cli.*;
+import org.maestro.client.exchange.MaestroDeserializer;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.mqtt.MaestroMqttClient;
+import org.maestro.client.exchange.mqtt.MqttConsumerEndpoint;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.NetworkUtils;
+import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.inspector.base.InspectorManager;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
@@ -123,8 +127,14 @@ public class MaestroInspectorMain {
             MaestroWorkerExecutor executor;
             final PeerInfo peerInfo = new InspectorPeer(host);
 
-            InspectorManager maestroPeer
-                    = new InspectorManager(maestroUrl, peerInfo, logDir);
+            MaestroMqttClient client = new MaestroMqttClient(maestroUrl);
+            client.connect();
+
+            MqttConsumerEndpoint<MaestroNote> consumerEndpoint = new MqttConsumerEndpoint<>(maestroUrl, MaestroDeserializer::deserialize);
+            consumerEndpoint.connect();
+            consumerEndpoint.subscribe(MaestroTopics.MAESTRO_TOPICS);
+
+            InspectorManager maestroPeer = new InspectorManager(client, consumerEndpoint, peerInfo, logDir);
 
             executor = new MaestroWorkerExecutor(maestroPeer);
 

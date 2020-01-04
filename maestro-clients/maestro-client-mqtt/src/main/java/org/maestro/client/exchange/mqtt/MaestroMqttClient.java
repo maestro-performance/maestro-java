@@ -14,14 +14,14 @@
  * limitations under the License.
  */
 
-package org.maestro.client.exchange;
+package org.maestro.client.exchange.mqtt;
 
 import org.eclipse.paho.client.mqttv3.MqttClient;
 import org.eclipse.paho.client.mqttv3.MqttConnectOptions;
 import org.eclipse.paho.client.mqttv3.MqttException;
 import org.eclipse.paho.client.mqttv3.MqttTopic;
-import org.maestro.client.callback.MaestroNoteCallback;
-import org.maestro.client.exchange.mqtt.MqttClientInstance;
+import org.maestro.common.client.callback.MaestroNoteCallback;
+import org.maestro.common.client.ServiceLevel;
 import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.exceptions.MalformedNoteException;
 import org.maestro.common.client.notes.MaestroNote;
@@ -41,6 +41,7 @@ public class MaestroMqttClient implements MaestroClient {
      * @param url Maestro broker URL
      * @throws MaestroException if unable to create the client
      */
+    @Deprecated
     public MaestroMqttClient(final String url) throws MaestroException {
         this(MqttClientInstance.getInstance(url).getClient());
     }
@@ -138,13 +139,12 @@ public class MaestroMqttClient implements MaestroClient {
      *
      * @param topic the topic to publish the message
      * @param note  the maestro note to publish
-     * @param qos MQTT QoS
-     * @param retained MQTT retained flag
+     * @param serviceLevel service level to use for publication
      * @param postProcessCallback A call back action to be executed after the message was sent
      * @throws MaestroConnectionException if failed to publish the message
      * @throws MalformedNoteException     in case of other I/O errors
      */
-    protected void publish(final String topic, final MaestroNote note, int qos, boolean retained,
+    public void publish(final String topic, final MaestroNote note, ServiceLevel serviceLevel,
                            final MaestroNoteCallback postProcessCallback) throws
             MalformedNoteException, MaestroConnectionException
     {
@@ -164,7 +164,8 @@ public class MaestroMqttClient implements MaestroClient {
                 synchronized (mqttClient) {
                     MqttTopic mqttTopic = mqttClient.getTopic(topic);
 
-                    mqttTopic.publish(bytes, qos, retained);
+                    boolean retained = true;
+                    mqttTopic.publish(bytes, serviceLevel.getLevel(), retained);
                 }
 
                 if (postProcessCallback != null) {
@@ -187,7 +188,20 @@ public class MaestroMqttClient implements MaestroClient {
      * @throws MalformedNoteException     in case of other I/O errors
      */
     public void publish(final String topic, final MaestroNote note) throws MalformedNoteException, MaestroConnectionException {
-        publish(topic, note, MqttServiceLevel.AT_LEAST_ONCE, false);
+        publish(topic, note, ServiceLevel.AT_LEAST_ONCE.getLevel(), false);
+    }
+
+    @Override
+    public void publish(String topic, MaestroNote note, ServiceLevel serviceLevel) throws MalformedNoteException, MaestroConnectionException {
+        publish(topic, note, serviceLevel.getLevel(), false);
+    }
+
+    /**
+     * Subscribe to topics
+     * @param topic the topic to subscribe too
+     */
+    public void subscribe(String topic, ServiceLevel serviceLevel) {
+        subscribe(topic, serviceLevel.getLevel());
     }
 
     /**

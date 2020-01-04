@@ -16,27 +16,26 @@
 
 package org.maestro.worker.common.executor;
 
-import org.maestro.client.exchange.AbstractMaestroExecutor;
-import org.maestro.client.exchange.AbstractMaestroPeer;
+import java.io.File;
+
+import org.maestro.client.exchange.ConsumerEndpoint;
+import org.maestro.client.exchange.peer.AbstractMaestroPeer;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.notes.MaestroEvent;
 import org.maestro.client.notes.MaestroEventListener;
+import org.maestro.common.client.MaestroClient;
+import org.maestro.common.client.exchange.AbstractMaestroExecutor;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.common.ConcurrentWorkerManager;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import java.io.File;
 
 public class MaestroWorkerExecutor extends AbstractMaestroExecutor {
-    private static final Logger logger = LoggerFactory.getLogger(MaestroWorkerExecutor.class);
 
-
+    @Deprecated
     public MaestroWorkerExecutor(final AbstractMaestroPeer<MaestroEvent<MaestroEventListener>> maestroPeer) {
         super(maestroPeer);
     }
 
-    public MaestroWorkerExecutor(final String url, final PeerInfo peerInfo, final File logDir) throws MaestroException {
-        super(new ConcurrentWorkerManager(url, peerInfo, logDir));
+    public MaestroWorkerExecutor(MaestroClient maestroClient, ConsumerEndpoint consumerEndpoint, final PeerInfo peerInfo, final File logDir) throws MaestroException {
+        super(new ConcurrentWorkerManager(maestroClient, consumerEndpoint, peerInfo, logDir));
     }
 }

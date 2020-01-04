@@ -48,22 +48,28 @@ public final class Maestro implements MaestroRequester {
     private static final Logger logger = LoggerFactory.getLogger(Maestro.class);
 
     private final MaestroClient maestroClient;
-    private final MaestroCollectorExecutor collectorExecutor;
-    private final Thread collectorThread;
+    private final Collector collector;
+
+    /**
+     * Constructor
+     * @param collector the reply collector
+     * @param maestroClient the maestro client to use
+     * @throws MaestroException if unable to connect to the maestro broker
+     */
+    public Maestro(Collector collector, MaestroClient maestroClient) throws MaestroException {
+        this.collector = collector;
+        this.maestroClient = maestroClient;
+    }
 
     /**
      * Constructor
      * @param url URL of the maestro broker
      * @throws MaestroException if unable to connect to the maestro broker
      */
-    public Maestro(final String url) throws MaestroException {
-        collectorExecutor = new MaestroCollectorExecutor(url);
-
-        maestroClient = new MaestroMqttClient(url);
-        maestroClient.connect();
-
-        collectorThread = new Thread(collectorExecutor);
-        collectorThread.start();
+    @Deprecated
+    public Maestro(final String url, Collector collector, MaestroClient maestroClient) throws MaestroException {
+        this.collector = collector;
+        this.maestroClient = maestroClient;
     }
 
     /**
@@ -71,18 +77,7 @@ public final class Maestro implements MaestroRequester {
      * @throws MaestroConnectionException if unable to send the MQTT request
      */
     public void stop() throws MaestroConnectionException {
-        logger.debug("Thread {} is stopping Maestro execution", Thread.currentThread());
 
-        try {
-            collectorExecutor.stop();
-            collectorThread.join(5000);
-        } catch (InterruptedException e) {
-            logger.trace("Interrupted while stopping Maestro {}", e.getMessage(), e);
-        }
-        finally {
-            logger.debug("Disconnecting the Maestro client");
-            maestroClient.disconnect();
-        }
     }
 
     @Override
@@ -483,7 +478,7 @@ public final class Maestro implements MaestroRequester {
      * Clear the container of received messages
      */
     public void clear() {
-        collectorExecutor.clear();
+        collector.clear();
     }
 
     /**
@@ -497,10 +492,11 @@ public final class Maestro implements MaestroRequester {
         final MaestroMonitor monitor = new MaestroMonitor(predicate);
 
         try {
-            collectorExecutor.getCollector().monitor(monitor);
+
+            collector.monitor(monitor);
 
             do {
-                replies.addAll(collectorExecutor.getCollector().collect(predicate));
+                replies.addAll(collector.collect(predicate));
                 logger.trace("Collected {} of {}", replies.size(), expect);
 
                 if (replies.size() >= expect) {
@@ -522,7 +518,7 @@ public final class Maestro implements MaestroRequester {
                     predicate);
         }
         finally {
-            collectorExecutor.getCollector().remove(monitor);
+            collector.remove(monitor);
         }
 
         return replies;
@@ -539,10 +535,10 @@ public final class Maestro implements MaestroRequester {
         final StaleChecker staleChecker = new NonProgressingStaleChecker(retries);
 
         try {
-            collectorExecutor.getCollector().monitor(monitor);
+            collector.monitor(monitor);
 
             do {
-                replies.addAll(collectorExecutor.getCollector().collect(predicate));
+                replies.addAll(collector.collect(predicate));
                 logger.trace("Collected {} notes", replies.size());
 
                 if (staleChecker.isStale(replies.size())) {
@@ -563,7 +559,7 @@ public final class Maestro implements MaestroRequester {
             logger.trace("Exiting the collection loop: {} collected for {}", replies.size(), predicate);
         }
         finally {
-            collectorExecutor.getCollector().remove(monitor);
+            collector.remove(monitor);
         }
 
         return replies;
@@ -600,8 +596,8 @@ public final class Maestro implements MaestroRequester {
      * Get the collector receiving the messages
      * @return the collector receiving the messages
      */
-    public MaestroCollector getCollector() {
-        return collectorExecutor.getCollector();
+    public Collector getCollector() {
+        return collector;
     }
 
     /**

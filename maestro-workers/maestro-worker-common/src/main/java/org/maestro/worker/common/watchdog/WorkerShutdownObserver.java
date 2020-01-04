@@ -16,7 +16,7 @@
 
 package org.maestro.worker.common.watchdog;
 
-import org.maestro.client.MaestroReceiverClient;
+import org.maestro.client.exchange.receiver.MaestroReceiverClient;
 import org.maestro.common.client.notes.Test;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.common.worker.TestLogUtils;

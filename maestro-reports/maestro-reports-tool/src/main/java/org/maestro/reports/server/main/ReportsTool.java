@@ -17,14 +17,24 @@
 
 package org.maestro.reports.server.main;
 
-import org.apache.commons.cli.*;
+import java.io.File;
+import java.net.UnknownHostException;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.maestro.client.exchange.MaestroDeserializer;
+import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.mqtt.MaestroMqttClient;
+import org.maestro.client.exchange.mqtt.MqttConsumerEndpoint;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.NetworkUtils;
-
-import java.io.File;
-import java.net.UnknownHostException;
+import org.maestro.common.client.notes.MaestroNote;
 
 public class ReportsTool {
     private CommandLine cmdLine;
@@ -147,7 +157,14 @@ public class ReportsTool {
     }
 
     protected int run() {
-        return run(new DefaultToolLauncher(dataDir, offline, maestroUrl, host));
+        MaestroMqttClient client = new MaestroMqttClient(maestroUrl);
+        client.connect();
+
+        MqttConsumerEndpoint<MaestroNote> consumerEndpoint = new MqttConsumerEndpoint<>(maestroUrl, MaestroDeserializer::deserializeEvent);
+        consumerEndpoint.connect();
+        consumerEndpoint.subscribe(MaestroTopics.MAESTRO_TOPICS);
+
+        return run(new DefaultToolLauncher(client, consumerEndpoint, dataDir, offline, host));
     }
 
     /*

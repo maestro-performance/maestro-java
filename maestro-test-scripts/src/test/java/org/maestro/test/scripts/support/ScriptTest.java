@@ -16,8 +16,10 @@
 
 package org.maestro.test.scripts.support;
 
+import org.maestro.client.exchange.MaestroDeserializer;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.Maestro;
+import org.maestro.client.exchange.mqtt.MqttConsumerEndpoint;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.MaestroNoteType;
@@ -34,6 +36,9 @@ import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+
+import org.maestro.client.exchange.mqtt.MaestroMqttClient;
+import org.maestro.client.exchange.collector.MaestroCollector;
 
 import static org.junit.Assert.assertEquals;
 
@@ -62,7 +67,16 @@ public class ScriptTest extends EndToEndTest {
         String mqttEndpoint = container.getMQTTEndpoint();
         System.out.println("Broker MQTT endpoint accessible at " + mqttEndpoint);
 
-        maestro = new Maestro(mqttEndpoint);
+        MaestroMqttClient client = new MaestroMqttClient(mqttEndpoint);
+        client.connect();
+
+        MqttConsumerEndpoint<MaestroNote> consumerEndpoint = new MqttConsumerEndpoint<>(mqttEndpoint, MaestroDeserializer::deserialize);
+        consumerEndpoint.connect();
+        consumerEndpoint.subscribe(MaestroTopics.MAESTRO_TOPICS);
+
+        MaestroCollector collector = new MaestroCollector(consumerEndpoint);
+
+        maestro = new Maestro(collector, client);
 
         miniReceivingPeer = new MiniPeer("org.maestro.worker.jms.JMSReceiverWorker",
                 mqttEndpoint, "receiver", "localhost");
