@@ -16,25 +16,20 @@
 
 package org.maestro.worker;
 
-import net.orpiske.jms.provider.activemq.ActiveMqProvider;
-import net.orpiske.jms.test.annotations.Provider;
 import org.junit.Test;
 import org.maestro.client.Maestro;
+import org.maestro.worker.container.ArtemisContainer;
 import org.maestro.worker.tests.support.annotations.MaestroPeer;
 import org.maestro.worker.tests.support.annotations.ReceivingPeer;
 import org.maestro.worker.tests.support.annotations.SendingPeer;
 import org.maestro.worker.tests.support.runner.MiniPeer;
-import org.maestro.worker.tests.support.runner.DefaultBrokerConfiguration;
-import org.maestro.worker.tests.support.runner.WorkerTestRunner;
 import org.junit.*;
-import org.junit.runner.RunWith;
 
 @SuppressWarnings("unused")
-@RunWith(WorkerTestRunner.class)
-@Provider(
-        value = ActiveMqProvider.class,
-        configuration = DefaultBrokerConfiguration.class)
 public class OpenwireTest extends AbstractProtocolTest {
+
+    @Rule
+    public ArtemisContainer container = new ArtemisContainer();
 
     @ReceivingPeer
     private MiniPeer miniReceivingPeer;
@@ -48,6 +43,21 @@ public class OpenwireTest extends AbstractProtocolTest {
     @Before
     public void setUp() throws Exception {
         setupMaestroConnectionProperties();
+
+        container.start();
+
+        String openWire = container.getOpenwireEndpoint();
+        System.out.println("Broker OpenWire endpoint accessible at " + openWire);
+
+        String mqttEndpoint = container.getMQTTEndpoint();
+        System.out.println("Broker MQTT endpoint accessible at " + mqttEndpoint);
+
+        maestro = new Maestro(mqttEndpoint);
+
+        miniReceivingPeer = new MiniPeer("org.maestro.worker.jms.JMSReceiverWorker",
+                mqttEndpoint, "receiver", "localhost");
+        miniSendingPeer = new MiniPeer("org.maestro.worker.jms.JMSSenderWorker",
+                mqttEndpoint, "sender", "localhost");
 
         miniSendingPeer.start();
         miniReceivingPeer.start();
@@ -64,6 +74,8 @@ public class OpenwireTest extends AbstractProtocolTest {
 
     @Test(timeout = 300000)
     public void testFixedCount() throws Exception {
-        testFixedCountTest(maestro, "tcp://localhost:61616/unit.test.queue?protocol=OPENWIRE");
+        String openWireAddr = container.getOpenwireEndpoint();
+
+        testFixedCountTest(maestro, openWireAddr + "/unit.test.queue?protocol=OPENWIRE");
     }
 }

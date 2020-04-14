@@ -45,7 +45,6 @@
         <version.paho.mqttv3>1.2.1</version.paho.mqttv3>
         <version.msgpack>0.8.16</version.msgpack>
         <version.prometheus-simple-client>0.1.0</version.prometheus-simple-client>
-        <version.jms-test-util>1.2.0</version.jms-test-util>
         <version.apache-ivy>2.4.0</version.apache-ivy>
         <version.spring-jdbc>5.0.15.RELEASE</version.spring-jdbc>
         <version.h2database>1.4.197</version.h2database>
@@ -58,6 +57,7 @@
         <version.jgit>4.5.4.201711221230-r</version.jgit>
         <version.netty>4.1.32.Final</version.netty>
         <version.jolokia-client>2.0.0-M3</version.jolokia-client>
+        <version.testcontainers>1.14.0</version.testcontainers>
 
 
         <!-- JMS clients -->
@@ -360,41 +360,12 @@
             </dependency>
 
             <dependency>
-                <groupId>net.orpiske</groupId>
-                <artifactId>jms-test-util</artifactId>
-                <version>${version.jms-test-util}</version>
+                <groupId>org.testcontainers</groupId>
+                <artifactId>testcontainers</artifactId>
+                <version>${version.testcontainers}</version>
                 <scope>test</scope>
             </dependency>
 
-            <dependency>
-                <groupId>net.orpiske</groupId>
-                <artifactId>jms-test-util</artifactId>
-                <version>${version.jms-test-util}</version>
-                <type>test-jar</type>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>net.orpiske</groupId>
-                <artifactId>jms-test-provider-activemq</artifactId>
-                <version>${version.jms-test-util}</version>
-                <type>test-jar</type>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>net.orpiske</groupId>
-                <artifactId>jms-test-provider-activemq</artifactId>
-                <version>${version.jms-test-util}</version>
-                <scope>test</scope>
-            </dependency>
-
-            <dependency>
-                <groupId>net.orpiske</groupId>
-                <artifactId>jms-test-provider-activemq</artifactId>
-                <version>${version.jms-test-util}</version>
-                <scope>test</scope>
-            </dependency>
         </dependencies>
     </dependencyManagement>
 

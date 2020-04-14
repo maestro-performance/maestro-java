@@ -16,25 +16,19 @@
 
 package org.maestro.test.scripts.support;
 
-import net.orpiske.jms.test.annotations.Provider;
 import org.maestro.client.exchange.MaestroTopics;
-import org.maestro.common.LogConfigurator;
 import org.maestro.client.Maestro;
 import org.maestro.common.client.notes.MaestroCommand;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.client.notes.MaestroNoteType;
 
-import net.orpiske.jms.provider.activemq.ActiveMqProvider;
-
+import org.maestro.worker.container.ArtemisContainer;
 import org.maestro.worker.tests.support.annotations.MaestroPeer;
 import org.maestro.worker.tests.support.annotations.ReceivingPeer;
 import org.maestro.worker.tests.support.annotations.SendingPeer;
 import org.maestro.worker.tests.support.common.EndToEndTest;
-import org.maestro.worker.tests.support.runner.AMQPBrokerConfiguration;
 import org.maestro.worker.tests.support.runner.MiniPeer;
-import org.maestro.worker.tests.support.runner.WorkerTestRunner;
 import org.junit.*;
-import org.junit.runner.RunWith;
 
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -43,12 +37,9 @@ import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertEquals;
 
-
-@RunWith(WorkerTestRunner.class)
-@Provider(
-        value = ActiveMqProvider.class,
-        configuration = AMQPBrokerConfiguration.class)
 public class ScriptTest extends EndToEndTest {
+    @Rule
+    public ArtemisContainer container = new ArtemisContainer();
 
     @ReceivingPeer
     private MiniPeer miniReceivingPeer;
@@ -61,11 +52,27 @@ public class ScriptTest extends EndToEndTest {
 
     @Before
     public void setUp() throws Exception {
-        LogConfigurator.silent();
         System.setProperty("maestro.mqtt.no.reuse", "true");
+
+        container.start();
+
+        String amqpEndpoint = container.getAMQPEndpoint();
+        System.out.println("Broker AMQP endpoint accessible at " + amqpEndpoint);
+
+        String mqttEndpoint = container.getMQTTEndpoint();
+        System.out.println("Broker MQTT endpoint accessible at " + mqttEndpoint);
+
+        maestro = new Maestro(mqttEndpoint);
+
+        miniReceivingPeer = new MiniPeer("org.maestro.worker.jms.JMSReceiverWorker",
+                mqttEndpoint, "receiver", "localhost");
+        miniSendingPeer = new MiniPeer("org.maestro.worker.jms.JMSSenderWorker",
+                mqttEndpoint, "sender", "localhost");
 
         miniSendingPeer.start();
         miniReceivingPeer.start();
+        System.out.println("Mini peers have started");
+
     }
 
     @After

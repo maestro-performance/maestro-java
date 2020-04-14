@@ -77,19 +77,12 @@
             <version>${project.version}</version>
         </dependency>
 
-        <!-- Tests dependencies -->
         <dependency>
-            <groupId>net.orpiske</groupId>
-            <artifactId>jms-test-provider-activemq</artifactId>
-            <type>test-jar</type>
-            <scope>test</scope>
+            <groupId>org.testcontainers</groupId>
+            <artifactId>testcontainers</artifactId>
         </dependency>
 
-        <dependency>
-            <groupId>net.orpiske</groupId>
-            <artifactId>jms-test-provider-activemq</artifactId>
-            <scope>test</scope>
-        </dependency>
+        <!-- Tests dependencies -->
 
 
         <dependency>

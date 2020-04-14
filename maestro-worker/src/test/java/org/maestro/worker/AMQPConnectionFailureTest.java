@@ -16,33 +16,28 @@
 
 package org.maestro.worker;
 
-import net.orpiske.jms.provider.activemq.ActiveMqProvider;
-import net.orpiske.jms.test.annotations.Provider;
 import org.junit.After;
 import org.junit.Before;
+import org.junit.Ignore;
+import org.junit.Rule;
 import org.junit.Test;
-import org.junit.runner.RunWith;
 import org.maestro.client.Maestro;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.worker.container.ArtemisContainer;
 import org.maestro.worker.tests.support.annotations.MaestroPeer;
 import org.maestro.worker.tests.support.annotations.ReceivingPeer;
 import org.maestro.worker.tests.support.annotations.SendingPeer;
-import org.maestro.worker.tests.support.runner.AMQPBrokerConfiguration;
-import org.maestro.worker.tests.support.runner.DefaultBrokerConfiguration;
 import org.maestro.worker.tests.support.runner.MiniPeer;
-import org.maestro.worker.tests.support.runner.WorkerTestRunner;
 
 import java.util.List;
-import java.util.concurrent.ExecutionException;
-import java.util.concurrent.TimeoutException;
 
+@Ignore
 @SuppressWarnings("unused")
-@RunWith(WorkerTestRunner.class)
-@Provider(
-        value = ActiveMqProvider.class,
-        configuration = DefaultBrokerConfiguration.class)
 public class AMQPConnectionFailureTest extends AbstractProtocolTest {
+
+    @Rule
+    public ArtemisContainer container = new ArtemisContainer();
 
     @ReceivingPeer
     private MiniPeer miniReceivingPeer;
@@ -57,6 +52,21 @@ public class AMQPConnectionFailureTest extends AbstractProtocolTest {
     public void setUp() throws Exception {
         setupMaestroConnectionProperties();
 
+        container.start();
+
+        String amqpEndpoint = container.getAMQPEndpoint();
+        System.out.println("Broker AMQP endpoint accessible at " + amqpEndpoint);
+
+        String mqttEndpoint = container.getMQTTEndpoint();
+        System.out.println("Broker MQTT endpoint accessible at " + mqttEndpoint);
+
+        maestro = new Maestro(mqttEndpoint);
+
+        miniReceivingPeer = new MiniPeer("org.maestro.worker.jms.JMSReceiverWorker",
+                mqttEndpoint, "receiver", "localhost");
+        miniSendingPeer = new MiniPeer("org.maestro.worker.jms.JMSSenderWorker",
+                mqttEndpoint, "sender", "localhost");
+
         miniSendingPeer.start();
         miniReceivingPeer.start();
         System.out.println("Mini peers have started");
@@ -64,7 +74,7 @@ public class AMQPConnectionFailureTest extends AbstractProtocolTest {
 
     @After
     public void tearDown() {
-       stopWorkers(maestro);
+        stopWorkers(maestro);
 
         miniSendingPeer.stop();
         miniReceivingPeer.stop();
@@ -81,8 +91,11 @@ public class AMQPConnectionFailureTest extends AbstractProtocolTest {
     }
 
     @Test(timeout = 300000)
-    public void testFixedCountTest() throws Exception {
+    public void testFixedCountTestWithConnectionError() throws Exception {
         LogConfigurator.silent();
-        testFixedCountTest(maestro, "amqp://localhost:5672/unit.test.queue");
+
+        String brokerAddress = container.getAMQPEndpoint();
+
+        testFixedCountTest(maestro, brokerAddress + "/unit.test.queue");
     }
 }
