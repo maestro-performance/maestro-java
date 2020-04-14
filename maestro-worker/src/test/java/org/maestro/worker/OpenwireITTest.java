@@ -16,9 +16,6 @@
 
 package org.maestro.worker;
 
-import org.junit.After;
-import org.junit.Before;
-import org.junit.Rule;
 import org.junit.Test;
 import org.maestro.client.Maestro;
 import org.maestro.worker.container.ArtemisContainer;
@@ -26,9 +23,10 @@ import org.maestro.worker.tests.support.annotations.MaestroPeer;
 import org.maestro.worker.tests.support.annotations.ReceivingPeer;
 import org.maestro.worker.tests.support.annotations.SendingPeer;
 import org.maestro.worker.tests.support.runner.MiniPeer;
+import org.junit.*;
 
 @SuppressWarnings("unused")
-public class AMQPTest extends AbstractProtocolTest {
+public class OpenwireITTest extends AbstractProtocolTest {
 
     @Rule
     public ArtemisContainer container = new ArtemisContainer();
@@ -48,8 +46,8 @@ public class AMQPTest extends AbstractProtocolTest {
 
         container.start();
 
-        String amqpEndpoint = container.getAMQPEndpoint();
-        System.out.println("Broker AMQP endpoint accessible at " + amqpEndpoint);
+        String openWire = container.getOpenwireEndpoint();
+        System.out.println("Broker OpenWire endpoint accessible at " + openWire);
 
         String mqttEndpoint = container.getMQTTEndpoint();
         System.out.println("Broker MQTT endpoint accessible at " + mqttEndpoint);
@@ -68,17 +66,16 @@ public class AMQPTest extends AbstractProtocolTest {
 
     @After
     public void tearDown() {
-       stopWorkers(maestro);
+        stopWorkers(maestro);
 
         miniSendingPeer.stop();
         miniReceivingPeer.stop();
     }
 
     @Test(timeout = 300000)
-    public void testFixedCountTest() throws Exception {
+    public void testFixedCount() throws Exception {
+        String openWireAddr = container.getOpenwireEndpoint();
 
-        String brokerAddress = container.getAMQPEndpoint();
-
-        testFixedCountTest(maestro, brokerAddress + "/unit.test.queue");
+        testFixedCountTest(maestro, openWireAddr + "/unit.test.queue?protocol=OPENWIRE");
     }
 }
