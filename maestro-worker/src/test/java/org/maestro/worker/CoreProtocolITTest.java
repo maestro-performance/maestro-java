@@ -28,7 +28,7 @@ import org.maestro.worker.tests.support.annotations.SendingPeer;
 import org.maestro.worker.tests.support.runner.MiniPeer;
 
 @SuppressWarnings("unused")
-public class AMQPITTest extends AbstractProtocolTest {
+public class CoreProtocolITTest extends AbstractProtocolTest {
 
     @Rule
     public ArtemisContainer container = new ArtemisContainer();
@@ -48,8 +48,8 @@ public class AMQPITTest extends AbstractProtocolTest {
 
         container.start();
 
-        String amqpEndpoint = container.getAMQPEndpoint();
-        System.out.println("Broker AMQP endpoint accessible at " + amqpEndpoint);
+        String coreProtocolEndpoint = container.getDefaultEndpoint();
+        System.out.println("Broker Core protocol endpoint accessible at " + coreProtocolEndpoint);
 
         String mqttEndpoint = container.getMQTTEndpoint();
         System.out.println("Broker MQTT endpoint accessible at " + mqttEndpoint);
@@ -76,8 +76,9 @@ public class AMQPITTest extends AbstractProtocolTest {
 
     @Test(timeout = 300000)
     public void testFixedCountTest() throws Exception {
-        String brokerAddress = container.getAMQPEndpoint();
 
-        testFixedCountTest(maestro, brokerAddress + "/unit.test.queue");
+        String brokerAddress = container.getDefaultEndpoint();
+
+        testFixedCountTest(maestro, brokerAddress + "/it.test.queue?protocol=ARTEMIS");
     }
 }
