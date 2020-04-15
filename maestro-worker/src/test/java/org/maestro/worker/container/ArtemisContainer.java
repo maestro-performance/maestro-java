@@ -5,10 +5,10 @@ import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
 public class ArtemisContainer extends GenericContainer {
-    private static final int DEFAULT_MQTT_PORT = 1883;
-    private static final int DEFAULT_AMQP_PORT = 5672;
-    private static final int DEFAULT_ADMIN_PORT = 8161;
-    private static final int DEFAULT_ACCEPTOR_PORT = 61616;
+    public static final int DEFAULT_MQTT_PORT = 1883;
+    public static final int DEFAULT_AMQP_PORT = 5672;
+    public static final int DEFAULT_ADMIN_PORT = 8161;
+    public static final int DEFAULT_ACCEPTOR_PORT = 61616;
 
 
     public ArtemisContainer() {
@@ -18,6 +18,16 @@ public class ArtemisContainer extends GenericContainer {
 
         withExposedPorts(DEFAULT_MQTT_PORT, DEFAULT_AMQP_PORT,
                 DEFAULT_ADMIN_PORT, DEFAULT_ACCEPTOR_PORT);
+
+        waitingFor(Wait.forListeningPort());
+    }
+
+    public ArtemisContainer(Integer... ports) {
+        super(new ImageFromDockerfile("apache-artemis:2.6", false)
+                .withFileFromClasspath("Dockerfile",
+                        "org/maestro/worker/container/artemis/Dockerfile"));
+
+        withExposedPorts(ports);
 
         waitingFor(Wait.forListeningPort());
     }
