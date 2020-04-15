@@ -4,8 +4,6 @@ import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.wait.strategy.Wait;
 import org.testcontainers.images.builder.ImageFromDockerfile;
 
-import java.util.Properties;
-
 public class ArtemisContainer extends GenericContainer {
     private static final int DEFAULT_MQTT_PORT = 1883;
     private static final int DEFAULT_AMQP_PORT = 5672;
