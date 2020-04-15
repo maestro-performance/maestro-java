@@ -76,6 +76,6 @@ public class OpenwireITTest extends AbstractProtocolTest {
     public void testFixedCount() throws Exception {
         String openWireAddr = container.getOpenwireEndpoint();
 
-        testFixedCountTest(maestro, openWireAddr + "/unit.test.queue?protocol=OPENWIRE");
+        testFixedCountTest(maestro, openWireAddr + "/openwire.itest.queue?protocol=OPENWIRE");
     }
 }

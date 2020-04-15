@@ -78,6 +78,6 @@ public class AMQPITTest extends AbstractProtocolTest {
     public void testFixedCountTest() throws Exception {
         String brokerAddress = container.getAMQPEndpoint();
 
-        testFixedCountTest(maestro, brokerAddress + "/unit.test.queue");
+        testFixedCountTest(maestro, brokerAddress + "/amqp.itest.queue");
     }
 }

@@ -79,6 +79,6 @@ public class CoreProtocolITTest extends AbstractProtocolTest {
 
         String brokerAddress = container.getDefaultEndpoint();
 
-        testFixedCountTest(maestro, brokerAddress + "/it.test.queue?protocol=ARTEMIS");
+        testFixedCountTest(maestro, brokerAddress + "/core.itest.queue?protocol=ARTEMIS");
     }
 }

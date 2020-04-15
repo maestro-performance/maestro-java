@@ -19,6 +19,7 @@ package org.maestro.worker;
 import org.maestro.client.Maestro;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.notes.DrainCompleteNotification;
+import org.maestro.client.notes.MaestroNotification;
 import org.maestro.client.notes.TestFailedNotification;
 import org.maestro.client.notes.TestSuccessfulNotification;
 import org.maestro.common.LogConfigurator;
@@ -30,6 +31,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
 
 public class AbstractProtocolTest extends EndToEndTest {
 
@@ -78,8 +80,8 @@ public class AbstractProtocolTest extends EndToEndTest {
                 .withSutJvmVersion("1.7.0")
                 .withSutOtherInfo("")
                 .withSutTags("maestro,devel,test")
-                .withTestName("unit test")
-                .withTestTags("unit,java,junit")
+                .withTestName("integration test")
+                .withTestTags("integration,java,junit")
                 .withLabName("local")
                 .withScriptName("junit")
                 .build();
@@ -120,33 +122,38 @@ public class AbstractProtocolTest extends EndToEndTest {
         assertEquals(1, drainNotification.stream().filter(n -> n instanceof DrainCompleteNotification).count());
     }
 
-    public static void validateTestResultsSuccess(List<? extends MaestroNote> replies) {
-        assertEquals("Replies don't match: " + replies.size(), 2, replies.size());
-        assertEquals(2, replies.stream().filter(n -> n instanceof TestSuccessfulNotification).count());
+    public static void validateTestNotification(TestSuccessfulNotification note) {
+        assertEquals(note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
+        assertEquals(note.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_SUCCESS);
 
-        MaestroNote firstNote = replies.get(0);
-        assertEquals(firstNote.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
-        assertEquals(firstNote.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_SUCCESS);
-
-        MaestroNote secondNote = replies.get(1);
-        assertEquals(secondNote.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
-        assertEquals(secondNote.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_SUCCESS);
+        validateTestMetadata(note.getTest());
     }
 
-    public static void validateTestResultsFailure(List<? extends MaestroNote> replies) {
-        assertEquals("Replies don't match: " + replies.size(), 2, replies.size());
-        assertEquals(2, replies.stream().filter(n -> n instanceof TestFailedNotification).count());
+    public static void validateTestNotification(TestFailedNotification note) {
+        assertEquals(note.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
+        assertEquals(note.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_FAIL);
 
-        MaestroNote firstNote = replies.get(0);
-        assertEquals(firstNote.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
-        assertEquals(firstNote.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_FAIL);
+        validateTestMetadata(note.getTest());
+    }
 
-        MaestroNote secondNote = replies.get(1);
-        assertEquals(secondNote.getNoteType(), MaestroNoteType.MAESTRO_TYPE_NOTIFICATION);
-        assertEquals(secondNote.getMaestroCommand(), MaestroCommand.MAESTRO_NOTE_NOTIFY_FAIL);
+    public static void validateTestMetadata(Test test) {
+        assertEquals("junit", test.getScriptName());
+        assertEquals("integration test", test.getTestName());
+        assertNotNull("test details are null", test.getTestDetails());
+        assertEquals("some description", test.getTestDetails().getTestDescription());
+        assertEquals("test comments", test.getTestDetails().getTestComments());
+        assertEquals(SutDetails.UNSPECIFIED, test.getTestNumber());
     }
 
     protected void validateTestResults(List<? extends MaestroNote> replies) {
-        validateTestResultsSuccess(replies);
+        assertEquals("Replies don't match: " + replies.size(), 2, replies.size());
+
+        assertEquals(2, replies.stream().filter(n -> n instanceof MaestroNotification).count());
+
+        replies.stream().filter(n -> n instanceof TestSuccessfulNotification).forEach(
+                n -> validateTestNotification((TestSuccessfulNotification) n));
+
+        replies.stream().filter(n -> n instanceof TestFailedNotification).forEach(
+                n -> validateTestNotification((TestFailedNotification) n));
     }
 }
