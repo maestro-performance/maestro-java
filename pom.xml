@@ -75,6 +75,7 @@
         <version.plugin.maven-jar>3.0.2</version.plugin.maven-jar>
         <version.plugin.maven-dependency>3.1.1</version.plugin.maven-dependency>
         <version.plugin.maven-failsafe>2.22.2</version.plugin.maven-failsafe>
+        <version.plugin.maven-surefire>2.22.2</version.plugin.maven-surefire>
     </properties>
 
     <repositories>
@@ -425,6 +426,19 @@
                             <goals>
                                 <goal>integration-test</goal>
                                 <goal>verify</goal>
+                            </goals>
+                        </execution>
+                    </executions>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-report-plugin</artifactId>
+                    <version>${version.plugin.maven-surefire}</version>
+                    <executions>
+                        <execution>
+                            <phase>verify</phase>
+                            <goals>
+                                <goal>report</goal>
                             </goals>
                         </execution>
                     </executions>
