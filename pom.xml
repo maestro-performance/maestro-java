@@ -42,7 +42,7 @@
         <version.hdrhistogram>2.1.10</version.hdrhistogram>
         <version.junit>4.12</version.junit>
         <version.groovy>2.4.14</version.groovy>
-        <version.paho.mqttv3>1.2.1</version.paho.mqttv3>
+        <version.paho.mqttv3>1.2.4</version.paho.mqttv3>
         <version.msgpack>0.8.16</version.msgpack>
         <version.prometheus-simple-client>0.1.0</version.prometheus-simple-client>
         <version.apache-ivy>2.4.0</version.apache-ivy>
