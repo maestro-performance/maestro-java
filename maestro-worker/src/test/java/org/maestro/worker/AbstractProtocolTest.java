@@ -23,9 +23,9 @@ import org.maestro.client.notes.MaestroNotification;
 import org.maestro.client.notes.TestFailedNotification;
 import org.maestro.client.notes.TestSuccessfulNotification;
 import org.maestro.common.LogConfigurator;
+import org.maestro.common.Role;
 import org.maestro.common.client.notes.*;
 import org.maestro.worker.tests.support.common.EndToEndTest;
-import org.maestro.worker.tests.support.runner.MiniPeer;
 
 import java.util.List;
 import java.util.concurrent.TimeUnit;
@@ -86,19 +86,19 @@ public class AbstractProtocolTest extends EndToEndTest {
                 .withScriptName("junit")
                 .build();
 
-        List<? extends MaestroNote> testStarted = maestro.startTest(MaestroTopics.WORKERS_TOPIC, testExecutionInfo).get();
+        List<? extends MaestroNote> testStarted = maestro.startTest(MaestroTopics.PEER_TOPIC, testExecutionInfo).get(2, TimeUnit.SECONDS);
         assertEquals("Test started replies don't match: " + testStarted.size(), 2, testStarted.size());
 
         System.out.println("Sending the worker start commands");
         // 12 = 6 commands * 2 peers (sending and receiving peers)
 
         List<? extends MaestroNote> receiverStarted = maestro
-                .startWorker(MiniPeer.RECEIVER_TOPIC, new WorkerStartOptions("JmsReceiver")).get();
+                .startWorker(MaestroTopics.peerTopic(Role.RECEIVER), new WorkerStartOptions("JmsReceiver")).get();
         assertEquals("Receiver start replies don't match: " + receiverStarted.size(), 1,
                 receiverStarted.size());
 
         List<? extends MaestroNote> senderStarted = maestro
-                .startWorker(MiniPeer.SENDER_TOPIC, new WorkerStartOptions("JmsSender")).get();
+                .startWorker(MaestroTopics.peerTopic(Role.SENDER), new WorkerStartOptions("JmsSender")).get();
         assertEquals("Sender start replies don't match: " + senderStarted.size(), 1,
                 senderStarted.size());
 

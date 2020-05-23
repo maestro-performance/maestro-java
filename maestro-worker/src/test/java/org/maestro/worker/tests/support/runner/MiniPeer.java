@@ -18,6 +18,7 @@ package org.maestro.worker.tests.support.runner;
 
 import org.apache.commons.io.FileUtils;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.support.GroupInfo;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.exchange.support.WorkerPeer;
 import org.maestro.common.Role;
@@ -32,17 +33,39 @@ import java.net.URL;
  */
 @SuppressWarnings("FieldCanBeLocal")
 public class MiniPeer {
-    private static final String MINIPEERS_TOPIC =  "/mpt/minipeer";
-    public static final String SENDER_TOPIC =  MINIPEERS_TOPIC + "/sender";
-    public static final String RECEIVER_TOPIC =  MINIPEERS_TOPIC + "/receiver";
-
-
     private MaestroWorkerExecutor executor;
 
     private final String worker;
     private final String maestroUrl;
     private final String role;
     private final String host;
+
+    private static final PeerInfo SENDER_INFO = new SenderInfo();
+    private static final PeerInfo RECEIVER_INFO = new ReceiverInfo();
+
+    private static String[] senderTopics(final String id) {
+        return new String[] {
+                MaestroTopics.PEER_TOPIC,
+                MaestroTopics.WORKERS_TOPIC,
+                MaestroTopics.NOTIFICATION_TOPIC,
+                MaestroTopics.MAESTRO_LOGS_TOPIC,
+                MaestroTopics.peerTopic(Role.SENDER),
+                MaestroTopics.peerTopic(id),
+                MaestroTopics.peerTopic(SENDER_INFO)
+        };
+    }
+
+    private static String[] receiverTopics(final String id) {
+        return new String[] {
+                MaestroTopics.PEER_TOPIC,
+                MaestroTopics.WORKERS_TOPIC,
+                MaestroTopics.NOTIFICATION_TOPIC,
+                MaestroTopics.MAESTRO_LOGS_TOPIC,
+                MaestroTopics.peerTopic(Role.RECEIVER),
+                MaestroTopics.peerTopic(id),
+                MaestroTopics.peerTopic(RECEIVER_INFO),
+        };
+    }
 
 
     public MiniPeer(String worker, String maestroUrl, String role, String host) {
@@ -73,13 +96,13 @@ public class MiniPeer {
         executor = new MaestroWorkerExecutor(maestroUrl, peerInfo, logDir);
 
         if (role.equals("sender")) {
-            String[] topics = {MaestroTopics.WORKERS_TOPIC, MaestroTopics.NOTIFICATION_TOPIC, SENDER_TOPIC};
+            String[] topics = senderTopics("123");
 
             peerInfo.setRole(Role.SENDER);
             executor.start(topics);
         }
         else {
-            String[] topics = {MaestroTopics.WORKERS_TOPIC, MaestroTopics.NOTIFICATION_TOPIC, RECEIVER_TOPIC};
+            String[] topics = receiverTopics("456");
 
             peerInfo.setRole(Role.RECEIVER);
             executor.start(topics);
