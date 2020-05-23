@@ -118,6 +118,9 @@ public class DefaultToolLauncher implements ReportsToolLauncher {
 
             logger.info("Started the reports server instance");
             latch.await();
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            logger.error("The tool launcher thread was interrupted");
         } catch (Throwable t) {
             logger.error("Unable to start the Maestro reports server: {}", t.getMessage(), t);
         }
