@@ -98,7 +98,7 @@ public class DefaultToolLauncher implements ReportsToolLauncher {
             logger.info("Starting the reports Collector instance");
             executor.start(topics, 10, 1000);
             executor.run();
-            logger.error("Collector worker has finished running");
+            logger.info("Collector worker has finished running");
         } catch (Throwable t) {
             logger.error("Unable to start the Maestro reports collector: {}", t.getMessage(), t);
         }
