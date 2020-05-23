@@ -33,7 +33,12 @@ import java.util.concurrent.TimeUnit;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 
-public class AbstractProtocolTest extends EndToEndTest {
+public abstract class AbstractProtocolTest extends EndToEndTest {
+
+    protected abstract int numWorkers();
+    protected abstract int numReceivers();
+    protected abstract int numSenders();
+    protected abstract int numPeers();
 
     protected void setupMaestroConnectionProperties() {
         System.out.println("This test will take some time to run");
@@ -48,27 +53,30 @@ public class AbstractProtocolTest extends EndToEndTest {
         waitForWorkerShutdown();
     }
 
+    protected void setupFixedCountTest(final Maestro maestro, final String uri) throws Exception {
+        List<? extends MaestroNote> set1 = maestro.setParallelCount(MaestroTopics.WORKERS_TOPIC, 1).get();
+        assertEquals("Set parallel count replies don't match: " + set1.size(), numWorkers(), set1.size());
+
+        List<? extends MaestroNote> set2 = maestro.setDuration(MaestroTopics.WORKERS_TOPIC, "5").get();
+        assertEquals("Set duration replies don't match: " + set2.size(), numWorkers(), set2.size());
+
+        List<? extends MaestroNote> set3 = maestro.setMessageSize(MaestroTopics.WORKERS_TOPIC, 100).get();
+        assertEquals("Set message size replies don't match: " + set3.size(), numWorkers(), set3.size());
+
+        List<? extends MaestroNote> set4 = maestro.setFCL(MaestroTopics.WORKERS_TOPIC, 1000).get();
+        assertEquals("Set FCL replies don't match: " + set4.size(), numWorkers(), set4.size());
+
+        List<? extends MaestroNote> set5 = maestro.setRate(MaestroTopics.WORKERS_TOPIC, 100).get();
+        assertEquals("Set rate replies don't match: " + set5.size(), numWorkers(), set5.size());
+
+        List<? extends MaestroNote> set6 = maestro.setBroker(MaestroTopics.WORKERS_TOPIC, uri).get();
+        assertEquals("Set broker replies don't match: " + set6.size(), numWorkers(), set6.size());
+    }
+
     protected void testFixedCountTest(final Maestro maestro, final String uri) throws Exception {
         System.out.println("Running a short-lived test");
 
-        List<? extends MaestroNote> set1 = maestro.setParallelCount(MaestroTopics.WORKERS_TOPIC, 1).get();
-        assertEquals("Set parallel count replies don't match: " + set1.size(), 2, set1.size());
-
-        List<? extends MaestroNote> set2 = maestro.setDuration(MaestroTopics.WORKERS_TOPIC, "5").get();
-        assertEquals("Set duration replies don't match: " + set2.size(), 2, set2.size());
-
-        List<? extends MaestroNote> set3 = maestro.setMessageSize(MaestroTopics.WORKERS_TOPIC, 100).get();
-        assertEquals("Set message size replies don't match: " + set3.size(), 2, set3.size());
-
-        List<? extends MaestroNote> set4 = maestro.setFCL(MaestroTopics.WORKERS_TOPIC, 1000).get();
-        assertEquals("Set FCL replies don't match: " + set4.size(), 2, set4.size());
-
-        List<? extends MaestroNote> set5 = maestro.setRate(MaestroTopics.WORKERS_TOPIC, 100).get();
-        assertEquals("Set rate replies don't match: " + set5.size(), 2, set5.size());
-
-        List<? extends MaestroNote> set6 = maestro.setBroker(MaestroTopics.WORKERS_TOPIC, uri).get();
-        assertEquals("Set broker replies don't match: " + set6.size(), 2, set6.size());
-
+        setupFixedCountTest(maestro, uri);
 
         System.out.println("Sending the test start command");
         TestExecutionInfo testExecutionInfo = TestExecutionInfoBuilder.newBuilder()
@@ -87,25 +95,25 @@ public class AbstractProtocolTest extends EndToEndTest {
                 .build();
 
         List<? extends MaestroNote> testStarted = maestro.startTest(MaestroTopics.PEER_TOPIC, testExecutionInfo).get(2, TimeUnit.SECONDS);
-        assertEquals("Test started replies don't match: " + testStarted.size(), 2, testStarted.size());
+        assertEquals("Test started replies don't match: " + testStarted.size(), numPeers(), testStarted.size());
 
         System.out.println("Sending the worker start commands");
         // 12 = 6 commands * 2 peers (sending and receiving peers)
 
         List<? extends MaestroNote> receiverStarted = maestro
                 .startWorker(MaestroTopics.peerTopic(Role.RECEIVER), new WorkerStartOptions("JmsReceiver")).get();
-        assertEquals("Receiver start replies don't match: " + receiverStarted.size(), 1,
+        assertEquals("Receiver start replies don't match: " + receiverStarted.size(), numReceivers(),
                 receiverStarted.size());
 
         List<? extends MaestroNote> senderStarted = maestro
                 .startWorker(MaestroTopics.peerTopic(Role.SENDER), new WorkerStartOptions("JmsSender")).get();
-        assertEquals("Sender start replies don't match: " + senderStarted.size(), 1,
+        assertEquals("Sender start replies don't match: " + senderStarted.size(), numSenders(),
                 senderStarted.size());
 
         System.out.println("Waiting for notifications ...");
         // Get the test result notification
         List<? extends MaestroNote> replies = maestro
-                .waitForNotifications(2)
+                .waitForNotifications(numWorkers())
                 .get(90, TimeUnit.SECONDS);
 
         validateTestResults(replies);
@@ -116,10 +124,10 @@ public class AbstractProtocolTest extends EndToEndTest {
     protected void validateDrain(Maestro maestro) throws InterruptedException, java.util.concurrent.ExecutionException, java.util.concurrent.TimeoutException {
         System.out.println("Waiting for drain ...");
         List<? extends MaestroNote> drainNotification = maestro
-                .waitForDrain(1)
+                .waitForDrain(numReceivers())
                 .get(180, TimeUnit.SECONDS);
-        assertEquals("Replies don't match: " + drainNotification.size(), 1, drainNotification.size());
-        assertEquals(1, drainNotification.stream().filter(n -> n instanceof DrainCompleteNotification).count());
+        assertEquals("Replies don't match: " + drainNotification.size(), numReceivers(), drainNotification.size());
+        assertEquals(numReceivers(), drainNotification.stream().filter(n -> n instanceof DrainCompleteNotification).count());
     }
 
     public static void validateTestNotification(TestSuccessfulNotification note) {

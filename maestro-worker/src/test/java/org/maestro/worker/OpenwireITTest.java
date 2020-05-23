@@ -40,6 +40,26 @@ public class OpenwireITTest extends AbstractProtocolTest {
     @MaestroPeer
     private Maestro maestro;
 
+    @Override
+    protected int numWorkers() {
+        return 2;
+    }
+
+    @Override
+    protected int numReceivers() {
+        return 1;
+    }
+
+    @Override
+    protected int numSenders() {
+        return 1;
+    }
+
+    @Override
+    protected int numPeers() {
+        return 2;
+    }
+
     @Before
     public void setUp() throws Exception {
         setupMaestroConnectionProperties();

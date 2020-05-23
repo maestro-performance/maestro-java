@@ -1,43 +1,33 @@
-/*
- *  Copyright 2017 Otavio R. Piske <angusyoung@gmail.com>
- *
- *  Licensed under the Apache License, Version 2.0 (the "License");
- *  you may not use this file except in compliance with the License.
- *  You may obtain a copy of the License at
- *
- *  http://www.apache.org/licenses/LICENSE-2.0
- *
- *  Unless required by applicable law or agreed to in writing, software
- *  distributed under the License is distributed on an "AS IS" BASIS,
- *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
- *  See the License for the specific language governing permissions and
- *  limitations under the License.
- */
-
-package org.maestro.worker;
+package org.maestro.reports.server.main;
 
 import org.junit.After;
 import org.junit.Before;
-import org.junit.Ignore;
 import org.junit.Rule;
+
 import org.junit.Test;
 import org.maestro.client.Maestro;
+import org.maestro.worker.AbstractProtocolTest;
 import org.maestro.worker.container.ArtemisContainer;
 import org.maestro.worker.tests.support.annotations.MaestroPeer;
 import org.maestro.worker.tests.support.annotations.ReceivingPeer;
 import org.maestro.worker.tests.support.annotations.SendingPeer;
 import org.maestro.worker.tests.support.runner.MiniPeer;
-import org.testcontainers.containers.RabbitMQContainer;
 
-@Ignore
-@SuppressWarnings("unused")
-public class RabbitMQITTest extends AbstractProtocolTest {
+import java.io.File;
+import java.util.concurrent.ExecutionException;
+import java.util.concurrent.ExecutorService;
+import java.util.concurrent.Executors;
+import java.util.concurrent.Future;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.TimeoutException;
+
+import static org.junit.Assert.assertEquals;
+
+
+public class ReportsToolITest extends AbstractProtocolTest {
 
     @Rule
-    public ArtemisContainer maestroBroker = new ArtemisContainer(ArtemisContainer.DEFAULT_MQTT_PORT);
-
-    @Rule
-    public RabbitMQContainer container = new RabbitMQContainer();
+    public ArtemisContainer container = new ArtemisContainer();
 
     @ReceivingPeer
     private MiniPeer miniReceivingPeer;
@@ -47,6 +37,11 @@ public class RabbitMQITTest extends AbstractProtocolTest {
 
     @MaestroPeer
     private Maestro maestro;
+
+    @MaestroPeer
+    private DefaultToolLauncher defaultToolLauncher;
+
+    private Future<Integer> reportsToolFuture;
 
     @Override
     protected int numWorkers() {
@@ -65,20 +60,19 @@ public class RabbitMQITTest extends AbstractProtocolTest {
 
     @Override
     protected int numPeers() {
-        return 2;
+        return 3;
     }
 
     @Before
     public void setUp() throws Exception {
         setupMaestroConnectionProperties();
 
-        maestroBroker.start();
         container.start();
 
-        String amqpEndpoint = container.getAmqpUrl();
+        String amqpEndpoint = container.getAMQPEndpoint();
         System.out.println("Broker AMQP endpoint accessible at " + amqpEndpoint);
 
-        String mqttEndpoint = maestroBroker.getMQTTEndpoint();
+        String mqttEndpoint = container.getMQTTEndpoint();
         System.out.println("Broker MQTT endpoint accessible at " + mqttEndpoint);
 
         maestro = new Maestro(mqttEndpoint);
@@ -88,23 +82,40 @@ public class RabbitMQITTest extends AbstractProtocolTest {
         miniSendingPeer = new MiniPeer("org.maestro.worker.jms.JMSSenderWorker",
                 mqttEndpoint, "sender", "localhost");
 
+        String dataDirStr = this.getClass().getResource(".").getPath();
+        File dataDir = new File(dataDirStr);
+
+        defaultToolLauncher = new DefaultToolLauncher(dataDir, false, mqttEndpoint, "localhost");
+
         miniSendingPeer.start();
         miniReceivingPeer.start();
+
+        ExecutorService executorService = Executors.newCachedThreadPool();
+
+        reportsToolFuture = executorService.submit(() -> defaultToolLauncher.launchServices());
+
         System.out.println("Mini peers have started");
     }
 
     @After
-    public void tearDown() {
-       stopWorkers(maestro);
+    public void tearDown() throws InterruptedException, ExecutionException, TimeoutException {
+        stopWorkers(maestro);
 
         miniSendingPeer.stop();
         miniReceivingPeer.stop();
+        maestro.halt();
+
+        // TODO: need to check if the data was collected
+
+        int ret = reportsToolFuture.get(5, TimeUnit.SECONDS);
+        assertEquals(0, ret);
     }
 
     @Test(timeout = 300000)
     public void testFixedCountTest() throws Exception {
-        String brokerAddress = container.getAmqpUrl();
+        String brokerAddress = container.getAMQPEndpoint();
 
-        testFixedCountTest(maestro, brokerAddress + "/ramqp.itest.queue?protocol=RABBITAMQP");
+        testFixedCountTest(maestro, brokerAddress + "/amqp.itest.queue");
     }
+
 }
