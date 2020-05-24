@@ -1,11 +1,17 @@
 package org.maestro.reports.server.main;
 
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.MappingJsonFactory;
+import org.eclipse.jetty.http.HttpStatus;
 import org.junit.After;
 import org.junit.Before;
 import org.junit.Rule;
 
 import org.junit.Test;
 import org.maestro.client.Maestro;
+import org.maestro.reports.dto.Report;
+import org.maestro.reports.server.util.HTTPEasy;
 import org.maestro.worker.AbstractProtocolTest;
 import org.maestro.worker.container.ArtemisContainer;
 import org.maestro.worker.tests.support.annotations.MaestroPeer;
@@ -13,7 +19,10 @@ import org.maestro.worker.tests.support.annotations.ReceivingPeer;
 import org.maestro.worker.tests.support.annotations.SendingPeer;
 import org.maestro.worker.tests.support.runner.MiniPeer;
 
+import javax.ws.rs.core.Response;
 import java.io.File;
+import java.io.InputStream;
+import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -22,9 +31,13 @@ import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 
 public class ReportsToolITest extends AbstractProtocolTest {
+    private static final String API_HOST = "http://localhost:6500";
 
     @Rule
     public ArtemisContainer container = new ArtemisContainer();
@@ -105,8 +118,6 @@ public class ReportsToolITest extends AbstractProtocolTest {
         miniReceivingPeer.stop();
         maestro.halt();
 
-        // TODO: need to check if the data was collected
-
         int ret = reportsToolFuture.get(5, TimeUnit.SECONDS);
         assertEquals(0, ret);
     }
@@ -116,6 +127,33 @@ public class ReportsToolITest extends AbstractProtocolTest {
         String brokerAddress = container.getAMQPEndpoint();
 
         testFixedCountTest(maestro, brokerAddress + "/amqp.itest.queue");
+
+        // Check that the report server remains up after the test
+        String apiLiveUrl = API_HOST + "/api/live";
+        Response apiLiveResponse = HTTPEasy
+                .url(apiLiveUrl)
+                .get();
+
+        assertEquals(HttpStatus.OK_200, apiLiveResponse.getStatus());
+
+        String allReports = API_HOST + "/api/report/";
+        Response allReportsResponse = HTTPEasy
+                .url(allReports)
+                .get();
+        
+        MappingJsonFactory factory = new MappingJsonFactory();
+        JsonParser parser = factory.createParser((InputStream)allReportsResponse.getEntity());
+
+        List<Report> reports = parser.readValueAs(new TypeReference<List<Report>>(){});
+
+        for (Report report : reports) {
+            assertNotNull(report);
+            assertEquals("integration test", report.getTestName());
+            assertEquals("junit", report.getTestScript());
+            assertTrue(report.isValid());
+            assertFalse(report.isAggregated());
+            assertFalse(report.isRetired());
+        }
     }
 
 }

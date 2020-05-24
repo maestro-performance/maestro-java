@@ -59,6 +59,10 @@
         <version.jolokia-client>2.0.0-M3</version.jolokia-client>
         <version.testcontainers>1.14.0</version.testcontainers>
 
+        <!-- Used for testing -->
+        <version.cxf>3.3.1</version.cxf>
+        <version.jax-ws-rs>2.1.1</version.jax-ws-rs>
+
 
         <!-- JMS clients -->
         <version.qpid-jms-client>0.40.0</version.qpid-jms-client>
@@ -330,6 +334,21 @@
                 <artifactId>jolokia-client-java</artifactId>
                 <version>${version.jolokia-client}</version>
             </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-rs-client</artifactId>
+                <version>${version.cxf}</version>
+                <scope>test</scope>
+            </dependency>
+
+            <dependency>
+                <groupId>org.apache.cxf</groupId>
+                <artifactId>cxf-rt-transports-http-hc</artifactId>
+                <version>${version.cxf}</version>
+                <scope>test</scope>
+            </dependency>
+
 
             <!-- JMS clients -->
             <dependency>
