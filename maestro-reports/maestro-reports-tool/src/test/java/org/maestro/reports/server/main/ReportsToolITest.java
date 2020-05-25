@@ -21,6 +21,7 @@ import org.maestro.worker.tests.support.runner.MiniPeer;
 
 import javax.ws.rs.core.Response;
 import java.io.File;
+import java.io.IOException;
 import java.io.InputStream;
 import java.util.List;
 import java.util.concurrent.ExecutionException;
@@ -127,7 +128,14 @@ public class ReportsToolITest extends AbstractProtocolTest {
         String brokerAddress = container.getAMQPEndpoint();
 
         testFixedCountTest(maestro, brokerAddress + "/amqp.itest.queue");
+        verifyUrl("/api/live");
+        verifyUrl("/api/report");
 
+        verifyReportsData();
+        verifyAggregatedReportsData();
+    }
+
+    private void verifyUrl(String path) {
         // Check that the report server remains up after the test
         String apiLiveUrl = API_HOST + "/api/live";
         Response apiLiveResponse = HTTPEasy
@@ -135,14 +143,23 @@ public class ReportsToolITest extends AbstractProtocolTest {
                 .get();
 
         assertEquals(HttpStatus.OK_200, apiLiveResponse.getStatus());
+    }
 
-        String allReports = API_HOST + "/api/report/";
+
+    private JsonParser verifyResponseData(String path) throws IOException {
+        String allReports = API_HOST + path;
         Response allReportsResponse = HTTPEasy
                 .url(allReports)
                 .get();
-        
+
+        assertEquals(HttpStatus.OK_200, allReportsResponse.getStatus());
+
         MappingJsonFactory factory = new MappingJsonFactory();
-        JsonParser parser = factory.createParser((InputStream)allReportsResponse.getEntity());
+        return factory.createParser((InputStream) allReportsResponse.getEntity());
+    }
+
+    private void verifyReportsData() throws IOException {
+        JsonParser parser = verifyResponseData("/api/report/");
 
         List<Report> reports = parser.readValueAs(new TypeReference<List<Report>>(){});
 
@@ -152,6 +169,21 @@ public class ReportsToolITest extends AbstractProtocolTest {
             assertEquals("junit", report.getTestScript());
             assertTrue(report.isValid());
             assertFalse(report.isAggregated());
+            assertFalse(report.isRetired());
+        }
+    }
+
+    private void verifyAggregatedReportsData() throws IOException {
+        JsonParser parser = verifyResponseData("/api/report/aggregated/");
+
+        List<Report> reports = parser.readValueAs(new TypeReference<List<Report>>(){});
+
+        for (Report report : reports) {
+            assertNotNull(report);
+            assertEquals("integration test", report.getTestName());
+            assertEquals("junit", report.getTestScript());
+            assertTrue(report.isValid());
+            assertTrue(report.isAggregated());
             assertFalse(report.isRetired());
         }
     }
