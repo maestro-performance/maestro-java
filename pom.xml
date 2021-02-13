@@ -57,7 +57,7 @@
         <version.jgit>4.5.4.201711221230-r</version.jgit>
         <version.netty>4.1.32.Final</version.netty>
         <version.jolokia-client>2.0.0-M3</version.jolokia-client>
-        <version.testcontainers>1.14.0</version.testcontainers>
+        <version.testcontainers>1.15.2</version.testcontainers>
 
         <!-- Used for testing -->
         <version.cxf>3.3.1</version.cxf>
