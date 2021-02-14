@@ -49,7 +49,12 @@ public class InternalDatabaseBuilder implements TemplateBuilder {
                         final String driverClassName = config.getString("maestro.reports.driver", "org.h2.Driver");
                         ds.setDriverClassName(driverClassName);
 
-                        final String url = config.getString("maestro.reports.datasource.url", "jdbc:h2:~/.maestro/reports.db");
+                        // This is is required to allow overriding the data source during tests.
+                        String url = System.getProperty("maestro.reports.datasource.url");
+                        if (url == null) {
+                            url = config.getString("maestro.reports.datasource.url", "jdbc:h2:~/.maestro/reports.db");
+                        }
+
                         ds.setUrl(url);
 
                         ds.setInitialSize(2);
