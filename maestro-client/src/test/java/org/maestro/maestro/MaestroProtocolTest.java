@@ -326,32 +326,6 @@ public class MaestroProtocolTest {
                 MaestroCommand.MAESTRO_NOTE_ROLE_UNASSIGN);
     }
 
-    private void verifyGroupJoinRequestPayload(GroupJoinRequest note) {
-        assertEquals("Unexpected member name", "SomeMemberName", note.getGroupInfo().memberName());
-        assertEquals("Unexpected group name", "OtherGroupName", note.getGroupInfo().groupName());
-    }
-
-    @Test
-    public void serializeGroupJoinRequest() throws Exception {
-        GroupJoinRequest joinRequest = new GroupJoinRequest();
-
-        joinRequest.setGroupInfo(new GroupInfo() {
-            @Override
-            public String memberName() {
-                return "SomeMemberName";
-            }
-
-            @Override
-            public String groupName() {
-                return "OtherGroupName";
-            }
-        });
-
-
-        serializeTest(joinRequest, MaestroNoteType.MAESTRO_TYPE_REQUEST,
-                MaestroCommand.MAESTRO_NOTE_GROUP_JOIN, this::verifyGroupJoinRequestPayload);
-    }
-
 
     @Test
     public void serializeGroupLeaveRequest() throws Exception {

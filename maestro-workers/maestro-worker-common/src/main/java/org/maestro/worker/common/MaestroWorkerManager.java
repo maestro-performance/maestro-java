@@ -404,28 +404,6 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         }
     }
 
-
-    @Deprecated
-    @Override
-    public void handle(final GroupJoinRequest note) {
-        GroupInfo requested = note.getGroupInfo();
-
-        if (groupInfo != null) {
-            getClient().replyInternalError(note, "Cannot join group %s as %s: the worker is already part of the worker group %s as %s",
-                requested.groupName(), requested.memberName(), groupInfo.groupName(), groupInfo.memberName());
-
-            return;
-        }
-
-        final String topicName = MaestroTopics.peerTopic(requested);
-        getClient().subscribe(topicName, ServiceLevel.AT_MOST_ONCE);
-
-        this.groupInfo = requested;
-
-        logger.info("Successfully joined group {} as {}", groupInfo.groupName(), groupInfo.memberName());
-        getClient().replyOk(note);
-    }
-
     @Deprecated
     @Override
     public void handle(final GroupLeaveRequest note) {

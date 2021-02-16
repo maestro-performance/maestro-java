@@ -175,9 +175,6 @@ public class MaestroDeserializer {
             case MAESTRO_NOTE_DRAIN: {
                 return new DrainRequest(unpacker);
             }
-            case MAESTRO_NOTE_GROUP_JOIN: {
-                return new GroupJoinRequest(unpacker);
-            }
             case MAESTRO_NOTE_GROUP_LEAVE: {
                 return new GroupLeaveRequest(unpacker);
             }

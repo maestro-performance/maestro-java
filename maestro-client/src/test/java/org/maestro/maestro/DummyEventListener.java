@@ -76,11 +76,6 @@ class DummyEventListener implements MaestroEventListener, MaestroReceiverEventLi
     }
 
     @Override
-    public void handle(GroupJoinRequest note) {
-        handled = true;
-    }
-
-    @Override
     public void handle(GroupLeaveRequest note) {
         handled = true;
     }

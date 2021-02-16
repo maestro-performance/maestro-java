@@ -43,8 +43,6 @@ public interface MaestroEventListener {
 
     void handle(DrainCompleteNotification note);
 
-    void handle(GroupJoinRequest note);
-
     void handle(GroupLeaveRequest note);
 
     void handle(StartWorker note);
