@@ -84,13 +84,13 @@
 
         <dependency>
             <groupId>org.maestro</groupId>
-            <artifactId>maestro-client-mqtt</artifactId>
+            <artifactId>maestro-peers</artifactId>
             <version>${project.version}</version>
         </dependency>
 
         <dependency>
             <groupId>org.maestro</groupId>
-            <artifactId>maestro-peers</artifactId>
+            <artifactId>maestro-client-resolver</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -143,7 +143,6 @@
             <artifactId>cxf-rt-transports-http-hc</artifactId>
             <scope>test</scope>
         </dependency>
-
     </dependencies>
 
     <build>

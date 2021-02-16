@@ -79,9 +79,8 @@
 
         <dependency>
             <groupId>org.maestro</groupId>
-            <artifactId>maestro-client-mqtt</artifactId>
+            <artifactId>maestro-client-resolver</artifactId>
             <version>${project.version}</version>
-            <scope>test</scope>
         </dependency>
 
         <dependency>

@@ -54,11 +54,6 @@
         </dependency>
 
         <dependency>
-            <groupId>org.eclipse.paho</groupId>
-            <artifactId>org.eclipse.paho.client.mqttv3</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>org.maestro</groupId>
             <artifactId>maestro-common</artifactId>
             <version>${project.version}</version>
@@ -72,7 +67,7 @@
 
         <dependency>
             <groupId>org.maestro</groupId>
-            <artifactId>maestro-client-mqtt</artifactId>
+            <artifactId>maestro-client-resolver</artifactId>
             <version>${project.version}</version>
         </dependency>
 

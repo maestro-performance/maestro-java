@@ -16,24 +16,27 @@
 
 package org.maestro.agent.main;
 
-import org.apache.commons.cli.*;
+import java.net.UnknownHostException;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
 import org.maestro.agent.base.MaestroAgent;
-import org.maestro.client.Maestro;
-import org.maestro.client.exchange.MaestroDeserializer;
+import org.maestro.client.exchange.ConsumerEndpoint;
 import org.maestro.client.exchange.MaestroTopics;
-import org.maestro.client.exchange.collector.MaestroCollector;
-import org.maestro.client.exchange.mqtt.MaestroMqttClient;
-import org.maestro.client.exchange.mqtt.MqttConsumerEndpoint;
 import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.resolver.MaestroClientResolver;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.NetworkUtils;
+import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
-
-import java.net.UnknownHostException;
 
 
 public class MaestroAgentMain {
@@ -127,11 +130,9 @@ public class MaestroAgentMain {
         try {
             MaestroWorkerExecutor executor;
 
-            MaestroMqttClient client = new MaestroMqttClient(maestroUrl);
-            client.connect();
+            MaestroClient client = MaestroClientResolver.newClient(maestroUrl);
 
-            MqttConsumerEndpoint<MaestroNote> consumerEndpoint = new MqttConsumerEndpoint<>(maestroUrl, MaestroDeserializer::deserialize);
-            consumerEndpoint.connect();
+            ConsumerEndpoint<MaestroNote> consumerEndpoint = MaestroClientResolver.newConsumerEndpoint(maestroUrl);
             consumerEndpoint.subscribe(MaestroTopics.MAESTRO_TOPICS);
 
             final PeerInfo peerInfo = new AgentPeer(host);

@@ -17,6 +17,7 @@
 package org.maestro.worker.tests.support.runner;
 
 import org.apache.commons.io.FileUtils;
+import org.maestro.client.exchange.ConsumerEndpoint;
 import org.maestro.client.exchange.MaestroDeserializer;
 import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.mqtt.MaestroMqttClient;
@@ -24,7 +25,9 @@ import org.maestro.client.exchange.mqtt.MqttConsumerEndpoint;
 import org.maestro.client.exchange.support.GroupInfo;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.exchange.support.WorkerPeer;
+import org.maestro.client.resolver.MaestroClientResolver;
 import org.maestro.common.Role;
+import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
@@ -97,26 +100,25 @@ public class MiniPeer {
 
         final PeerInfo peerInfo = new WorkerPeer("test", "localhost");
 
-        MaestroMqttClient client = new MaestroMqttClient(maestroUrl);
-        client.connect();
+        MaestroClient client = MaestroClientResolver.newClient(maestroUrl);
 
-        MqttConsumerEndpoint<MaestroNote> consumerEndpoint = new MqttConsumerEndpoint<>(maestroUrl, MaestroDeserializer::deserialize);
-        consumerEndpoint.connect();
-
-        executor = new MaestroWorkerExecutor(client, consumerEndpoint, peerInfo, logDir);
-
+        String[] topics;
         if (role.equals("sender")) {
-            String[] topics = senderTopics("123");
+            topics = senderTopics("123");
 
             peerInfo.setRole(Role.SENDER);
-            executor.start(topics);
         }
         else {
-            String[] topics = receiverTopics("456");
+            topics = receiverTopics("456");
 
             peerInfo.setRole(Role.RECEIVER);
-            executor.start(topics);
         }
+
+        ConsumerEndpoint<MaestroNote> consumerEndpoint = MaestroClientResolver
+                .newConsumerEndpoint(maestroUrl, topics);
+
+        executor = new MaestroWorkerExecutor(client, consumerEndpoint, peerInfo, logDir);
+        executor.start(topics);
 
         Thread thread = new Thread(executor);
         thread.start();

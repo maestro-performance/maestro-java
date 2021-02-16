@@ -26,14 +26,14 @@ import org.apache.commons.cli.DefaultParser;
 import org.apache.commons.cli.HelpFormatter;
 import org.apache.commons.cli.Options;
 import org.apache.commons.cli.ParseException;
-import org.maestro.client.exchange.MaestroDeserializer;
+import org.maestro.client.exchange.ConsumerEndpoint;
 import org.maestro.client.exchange.MaestroTopics;
-import org.maestro.client.exchange.mqtt.MaestroMqttClient;
-import org.maestro.client.exchange.mqtt.MqttConsumerEndpoint;
+import org.maestro.client.resolver.MaestroClientResolver;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.NetworkUtils;
+import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.notes.MaestroNote;
 
 public class ReportsTool {
@@ -157,11 +157,9 @@ public class ReportsTool {
     }
 
     protected int run() {
-        MaestroMqttClient client = new MaestroMqttClient(maestroUrl);
-        client.connect();
+        MaestroClient client = MaestroClientResolver.newClient(maestroUrl);
 
-        MqttConsumerEndpoint<MaestroNote> consumerEndpoint = new MqttConsumerEndpoint<>(maestroUrl, MaestroDeserializer::deserializeEvent);
-        consumerEndpoint.connect();
+        ConsumerEndpoint<MaestroNote> consumerEndpoint = MaestroClientResolver.newEventConsumerEndpoint(maestroUrl);
         consumerEndpoint.subscribe(MaestroTopics.MAESTRO_TOPICS);
 
         return run(new DefaultToolLauncher(client, consumerEndpoint, dataDir, offline, host));

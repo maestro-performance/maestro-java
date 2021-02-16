@@ -21,18 +21,16 @@ import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.maestro.client.Maestro;
-import org.maestro.client.exchange.MaestroDeserializer;
-import org.maestro.client.exchange.MaestroTopics;
-import org.maestro.client.exchange.mqtt.MqttConsumerEndpoint;
+import org.maestro.client.exchange.ConsumerEndpoint;
+import org.maestro.client.exchange.collector.MaestroCollector;
+import org.maestro.client.resolver.MaestroClientResolver;
+import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.worker.container.ArtemisContainer;
 import org.maestro.worker.tests.support.annotations.MaestroPeer;
 import org.maestro.worker.tests.support.annotations.ReceivingPeer;
 import org.maestro.worker.tests.support.annotations.SendingPeer;
 import org.maestro.worker.tests.support.runner.MiniPeer;
-
-import org.maestro.client.exchange.mqtt.MaestroMqttClient;
-import org.maestro.client.exchange.collector.MaestroCollector;
 
 @SuppressWarnings("unused")
 public class CoreProtocolITTest extends AbstractProtocolTest {
@@ -81,12 +79,8 @@ public class CoreProtocolITTest extends AbstractProtocolTest {
         String mqttEndpoint = container.getMQTTEndpoint();
         System.out.println("Broker MQTT endpoint accessible at " + mqttEndpoint);
 
-        MaestroMqttClient client = new MaestroMqttClient(mqttEndpoint);
-        client.connect();
-
-        MqttConsumerEndpoint<MaestroNote> consumerEndpoint = new MqttConsumerEndpoint<>(mqttEndpoint, MaestroDeserializer::deserialize);
-        consumerEndpoint.connect();
-        consumerEndpoint.subscribe(MaestroTopics.MAESTRO_TOPICS);
+        MaestroClient client = MaestroClientResolver.newClient(mqttEndpoint);
+        ConsumerEndpoint<MaestroNote> consumerEndpoint = MaestroClientResolver.newConsumerEndpoint(mqttEndpoint);
 
         MaestroCollector collector = new MaestroCollector(consumerEndpoint);
         maestro = new Maestro(collector, client);

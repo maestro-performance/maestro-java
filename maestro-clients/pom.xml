@@ -15,6 +15,7 @@
     <modules>
         <module>maestro-client-mqtt</module>
         <module>maestro-peers</module>
+        <module>maestro-client-resolver</module>
     </modules>
 
 

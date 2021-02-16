@@ -1,32 +1,5 @@
 package org.maestro.reports.server.main;
 
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.MappingJsonFactory;
-import org.apache.commons.io.FileUtils;
-import org.eclipse.jetty.http.HttpStatus;
-import org.junit.After;
-import org.junit.Before;
-import org.junit.BeforeClass;
-import org.junit.Rule;
-
-import org.junit.Test;
-import org.maestro.client.Maestro;
-import org.maestro.client.exchange.MaestroDeserializer;
-import org.maestro.client.exchange.MaestroTopics;
-import org.maestro.client.exchange.mqtt.MqttConsumerEndpoint;
-import org.maestro.common.LogConfigurator;
-import org.maestro.common.client.notes.MaestroNote;
-import org.maestro.reports.dto.Report;
-import org.maestro.reports.server.util.HTTPEasy;
-import org.maestro.worker.AbstractProtocolTest;
-import org.maestro.worker.container.ArtemisContainer;
-import org.maestro.worker.tests.support.annotations.MaestroPeer;
-import org.maestro.worker.tests.support.annotations.ReceivingPeer;
-import org.maestro.worker.tests.support.annotations.SendingPeer;
-import org.maestro.worker.tests.support.runner.MiniPeer;
-
-import javax.ws.rs.core.Response;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -37,9 +10,32 @@ import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.TimeoutException;
+import javax.ws.rs.core.Response;
 
-import org.maestro.client.exchange.mqtt.MaestroMqttClient;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.MappingJsonFactory;
+import org.apache.commons.io.FileUtils;
+import org.eclipse.jetty.http.HttpStatus;
+import org.junit.After;
+import org.junit.Before;
+import org.junit.Rule;
+import org.junit.Test;
+import org.maestro.client.Maestro;
+import org.maestro.client.exchange.ConsumerEndpoint;
+import org.maestro.client.exchange.MaestroTopics;
 import org.maestro.client.exchange.collector.MaestroCollector;
+import org.maestro.client.resolver.MaestroClientResolver;
+import org.maestro.common.client.MaestroClient;
+import org.maestro.common.client.notes.MaestroNote;
+import org.maestro.reports.dto.Report;
+import org.maestro.reports.server.util.HTTPEasy;
+import org.maestro.worker.AbstractProtocolTest;
+import org.maestro.worker.container.ArtemisContainer;
+import org.maestro.worker.tests.support.annotations.MaestroPeer;
+import org.maestro.worker.tests.support.annotations.ReceivingPeer;
+import org.maestro.worker.tests.support.annotations.SendingPeer;
+import org.maestro.worker.tests.support.runner.MiniPeer;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -103,14 +99,9 @@ public class ReportsToolITest extends AbstractProtocolTest {
         String mqttEndpoint = container.getMQTTEndpoint();
         System.out.println("Broker MQTT endpoint accessible at " + mqttEndpoint);
 
-        MaestroMqttClient client = new MaestroMqttClient(mqttEndpoint);
-        client.connect();
+        MaestroClient client = MaestroClientResolver.newClient(mqttEndpoint);
 
-        MqttConsumerEndpoint<MaestroNote> consumerEndpoint = new MqttConsumerEndpoint<>(mqttEndpoint, MaestroDeserializer::deserialize);
-        // Done on the launcher
-        consumerEndpoint.connect();
-        consumerEndpoint.subscribe(MaestroTopics.MAESTRO_TOPICS);
-
+        ConsumerEndpoint<MaestroNote> consumerEndpoint = MaestroClientResolver.newConsumerEndpoint(mqttEndpoint);
         MaestroCollector collector = new MaestroCollector(consumerEndpoint);
 
         maestro = new Maestro(collector, client);
@@ -120,14 +111,10 @@ public class ReportsToolITest extends AbstractProtocolTest {
         miniSendingPeer = new MiniPeer("org.maestro.worker.jms.JMSSenderWorker",
                 mqttEndpoint, "sender", "localhost");
 
-
         File dataDir = new File(testDataDir, "data");
         FileUtils.deleteDirectory(dataDir);
 
-        MqttConsumerEndpoint<MaestroNote> toolEndpoint = new MqttConsumerEndpoint<>(mqttEndpoint, MaestroDeserializer::deserializeEvent);
-        // Done on the launcher
-//        toolEndpoint.connect();
-//        toolEndpoint.subscribe(...);
+        ConsumerEndpoint<MaestroNote> toolEndpoint = MaestroClientResolver.newEventConsumerEndpoint(mqttEndpoint, null);
 
         defaultToolLauncher = new DefaultToolLauncher(client, toolEndpoint, dataDir, false, "localhost");
 

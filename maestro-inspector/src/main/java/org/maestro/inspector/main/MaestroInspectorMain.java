@@ -16,23 +16,28 @@
 
 package org.maestro.inspector.main;
 
-import org.apache.commons.cli.*;
-import org.maestro.client.exchange.MaestroDeserializer;
+import java.io.File;
+import java.net.UnknownHostException;
+
+import org.apache.commons.cli.CommandLine;
+import org.apache.commons.cli.CommandLineParser;
+import org.apache.commons.cli.DefaultParser;
+import org.apache.commons.cli.HelpFormatter;
+import org.apache.commons.cli.Options;
+import org.apache.commons.cli.ParseException;
+import org.maestro.client.exchange.ConsumerEndpoint;
 import org.maestro.client.exchange.MaestroTopics;
-import org.maestro.client.exchange.mqtt.MaestroMqttClient;
-import org.maestro.client.exchange.mqtt.MqttConsumerEndpoint;
 import org.maestro.client.exchange.support.PeerInfo;
+import org.maestro.client.resolver.MaestroClientResolver;
 import org.maestro.common.ConfigurationWrapper;
 import org.maestro.common.Constants;
 import org.maestro.common.LogConfigurator;
 import org.maestro.common.NetworkUtils;
+import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.inspector.base.InspectorManager;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
-
-import java.io.File;
-import java.net.UnknownHostException;
 
 
 public class MaestroInspectorMain {
@@ -127,11 +132,9 @@ public class MaestroInspectorMain {
             MaestroWorkerExecutor executor;
             final PeerInfo peerInfo = new InspectorPeer(host);
 
-            MaestroMqttClient client = new MaestroMqttClient(maestroUrl);
-            client.connect();
+            MaestroClient client = MaestroClientResolver.newClient(maestroUrl);
 
-            MqttConsumerEndpoint<MaestroNote> consumerEndpoint = new MqttConsumerEndpoint<>(maestroUrl, MaestroDeserializer::deserialize);
-            consumerEndpoint.connect();
+            ConsumerEndpoint<MaestroNote> consumerEndpoint = MaestroClientResolver.newConsumerEndpoint(maestroUrl);
             consumerEndpoint.subscribe(MaestroTopics.MAESTRO_TOPICS);
 
             InspectorManager maestroPeer = new InspectorManager(client, consumerEndpoint, peerInfo, logDir);
