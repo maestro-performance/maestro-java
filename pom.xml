@@ -48,7 +48,7 @@
         <version.apache-ivy>2.4.0</version.apache-ivy>
         <version.spring-jdbc>5.0.15.RELEASE</version.spring-jdbc>
         <version.h2database>1.4.197</version.h2database>
-        <version.jackson-databind>2.9.9.1</version.jackson-databind>
+        <version.jackson-databind>2.9.9.3</version.jackson-databind>
         <version.jackson-annotations>2.9.9</version.jackson-annotations>
         <version.jackson-core>2.9.9</version.jackson-core>
         <version.javalin>1.7.0</version.javalin>
