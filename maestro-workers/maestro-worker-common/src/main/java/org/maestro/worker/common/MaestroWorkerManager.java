@@ -404,26 +404,6 @@ public abstract class MaestroWorkerManager extends AbstractMaestroPeer<MaestroEv
         }
     }
 
-    @Deprecated
-    @Override
-    public void handle(final GroupLeaveRequest note) {
-        if (groupInfo == null) {
-            logger.warn("Ignoring a group leave request because not a member of any group");
-
-            getClient().replyOk(note);
-
-            return;
-        }
-
-        final String peerTopics = MaestroTopics.peerTopic(groupInfo);
-        getClient().unsubscribe(peerTopics);
-
-        final  GroupInfo old = groupInfo;
-        groupInfo = null;
-        getClient().replyOk(note);
-
-        logger.info("Successfully left group {} as {}", old.groupName(), old.memberName());
-    }
 
     @Override
     public void handle(final RoleAssign note) {

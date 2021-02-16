@@ -326,13 +326,6 @@ public class MaestroProtocolTest {
                 MaestroCommand.MAESTRO_NOTE_ROLE_UNASSIGN);
     }
 
-
-    @Test
-    public void serializeGroupLeaveRequest() throws Exception {
-        serializeTest(new GroupLeaveRequest(), MaestroNoteType.MAESTRO_TYPE_REQUEST,
-                MaestroCommand.MAESTRO_NOTE_GROUP_LEAVE);
-    }
-
     @Test
     public void serializeProtocolError() throws Exception {
         ProtocolError note = new ProtocolError();
