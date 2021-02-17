@@ -16,13 +16,12 @@
 
 package org.maestro.worker.tests.support.runner;
 
+import java.io.File;
+import java.net.URL;
+
 import org.apache.commons.io.FileUtils;
 import org.maestro.client.exchange.ConsumerEndpoint;
-import org.maestro.client.exchange.MaestroDeserializer;
 import org.maestro.client.exchange.MaestroTopics;
-import org.maestro.client.exchange.mqtt.MaestroMqttClient;
-import org.maestro.client.exchange.mqtt.MqttConsumerEndpoint;
-import org.maestro.client.exchange.support.GroupInfo;
 import org.maestro.client.exchange.support.PeerInfo;
 import org.maestro.client.exchange.support.WorkerPeer;
 import org.maestro.client.resolver.MaestroClientResolver;
@@ -31,9 +30,6 @@ import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.worker.MaestroWorker;
 import org.maestro.worker.common.executor.MaestroWorkerExecutor;
-
-import java.io.File;
-import java.net.URL;
 
 /**
  * A small, but complete, maestro peer to be used for testing
