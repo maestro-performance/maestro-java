@@ -16,24 +16,19 @@ public final class MaestroClientResolver {
 
     private MaestroClientResolver() {}
 
-    public static MaestroClient newClient(String maestroUrl) {
-        MaestroMqttClient client = new MaestroMqttClient(maestroUrl);
-        client.connect();
-
-        return client;
+    interface Connector {
+        void connect();
     }
 
-    private static void doConnect(MqttConsumerEndpoint<MaestroNote> consumerEndpoint, String[] topics) {
+    private static void doConnect(Connector connector) {
         int connectionRetries = 10;
         int retryDelay = 1000;
 
         do {
             try {
-                consumerEndpoint.connect();
-
-                if (topics != null) {
-                    consumerEndpoint.subscribe(topics);
-                }
+                logger.info("Trying to connect to broker: {} retries remaining", connectionRetries);
+                connector.connect();
+                logger.info("Successfully connected to the Maestro broker");
                 break;
             } catch (MaestroConnectionException e) {
                 logger.error("Maestro did not connect. Waiting and retrying {} more times", connectionRetries);
@@ -53,11 +48,23 @@ public final class MaestroClientResolver {
         } while (connectionRetries > 0);
     }
 
+    public static MaestroClient newClient(String maestroUrl) {
+        MaestroMqttClient client = new MaestroMqttClient(maestroUrl);
+
+        doConnect(() -> client.connect());
+
+        return client;
+    }
+
     public static ConsumerEndpoint<MaestroNote> newConsumerEndpoint(String maestroUrl, String[] topics) {
         MqttConsumerEndpoint<MaestroNote> consumerEndpoint = new MqttConsumerEndpoint<>(maestroUrl,
                 MaestroDeserializer::deserialize);
 
-        doConnect(consumerEndpoint, topics);
+        doConnect(() -> consumerEndpoint.connect());
+
+        if (topics != null) {
+            consumerEndpoint.subscribe(topics);
+        }
 
         return consumerEndpoint;
     }
@@ -70,7 +77,11 @@ public final class MaestroClientResolver {
         MqttConsumerEndpoint<MaestroNote> consumerEndpoint = new MqttConsumerEndpoint<>(maestroUrl,
                 MaestroDeserializer::deserializeEvent);
 
-        doConnect(consumerEndpoint, topics);
+        doConnect(() -> consumerEndpoint.connect());
+
+        if (topics != null) {
+            consumerEndpoint.subscribe(topics);
+        }
 
         return consumerEndpoint;
     }
