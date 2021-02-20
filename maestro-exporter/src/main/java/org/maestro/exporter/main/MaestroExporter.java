@@ -21,8 +21,12 @@ import io.prometheus.client.Counter;
 import io.prometheus.client.exporter.HTTPServer;
 import org.apache.commons.configuration.AbstractConfiguration;
 import org.maestro.client.Maestro;
+import org.maestro.client.exchange.ConsumerEndpoint;
+import org.maestro.client.exchange.collector.MaestroCollector;
 import org.maestro.client.notes.*;
+import org.maestro.client.resolver.MaestroClientResolver;
 import org.maestro.common.ConfigurationWrapper;
+import org.maestro.common.client.MaestroClient;
 import org.maestro.common.client.notes.MaestroNote;
 import org.maestro.common.exceptions.MaestroConnectionException;
 import org.maestro.common.exceptions.MaestroException;
@@ -76,7 +80,12 @@ public class MaestroExporter {
     }
 
     public MaestroExporter(final String maestroUrl) throws MaestroException {
-        maestro = new Maestro(maestroUrl, null, null);
+        MaestroClient client = MaestroClientResolver.newClient(maestroUrl);
+
+        ConsumerEndpoint<MaestroNote> consumerEndpoint = MaestroClientResolver.newConsumerEndpoint(maestroUrl);
+        MaestroCollector collector = new MaestroCollector(consumerEndpoint);
+
+        maestro = new Maestro(collector, client);
 
         messageCounter.register();
         rateCounter.register();

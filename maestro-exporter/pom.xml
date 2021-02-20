@@ -50,6 +50,18 @@
             <version>${project.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-client-resolver</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.maestro</groupId>
+            <artifactId>maestro-peers</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
         <!-- The client -->
         <dependency>
             <groupId>io.prometheus</groupId>
@@ -60,6 +72,7 @@
             <groupId>io.prometheus</groupId>
             <artifactId>simpleclient_httpserver</artifactId>
         </dependency>
+
     </dependencies>
 
     <build>
