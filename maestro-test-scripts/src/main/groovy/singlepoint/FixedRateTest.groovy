@@ -83,7 +83,7 @@ inspectorName = System.getenv("INSPECTOR_NAME")
 warmUp = System.getenv("WARM_UP")
 
 println "Connecting to " + maestroURL
-maestro = new Maestro(maestroURL)
+maestro = MaestroClientResolver.newMaestro(maestroURL)
 
 distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
 

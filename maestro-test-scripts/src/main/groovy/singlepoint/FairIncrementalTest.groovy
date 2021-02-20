@@ -140,7 +140,7 @@ println "Calculated rate increment $rateIncrement"
 
 
 println "Connecting to " + maestroURL
-maestro = new Maestro(maestroURL)
+maestro = MaestroClientResolver.newMaestro(maestroURL)
 
 distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
 

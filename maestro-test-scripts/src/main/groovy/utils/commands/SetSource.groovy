@@ -46,7 +46,7 @@ branch = System.getenv("BRANCH")
 
 
 println "Connecting to " + maestroURL
-maestro = new Maestro(maestroURL)
+maestro = MaestroClientResolver.newMaestro(maestroURL)
 
 /**
  * Sends a stop command to all the test cluster

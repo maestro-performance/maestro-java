@@ -113,7 +113,7 @@ managementInterface = System.getenv("MANAGEMENT_INTERFACE")
 inspectorName = System.getenv("INSPECTOR_NAME")
 
 println "Connecting to " + maestroURL
-maestro = new Maestro(maestroURL)
+maestro = MaestroClientResolver.newMaestro(maestroURL)
 
 distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
 

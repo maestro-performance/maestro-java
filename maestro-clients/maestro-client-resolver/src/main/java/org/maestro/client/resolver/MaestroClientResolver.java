@@ -1,8 +1,10 @@
 package org.maestro.client.resolver;
 
+import org.maestro.client.Maestro;
 import org.maestro.client.exchange.ConsumerEndpoint;
 import org.maestro.client.exchange.MaestroDeserializer;
 import org.maestro.client.exchange.MaestroTopics;
+import org.maestro.client.exchange.collector.MaestroCollector;
 import org.maestro.client.exchange.mqtt.MaestroMqttClient;
 import org.maestro.client.exchange.mqtt.MqttConsumerEndpoint;
 import org.maestro.common.client.MaestroClient;
@@ -88,5 +90,14 @@ public final class MaestroClientResolver {
 
     public static ConsumerEndpoint<MaestroNote> newEventConsumerEndpoint(String maestroUrl) {
         return newEventConsumerEndpoint(maestroUrl, MaestroTopics.MAESTRO_TOPICS);
+    }
+
+    public static Maestro newMaestro(String maestroUrl) {
+        final MaestroClient client = MaestroClientResolver.newClient(maestroUrl);
+
+        final ConsumerEndpoint<MaestroNote> consumerEndpoint = MaestroClientResolver.newConsumerEndpoint(maestroUrl);
+        final MaestroCollector collector = new MaestroCollector(consumerEndpoint);
+
+        return new Maestro(collector, client);
     }
 }

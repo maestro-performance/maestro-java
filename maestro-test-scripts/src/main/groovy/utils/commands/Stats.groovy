@@ -40,7 +40,7 @@ maestroURL = System.getenv("MAESTRO_BROKER")
 
 
 println "Connecting to " + maestroURL
-maestro = new Maestro(maestroURL)
+maestro = MaestroClientResolver.newMaestro(maestroURL)
 
 /**
  * Issue the get request

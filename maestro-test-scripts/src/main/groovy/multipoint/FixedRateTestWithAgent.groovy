@@ -91,7 +91,7 @@ logLevel = System.getenv("LOG_LEVEL")
 LogConfigurator.configureLogLevel(logLevel)
 
 println "Connecting to " + maestroURL
-maestro = new Maestro(maestroURL)
+maestro = MaestroClientResolver.newMaestro(maestroURL)
 
 distributionStrategy = DistributionStrategyFactory.createStrategy(System.getenv("DISTRIBUTION_STRATEGY"), maestro)
 

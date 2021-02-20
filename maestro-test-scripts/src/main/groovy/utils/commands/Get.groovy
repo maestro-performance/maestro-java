@@ -42,7 +42,7 @@ maestroURL = System.getenv("MAESTRO_BROKER")
  * Connects to the Maestro broker
  */
 println "Connecting to " + maestroURL
-maestro = new Maestro(maestroURL)
+maestro = MaestroClientResolver.newMaestro(maestroURL)
 
 /**
  * Issue the get request

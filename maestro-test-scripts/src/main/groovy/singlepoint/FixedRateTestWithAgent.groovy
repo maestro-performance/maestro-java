@@ -86,7 +86,7 @@ logLevel = System.getenv("LOG_LEVEL")
 LogConfigurator.configureLogLevel(logLevel)
 
 println "Connecting to " + maestroURL
-maestro = new Maestro(maestroURL)
+maestro = MaestroClientResolver.newMaestro(maestroURL)
 
 FixedRateTestProfile testProfile = new FixedRateTestProfile()
 
