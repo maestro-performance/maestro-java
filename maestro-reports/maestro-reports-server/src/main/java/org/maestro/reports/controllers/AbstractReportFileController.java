@@ -17,7 +17,6 @@
 package org.maestro.reports.controllers;
 
 import io.javalin.Handler;
-import org.jetbrains.annotations.NotNull;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.reports.controllers.common.exceptions.ReportFileNotFound;
 import org.maestro.reports.dto.Report;
@@ -29,7 +28,6 @@ import java.io.File;
 public abstract class AbstractReportFileController implements Handler {
     private static final Logger logger = LoggerFactory.getLogger(AbstractReportFileController.class);
 
-    @NotNull
     protected File getReportFile(final Report report, final String name) {
         final File reportDir = new File(report.getLocation());
 

@@ -24,7 +24,6 @@ import org.ehcache.config.builders.CacheConfigurationBuilder;
 import org.ehcache.config.builders.CacheManagerBuilder;
 import org.ehcache.config.builders.ExpiryPolicyBuilder;
 import org.ehcache.config.builders.ResourcePoolsBuilder;
-import org.jetbrains.annotations.NotNull;
 import org.maestro.common.HostTypes;
 import org.maestro.common.exceptions.MaestroException;
 import org.maestro.plotter.common.serializer.SingleData;
@@ -87,7 +86,6 @@ abstract class CommonRateReportController extends AbstractReportFileController {
         }
     }
 
-    @NotNull
     protected File getReportFileForRole(final Report report, final String hostHole) {
         File reportFile;
 
