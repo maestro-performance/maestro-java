@@ -63,7 +63,7 @@ Running The Tests
 To run the tests, first start the client container:
 
 ```
-docker run -it -h maestro_client -v maestro:/maestro --network=maestro_cluster maestro_client /bin/bash
+docker run -it -h maestro_client -v maestro:/maestro --network=maestro_cluster maestroperf/maestro-client:devel /bin/bash
 ```
 
 Once you attach to the container, the console MOTD will display useful information about 
@@ -74,8 +74,7 @@ To execute the unbounded test, which tries to send as much data as possible to t
 provided by default along with Maestro, run the following commands within the container:
 
 ```
-cd /opt/maestro/maestro-test-scripts/scripts/groovy/singlepoint
-groovy FixedRateTest.groovy /maestro/reports/activemq-5.15.2
+./maestro-cli/bin/maestro-cli exec -s /opt/maestro/maestro-cli/scripts/singlepoint/FixedRateTest.groovy
 ```
 
 **Note**: the first test takes a longer time to run because Groovy will download the 
