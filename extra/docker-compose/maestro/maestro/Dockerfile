@@ -1,15 +1,18 @@
-FROM centos:7 AS buildimg
+FROM fedora:33 AS buildimg
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 ARG MAESTRO_VERSION
 ENV MAESTRO_VERSION ${MAESTRO_VERSION:-1.6.0-SNAPSHOT}
 ARG MAESTRO_BRANCH
 ENV MAESTRO_BRANCH ${MAESTRO_BRANCH:-devel}
 LABEL MAESTRO_VERSION=${MAESTRO_VERSION}
-RUN yum install -y java-1.8.0-openjdk-devel which unzip zip wget
+RUN dnf install -y java-11-openjdk-headless which unzip zip wget && dnf clean all
 ENV JAVA_HOME /etc/alternatives/jre
 WORKDIR /root/build
-RUN wget https://github.com/maestro-performance/maestro-java/archive/${MAESTRO_BRANCH}.zip -O maestro-java.zip && unzip maestro-java.zip && ln -s maestro-java-${MAESTRO_BRANCH} maestro-java
-RUN cd maestro-java && ./mvnw -DskipTests=true -PPackage clean package
+RUN wget https://github.com/maestro-performance/maestro-java/archive/${MAESTRO_BRANCH}.zip -O maestro-java.zip && \
+    unzip maestro-java.zip && \
+    ln -s maestro-java-${MAESTRO_BRANCH} maestro-java && \
+    cd maestro-java && \
+    ./mvnw -DskipTests=true -PPackage clean package
 
 ENV MAESTRO_APP_ROOT /opt/maestro
 RUN mkdir -p ${MAESTRO_APP_ROOT}
@@ -28,16 +31,18 @@ RUN mkdir -p maestro-cli && tar --strip-components=1 -xvf /root/build/maestro-ja
 
 
 # Base image for everything
-FROM centos:7 AS maestro-base
+FROM registry.access.redhat.com/ubi8/ubi-minimal AS maestro-base
 MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 ARG MAESTRO_VERSION
 ENV MAESTRO_VERSION ${MAESTRO_VERSION:-1.6.0-SNAPSHOT}
 LABEL MAESTRO_VERSION=${MAESTRO_VERSION}
 ENV MAESTRO_APP_ROOT /opt/maestro
 ENV JAVA_HOME /etc/alternatives/jre
-RUN mkdir -p ${MAESTRO_APP_ROOT} && mkdir -p /maestro
+RUN mkdir -p ${MAESTRO_APP_ROOT} && \
+    mkdir -p /maestro && \
+    microdnf install -y java-11-openjdk-headless unzip which rsync openssl && \
+    microdnf clean all
 WORKDIR ${MAESTRO_APP_ROOT}
-RUN yum install -y java-1.8.0-openjdk-headless unzip which ntp rsync openssl && yum clean all
 
 ## Worker ##
 FROM maestro-base AS maestro-worker
@@ -116,7 +121,8 @@ MAINTAINER Otavio Rodolfo Piske <angusyoung@gmail.com>
 LABEL MAESTRO_WORKER_TYPE=client
 ENV GROOVY_VERSION 2.4.15
 LABEL MAESTRO_WORKER_TYPE=${MAESTRO_WORKER_TYPE}
-RUN yum install -y java-1.8.0-openjdk liberation-fonts && yum clean all
+RUN microdnf install -y java-11-openjdk && \
+    microdnf clean all
 COPY --from=buildimg ${MAESTRO_APP_ROOT}/maestro-cli maestro-cli
 
 ENV MAESTRO_BROKER mqtt://broker:1883
